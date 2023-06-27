@@ -7,6 +7,24 @@ openai.api_key = [Place the key here]  # Replace with your actual OpenAI key
 
 
 
+import os
+
+api_key = os.environ.get('openai_key')
+if api_key is None:
+    print("Key not found.")
+else:
+    print("Key:", api_key)
+
+
+import os
+
+# Get all environment variables
+env_vars = os.environ
+
+# Print all environment variables
+for var, value in env_vars.items():
+    print(f"{var}={value}")
+
 
 # ----------------------------------------------------
 class ChatApplication:
