@@ -1,4 +1,6 @@
-import dearpygui.dearpygui as dpg
+import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
+import customtkinter as ctk
 import threading
 import openai
 import os
@@ -10,61 +12,74 @@ if api_key is None:
 
 openai.api_key = api_key
 
+
 class ChatApplication:
 
-    def __init__(self,init_msg):
+    def __init__(self, init_msg):
         self.width = 600
         self.height = 600
 
-        dpg.create_context()
-        self.window_id = dpg.add_window(label="Chat Window", no_title_bar=True, no_move=True, no_resize=True,
-                                        no_collapse=True, horizontal_scrollbar=True, width=self.width,
-                                        height=self.height, menubar=False)
+        self.window = tk.Tk()
+        self.window.title("Chat with GPT-3.5")
+        self.window.geometry(f'{self.width}x{self.height}')
+        self.window.configure(bg='#D3D3D3')
 
         self.conversation = [{"role": "system", "content": f"{init_msg}"}]
-        self.child_window = dpg.add_child(parent=self.window_id, horizontal_scrollbar=False)  # Add this line
-        self.message_area = dpg.add_text("", parent=self.child_window,wrap=self.get_text_length())  # Modify this line
-        self.input_area = dpg.add_input_text(parent=self.window_id, width=self.width, on_enter=True,
-                                             callback=self.send_message)
+        self.font = ctk.CTkFont(family='Helvetica', size=18)
 
-        dpg.create_viewport(title="Chat with GPT-3.5", width=self.width, height=self.height)
-        dpg.add_button(parent=self.window_id, label="Send", callback=self.send_message)
-        dpg.set_viewport_resize_callback(self.on_resize)
+        self.message_area = ScrolledText(self.window, bg='white', fg='black', font=self.font)
+        self.message_area.pack(fill='both', expand=True)
 
-    def get_text_length(self):
-        return int(0.9*self.width)
+        self.input_area = ctk.CTkEntry(self.window, fg_color=('black', 'black'), bg_color=('white', 'white'), font=self.font)
+        self.input_area.pack(fill='x')
 
-    def send_message(self, sender, data):
-        message = dpg.get_value(self.input_area)
+        send_button = ctk.CTkButton(self.window, text="Send", command=self.send_message,
+                                    fg_color=('#FFFFFF', '#FFFFFF'), bg_color=('#0000FF', '#0000FF'), font=self.font)
+        send_button.pack(fill='x')
+
+        self.input_area.bind("<Return>", self.send_message)
+
+
+    def send_message(self, event=None):
+        message = self.input_area.get()
         if message:
             self.conversation.append({"role": "user", "content": message})
             self.display_message(f'You: {message}\n')
-            dpg.set_value(self.input_area, "")
+            self.input_area.delete(0, 'end')
 
             threading.Thread(target=self.get_response).start()
-        dpg.focus_item(self.input_area)
-
 
     def get_response(self):
         try:
-            response = openai.ChatCompletion.create(model="gpt-3.5-turbo-16k", messages=self.conversation)
-            chatbot_message = response['choices'][0]['message']['content'].strip()
-            self.display_message(f'GPT-3.5: {chatbot_message}\n')
-            self.conversation.append({"role": "assistant", "content": chatbot_message})
+            # start_time = time.time()
+            chatbot_message = ""
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=self.conversation,
+                stream=True
+            )
+
+            self.display_message(f'GPT-3.5: ')  # Display assistant's name once before the message starts
+
+            for chunk in response:
+                # chunk_time = time.time() - start_time  # calculate the time delay of the chunk
+                if chunk['choices'][0]['delta']:
+                    to_append = chunk['choices'][0]['delta']['content']  # extract the message
+                else:
+                    to_append = '\n'
+
+                chatbot_message += to_append  # append the chunk to the message
+                self.display_message(f'{to_append}')  # Display each chunk as it arrives
+                self.conversation.append({"role": "assistant", "content": chatbot_message})
+
         except Exception as e:
             self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')
 
     def display_message(self, message):
-        dpg.set_value(self.message_area, dpg.get_value(self.message_area) + message)
-        dpg.configure_item(self.child_window, width=self.width)  # Add this line
-
-
-    def on_resize(self, sender, data):
-        print('Triggered callback!')
-        self.height = dpg.get_viewport_height()
-        self.width = dpg.get_viewport_width()
-        dpg.configure_item(self.window_id, width=self.width, height=self.height)
-        dpg.configure_item(self.message_area, wrap=self.get_text_length())  # Update the wrap attribute here
+        self.message_area.configure(state='normal')
+        self.message_area.insert(tk.END, message)
+        self.message_area.configure(state='disabled')
 
 
 def read_file(file_path):
@@ -76,9 +91,5 @@ def read_file(file_path):
 if __name__ == "__main__":
     file_path = 'prompt'
     prompt_str = read_file(file_path)
-
     app = ChatApplication(prompt_str)
-    dpg.setup_dearpygui()
-    dpg.show_viewport()
-    dpg.start_dearpygui()
-    dpg.destroy_context()
+    app.window.mainloop()
