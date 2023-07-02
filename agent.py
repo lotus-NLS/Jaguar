@@ -17,14 +17,13 @@ class Agent:
                 toolbox_description+=f'{tool.get_tool_info()}'
             self.initial_prompt = f'You have access to the following tools:{toolbox_description}'
 
-        def create_agent_toolbox():
-            return [Tools.read, Tools.write]
+
 
         self.initial_prompt = ''
         self.model_type = model_type
         self.conversation_history = []
 
-        self.toolbox = create_agent_toolbox()
+        self.toolbox = agent_toolbox
         set_initial_prompt()
 
 
@@ -63,7 +62,6 @@ class Agent:
     #     except Exception as e:
     #         print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
-
     def process_gpt_message(self, msg):
         print(f"[Debug] Processing GPT message: '{msg}'")
         processed_msg = ""
@@ -74,28 +72,28 @@ class Agent:
             processed_msg += char
             if not tool_found:  # Only look for a new tool if one hasn't been found yet
                 for tool in self.toolbox:
-                    keyword = tool.get_start_keyword()
-                    if keyword in processed_msg:
+                    if tool.get_start_keyword() in processed_msg:
                         current_tool = tool  # Save the current tool info
                         tool_found = True  # Indicate that a tool was found
                         break  # Once a tool is found, stop looking for other tools
-            else:
-                end_keyword = current_tool.get_end_keyword()  # use method to get end_keyword
-                if end_keyword in processed_msg:
-                    arg_str = extract_between_keywords(processed_msg, current_tool.get_start_keyword(), end_keyword)
 
+            else:
+                if current_tool.get_end_keyword() in processed_msg:
+                    arg_str = extract_between_keywords(processed_msg, current_tool.get_start_keyword(),
+                                                       current_tool.get_end_keyword())
                     print(f'[Debug] Found ending keyword')
                     print(f'[Debug] Arg_str:{arg_str}')
-                    current_tool.handle_call(arg_str)
 
-                    # result = current_tool.function(*args)  # use function attribute directly
-                    # print(f'[Debug] Called function with result: {result}')  # Display the result
-                    # processed_msg = ""  # reset the processed_msg
-                    # tool_found = False  # Reset tool_found to look for a new tool
+                    result = current_tool.handle_call(arg_str)
+                    print(f'[Debug] Called function with result: {result}')  # Display the result
+
+                    processed_msg = ""  # reset the processed_msg
+                    tool_found = False  # Reset tool_found to look for a new tool
 
         if not tool_found:  # If no tool was found in the last processed message
             print("[Debug] No keyword found in message")
         return None
+
 
 if __name__ == "__main__":
     agent = Agent()
