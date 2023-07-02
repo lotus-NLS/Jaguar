@@ -8,10 +8,10 @@ class Arg:
         self.name = name
 
     def get_start_keyword(self):
-        return f"START_{self.name.upper()}|"
+        return f"START_{self.name.lower()}|"
 
     def get_end_keyword(self):
-        return f"|END_{self.name.upper()}"
+        return f"|END_{self.name.lower()}*"
 
     def extract_value(self, arg_string: str):
         return extract_between_keywords(arg_string, self.get_start_keyword(), self.get_end_keyword())
@@ -61,7 +61,7 @@ class Tool:
         return f'{self.name.upper()}|'
 
     def get_end_keyword(self):
-        return f'|/{self.name.upper()}'
+        return f'|{self.name.upper()}'
 
 
 class Function_lib:
@@ -94,30 +94,30 @@ agent_toolbox =  [Tools.read, Tools.write]
 
 # -----------------------------------
 
-if __name__ == "__main__":
-    read_tool = Tools.read
-    write_tool = Tools.write
-
-    print("Read Tool Arguments:")
-    for arg in read_tool.args:
-        print(arg.name)
-
-    print("Read Tool Info:")
-    print(read_tool.get_tool_info())
-
-    print("Write Tool Arguments:")
-    for arg in write_tool.args:
-        print(arg.name)
-
-    print("Write Tool Info:")
-    print(write_tool.get_tool_info())
-
-    # Write to a file using 'write_tool'
-    path_to_file = os.path.expanduser("~/pyWriter/test.txt")
-    content_to_write = "Hello, World!"
-    write_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH\nSTART_CONTENT|\n{content_to_write}\n|END_CONTENT"
-    write_tool.handle_call(write_tool_arg_string)
-
-    # Read from the same file using 'read_tool'
-    read_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH"
-    print(read_tool.handle_call(read_tool_arg_string))
+# if __name__ == "__main__":
+#     read_tool = Tools.read
+#     write_tool = Tools.write
+#
+#     print("Read Tool Arguments:")
+#     for arg in read_tool.args:
+#         print(arg.name)
+#
+#     print("Read Tool Info:")
+#     print(read_tool.get_tool_info())
+#
+#     print("Write Tool Arguments:")
+#     for arg in write_tool.args:
+#         print(arg.name)
+#
+#     print("Write Tool Info:")
+#     print(write_tool.get_tool_info())
+#
+#     # Write to a file using 'write_tool'
+#     path_to_file = os.path.expanduser("~/pyWriter/test.txt")
+#     content_to_write = "Hello, World!"
+#     write_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH\nSTART_CONTENT|\n{content_to_write}\n|END_CONTENT"
+#     write_tool.handle_call(write_tool_arg_string)
+#
+#     # Read from the same file using 'read_tool'
+#     read_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH"
+#     print(read_tool.handle_call(read_tool_arg_string))

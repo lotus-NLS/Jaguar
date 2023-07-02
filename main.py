@@ -5,6 +5,8 @@ import threading
 import openai
 import os
 
+from agent import *  # Assuming the Agent class is in this file
+
 api_key = os.environ.get('openai_key')
 if api_key is None:
     print("Key not found. Aborting program ...")
@@ -15,7 +17,7 @@ openai.api_key = api_key
 
 class ChatApplication:
 
-    def __init__(self, init_msg):
+    def __init__(self):
         self.width = 600
         self.height = 600
 
@@ -24,7 +26,6 @@ class ChatApplication:
         self.window.geometry(f'{self.width}x{self.height}')
         self.window.configure(bg='#D3D3D3')
 
-        self.conversation = [{"role": "system", "content": f"{init_msg}"}]
         self.font = ctk.CTkFont(family='Helvetica', size=18)
 
         self.message_area = ScrolledText(self.window, bg='white', fg='black', font=self.font)
@@ -39,39 +40,20 @@ class ChatApplication:
 
         self.input_area.bind("<Return>", self.send_message)
 
+        self.agent = Agent()  # Initialize the Agent object
 
     def send_message(self, event=None):
         message = self.input_area.get()
         if message:
-            self.conversation.append({"role": "user", "content": message})
             self.display_message(f'You: {message}\n')
             self.input_area.delete(0, 'end')
+            threading.Thread(target=self.get_response, args=(message,)).start()
 
-            threading.Thread(target=self.get_response).start()
-
-    def get_response(self):
+    def get_response(self, message):
         try:
-            # start_time = time.time()
-            chatbot_message = ""
-
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=self.conversation,
-                stream=True
-            )
-
-            self.display_message(f'GPT-3.5: ')  # Display assistant's name once before the message starts
-
-            for chunk in response:
-                # chunk_time = time.time() - start_time  # calculate the time delay of the chunk
-                if chunk['choices'][0]['delta']:
-                    to_append = chunk['choices'][0]['delta']['content']  # extract the message
-                else:
-                    to_append = '\n'
-
-                chatbot_message += to_append  # append the chunk to the message
-                self.display_message(f'{to_append}')  # Display each chunk as it arrives
-                self.conversation.append({"role": "assistant", "content": chatbot_message})
+            self.agent.handle_user_msg(message)  # Call the agent to handle the user's message
+            agent_response = self.agent.last_response
+            self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the agent's response
 
         except Exception as e:
             self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')
@@ -82,14 +64,6 @@ class ChatApplication:
         self.message_area.configure(state='disabled')
 
 
-def read_file(file_path):
-    with open(file_path, 'r') as file:
-        data = file.read()
-    return data
-
-
 if __name__ == "__main__":
-    file_path = 'prompt'
-    prompt_str = read_file(file_path)
-    app = ChatApplication(prompt_str)
+    app = ChatApplication()
     app.window.mainloop()
