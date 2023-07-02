@@ -10,13 +10,11 @@ from globals.tools import *
 class Agent:
     def __init__(self, model_type: str = Models.gpt_35_16k):
         def set_initial_prompt():
-            toolbox_description = ""
-            for tool in self.toolbox:  # For each tool in the toolbox
-                args_description = ""
-                for arg in tool.args:  # For each argument that the tool requires
-                    args_description += f"--START_{arg.upper()}|[arg_value]|--END_{arg.upper()}"
-                usage_instruction = f"{tool.get_start_keyword()}{args_description}{tool.get_end_keyword()}"
-                toolbox_description += f"\n{tool.name}: {tool.description} To use it, follow this format: {usage_instruction}"
+            toolbox_description = "You are a software development agent based on a large langauge model embedded in the Lotus project " \
+                                  "which is a framework for enabling large language models to do software development" \
+                                  "The following functions are available to use through simple text instructions:"
+            for tool in self.toolbox:
+                toolbox_description+=f'{tool.get_tool_info()}'
             self.initial_prompt = f'You have access to the following tools:{toolbox_description}'
 
         def create_agent_toolbox():
@@ -30,38 +28,40 @@ class Agent:
         set_initial_prompt()
 
 
-    def handle_new_user_msg(self, user_msg):
-        def add_user_log(this_msg):
-            self.conversation_history.append({"role": Roles.user, "content": user_msg})
+    # def add_user_log(self,this_msg):
+    #     self.conversation_history.append({"role": Roles.user, "content": this_msg})
+    #
+    # def add_agent_log(self,this_msg):
+    #     self.conversation_history.append({"role": Roles.agent, "content": this_msg})
+    #
+    # def handle_new_user_msg(self, user_msg):
+    #     self.add_user_log(user_msg)
+    #     agent_msg = self.get_response(self.conversation_history)
+    #     self.add_agent_log(agent_msg)
 
-        def add_agent_log(this_msg):
-            self.conversation_history.append({"role": Roles.agent, "content": user_msg})
-
-        add_user_log(user_msg)
-        agent_msg = self.get_response(self.conversation_history)
-        add_agent_log(agent_msg)
-
-    def get_response(self, msg):
-        try:
-            agent_msg = ""
-            print("[Debug] Creating completion request.")
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=self.conversation_history,
-                stream=True
-            )
-
-            for chunk in response:
-                if chunk['choices'][0]['delta']:
-                    to_append = chunk['choices'][0]['delta']['content']  # extract the message
-                else:
-                    to_append = '\n'
-                agent_msg += to_append  # append the chunk to the message
-            print("[Debug] Received response from the model.")
-            return agent_msg
-
-        except Exception as e:
-            print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
+    # def get_response(self, msg):
+    #     self.add_user_log(msg)
+    #
+    #     try:
+    #         agent_msg = ""
+    #         print("[Debug] Creating completion request.")
+    #         response = openai.ChatCompletion.create(
+    #             model="gpt-3.5-turbo",
+    #             messages=self.conversation_history,
+    #             stream=True
+    #         )
+    #
+    #         for chunk in response:
+    #             if chunk['choices'][0]['delta']:
+    #                 to_append = chunk['choices'][0]['delta']['content']  # extract the message
+    #             else:
+    #                 to_append = '\n'
+    #             agent_msg += to_append  # append the chunk to the message
+    #         print("[Debug] Received response from the model.")
+    #         return agent_msg
+    #
+    #     except Exception as e:
+    #         print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
 
     def process_gpt_message(self, msg):

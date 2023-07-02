@@ -11,6 +11,13 @@ class Tool:
         self.args = list(inspect.signature(function).parameters.keys())
         self.description = description
 
+    def get_tool_info(self):
+        args_description = ""
+        for arg in self.args:  # For each argument that the tool requires
+            args_description += f"--START_{arg.upper()}|[arg_value]|--END_{arg.upper()}"
+        usage_instruction = f"{self.get_start_keyword()}{args_description}{self.get_end_keyword()}"
+        return f"{self.name}: {self.description} To use it, follow this format: {usage_instruction}"
+
     def handle_call(self, arg_string: str):
         kwargs = {}
         for arg in self.args:
