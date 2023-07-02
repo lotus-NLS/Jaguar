@@ -1,3 +1,4 @@
+import os.path
 from typing import Callable, List
 from method_lib import *
 import inspect
@@ -7,10 +8,10 @@ class Arg:
         self.name = name
 
     def get_start_keyword(self):
-        return f"--START_{self.name.upper()}|"
+        return f"START_{self.name.upper()}|"
 
     def get_end_keyword(self):
-        return f"|--END_{self.name.upper()}"
+        return f"|END_{self.name.upper()}"
 
     def extract_value(self, arg_string: str):
         return extract_between_keywords(arg_string, self.get_start_keyword(), self.get_end_keyword())
@@ -32,27 +33,27 @@ class Tool:
         self.description = description
 
     def get_tool_info(self):
-        tool_description = f"{self.name}: {self.description} To use it, follow this format: "
+        tool_description = f'{self.name}: {self.description} To use it, follow the following format:'
+        tool_description += f'{self.get_start_keyword()}'
 
-        for arg in self.args:
-            arg_description = f"{arg.get_start_keyword()}[arg_value]{arg.get_end_keyword()}"
-            tool_description += arg_description
+        for tool_arg in self.args:
+            tool_description += f"{tool_arg.get_start_keyword()}[arg_value]{tool_arg.get_end_keyword()}"
 
-        usage_instruction = f"{self.get_start_keyword()}{tool_description}{self.get_end_keyword()}"
+        tool_description += f'{self.get_end_keyword()}'
 
-        return usage_instruction
+
+        return tool_description
 
     def handle_call(self, arg_string: str):
         kwargs = {}
-        for arg in self.args:
-            arg_val = arg.extract_value(arg_string)
+        for tool_arg in self.args:
+            arg_val = tool_arg.extract_value(arg_string)
             if arg_val is not None:
-                kwargs[arg.name] = arg_val.strip()
+                kwargs[tool_arg.name] = arg_val.strip()
             else:
-                print(f"[Warning] Missing argument {arg.name} for tool {self.name}")
+                print(f"[Warning] Missing argument {tool_arg.name} for tool {self.name}")
                 return None  # If any argument is missing, don't call the function
 
-        # Call the function associated with the tool with the parsed arguments
         result = self.function(**kwargs)
         return result
 
@@ -110,3 +111,13 @@ if __name__ == "__main__":
 
     print("Write Tool Info:")
     print(write_tool.get_tool_info())
+
+    # Write to a file using 'write_tool'
+    path_to_file = os.path.expanduser("~/pyWriter/test.txt")
+    content_to_write = "Hello, World!"
+    write_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH\nSTART_CONTENT|\n{content_to_write}\n|END_CONTENT"
+    write_tool.handle_call(write_tool_arg_string)
+
+    # Read from the same file using 'read_tool'
+    read_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH"
+    print(read_tool.handle_call(read_tool_arg_string))
