@@ -31,7 +31,6 @@ class ChatApplication:
 
         self.font = ctk.CTkFont(family='Helvetica', size=18)
 
-
         self.message_area = ScrolledText(self.window, bg='white', fg='black', font=self.font)
         self.message_area.pack(fill='both', expand=True)
 

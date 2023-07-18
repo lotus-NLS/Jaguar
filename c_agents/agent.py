@@ -1,6 +1,6 @@
 import openai
-from a_globals.class_lib import Models,Roles
-from a_globals.tools import extract_between_keywords,agent_toolbox
+from c_agents.class_lib import Models,Roles
+from c_agents.toolbox import extract_between_keywords,Toolbox
 
 # ---------------------------------------------------------
 
@@ -11,7 +11,7 @@ class Agent:
             self.initial_prompt += "You are a software development agent based on a large langauge model embedded in the Lotus project " \
                                    "which is a framework for enabling large language models to do software development. " \
                                    "The following functions are available to use through simple text instructions:"
-            for tool in self.toolbox:
+            for tool in self.tool_list:
                 self.initial_prompt+=f'{tool.get_tool_info()}'
 
             self.add_system_log(self.initial_prompt)
@@ -22,7 +22,7 @@ class Agent:
         self.model_type = model_type
         self.conversation_history = []
 
-        self.toolbox = agent_toolbox
+        self.tool_list = Toolbox.tool_list
         set_initial_prompt()
 
     def add_system_log(self,this_msg):
@@ -43,7 +43,7 @@ class Agent:
         for char in msg:
             processed_msg += char
             if not tool_found:  # Only look for a new tool if one hasn't been found yet
-                for tool in self.toolbox:
+                for tool in self.tool_list:
                     if tool.get_start_keyword() in processed_msg:
                         current_tool = tool  # Save the current tool info
                         tool_found = True  # Indicate that a tool was found
