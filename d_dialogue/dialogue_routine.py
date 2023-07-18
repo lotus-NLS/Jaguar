@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
-import threading
-import openai
-import os
 
-from agent import *  # Assuming the Agent class is in this file
+import threading
+import os
+import openai
+
+from c_agents.agent import Agent
+
+# ----------------------------------------------
 
 api_key = os.environ.get('openai_key')
 if api_key is None:
@@ -28,18 +31,19 @@ class ChatApplication:
 
         self.font = ctk.CTkFont(family='Helvetica', size=18)
 
+
         self.message_area = ScrolledText(self.window, bg='white', fg='black', font=self.font)
         self.message_area.pack(fill='both', expand=True)
 
-        self.input_area = ctk.CTkEntry(self.window, fg_color=('black', 'black'), bg_color=('white', 'white'), font=self.font)
+        self.input_area = tk.Entry(self.window, fg='black', bg='white', font=self.font)
         self.input_area.pack(fill='x')
 
-        send_button = ctk.CTkButton(self.window, text="Send", command=self.send_message,
-                                    fg_color=('#FFFFFF', '#FFFFFF'), bg_color=('#0000FF', '#0000FF'), font=self.font)
+        send_button = tk.Button(self.window, text="Send", command=self.send_message, fg='white', bg='#87CEFA',
+                                font=self.font)
+
         send_button.pack(fill='x')
 
         self.input_area.bind("<Return>", self.send_message)
-
         self.agent = Agent()  # Initialize the Agent object
 
     def send_message(self, event=None):

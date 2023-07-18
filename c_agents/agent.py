@@ -1,8 +1,6 @@
 import openai
-
-from globals.method_lib import *
-from globals.class_lib import *
-from globals.tools import *
+from a_globals.class_lib import Models,Roles
+from a_globals.tools import extract_between_keywords,agent_toolbox
 
 # ---------------------------------------------------------
 
@@ -16,6 +14,8 @@ class Agent:
             for tool in self.toolbox:
                 self.initial_prompt+=f'{tool.get_tool_info()}'
 
+            self.add_system_log(self.initial_prompt)
+
 
         self.last_response = ''
         self.initial_prompt = ''
@@ -25,6 +25,8 @@ class Agent:
         self.toolbox = agent_toolbox
         set_initial_prompt()
 
+    def add_system_log(self,this_msg):
+        self.conversation_history.append({"system": Roles.user, "content": this_msg})
 
     def add_user_log(self,this_msg):
         self.conversation_history.append({"role": Roles.user, "content": this_msg})
@@ -90,12 +92,11 @@ class Agent:
 
 
 
-
-if __name__ == "__main__":
-    agent = Agent()
-
-    write_instruction = 'WRITE|START_path|/home/daniel/pyWriter/new_test.txt|END_path*START_content|helloworld|END_content*|WRITE'
-    read_instruction = 'READ|START_path|/home/daniel/pyWriter/new_test.txt|END_path*|READ'
-    totalinstr = write_instruction+read_instruction
-
-    agent.execute_specified_functions(totalinstr)
+# if __name__ == "__main__":
+#     agent = Agent()
+#
+#     write_instruction = 'WRITE|START_path|/home/daniel/pyWriter/new_test.txt|END_path*START_content|helloworld|END_content*|WRITE'
+#     read_instruction = 'READ|START_path|/home/daniel/pyWriter/new_test.txt|END_path*|READ'
+#     totalinstr = write_instruction+read_instruction
+#
+#     agent.execute_specified_functions(totalinstr)

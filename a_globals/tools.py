@@ -1,7 +1,8 @@
-import os.path
 from typing import Callable, List
-from method_lib import *
 import inspect
+from a_globals.method_lib import extract_between_keywords
+
+# ------------------------------------------------
 
 class Arg:
     def __init__(self, name: str):
@@ -17,13 +18,9 @@ class Arg:
         return extract_between_keywords(arg_string, self.get_start_keyword(), self.get_end_keyword())
 
 
-# Contract specifications
+
 # ASSUMPTIONS:
 # function : Callable; only keword arguments, only string arguments; apt-description
-
-# ASSURANCES
-# tool : can provide 
-
 class Tool:
     def __init__(self, function: Callable, name: str, description: str):
         self.function = function

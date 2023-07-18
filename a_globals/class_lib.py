@@ -1,4 +1,3 @@
-
 class Models:
     gpt_35_16k = 'gpt-3.5-turbo-16k'
     gpt_35_4k = 'gpt-3.5-turbo'
