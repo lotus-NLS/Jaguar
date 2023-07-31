@@ -1,8 +1,20 @@
 import openai
-from c_agents.class_lib import Models,Roles
-from c_agents.toolbox import extract_between_keywords,Toolbox
+from b_tools.toolbox import Toolbox
+from b_tools.toolbox import extract_between_keywords
 
 # ---------------------------------------------------------
+
+class Models:
+    gpt_35_16k = 'gpt-3.5-turbo-16k'
+    gpt_35_4k = 'gpt-3.5-turbo'
+    gpt_40_32k = 'gpt-4-32k-0613'
+    gpt_40_8k = 'gpt-4-0613'
+
+
+class Roles:
+    user = 'user'
+    agent = 'assistant'
+    system = 'system'
 
 
 class Agent:

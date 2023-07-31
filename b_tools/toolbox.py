@@ -1,8 +1,18 @@
-from typing import Callable, List
+from typing import Callable
+# from typing import List
 import inspect
-from a_globals.method_lib import extract_between_keywords
 
 # ------------------------------------------------
+
+
+def extract_between_keywords(input_string, start_keyword, end_keyword):
+    try:
+        start_index = input_string.index(start_keyword) + len(start_keyword)
+        end_index = input_string.index(end_keyword)
+        return input_string[start_index:end_index].strip()
+    except ValueError:
+        return ""
+
 
 class Toolbox:
     tool_list = []
