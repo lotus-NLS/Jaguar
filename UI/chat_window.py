@@ -6,7 +6,7 @@ import threading
 import os
 import openai
 
-from c_agents.agent import Agent
+from agents.agent import Agent
 
 # ----------------------------------------------
 
@@ -30,7 +30,6 @@ class ChatApplication:
         self.window.configure(bg='#D3D3D3')
 
         self.font = ctk.CTkFont(family='Helvetica', size=18)
-
 
         self.message_area = ScrolledText(self.window, bg='white', fg='black', font=self.font)
         self.message_area.pack(fill='both', expand=True)
