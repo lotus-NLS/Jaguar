@@ -6,7 +6,7 @@ import threading
 import os
 import openai
 
-from c_agents.agent import Agent
+from agents.agent import Agent
 
 # ----------------------------------------------
 

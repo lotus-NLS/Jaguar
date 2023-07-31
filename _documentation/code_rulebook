@@ -1,0 +1,7 @@
+I: Functions
+-> All functions must be type labeled if they return anything
+-> All function arguments must be type labeled
+-> Pass arguments only by keyword
+
+II: Naming
+-> Plural with "object_list" not "objects"

@@ -1,6 +1,6 @@
 import openai
-from b_tools.toolbox import Toolbox
-from b_tools.toolbox import extract_between_keywords
+from tools.toolbox import Toolbox
+from tools.toolbox import extract_between_keywords
 
 # ---------------------------------------------------------
 
@@ -38,7 +38,7 @@ class Agent:
         set_initial_prompt()
 
     def add_system_log(self,this_msg):
-        self.conversation_history.append({"system": Roles.user, "content": this_msg})
+        self.conversation_history.append({"role": Roles.user, "content": this_msg})
 
     def add_user_log(self,this_msg):
         self.conversation_history.append({"role": Roles.user, "content": this_msg})
@@ -73,6 +73,7 @@ class Agent:
 
                     processed_msg = ""  # reset the processed_msg
                     tool_found = False  # Reset tool_found to look for a new tool
+
 
     def handle_user_msg(self, msg):
         self.add_user_log(msg)
