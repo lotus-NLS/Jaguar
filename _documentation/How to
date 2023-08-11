@@ -1,0 +1,8 @@
+1: Add API key
+
+Open environment variables
+sudo nano /etc/environment
+
+Add line
+openai_key='[your api key]'
+
