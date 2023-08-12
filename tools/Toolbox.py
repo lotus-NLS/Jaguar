@@ -10,6 +10,7 @@ class Tool:
     def __init__(self):
         self.name = None
         self.description = None
+        self.external_log = None
         self.arguments = []
 
     def create_argument(self, name: str, dtype: type, description: str):
@@ -32,14 +33,21 @@ class Tool:
 
         return tool_doc
 
+    def log(self,to_log):
+        if self.external_log is None:
+            print(to_log)
+        else:
+            print(to_log)
+            self.external_log(to_log)
+
+
     def handle_call(self, any_dict : dict):
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in any_dict.keys() for arg in arg_names])
 
-        # TODO: Have to provide feeback about what was wrong about the call
         if not arguments_included:
-            print(f'[ERROR]: Call failed since provided dictionary {any_dict}'
-                  f' did not cover all required tool arguments')
+            self.log(f'[ERROR]: Call failed since provided dictionary {any_dict}'
+                     f' did not cover all required tool arguments')
             return
 
         for arg in self.arguments:
@@ -51,14 +59,7 @@ class Tool:
 
 
 
-# TODO: The Tools have to log out feedback to the agent that calls it. Probably they will need to receive a
-# logger function from the agent.
-
 class Toolbox:
-    # TODO: Maybe tool_list is not needed and I should simply define tool lists for the agents themselves?
-    # TODO: This would detangle things more and after all maybe not all agents should even have the same permissions?
-    tool_list = []
-
     # DEBUG
     class Say_hi(Tool):
         def __init__(self):
@@ -70,7 +71,7 @@ class Toolbox:
                                                       description='This is what you will say to the guests')
 
         def do(self):
-            print(f'**** {self.text_argument.val} ****')
+            self.log(f'**** {self.text_argument.val} ****')
 
 
     class READ(Tool):
@@ -84,7 +85,10 @@ class Toolbox:
 
         def do(self):
             with open(self.fpath_arg.val, 'f') as file:
-                return file.read()
+                file_content = file.read()
+
+            self.log('Successfully completed reading of file.')
+            return file_content
 
 
     class WRITE(Tool):

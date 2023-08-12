@@ -26,9 +26,6 @@ openai.api_key = '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'
 
 # Define function
 
-# TODO: The JSON that describes the function to the agent
-# is something that should be generated on the fly
-
 def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
 
