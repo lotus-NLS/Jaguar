@@ -1,106 +1,106 @@
 from typing import Callable
-# from typing import List
-import inspect
+from typing import List
+from tools.Argument import Arg
 
 # ------------------------------------------------
 
+class Tool:
+    arguments = []
 
-def extract_between_keywords(input_string, start_keyword, end_keyword):
-    try:
-        start_index = input_string.index(start_keyword) + len(start_keyword)
-        end_index = input_string.index(end_keyword)
-        return input_string[start_index:end_index].strip()
-    except ValueError:
-        return ""
+    def __init__(self):
+        self.name = None
+        self.description = None
+        self.arguments = []
 
+    def create_argument(self, name: str, dtype: type, description: str):
+        this_arg = Arg(name, dtype, description)
+        self.arguments.append(this_arg)
+        return this_arg
+
+    def get_tool_info(self):
+        tool_doc = {
+            'name': self.name,
+            'description': self.description,
+            'parameters': {
+                'type': 'object',
+                'properties': {}
+            }
+        }
+
+        for arg in self.arguments:
+            tool_doc['parameters']['properties'][arg.name] = arg.generate_argument_doc()
+
+        return tool_doc
+
+    def handle_call(self, any_dict : dict):
+        arg_names = [arg.name for arg in self.arguments]
+        arguments_included = all([arg in any_dict.keys() for arg in arg_names])
+
+        # TODO: Have to provide feeback about what was wrong about the call
+        if not arguments_included:
+            print(f'[ERROR]: Call failed since provided dictionary {any_dict}'
+                  f' did not cover all required tool arguments')
+            return
+
+        for arg in self.arguments:
+            arg.val = any_dict[arg.name]
+        self.do()
+
+    def do(self):
+        pass
+
+
+
+# TODO: The Tools have to log out feedback to the agent that calls it. Probably they will need to receive a
+# logger function from the agent.
 
 class Toolbox:
     tool_list = []
-    
-    class Arg:
-        def __init__(self, name: str):
-            self.name = name
 
-        def get_start_keyword(self):
-            return f"START_{self.name.lower()}|"
+    # DEBUG
+    class Say_hi(Tool):
+        def __init__(self):
+            super().__init__()
+            self.name = 'say_hi'
+            self.description = 'Say hello to the guests we have in our home today via a message board '
 
-        def get_end_keyword(self):
-            return f"|END_{self.name.lower()}*"
+            self.text_content = self.create_argument(name='text_content', dtype=str,
+                                                     description='This is what you will say to the guests')
 
-        def extract_value(self, arg_string: str):
-            return extract_between_keywords(arg_string, self.get_start_keyword(), self.get_end_keyword())
-    
-    # ASSUMPTIONS:
-    # function : Callable; only keword arguments, only string arguments; apt-description
-    class Tool:
-        def __init__(self, function: Callable, name: str, description: str):
-            self.function = function
-            self.name = name
-
-            arg_list = list(inspect.signature(function).parameters.keys())
-            self.args = [Toolbox.Arg(arg_name) for arg_name in arg_list]
-            self.description = description
-
-            Toolbox.tool_list.append(self)
-
-        def get_tool_info(self):
-            tool_description = f'{self.name}: {self.description} To use it, follow the following format:'
-            tool_description += f'{self.get_start_keyword()}'
-
-            for tool_arg in self.args:
-                tool_description += f"{tool_arg.get_start_keyword()}[arg_value]{tool_arg.get_end_keyword()}"
-
-            tool_description += f'{self.get_end_keyword()}'
-
-            return tool_description
-
-        def handle_call(self, arg_string: str):
-            kwargs = {}
-            for tool_arg in self.args:
-                arg_val = tool_arg.extract_value(arg_string)
-                if arg_val is not None:
-                    kwargs[tool_arg.name] = arg_val.strip()
-                else:
-                    print(f"[Warning] Missing argument {tool_arg.name} for tool {self.name}")
-                    return None  # If any argument is missing, don't call the function
-
-            result = self.function(**kwargs)
-            return result
-
-        def get_start_keyword(self):
-            return f'{self.name.upper()}|'
-
-        def get_end_keyword(self):
-            return f'|{self.name.upper()}'
+        def do(self):
+            print(f'**** {self.text_content} ****')
 
 
+    class READ(Tool):
+        def __init__(self):
+            super().__init__()
+            self.name = 'say_hi'
+            self.description = 'The READ tool allows you to read the contents of a file.'
 
-    class Function_lib:
-        @staticmethod
-        def read_file(path: str):
-            with open(path, 'r') as file:
+            self.fpath_arg = self.create_argument(name='fpath', dtype=str,
+                                                     description='This is the path to the file which you will read')
+
+        def do(self):
+            with open(self.fpath_arg.val, 'f') as file:
                 return file.read()
 
-        @staticmethod
-        def write_file(path: str, content: str):
-            with open(path, 'w') as file:
-                file.write(content)
-            return True
-    
-    
-    read = Tool(
-        function=Function_lib.read_file,
-        name="READ",
-        description="The 'READ' tool allows you to read the contents of a file. This tool has one argument: 'path', which specifies the path to the file you want to read."
-    )
 
-    write = Tool(
-        function=Function_lib.write_file,
-        name="WRITE",
-        description="The 'WRITE' tool allows you to write content to a file. This tool has two arguments: 'path', which specifies the path to the file you want to write to, and 'content', which specifies the content you want to write."
-    )
+    class WRITE(Tool):
+        def __init__(self):
+            super().__init__()
+            self.name = 'say_hi'
+            self.description = 'The WRITE tool allows you to write content to a text file on the user system'
 
-    
+            self.fpath_arg = self.create_argument(name='fpath', dtype=str,
+                                                     description='The path of the file that you will write')
+
+            self.content_arg = self.create_argument(name='content',dtype=str,
+                                                    description='The content that will be written to the file')
+
+        def do(self):
+            with open(self.fpath_arg.val, 'w') as file:
+                file.write(self.content_arg.val)
+
 
 # -----------------------------------
 

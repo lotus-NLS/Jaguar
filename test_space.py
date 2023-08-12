@@ -29,7 +29,7 @@ def say_hello_to_guests(some_text):
 
 
 # TODO: The JSON that describes the function to the agent
-# is something that should be
+# is something that should be generated on the fly
 
 def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
