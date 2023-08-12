@@ -1,6 +1,6 @@
 import openai
-from tools.toolbox import Toolbox
-from tools.toolbox import extract_between_keywords
+from tools.Toolbox import Toolbox
+from tools.Toolbox import extract_between_keywords
 
 # ---------------------------------------------------------
 

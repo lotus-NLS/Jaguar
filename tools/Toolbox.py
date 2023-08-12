@@ -1,5 +1,5 @@
-from typing import Callable
-from typing import List
+# from typing import Callable
+# from typing import List
 from tools.Argument import Arg
 
 # ------------------------------------------------
@@ -19,8 +19,8 @@ class Tool:
 
     def get_tool_info(self):
         tool_doc = {
-            'name': self.name,
-            'description': self.description,
+            'name': f'{self.name}',
+            'description': f'{self.description}',
             'parameters': {
                 'type': 'object',
                 'properties': {}
@@ -55,6 +55,8 @@ class Tool:
 # logger function from the agent.
 
 class Toolbox:
+    # TODO: Maybe tool_list is not needed and I should simply define tool lists for the agents themselves?
+    # TODO: This would detangle things more and after all maybe not all agents should even have the same permissions?
     tool_list = []
 
     # DEBUG
@@ -64,11 +66,11 @@ class Toolbox:
             self.name = 'say_hi'
             self.description = 'Say hello to the guests we have in our home today via a message board '
 
-            self.text_content = self.create_argument(name='text_content', dtype=str,
-                                                     description='This is what you will say to the guests')
+            self.text_argument = self.create_argument(name='text_content', dtype=str,
+                                                      description='This is what you will say to the guests')
 
         def do(self):
-            print(f'**** {self.text_content} ****')
+            print(f'**** {self.text_argument.val} ****')
 
 
     class READ(Tool):
@@ -100,34 +102,3 @@ class Toolbox:
         def do(self):
             with open(self.fpath_arg.val, 'w') as file:
                 file.write(self.content_arg.val)
-
-
-# -----------------------------------
-
-# if __name__ == "__main__":
-#     read_tool = Tools.read
-#     write_tool = Tools.write
-#
-#     print("Read Tool Arguments:")
-#     for arg in read_tool.args:
-#         print(arg.name)
-#
-#     print("Read Tool Info:")
-#     print(read_tool.get_tool_info())
-#
-#     print("Write Tool Arguments:")
-#     for arg in write_tool.args:
-#         print(arg.name)
-#
-#     print("Write Tool Info:")
-#     print(write_tool.get_tool_info())
-#
-#     # Write to a file using 'write_tool'
-#     path_to_file = os.path.expanduser("~/pyWriter/test.txt")
-#     content_to_write = "Hello, World!"
-#     write_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH\nSTART_CONTENT|\n{content_to_write}\n|END_CONTENT"
-#     write_tool.handle_call(write_tool_arg_string)
-#
-#     # Read from the same file using 'read_tool'
-#     read_tool_arg_string = f"START_PATH|\n{path_to_file}\n|END_PATH"
-#     print(read_tool.handle_call(read_tool_arg_string))

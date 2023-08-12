@@ -8,8 +8,8 @@ class Arg:
     def generate_argument_doc(self):
         arg_doc = {
             self.name: {
-                'type': self.dtype,
-                'description': self.description
+                'type': f'{self.dtype}',
+                'description': f'{self.description}'
             }
         }
         return arg_doc
