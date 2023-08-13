@@ -1,5 +1,7 @@
 import openai
 from tools.Toolbox import Toolbox
+import os
+from conversation.conversation import Conversation_Participant
 
 # ---------------------------------------------------------
 
@@ -16,34 +18,27 @@ class Roles:
     system = 'system'
 
 
-class Agent:
-    def __init__(self, model_type: str = Models.gpt_35_16k):
-        def set_initial_prompt():
-            self.initial_prompt += "You are a software development agent based on a large langauge model embedded in the Lotus project " \
-                                   "which is a framework for enabling large language models to do software development. " \
-                                   "The following functions are available to use through simple text instructions:"
-            for tool in self.tool_list:
-                self.initial_prompt+=f'{tool.get_tool_info()}'
+class Agent(Conversation_Participant):
+    def __init__(self, model_type: str = Models.gpt_35_16k,):
+        super().__init__(Roles.agent)
 
-            self.add_system_log(self.initial_prompt)
-
-
+        # TODO: This is deprecated and has to be removed after conversation update
         self.last_response = ''
-        self.initial_prompt = ''
+
+
         self.model_type = model_type
-        self.conversation_history = []
 
-        self.tool_list = Toolbox.tool_list
-        set_initial_prompt()
+        with open('../protocol/prompt') as prompt_file:
+            initial_prompt = prompt_file.read()
 
-    def add_system_log(self,this_msg):
-        self.conversation_history.append({"role": Roles.user, "content": this_msg})
+        self.register_system_message(msg=initial_prompt)
 
-    def add_user_log(self,this_msg):
-        self.conversation_history.append({"role": Roles.user, "content": this_msg})
+        self.tool_list = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
+        self.register_for_tool_feedback()
 
-    def add_agent_log(self,this_msg):
-        self.conversation_history.append({"role": Roles.agent, "content": this_msg})
+    def register_for_tool_feedback(self):
+        for tool in self.tool_list:
+            tool.external_log = self.register_system_message
 
     def execute_specified_functions(self, msg):
         print(f"[Debug] Processing GPT message: '{msg}'")
@@ -82,7 +77,7 @@ class Agent:
             print("[Debug] Creating completion request.")
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=self.conversation_history,
+                messages=self._conversation_history,
                 stream=True
             )
 

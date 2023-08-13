@@ -33,6 +33,9 @@ class Conversation_Participant:
         self.broadcast_list : List[Callable] = []
         self.conversational_memory : List[dict] = []
 
+    def register_system_message(self, msg : str):
+        self.conversational_memory.append(get_dialogue_line(Dialogue_Role.system,msg))
+
     def think(self,msg : str):
         # DEBUG
         print(f'{self.role} thought: {msg}')

@@ -1,6 +1,14 @@
 # from typing import Callable
 # from typing import List
+import os
+
 from tools.Argument import Arg
+
+
+# TOOL LOGGING Protocol:
+# -> 1: Log launch of tool using "[START]"
+# -> 2: If applicable log result of tool e.g. for READ file using [RESULT]
+# -> 3: If log success or error of tool using [SUCCESS] or [ERROR]
 
 # ------------------------------------------------
 
@@ -34,6 +42,11 @@ class Tool:
         return tool_doc
 
     def log(self,to_log):
+        log_text = f'{self.name} [TOOL LOGGER]: \n'
+        log_text += '\"\n'
+        log_text += to_log
+        log_text += '"\n'
+
         if self.external_log is None:
             print(to_log)
         else:
@@ -42,6 +55,7 @@ class Tool:
 
 
     def handle_call(self, any_dict : dict):
+        # Check if correct arguments are provided
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in any_dict.keys() for arg in arg_names])
 
@@ -50,18 +64,25 @@ class Tool:
                      f' did not cover all required tool arguments')
             return
 
+        # Set argument values
         for arg in self.arguments:
             arg.val = any_dict[arg.name]
-        self.do()
+        self.log(f'[START]: Tool {self.name} has been launched')
+
+        # Try to run
+        try:
+            self.do()
+        except:
+            self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
+
 
     def do(self):
         pass
 
 
-
 class Toolbox:
     # DEBUG
-    class Say_hi(Tool):
+    class SAY(Tool):
         def __init__(self):
             super().__init__()
             self.name = 'say_hi'
@@ -84,11 +105,19 @@ class Toolbox:
                                                      description='This is the path to the file which you will read')
 
         def do(self):
-            with open(self.fpath_arg.val, 'f') as file:
-                file_content = file.read()
+            location = self.fpath_arg.val
 
-            self.log('Successfully completed reading of file.')
-            return file_content
+            if not os.path.isfile(location):
+                self.log(f'[ERROR]: There is no file located at given location {location}')
+
+            try:
+                with open(location, 'f') as file:
+                    file_content = file.read()
+                self.log('Successfully completed reading of file.')
+
+                return file_content
+            except:
+                self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
 
 
     class WRITE(Tool):

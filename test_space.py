@@ -5,7 +5,7 @@ import os
 from openai.openai_object import OpenAIObject
 from tools.Toolbox import Toolbox
 
-# from agents.agent import Models
+# from agent.agent import Models
 
 
 class Models:
@@ -29,7 +29,7 @@ openai.api_key = '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'
 def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
 
-    say_hi = Toolbox.Say_hi()
+    say_hi = Toolbox.SAY()
     say_hi_doc = say_hi.get_tool_info()
 
     functions = [say_hi_doc]
