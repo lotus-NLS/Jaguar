@@ -26,7 +26,7 @@ class Tool:
         self.arguments.append(this_arg)
         return this_arg
 
-    def get_tool_info(self):
+    def get_info(self):
         tool_doc = {
             'name': f'{self.name}',
             'description': f'{self.description}',
@@ -55,7 +55,6 @@ class Tool:
 
 
     def handle_call(self, any_dict : dict):
-        # Check if correct arguments are provided
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in any_dict.keys() for arg in arg_names])
 
@@ -64,12 +63,10 @@ class Tool:
                      f' did not cover all required tool arguments')
             return
 
-        # Set argument values
         for arg in self.arguments:
             arg.val = any_dict[arg.name]
         self.log(f'[START]: Tool {self.name} has been launched')
 
-        # Try to run
         try:
             self.do()
         except:

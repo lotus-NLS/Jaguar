@@ -30,7 +30,7 @@ def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
 
     say_hi = Toolbox.SAY()
-    say_hi_doc = say_hi.get_tool_info()
+    say_hi_doc = say_hi.get_info()
 
     functions = [say_hi_doc]
 

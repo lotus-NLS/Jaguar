@@ -9,7 +9,7 @@ def get_dialogue_line(role,msg):
     return {"role": role, "content": msg}
 
 # Those are the only three roles defined in the API. No other role can be introduced.
-class Dialogue_Role:
+class Dialogue_Roles:
     user = 'user'
     agent = 'assistant'
     system = 'system'
@@ -23,18 +23,32 @@ class Dialogue_Role:
         return as_list
 
 
+class CallbackList(list):
+    def __init__(self, *args, callback=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.callback = callback
+
+    def append(self, item):
+        super().append(item)
+        if self.callback:
+            self.callback(item)
+
+
 class Conversation_Participant:
     def __init__(self, role : str):
-        if not role in Dialogue_Role.as_list():
-            logger.debug(f'Given role is not part of the allowed roles {Dialogue_Role.as_list()}')
+        if not role in Dialogue_Roles.as_list():
+            logger.debug(f'Given role is not part of the allowed roles {Dialogue_Roles.as_list()}')
             return
 
         self.role = role
         self.broadcast_list : List[Callable] = []
-        self.conversational_memory : List[dict] = []
+        self.conversational_memory : CallbackList[dict] = CallbackList(callback=self.react)
 
     def register_system_message(self, msg : str):
-        self.conversational_memory.append(get_dialogue_line(Dialogue_Role.system,msg))
+        self.conversational_memory.append(get_dialogue_line(Dialogue_Roles.system, msg))
+
+    def react(self, dialogue_line : dict):
+        pass
 
     def think(self,msg : str):
         # DEBUG
@@ -74,10 +88,10 @@ class Conversation:
 this_conversation = Conversation()
 
 # Create participants and add them to the handler
-participant1 = Conversation_Participant(role=Dialogue_Role.agent)
+participant1 = Conversation_Participant(role=Dialogue_Roles.agent)
 this_conversation.add_participant(participant1)
 
-participant2 = Conversation_Participant(role=Dialogue_Role.agent)
+participant2 = Conversation_Participant(role=Dialogue_Roles.agent)
 this_conversation.add_participant(participant2)
 
 # Participants write messages
