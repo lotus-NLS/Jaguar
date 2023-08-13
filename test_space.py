@@ -3,6 +3,7 @@ import json
 import os
 
 from openai.openai_object import OpenAIObject
+from tools.Toolbox import Toolbox
 
 # from agents.agent import Models
 
@@ -24,33 +25,14 @@ openai.api_key = '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'
 # -------------------------------------------------
 
 # Define function
-def say_hello_to_guests(some_text):
-    print(f' ~~~***** {some_text} ~~~*****')
-
-
-# TODO: The JSON that describes the function to the agent
-# is something that should be
 
 def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
-    functions = [
-            {
-            'name': 'say_hello_to_guests',
-            'description' : 'This tool enables you to say hello to the guests that we have in our house via a message board.',
-            'parameters' :
-                {
-                'type' : 'object',
-                'properties' :
-                    {
-                    'some_text' :
-                        {
-                        'type' : 'string',
-                        'description' : 'What you will say to the guests'
-                        },
-                    }
-                }
-            }
-                ]
+
+    say_hi = Toolbox.Say_hi()
+    say_hi_doc = say_hi.get_tool_info()
+
+    functions = [say_hi_doc]
 
     response = openai.ChatCompletion.create(
         model=Models.gpt_35_16k,
@@ -67,12 +49,10 @@ def run_conversation():
 
     if 'function_call' in best_response.keys():
         funct_call = best_response['function_call']
-        funct_name = funct_call['name']
-        # The function arguments are given in JSON format
+        # funct_name = funct_call['name']
         funct_args = json.loads(funct_call['arguments'])
 
-        if funct_name == 'say_hello_to_guests':
-            say_hello_to_guests(**funct_args)
+        say_hi.handle_call(funct_args)
 
     print('done')
 

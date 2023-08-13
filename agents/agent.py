@@ -1,6 +1,5 @@
 import openai
-from tools.toolbox import Toolbox
-from tools.toolbox import extract_between_keywords
+from tools.Toolbox import Toolbox
 
 # ---------------------------------------------------------
 
@@ -101,15 +100,3 @@ class Agent:
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
-
-
-
-
-# if __name__ == "__main__":
-#     agent = Agent()
-#
-#     write_instruction = 'WRITE|START_path|/home/daniel/pyWriter/new_test.txt|END_path*START_content|helloworld|END_content*|WRITE'
-#     read_instruction = 'READ|START_path|/home/daniel/pyWriter/new_test.txt|END_path*|READ'
-#     totalinstr = write_instruction+read_instruction
-#
-#     agent.execute_specified_functions(totalinstr)
