@@ -32,7 +32,8 @@ class Agent(Conversation_Participant):
         for tool in self.tool_list:
             tool.external_log = self.register_system_message
 
-    # def execute_specified_functions(self, msg):
+    def execute_specified_functions(self, msg):
+        pass
     #     print(f"[Debug] Processing GPT message: '{msg}'")
     #     processed_msg = ""
     #     current_tool = None
@@ -66,25 +67,25 @@ class Agent(Conversation_Participant):
 
     def handle_user_msg(self):
         try:
-            agent_msg = ""
             print("[Debug] Creating completion request.")
+
+            # Remove `stream=True` to get the entire response at once.
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=self.conversational_memory,
-                stream=True
+                messages=self.conversational_memory
             )
 
-            for chunk in response:
-                if chunk['choices'][0]['delta']:
-                    to_append = chunk['choices'][0]['delta']['content']  # extract the message
-                else:
-                    to_append = '\n'
-                agent_msg += to_append  # append the chunk to the message
+            # Extract the message directly without iterating over chunks.
+            if 'choices' in response and len(response['choices']) > 0:
+                agent_msg = response['choices'][0]['message']['content']
+            else:
+                agent_msg = ""
+
             print("[Debug] Received response from the model.")
 
             self.execute_specified_functions(agent_msg)
             self.speak(agent_msg)
-            self.last_response = agent_msg
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
+

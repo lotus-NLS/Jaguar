@@ -5,6 +5,14 @@ logger = logging.getLogger()
 
 # ----------------------------------------------------
 
+# TODO: Think about if you can make this a little less wonky.
+# This is a format that gets used all over the place but for everyone but
+# OpenAI it's not really convenient. Ideally I would have a conversation log of the form
+# [Dialgoue_piece_0, Dialogue_piece_1, ...] w/
+# class Dialogue_piece:
+#   def __init__()
+#       self.
+
 def get_dialogue_line(role,msg):
     return {"role": role, "content": msg}
 
@@ -41,14 +49,11 @@ class Conversation_Participant:
             return
 
         self.role = role
-        self.broadcast_list : List[Callable] = []
+        self.broadcast : Callable = lambda *args, **kwargs: None
         self.conversational_memory : CallbackList[dict] = CallbackList(callback=self.react)
 
     def register_system_message(self, msg : str):
         self.conversational_memory.append(get_dialogue_line(Dialogue_Roles.system, msg))
-
-    def react(self, dialogue_line : dict):
-        pass
 
     def think(self,msg : str):
         # DEBUG
@@ -57,8 +62,10 @@ class Conversation_Participant:
         self.conversational_memory.append(get_dialogue_line(role=self.role,msg=msg))
 
     def speak(self, message : str):
-        for broadcast in self.broadcast_list:
-            broadcast(self.role, message)
+        self.broadcast(self.role, message)
+
+    def react(self, dialogue_line : dict):
+        pass
 
     def print_memory(self):
         print(self.conversational_memory)
@@ -70,7 +77,7 @@ class Conversation:
 
     def add_participant(self, participant  : Conversation_Participant):
         self._participants.append(participant)
-        participant.broadcast_list.append(self.broadcast_message)
+        participant.broadcast.append(self.broadcast_message)
 
     def broadcast_message(self, role : str, msg : str):
         # DEBUG
@@ -78,7 +85,7 @@ class Conversation:
 
         for participant in self._participants:
             participant : Conversation_Participant
-            participant.conversational_memory.append({"role": role, "content": msg})
+            participant.conversational_memory.append(get_dialogue_line(role=role,msg=msg))
 
 
 # ----------------------------------------------------
@@ -98,6 +105,22 @@ this_conversation.add_participant(participant2)
 participant1.speak('Hello from participant 1!')
 participant2.speak('Hello from participant 2!')
 participant2.think('I do not even want to say hello to that guy!')
+
+# Since rowdy_participant is itself an agent
+# this will trigger infinite recursion
+class Rowdy_participant(Conversation_Participant):
+    def react(self, dialogue_line : dict):
+        role = dialogue_line['role']
+        if role == Dialogue_Roles.agent:
+            self.speak('Actually, leave me alone! Let me talk to the user')
+
+        if role == Dialogue_Roles.user:
+            self.speak('Hello, how can I assist you today')
+
+participant3 = Rowdy_participant(Dialogue_Roles.agent)
+this_conversation.add_participant(participant3)
+
+participant1.speak('How are you :)')
 
 # Participants print their logs
 print("Logs for Participant1:")
