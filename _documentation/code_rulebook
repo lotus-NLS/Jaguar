@@ -1,7 +1,10 @@
 I: Functions
 -> All functions must be type labeled if they return anything
--> All function arguments must be type labeled
+-> All function arguments must be type hinted
 -> Pass arguments only by keyword
 
 II: Naming
 -> Plural with "object_list" not "objects"
+
+III: Contracts
+-> That arguments are of the type they are hinted to be is a default assumption of every contract
