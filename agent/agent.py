@@ -14,11 +14,14 @@ class Models:
     gpt_40_8k = 'gpt-4-0613'
 
 
+
+
 class Agent(Conversation_Participant):
-    def __init__(self, model_type: str = Models.gpt_35_16k):
+    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set model
         super().__init__(Dialogue_Roles.agent)
         self.model_type = model_type
+        self.api_key = api_key if not api_key is '' else self.get_api_key()
 
         # Set initial prompt
         with open('../protocol/prompt') as prompt_file:
@@ -36,6 +39,16 @@ class Agent(Conversation_Participant):
     def register_for_tool_feedback(self):
         for tool in self.tool_list:
             tool.external_log = self.register_system_message
+
+    # TODO: Must Confirm that the API key works after getting it
+    @staticmethod
+    def get_api_key() -> str:
+        try:
+            key = os.environ.get('openai_key')
+            return key
+        except:
+            print('Failed to retrieve api key. Check /etc/environment for entry \’openai_key\’')
+            exit(code=1)
 
     # ---------------------------------------------------
     # Callback
@@ -61,6 +74,7 @@ class Agent(Conversation_Participant):
         try:
             print("[Debug] Creating completion request.")
 
+            openai.api_key = self.api_key
             response = openai.ChatCompletion.create(
                 model=Models.gpt_35_16k,
                 messages=self.conversational_memory,
@@ -85,7 +99,6 @@ class Agent(Conversation_Participant):
 
 # -------------------------
 # Test driver code
-
 
 test_conversation = Conversation()
 the_bot = Agent()
