@@ -80,4 +80,3 @@ class Agent(Conversation_Participant):
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
-

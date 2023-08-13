@@ -3,6 +3,11 @@ from typing import Callable,List
 import logging
 logger = logging.getLogger()
 
+
+# Conversation:
+# -> Only Conversation Particpants can join a conversation
+# ->
+
 # ----------------------------------------------------
 
 # TODO: Think about if you can make this a little less wonky.
@@ -70,14 +75,13 @@ class Conversation_Participant:
     def print_memory(self):
         print(self.conversational_memory)
 
-
 class Conversation:
     def __init__(self):
         self._participants = []
 
     def add_participant(self, participant  : Conversation_Participant):
         self._participants.append(participant)
-        participant.broadcast.append(self.broadcast_message)
+        participant.broadcast = self.broadcast_message
 
     def broadcast_message(self, role : str, msg : str):
         # DEBUG

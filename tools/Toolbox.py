@@ -1,7 +1,6 @@
 # from typing import Callable
 # from typing import List
 import os
-
 from tools.Argument import Arg
 
 
@@ -10,14 +9,18 @@ from tools.Argument import Arg
 # -> 2: If applicable log result of tool e.g. for READ file using [RESULT]
 # -> 3: If log success or error of tool using [SUCCESS] or [ERROR]
 
+
+# TOOL ERROR Catching
+# -> Any possible fatal error must be caught in handle_call
+
 # ------------------------------------------------
 
 class Tool:
     arguments = []
 
     def __init__(self):
-        self.name = None
-        self.description = None
+        self.name = ''
+        self.description : str = ''
         self.external_log = None
         self.arguments = []
 
@@ -65,9 +68,9 @@ class Tool:
 
         for arg in self.arguments:
             arg.val = args_dict[arg.name]
-        self.log(f'[START]: Tool {self.name} has been launched')
 
         try:
+            self.log(f'[START]: Tool {self.name} has been launched')
             self.do()
         except:
             self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
@@ -129,6 +132,7 @@ class Toolbox:
             self.content_arg = self.create_argument(name='content',dtype=str,
                                                     description='The content that will be written to the file')
 
+        # TODO Catch specfic errors
         def do(self):
             with open(self.fpath_arg.val, 'w') as file:
                 file.write(self.content_arg.val)
