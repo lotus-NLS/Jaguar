@@ -62,7 +62,7 @@ class Conversation_Participant:
 
     def think(self,msg : str):
         # DEBUG
-        print(f'{self.role} thought: {msg}')
+        print(f'[Debug]:{self.role} thought: {msg}')
 
         self.conversational_memory.append(get_dialogue_line(role=self.role,msg=msg))
 
@@ -89,7 +89,7 @@ class Conversation:
 
     def broadcast_message(self, role : str, msg : str):
         # DEBUG
-        print(f'{role} said: {msg}')
+        print(f'[Debug]: {role} said: {msg}')
 
         for participant in self._participants:
             participant : Conversation_Participant
@@ -115,7 +115,6 @@ def main():
     participant1.speak('Hello from participant 1!')
     participant2.speak('Hello from participant 2!')
     participant2.think('I do not even want to say hello to that guy!')
-
 
     # Participants print their logs
     print("Logs for Participant1:")

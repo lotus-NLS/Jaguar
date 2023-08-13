@@ -1,4 +1,5 @@
 import threading
+import time
 
 import openai
 from tools.Toolbox import Toolbox, Tool
@@ -127,7 +128,6 @@ test_conversation.add_participant(other_user)
 
 while True:
     the_user.speak(input(''))
-    the_bot.print_memory()
-    other_user.print_memory()
 
-
+    # the_bot.print_memory()
+    # other_user.print_memory()
