@@ -8,3 +8,7 @@ II: Naming
 
 III: Contracts
 -> That arguments are of the type they are hinted to be is a default assumption of every contract
+
+IV: Making changes
+-> Any change that you make has to either not influence the contract of that section of code or
+the changes to the contract have to be carried through upstream

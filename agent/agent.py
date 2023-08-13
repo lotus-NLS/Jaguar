@@ -1,3 +1,5 @@
+import threading
+
 import openai
 from tools.Toolbox import Toolbox, Tool
 import os
@@ -21,7 +23,7 @@ class Agent(Conversation_Participant):
         # Set model
         super().__init__(Dialogue_Roles.agent)
         self.model_type = model_type
-        self.api_key = api_key if not api_key is '' else self.get_api_key()
+        self.api_key = api_key if not api_key == '' else self.get_api_key()
 
         # Set initial prompt
         with open('../protocol/prompt') as prompt_file:
@@ -55,7 +57,7 @@ class Agent(Conversation_Participant):
 
     def react(self, dialogue_line : dict):
         if dialogue_line['role'] == Dialogue_Roles.user:
-            self.process_user_request()
+            threading.Thread(target=self.process_user_request).start()
 
     # ---------------------------------------------------
     # Other
@@ -85,13 +87,16 @@ class Agent(Conversation_Participant):
             # TODO: Ideally i would like to know more exactly what can happen here
             # I think that in particular it can happen that there is no message and just a function call
             best_response = response['choices'][0]['message']
-            agent_msg = best_response['content']
-            funct_call = best_response['function_call']
-
             print("[Debug] Received response from the model.")
 
-            self.handle_function_call(funct_call)
-            self.speak(agent_msg)
+            if 'content' in best_response:
+                agent_msg = best_response['content']
+                self.speak(agent_msg)
+
+            if 'function_call' in best_response:
+                funct_call = best_response['function_call']
+                self.handle_function_call(funct_call)
+
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
@@ -110,11 +115,19 @@ test_conversation.add_participant(the_user)
 other_user = Conversation_Participant(role=Dialogue_Roles.user)
 test_conversation.add_participant(other_user)
 
+# TODO: The processing of the messages occuring immediately after the message is spoken leads
+# to the wrong ordering of messages for other conversation participants
+# Because "react" of the bot triggers its own speak which is processed before before the
+# outer speak command of the user
+
+# I think that it could be solved by making reactions into seperate threads but that will still
+# involve a race condition.
+# Additionally I'm not sure if I want the processing to go on while the conversation can continue
+# This should be discussed.
+
 while True:
     the_user.speak(input(''))
     the_bot.print_memory()
     other_user.print_memory()
-
-
 
 
