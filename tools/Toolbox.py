@@ -26,7 +26,7 @@ class Tool:
         self.arguments.append(this_arg)
         return this_arg
 
-    def get_info(self):
+    def get_usage_instructions(self):
         tool_doc = {
             'name': f'{self.name}',
             'description': f'{self.description}',
@@ -54,17 +54,17 @@ class Tool:
             self.external_log(to_log)
 
 
-    def handle_call(self, any_dict : dict):
+    def handle_call(self, args_dict : dict):
         arg_names = [arg.name for arg in self.arguments]
-        arguments_included = all([arg in any_dict.keys() for arg in arg_names])
+        arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
-            self.log(f'[ERROR]: Call failed since provided dictionary {any_dict}'
+            self.log(f'[ERROR]: Call failed since provided dictionary {args_dict}'
                      f' did not cover all required tool arguments')
             return
 
         for arg in self.arguments:
-            arg.val = any_dict[arg.name]
+            arg.val = args_dict[arg.name]
         self.log(f'[START]: Tool {self.name} has been launched')
 
         try:

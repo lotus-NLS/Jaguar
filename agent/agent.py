@@ -1,7 +1,8 @@
 import openai
-from tools.Toolbox import Toolbox
+from tools.Toolbox import Toolbox, Tool
 import os
 from conversation.conversation import Conversation_Participant, Dialogue_Roles
+import json
 
 # ---------------------------------------------------------
 
@@ -25,65 +26,56 @@ class Agent(Conversation_Participant):
 
         # Set tools
         self.tool_list = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
+        self.tool_instructions = [tool.get_usage_instructions() for tool in self.tool_list]
         self.register_for_tool_feedback()
 
+    # ---------------------------------------------------
+    # Setup
 
     def register_for_tool_feedback(self):
         for tool in self.tool_list:
             tool.external_log = self.register_system_message
 
-    def execute_specified_functions(self, msg):
-        pass
-    #     print(f"[Debug] Processing GPT message: '{msg}'")
-    #     processed_msg = ""
-    #     current_tool = None
-    #     tool_found = False  # Boolean variable to indicate if a starting keyword was found
-    #
-    #     for char in msg:
-    #         processed_msg += char
-    #         if not tool_found:  # Only look for a new tool if one hasn't been found yet
-    #             for tool in self.tool_list:
-    #                 if tool.get_start_keyword() in processed_msg:
-    #                     current_tool = tool  # Save the current tool info
-    #                     tool_found = True  # Indicate that a tool was found
-    #                     break  # Once a tool is found, stop looking for other tools
-    #
-    #         else:
-    #             if current_tool.get_end_keyword() in processed_msg:
-    #                 arg_str = extract_between_keywords(processed_msg, current_tool.get_start_keyword(),
-    #                                                    current_tool.get_end_keyword())
-    #                 print(f'[Debug] Found ending keyword')
-    #                 print(f'[Debug] Arg_str:{arg_str}')
-    #
-    #                 result = current_tool.handle_call(arg_str)
-    #                 print(f'[Debug] Called function with result: {result}')  # Display the result
-    #
-    #                 processed_msg = ""  # reset the processed_msg
-    #                 tool_found = False  # Reset tool_found to look for a new tool
+    # ---------------------------------------------------
+    # Callback
 
     def react(self, dialogue_line : dict):
         if dialogue_line['role'] == Dialogue_Roles.user:
-            self.handle_user_msg()
+            self.process_user_request()
 
-    def handle_user_msg(self):
+    # ---------------------------------------------------
+    # Other
+
+    def handle_function_call(self, funct_call):
+        tool_name = funct_call['name']
+        tool_args_dict = json.loads(funct_call['arguments'])
+
+        tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
+
+        if tool_name in tool_dict:
+            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+
+
+    def process_user_request(self):
         try:
             print("[Debug] Creating completion request.")
 
-            # Remove `stream=True` to get the entire response at once.
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=self.conversational_memory
+                model=Models.gpt_35_16k,
+                messages=self.conversational_memory,
+                functions=self.tool_instructions,
+                function_call='auto'
             )
 
-            # Extract the message directly without iterating over chunks.
-            if 'choices' in response and len(response['choices']) > 0:
-                agent_msg = response['choices'][0]['message']['content']
-            else:
-                agent_msg = ""
+            # TODO: Ideally i would like to know more exactly what can happen here
+            # I think that in particular it can happen that there is no message and just a function call
+            best_response = response['choices'][0]['message']
+            agent_msg = best_response['content']
+            funct_call = best_response['function_call']
 
             print("[Debug] Received response from the model.")
 
-            self.execute_specified_functions(agent_msg)
+            self.handle_function_call(funct_call)
             self.speak(agent_msg)
 
         except Exception as e:

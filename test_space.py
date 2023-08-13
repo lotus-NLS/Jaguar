@@ -30,7 +30,7 @@ def run_conversation():
     messages = [{"role": "user", "content": f"{inital_prompt}"}]
 
     say_hi = Toolbox.SAY()
-    say_hi_doc = say_hi.get_info()
+    say_hi_doc = say_hi.get_usage_instructions()
 
     functions = [say_hi_doc]
 
@@ -49,7 +49,7 @@ def run_conversation():
 
     if 'function_call' in best_response.keys():
         funct_call = best_response['function_call']
-        # funct_name = funct_call['name']
+        funct_name = funct_call['name']
         funct_args = json.loads(funct_call['arguments'])
 
         say_hi.handle_call(funct_args)
