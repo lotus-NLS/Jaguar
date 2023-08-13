@@ -2,6 +2,7 @@ import openai
 from tools.Toolbox import Toolbox, Tool
 import os
 from conversation.conversation import Conversation_Participant, Dialogue_Roles
+from conversation.conversation import  Conversation
 import json
 
 # ---------------------------------------------------------
@@ -80,3 +81,27 @@ class Agent(Conversation_Participant):
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
+
+
+# -------------------------
+# Test driver code
+
+
+test_conversation = Conversation()
+the_bot = Agent()
+test_conversation.add_participant(the_bot)
+
+the_user = Conversation_Participant(role=Dialogue_Roles.user)
+test_conversation.add_participant(the_user)
+
+other_user = Conversation_Participant(role=Dialogue_Roles.user)
+test_conversation.add_participant(other_user)
+
+while True:
+    the_user.speak(input(''))
+    the_bot.print_memory()
+    other_user.print_memory()
+
+
+
+

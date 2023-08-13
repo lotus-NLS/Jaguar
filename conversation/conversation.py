@@ -80,8 +80,12 @@ class Conversation:
         self._participants = []
 
     def add_participant(self, participant  : Conversation_Participant):
-        self._participants.append(participant)
+        if not isinstance(participant,Conversation_Participant):
+            print(f'Given object is not a Conversation_Participant. Aborting add_participant routine ...')
+            return
+
         participant.broadcast = self.broadcast_message
+        self._participants.append(participant)
 
     def broadcast_message(self, role : str, msg : str):
         # DEBUG
@@ -95,40 +99,63 @@ class Conversation:
 # ----------------------------------------------------
 # Test driver code
 
-# Create a handler
-this_conversation = Conversation()
 
-# Create participants and add them to the handler
-participant1 = Conversation_Participant(role=Dialogue_Roles.agent)
-this_conversation.add_participant(participant1)
+def main():
+    # Create a handler
+    this_conversation = Conversation()
 
-participant2 = Conversation_Participant(role=Dialogue_Roles.agent)
-this_conversation.add_participant(participant2)
+    # Create participants and add them to the handler
+    participant1 = Conversation_Participant(role=Dialogue_Roles.agent)
+    this_conversation.add_participant(participant1)
 
-# Participants write messages
-participant1.speak('Hello from participant 1!')
-participant2.speak('Hello from participant 2!')
-participant2.think('I do not even want to say hello to that guy!')
+    participant2 = Conversation_Participant(role=Dialogue_Roles.agent)
+    this_conversation.add_participant(participant2)
 
-# Since rowdy_participant is itself an agent
-# this will trigger infinite recursion
-class Rowdy_participant(Conversation_Participant):
-    def react(self, dialogue_line : dict):
-        role = dialogue_line['role']
-        if role == Dialogue_Roles.agent:
-            self.speak('Actually, leave me alone! Let me talk to the user')
+    # Participants write messages
+    participant1.speak('Hello from participant 1!')
+    participant2.speak('Hello from participant 2!')
+    participant2.think('I do not even want to say hello to that guy!')
 
-        if role == Dialogue_Roles.user:
-            self.speak('Hello, how can I assist you today')
 
-participant3 = Rowdy_participant(Dialogue_Roles.agent)
-this_conversation.add_participant(participant3)
+    # Participants print their logs
+    print("Logs for Participant1:")
+    participant1.print_memory()
 
-participant1.speak('How are you :)')
+    print("Logs for Participant2:")
+    participant2.print_memory()
 
-# Participants print their logs
-print("Logs for Participant1:")
-participant1.print_memory()
+# Expects output:
+# assistant said: Hello from participant 1!
+# assistant said: Hello from participant 2!
+# assistant thought: I do not even want to say hello to that guy!
+# Logs for Participant1:
+# [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}]
+# Logs for Participant2:
+# [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}, {'role': 'assistant', 'content': 'I do not even want to say hello to that guy!'}]
 
-print("Logs for Participant2:")
-participant2.print_memory()
+if __name__ == "__main__":
+    main()
+
+
+# # Since rowdy_participant is itself an agent
+# # this will trigger infinite recursion
+# class Rowdy_participant(Conversation_Participant):
+#     def react(self, dialogue_line : dict):
+#         role = dialogue_line['role']
+#         if role == Dialogue_Roles.agent:
+#             self.speak('Actually, leave me alone! Let me talk to the user')
+#
+#         if role == Dialogue_Roles.user:
+#             self.speak('Hello, how can I assist you today')
+#
+# participant3 = Rowdy_participant(Dialogue_Roles.agent)
+# this_conversation.add_participant(participant3)
+#
+# participant1.speak('How are you :)')
+#
+# # Participants print their logs
+# print("Logs for Participant1:")
+# participant1.print_memory()
+#
+# print("Logs for Participant2:")
+# participant2.print_memory()
