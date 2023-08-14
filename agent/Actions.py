@@ -1,7 +1,7 @@
 from openai.openai_object import OpenAIObject
 from typing import Union
 
-class Actions:
+class Action:
     def __init__(self, openAI_response : OpenAIObject):
         self.response = openAI_response
         self.best_response = openAI_response['choices'][0]['message']
@@ -14,6 +14,5 @@ class Actions:
 
     def get_function_call(self) -> Union[str,None]:
         funct_call = self.best_response['function_call'] if 'function_call' in self.best_response else None
-
         return funct_call if isinstance(funct_call,OpenAIObject) else None
 

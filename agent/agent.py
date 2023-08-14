@@ -1,7 +1,7 @@
 import threading
 import time
 
-from Actions import Actions
+from Actions import Action
 import openai
 from tools.Toolbox import Toolbox, Tool
 import os
@@ -90,7 +90,7 @@ class Agent(Conversation_Participant):
 
             # TODO: Ideally i would like to know more exactly what can happen here
             # I think that in particular it can happen that there is no message and just a function call
-            actions = Actions(self.get_next_actions())
+            actions = Action(self.get_next_actions())
             print("[Debug] Received response from the model.")
 
             text_content = actions.get_text_content()

@@ -20,7 +20,6 @@ class Tool:
 
     def __init__(self):
         self.name = self.__class__.__name__
-        self.name = ''
         self.description : str = ''
         self.external_log = None
         self.arguments = []
@@ -75,6 +74,7 @@ class Tool:
         try:
             self.log(f'[PROGRESS]: Tool {self.name} has been launched')
             self.do()
+            self.log(f'[SUCCESS]: Tool {self.name} successfully completed execution')
         except:
             self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
 
