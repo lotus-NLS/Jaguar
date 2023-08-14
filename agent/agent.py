@@ -1,6 +1,7 @@
 import threading
 import time
 
+from Actions import Actions
 import openai
 from tools.Toolbox import Toolbox, Tool
 import os
@@ -63,9 +64,17 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Other
 
-    def handle_function_call(self, funct_call):
-        tool_name = funct_call['name']
-        tool_args_dict = json.loads(funct_call['arguments'])
+    def get_next_actions(self):
+        return openai.ChatCompletion.create(
+            model=Models.gpt_35_16k,
+            messages=self.conversational_memory,
+            functions=self.tool_instructions,
+            function_call='auto')
+
+
+    def use_tool(self, instructions):
+        tool_name = instructions['name']
+        tool_args_dict = json.loads(instructions['arguments'])
 
         tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
 
@@ -78,26 +87,20 @@ class Agent(Conversation_Participant):
             print("[Debug] Creating completion request.")
 
             openai.api_key = self.api_key
-            response = openai.ChatCompletion.create(
-                model=Models.gpt_35_16k,
-                messages=self.conversational_memory,
-                functions=self.tool_instructions,
-                function_call='auto'
-            )
 
             # TODO: Ideally i would like to know more exactly what can happen here
             # I think that in particular it can happen that there is no message and just a function call
-            best_response = response['choices'][0]['message']
+            actions = Actions(self.get_next_actions())
             print("[Debug] Received response from the model.")
 
-            if 'content' in best_response:
-                agent_msg = best_response['content']
-                self.speak(agent_msg)
+            text_content = actions.get_text_content()
+            tool_instructions = actions.get_function_call()
 
-            if 'function_call' in best_response:
-                funct_call = best_response['function_call']
-                self.handle_function_call(funct_call)
+            if not text_content is None:
+                self.speak(message=text_content)
 
+            if not tool_instructions is None:
+                self.use_tool(instructions=tool_instructions)
 
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
@@ -123,7 +126,7 @@ test_conversation.add_participant(other_user)
 
 # I think that it could be solved by making reactions into seperate threads but that will still
 # involve a race condition.
-# Additionally I'm not sure if I want the processing to go on while the conversation can continue
+# Additionally, I'm not sure if I want the processing to go on while the conversation can continue
 # This should be discussed.
 
 while True:

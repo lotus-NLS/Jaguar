@@ -58,6 +58,8 @@ class Tool:
 
 
     def handle_call(self, args_dict : dict):
+        self.log(f'[START]: Attempting to launch tool {self.name}')
+
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
@@ -70,7 +72,7 @@ class Tool:
             arg.val = args_dict[arg.name]
 
         try:
-            self.log(f'[START]: Tool {self.name} has been launched')
+            self.log(f'[PROGRESS]: Tool {self.name} has been launched')
             self.do()
         except:
             self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
