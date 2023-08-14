@@ -45,16 +45,13 @@ class Tool:
         return tool_doc
 
     def log(self,to_log):
-        log_text = f'{self.name} [TOOL LOGGER]: \n'
-        log_text += '\"\n'
-        log_text += to_log
-        log_text += '"\n'
+        log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
 
         if self.external_log is None:
-            print(to_log)
+            print(log_text)
         else:
-            print(to_log)
-            self.external_log(to_log)
+            print(log_text)
+            self.external_log(log_text)
 
 
     def handle_call(self, args_dict : dict):
