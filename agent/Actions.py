@@ -14,5 +14,6 @@ class Actions:
 
     def get_function_call(self) -> Union[str,None]:
         funct_call = self.best_response['function_call'] if 'function_call' in self.best_response else None
-        return funct_call if isinstance(funct_call,dict) else None
+
+        return funct_call if isinstance(funct_call,OpenAIObject) else None
 

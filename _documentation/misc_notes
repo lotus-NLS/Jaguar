@@ -1,0 +1,2 @@
+# funct_call is technicall an OpenAI object, but it passes as a dict since it inherits
+# class OpenAIObject(dict):

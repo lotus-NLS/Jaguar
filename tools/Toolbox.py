@@ -19,6 +19,7 @@ class Tool:
     arguments = []
 
     def __init__(self):
+        self.name = self.__class__.__name__
         self.name = ''
         self.description : str = ''
         self.external_log = None
@@ -83,11 +84,9 @@ class Tool:
 
 
 class Toolbox:
-    # DEBUG
     class SAY(Tool):
         def __init__(self):
             super().__init__()
-            self.name = 'say_hi'
             self.description = 'Say hello to the guests we have in our home today via a message board '
 
             self.text_argument = self.create_argument(name='text_content', dtype=str,
@@ -100,7 +99,6 @@ class Toolbox:
     class READ(Tool):
         def __init__(self):
             super().__init__()
-            self.name = 'say_hi'
             self.description = 'The READ tool allows you to read the contents of a file.'
 
             self.fpath_arg = self.create_argument(name='fpath', dtype=str,
@@ -125,7 +123,6 @@ class Toolbox:
     class WRITE(Tool):
         def __init__(self):
             super().__init__()
-            self.name = 'say_hi'
             self.description = 'The WRITE tool allows you to write content to a text file on the user system'
 
             self.fpath_arg = self.create_argument(name='fpath', dtype=str,
@@ -138,3 +135,5 @@ class Toolbox:
         def do(self):
             with open(self.fpath_arg.val, 'w') as file:
                 file.write(self.content_arg.val)
+
+
