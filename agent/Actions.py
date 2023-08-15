@@ -6,7 +6,7 @@ class Action:
         try:
             self._best_response : dict = openAI_response['choices'][0]['message']
         except:
-            print('[Debug]: Failed to retrieve response from OpenAI')
+            print('[Debug]: Failed to retrieve response from OpenAI. Defaulting to empty action')
             self._best_response  : dict = {}
 
     # To my knowledge 'content' is always a key in the dict but not always filled with text

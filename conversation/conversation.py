@@ -1,6 +1,4 @@
-from typing import Callable\
-    # ,List
-
+from typing import Callable,List
 
 # Conversation:
 # -> Only Conversation Particpants can join a conversation
@@ -62,29 +60,29 @@ class Conversation_Participant:
 
         self.role = role
         self.broadcast : Callable = lambda *args, **kwargs: None
-        self.conversational_memory : Reactive_List[Dialgoue_line] = Reactive_List(callback=self.react)
+        self._conversational_memory : Reactive_List[Dialgoue_line] = Reactive_List(callback=self._react)
 
     def register_system_message(self, msg : str):
-        self.conversational_memory.append(Dialgoue_line(role=Dialogue_Roles.system,msg=msg))
+        self._conversational_memory.append(Dialgoue_line(role=Dialogue_Roles.system, msg=msg))
 
     def think(self,msg : str):
-        # DEBUG
         print(f'[Debug]:{self.role} thought: {msg}')
 
-        self.conversational_memory.append(Dialgoue_line(role=self.role,msg=msg))
+        self._conversational_memory.append(Dialgoue_line(role=self.role, msg=msg))
 
     def speak(self, message : str):
         self.broadcast(self.role, message)
 
-    def react(self, dialogue_line : dict):
+    def _react(self, dialogue_line : dict):
         pass
 
     def print_memory(self):
-        print(self.conversational_memory)
+        print(self._conversational_memory)
+
 
 class Conversation:
     def __init__(self):
-        self._participants = []
+        self._participants : List[Conversation_Participant] = []
 
     def add_participant(self, participant  : Conversation_Participant):
         if not isinstance(participant,Conversation_Participant):
@@ -95,12 +93,10 @@ class Conversation:
         self._participants.append(participant)
 
     def broadcast_message(self, role : str, msg : str):
-        # DEBUG
         print(f'[Debug]: {role} said: {msg}')
 
         for participant in self._participants:
-            participant : Conversation_Participant
-            participant.conversational_memory.append(Dialgoue_line(role=role,msg=msg))
+            participant._conversational_memory.append(Dialgoue_line(role=role, msg=msg))
 
 
 

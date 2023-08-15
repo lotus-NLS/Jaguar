@@ -1,13 +1,9 @@
-import threading
-# import time
-
-from Actions import Action
+import os,json
 import openai
-from tools.Toolbox import Toolbox, Tool
-import os
-from conversation.conversation import Conversation, Conversation_Participant, Dialogue_Roles, Dialgoue_line
-import json
 from openai.openai_object import OpenAIObject
+from Actions import Action
+from tools.Toolbox import Toolbox, Tool
+from conversation.conversation import Conversation, Conversation_Participant, Dialogue_Roles, Dialgoue_line
 
 
 # ---------------------------------------------------------
@@ -21,57 +17,83 @@ class Models:
 
 class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
-        # Set model
-        super().__init__(role=Dialogue_Roles.agent)
-        self._model_type : str = model_type
-        self._api_key : str = api_key if not api_key == '' else self.get_api_key()
-
         # Set initial prompt
+        super().__init__(role=Dialogue_Roles.agent)
         with open('../protocol/prompt') as prompt_file:
             initial_prompt = prompt_file.read()
         self.register_system_message(msg=initial_prompt)
 
+        # Set model
+        self._model_type : str = model_type
+        self._api_key : str = api_key if not api_key == '' else self._get_api_key()
+
         # Set tools
-        self.tool_list = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
-        self.tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
-        self._tool_instructions = [tool.get_usage_instructions() for tool in self.tool_list]
-        self.register_for_tool_feedback()
+        self.tool_list : list[Tool] = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
+        self._tool_instructions : list[dict] = [tool.get_usage_instructions() for tool in self.tool_list]
+        self._register_for_tool_feedback()
+
 
     # ---------------------------------------------------
     # Setup
 
-    def register_for_tool_feedback(self) -> None:
+    def _register_for_tool_feedback(self) -> None:
         for tool in self.tool_list:
             tool.external_log = self.register_system_message
 
     # TODO: Must Confirm that the API key works after getting it
     @staticmethod
-    def get_api_key() -> str:
+    def _get_api_key() -> str:
         try:
             key = os.environ.get('openai_key')
-            return key
+            if not isinstance(key,str):
+                raise TypeError
         except:
-            print('Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’')
-            raise KeyError
+            key = input('Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’ and relaunch program'
+                  'OR: Enter key manually and hit ENTER:')
+
+        return key
+
 
     # ---------------------------------------------------
     # Callback
 
-    def react(self, dialogue_line : Dialgoue_line) -> None:
+    def _react(self, dialogue_line : Dialgoue_line) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             # threading.Thread(target=self.process_user_request).start()
-            self.process_user_request()
+            self._process_user_request()
 
     # ---------------------------------------------------
     # Other
 
-    def get_next_action(self) -> Action:
+    def _process_user_request(self) -> None:
+        try:
+            print("[Debug] Creating completion request.")
+
+            openai.api_key = self._api_key
+            action = self._get_next_action()
+            print("[Debug] Received response from the model.")
+
+            text_content = action.get_text_content()
+            tool_instructions = action.get_function_call()
+
+            if not text_content is None:
+                self.speak(message=text_content)
+
+            if not tool_instructions is None:
+                self._use_tool(instructions=tool_instructions)
+
+        except Exception as e:
+            print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
+
+
+    def _get_next_action(self) -> Action:
         openai_response = openai.ChatCompletion.create(
             model=self._model_type,
-            messages=self.conversational_memory,
+            messages=self._conversational_memory,
             functions=self._tool_instructions,
             function_call='auto')
 
+        # Action is promised a dict, so a dict must be delivered in any case
         if not isinstance(openai_response,dict):
             print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
@@ -79,7 +101,7 @@ class Agent(Conversation_Participant):
         return Action(openai_response)
 
 
-    def use_tool(self, instructions : OpenAIObject) -> None:
+    def _use_tool(self, instructions : OpenAIObject) -> None:
         if not isinstance(instructions,dict):
             print(f'[Debug]: Provided instructions {instructions} are not of dict type')
             return
@@ -92,32 +114,20 @@ class Agent(Conversation_Participant):
             print(f'[Debug: Could not find arguments in dictionary. Aborting ...')
             return
 
-        tool_args_dict = json.loads(instructions['arguments'])
-        tool_name = instructions['name']
-
-        if tool_name in self.tool_dict:
-            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-
-
-    def process_user_request(self) -> None:
         try:
-            print("[Debug] Creating completion request.")
+            tool_args_dict = json.loads(instructions['arguments'])
+        except:
+            print(f'[Debug]: An error occured while trying to parse given tool arguments. Aborting ...')
+            return
 
-            openai.api_key = self._api_key
-            actions = self.get_next_action()
-            print("[Debug] Received response from the model.")
+        tool_name = instructions['name']
+        tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
 
-            text_content = actions.get_text_content()
-            tool_instructions = actions.get_function_call()
+        if tool_name in tool_dict:
+            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-            if not text_content is None:
-                self.speak(message=text_content)
 
-            if not tool_instructions is None:
-                self.use_tool(instructions=tool_instructions)
 
-        except Exception as e:
-            print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
 
 # -------------------------
@@ -132,6 +142,7 @@ test_conversation.add_participant(the_user)
 
 other_user = Conversation_Participant(role=Dialogue_Roles.user)
 test_conversation.add_participant(other_user)
+
 
 # TODO: The processing of the messages occuring immediately after the message is spoken leads
 # to the wrong ordering of messages for other conversation participants

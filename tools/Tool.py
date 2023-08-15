@@ -29,7 +29,7 @@ class Tool:
         self.arguments.append(this_arg)
         return this_arg
 
-    def get_usage_instructions(self):
+    def get_usage_instructions(self) -> dict[str,str]:
         tool_doc = {
             'name': f'{self.name}',
             'description': f'{self.description}',

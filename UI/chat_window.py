@@ -54,7 +54,7 @@ class ChatApplication:
 
     def get_response(self, message):
         try:
-            self.agent.process_user_request(message)  # Call the agent to handle the user's message
+            self.agent._process_user_request(message)  # Call the agent to handle the user's message
             agent_response = self.agent.last_response
             self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the agent's response
 
