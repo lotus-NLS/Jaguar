@@ -4,7 +4,11 @@ from typing import Union
 class Action:
     def __init__(self, openAI_response : OpenAIObject):
         self.response = openAI_response
-        self.best_response = openAI_response['choices'][0]['message']
+        try:
+            self.best_response = openAI_response['choices'][0]['message']
+        except:
+            print('[Debug]: Failed to retrieve response from OpenAI')
+            self.best_response = {}
 
     # To my knowledge 'content' is always a key in the dict but not always filled with text
     def get_text_content(self) -> Union[str,None]:
@@ -12,7 +16,7 @@ class Action:
         return content if isinstance(content,str) else None
 
 
-    def get_function_call(self) -> Union[str,None]:
+    def get_function_call(self) -> Union[dict,None]:
         funct_call = self.best_response['function_call'] if 'function_call' in self.best_response else None
-        return funct_call if isinstance(funct_call,OpenAIObject) else None
+        return funct_call if isinstance(funct_call,dict) else None
 

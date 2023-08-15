@@ -1,5 +1,5 @@
 import threading
-import time
+# import time
 
 from Actions import Action
 import openai
@@ -64,25 +64,34 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Other
 
-    def get_next_actions(self):
-        return openai.ChatCompletion.create(
+    def get_next_action(self) -> Action:
+        return Action(openai.ChatCompletion.create(
             model=Models.gpt_35_16k,
             messages=self.conversational_memory,
             functions=self.tool_instructions,
-            function_call='auto')
+            function_call='auto'))
 
 
-    def use_tool(self, instructions):
-        tool_name = instructions['name']
+    def use_tool(self, instructions : dict) -> None:
+        if not isinstance(instructions,dict):
+            print(f'[Debug]: Provided instructions {instructions} are not of dict type')
+
+        if not 'name' in instructions:
+            print(f'[Debug]: Could not find name in ')
+            return
+
+        if 'arguments' in instructions:
+            print(f'[Debug: ')
+
         tool_args_dict = json.loads(instructions['arguments'])
-
+        tool_name = instructions['name']
         tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
 
         if tool_name in tool_dict:
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
 
-    def process_user_request(self):
+    def process_user_request(self) -> None:
         try:
             print("[Debug] Creating completion request.")
 
@@ -90,7 +99,7 @@ class Agent(Conversation_Participant):
 
             # TODO: Ideally i would like to know more exactly what can happen here
             # I think that in particular it can happen that there is no message and just a function call
-            actions = Action(self.get_next_actions())
+            actions = self.get_next_action()
             print("[Debug] Received response from the model.")
 
             text_content = actions.get_text_content()

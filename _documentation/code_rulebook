@@ -1,15 +1,23 @@
 I: Functions
--> All functions must be type labeled if they return anything
 -> All function arguments must be type hinted
+-> All functions must be type labeled if they return anything
 -> Pass arguments only by keyword
 -> Raise errors instead of returning None
 
 II: Naming
 -> Plural with "object_list" not "objects"
+-> private attributes should be of the form "_[attribute]" so that they are properly hidden
 
 III: Contracts
+-> Every module (class) has to have contracts for both its attributes its methods
 -> That arguments are of the type they are hinted to be is a default assumption of every contract
+
 
 IV: Making changes
 -> Any change that you make has to either not influence the contract of that section of code or
 the changes to the contract have to be carried through upstream
+
+
+
+
+
