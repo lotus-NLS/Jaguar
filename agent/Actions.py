@@ -3,8 +3,6 @@ from typing import Union
 
 class Action:
     def __init__(self, openAI_response : dict):
-        self._response : dict = openAI_response
-
         try:
             self._best_response : dict = openAI_response['choices'][0]['message']
         except:
@@ -17,7 +15,7 @@ class Action:
         return content if isinstance(content,str) else None
 
 
-    def get_function_call(self) -> Union[dict,None]:
+    def get_function_call(self) -> Union[OpenAIObject,None]:
         funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
         return funct_call if isinstance(funct_call,dict) else None
 

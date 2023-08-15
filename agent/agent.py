@@ -7,6 +7,8 @@ from tools.Toolbox import Toolbox, Tool
 import os
 from conversation.conversation import Conversation, Conversation_Participant, Dialogue_Roles, Dialgoue_line
 import json
+from openai.openai_object import OpenAIObject
+
 
 # ---------------------------------------------------------
 
@@ -77,7 +79,7 @@ class Agent(Conversation_Participant):
         return Action(openai_response)
 
 
-    def use_tool(self, instructions : dict) -> None:
+    def use_tool(self, instructions : OpenAIObject) -> None:
         if not isinstance(instructions,dict):
             print(f'[Debug]: Provided instructions {instructions} are not of dict type')
             return
