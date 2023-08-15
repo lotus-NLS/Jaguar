@@ -1,6 +1,8 @@
 from conversation.Roles import Dialogue_Roles
 
 
+# ---------------------------------------------------------
+
 class Conversation_Entry(dict):
     def __init__(self,role : str,msg : str):
         super().__init__()

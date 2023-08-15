@@ -12,7 +12,7 @@ from tools.Tool import Tool
 # TOOL ERROR Catching
 # -> Any possible fatal error must be caught in handle_call
 
-# ------------------------------------------------
+# ---------------------------------------------------------
 
 
 class Toolbox:

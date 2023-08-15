@@ -4,6 +4,7 @@ from conversation.Conversation import Reactive_List
 from conversation.Conversation_Entry import Conversation_Entry
 from conversation.Roles import Dialogue_Roles
 
+# ---------------------------------------------------------
 
 class Conversation_Participant:
     def __init__(self, role : str):

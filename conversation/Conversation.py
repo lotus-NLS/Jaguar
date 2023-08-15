@@ -11,9 +11,6 @@ from conversation.Roles import Dialogue_Roles
 
 # ----------------------------------------------------
 
-# Those are the only three roles defined in the API. No other role can be introduced.
-
-
 
 class Reactive_List(list):
     def __init__(self, *args, callback=None, **kwargs):

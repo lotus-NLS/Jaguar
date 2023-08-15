@@ -1,3 +1,5 @@
+# Those are the only three roles defined in the API. No other role can be introduced.
+
 class Dialogue_Roles:
     user = 'user'
     agent = 'assistant'

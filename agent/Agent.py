@@ -1,13 +1,15 @@
 import os,json
+
 import openai
 from openai.openai_object import OpenAIObject
-from Actions import Action
-from tools.Toolbox import Toolbox, Tool
+
 from conversation.Conversation import Conversation
 from conversation.Participant import Conversation_Participant
 from conversation.Conversation_Entry import Conversation_Entry
 from conversation.Roles import Dialogue_Roles
 
+from tools.Toolbox import Toolbox, Tool
+from Actions import Action
 
 # ---------------------------------------------------------
 

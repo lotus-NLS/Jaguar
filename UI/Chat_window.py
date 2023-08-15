@@ -8,7 +8,7 @@ import openai
 
 from agent.Agent import Agent
 
-# ----------------------------------------------
+# ---------------------------------------------------------
 
 api_key = os.environ.get('openai_key')
 if api_key is None:

@@ -1,6 +1,8 @@
 from openai.openai_object import OpenAIObject
 from typing import Union
 
+# ---------------------------------------------------------
+
 class Action:
     def __init__(self, openAI_response : dict):
         try:
