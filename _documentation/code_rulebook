@@ -1,11 +1,23 @@
 I: Functions
 -> All function arguments must be type hinted
--> All functions must be type labeled if they return anything
--> Pass arguments only by keyword
+-> All functions must be type labeled. If they return nothing they must be labeled with None
 -> Functions must either return the type the hint at or raise an Error (Returning and raising are mutually exclusive)
+-> Pass arguments only by keyword
+
+II: Classes
+-> All class attributes must be type hinted
 
 
-II: Naming (see also: https://github.com/naming-convention/naming-convention-guides/tree/master/python)
+III: Implicit contracts: Fulfill type hints
+-> Gurantee in every init: Every class attribute fulfills its type hint at any point after init
+-> Assume in every class instance scope: Every attribute fulfills its type hint at any point after init
+-> Guarantee in every function definition: Returns object of type it hints
+-> Assume in every function call: Function returns object of type it hints
+-> Assume in every function definition: Arguments are of the type they are hinted to be
+-> Guarantee in every function call: Passed arguments are of the type they are hinted to be
+
+
+IV: Naming (see also: https://github.com/naming-convention/naming-convention-guides/tree/master/python)
 -> All functions are named as verbs and classes as nouns
 -> Functions that return something are of the format get_[object].
 Ideally the name of the function should make the type of the returned object apparent already
@@ -17,13 +29,7 @@ Ideally the name of the function should make the type of the returned object app
    everything else              : lowercase w/ snake_case
 
 
-
-III: Contracts
--> Every module (class) has to have contracts for both its attributes its methods
--> That arguments are of the type they are hinted to be is a default assumption of every contract
-
-
-IV: Making changes
+V: Making changes
 -> Any change that you make has to either not influence the contract of that section of code or
 the changes to the contract have to be carried through upstream
 
