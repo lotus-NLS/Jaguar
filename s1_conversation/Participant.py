@@ -1,6 +1,6 @@
 from typing import Callable
 
-from s1_conversation.Conversation import Reactive_List
+from s1_conversation.Conversation import ReactiveList
 from s1_conversation.Conversation_Entry import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
 
@@ -14,7 +14,7 @@ class Conversation_Participant:
 
         self.role = role
         self.broadcast : Callable = lambda *args, **kwargs: None
-        self._conversational_memory : Reactive_List[Conversation_Entry] = Reactive_List(callback=self._react)
+        self._conversational_memory : ReactiveList[Conversation_Entry] = ReactiveList(callback=self._react)
 
     def register_system_message(self, msg : str):
         self._conversational_memory.append(Conversation_Entry(role=Dialogue_Roles.system, msg=msg))

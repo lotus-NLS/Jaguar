@@ -12,7 +12,7 @@ from s1_conversation.Participant import Conversation_Participant
 from s4_tests.test_conversation import speak_and_think
 
 
-class Reactive_List(list):
+class ReactiveList(list):
     def __init__(self, *args, callback=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.callback = callback
@@ -40,4 +40,3 @@ class Conversation:
 
         for participant in self._participants:
             participant._conversational_memory.append(Conversation_Entry(role=role, msg=msg))
-
