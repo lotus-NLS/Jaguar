@@ -6,7 +6,7 @@ import threading
 import os
 import openai
 
-from agent.Agent import Agent
+from s2_agent.Agent import Agent
 
 # ---------------------------------------------------------
 
@@ -54,9 +54,9 @@ class ChatApplication:
 
     def get_response(self, message):
         try:
-            self.agent._process_user_request(message)  # Call the agent to handle the user's message
+            self.agent._process_user_request(message)  # Call the s2_agent to handle the user's message
             agent_response = self.agent.last_response
-            self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the agent's response
+            self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the s2_agent's response
 
         except Exception as e:
             self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')

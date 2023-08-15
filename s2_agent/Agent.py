@@ -3,12 +3,12 @@ import os,json
 import openai
 from openai.openai_object import OpenAIObject
 
-from conversation.Conversation import Conversation
-from conversation.Participant import Conversation_Participant
-from conversation.Conversation_Entry import Conversation_Entry
-from conversation.Roles import Dialogue_Roles
+from s1_conversation.Conversation import Conversation
+from s1_conversation.Participant import Conversation_Participant
+from s1_conversation.Conversation_Entry import Conversation_Entry
+from s1_conversation.Roles import Dialogue_Roles
 
-from tools.Toolbox import Toolbox, Tool
+from s1_tools.Toolbox import Toolbox, Tool
 from Actions import Action
 
 # ---------------------------------------------------------
@@ -24,7 +24,7 @@ class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set initial prompt
         super().__init__(role=Dialogue_Roles.agent)
-        with open('../protocol/prompt') as prompt_file:
+        with open('../s1_protocol/prompt') as prompt_file:
             initial_prompt = prompt_file.read()
         self.register_system_message(msg=initial_prompt)
 
@@ -32,7 +32,7 @@ class Agent(Conversation_Participant):
         self._model_type : str = model_type
         self._api_key : str = api_key if not api_key == '' else self._get_api_key()
 
-        # Set tools
+        # Set s1_tools
         self.tool_list : list[Tool] = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
         self._tool_instructions : list[dict] = [tool.get_usage_instructions() for tool in self.tool_list]
         self._register_for_tool_feedback()
@@ -150,13 +150,13 @@ test_conversation.add_participant(other_user)
 
 
 # TODO: The processing of the messages occuring immediately after the message is spoken leads
-# to the wrong ordering of messages for other conversation participants
+# to the wrong ordering of messages for other s1_conversation participants
 # Because "react" of the bot triggers its own speak which is processed before before the
 # outer speak command of the user
 
 # I think that it could be solved by making reactions into seperate threads but that will still
 # involve a race condition.
-# Additionally, I'm not sure if I want the processing to go on while the conversation can continue
+# Additionally, I'm not sure if I want the processing to go on while the s1_conversation can continue
 # This should be discussed.
 
 while True:

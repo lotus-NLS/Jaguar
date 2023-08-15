@@ -1,7 +1,7 @@
 # from typing import Callable
 # from typing import List
 import os
-from tools.Tool import Tool
+from s1_tools.Tool import Tool
 
 # TOOL LOGGING Protocol:
 # -> 1: Log launch of tool using "[START]"

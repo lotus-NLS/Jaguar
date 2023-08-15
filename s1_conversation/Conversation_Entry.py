@@ -1,4 +1,4 @@
-from conversation.Roles import Dialogue_Roles
+from s1_conversation.Roles import Dialogue_Roles
 
 
 # ---------------------------------------------------------

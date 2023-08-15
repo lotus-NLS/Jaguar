@@ -1,10 +1,10 @@
 from typing import List
-from conversation.Conversation_Entry import Conversation_Entry
-from conversation.Participant import Conversation_Participant
-from conversation.Roles import Dialogue_Roles
+from s1_conversation.Conversation_Entry import Conversation_Entry
+from s1_conversation.Participant import Conversation_Participant
+from s1_conversation.Roles import Dialogue_Roles
 
 # Conversation:
-# -> Only Conversation Particpants can join a conversation
+# -> Only Conversation Particpants can join a s1_conversation
 # -> The argument of speak is logged to "conversational_memory" of every particpant
 # -> The arg of think is logged only to self
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
@@ -84,18 +84,18 @@ if __name__ == "__main__":
     main()
 
 
-# # Since rowdy_participant is itself an agent
+# # Since rowdy_participant is itself an s2_agent
 # # this will trigger infinite recursion
 # class Rowdy_participant(Conversation_Participant):
 #     def react(self, dialogue_line : dict):
 #         role = dialogue_line['role']
-#         if role == Dialogue_Roles.agent:
+#         if role == Dialogue_Roles.s2_agent:
 #             self.speak('Actually, leave me alone! Let me talk to the user')
 #
 #         if role == Dialogue_Roles.user:
 #             self.speak('Hello, how can I assist you today')
 #
-# participant3 = Rowdy_participant(Dialogue_Roles.agent)
+# participant3 = Rowdy_participant(Dialogue_Roles.s2_agent)
 # this_conversation.add_participant(participant3)
 #
 # participant1.speak('How are you :)')

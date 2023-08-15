@@ -1,8 +1,8 @@
 from typing import Callable
 
-from conversation.Conversation import Reactive_List
-from conversation.Conversation_Entry import Conversation_Entry
-from conversation.Roles import Dialogue_Roles
+from s1_conversation.Conversation import Reactive_List
+from s1_conversation.Conversation_Entry import Conversation_Entry
+from s1_conversation.Roles import Dialogue_Roles
 
 # ---------------------------------------------------------
 
