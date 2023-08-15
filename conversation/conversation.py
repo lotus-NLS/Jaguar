@@ -1,9 +1,6 @@
 from typing import Callable\
     # ,List
 
-import logging
-logger = logging.getLogger()
-
 
 # Conversation:
 # -> Only Conversation Particpants can join a conversation
@@ -60,7 +57,7 @@ class Reactive_List(list):
 class Conversation_Participant:
     def __init__(self, role : str):
         if not role in Dialogue_Roles.as_list():
-            logger.debug(f'Given role is not part of the allowed roles {Dialogue_Roles.as_list()}')
+            print(f'[Debug]: Given role is not part of the allowed roles {Dialogue_Roles.as_list()}')
             return
 
         self.role = role
