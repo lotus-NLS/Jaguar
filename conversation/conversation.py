@@ -6,22 +6,11 @@ logger = logging.getLogger()
 
 # Conversation:
 # -> Only Conversation Particpants can join a conversation
-# ->
+# -> The argument of speak is logged to "conversational_memory" of every particpant
+# -> The arg of think is logged only to self
+# -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
 
 # ----------------------------------------------------
-
-# TODO: Think about if you can make this a little less wonky.
-# This is a format that gets used all over the place but for everyone but
-# OpenAI it's not really convenient. Ideally I would have a conversation log of the form
-# [Dialgoue_piece_0, Dialogue_piece_1, ...] w/
-# class Dialogue_piece:
-#   def __init__()
-#       self.
-
-def get_dialogue_line(role,msg):
-    return {"role": role, "content": msg}
-
-
 
 # Those are the only three roles defined in the API. No other role can be introduced.
 class Dialogue_Roles:
@@ -38,7 +27,25 @@ class Dialogue_Roles:
         return as_list
 
 
-class CallbackList(list):
+class Dialgoue_line(dict):
+    def __init__(self,role : str,msg : str):
+        super().__init__()
+
+        if not role in Dialogue_Roles.as_list():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}. Defaulting to agent role ...')
+            self['role'] = Dialogue_Roles.agent
+        else:
+            self['role'] = role
+
+        if not isinstance(msg,str):
+            print(f'[Debug]: Given message {msg} is not a string. Typecasting msg object to string to include as message content ...')
+            self['content'] = str(msg)
+
+        else:
+            self['content'] = msg
+
+
+class Reactive_List(list):
     def __init__(self, *args, callback=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.callback = callback
@@ -57,16 +64,16 @@ class Conversation_Participant:
 
         self.role = role
         self.broadcast : Callable = lambda *args, **kwargs: None
-        self.conversational_memory : CallbackList[dict] = CallbackList(callback=self.react)
+        self.conversational_memory : Reactive_List[Dialgoue_line] = Reactive_List(callback=self.react)
 
     def register_system_message(self, msg : str):
-        self.conversational_memory.append(get_dialogue_line(Dialogue_Roles.system, msg))
+        self.conversational_memory.append(Dialgoue_line(role=Dialogue_Roles.system,msg=msg))
 
     def think(self,msg : str):
         # DEBUG
         print(f'[Debug]:{self.role} thought: {msg}')
 
-        self.conversational_memory.append(get_dialogue_line(role=self.role,msg=msg))
+        self.conversational_memory.append(Dialgoue_line(role=self.role,msg=msg))
 
     def speak(self, message : str):
         self.broadcast(self.role, message)
@@ -95,9 +102,7 @@ class Conversation:
 
         for participant in self._participants:
             participant : Conversation_Participant
-            participant.conversational_memory.append(get_dialogue_line(role=role,msg=msg))
-
-
+            participant.conversational_memory.append(Dialgoue_line(role=role,msg=msg))
 
 
 
