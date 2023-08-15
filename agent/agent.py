@@ -5,8 +5,7 @@ from Actions import Action
 import openai
 from tools.Toolbox import Toolbox, Tool
 import os
-from conversation.conversation import Conversation_Participant, Dialogue_Roles
-from conversation.conversation import  Conversation
+from conversation.conversation import Conversation, Conversation_Participant, Dialogue_Roles, Dialgoue_line
 import json
 
 # ---------------------------------------------------------
@@ -32,6 +31,7 @@ class Agent(Conversation_Participant):
 
         # Set tools
         self.tool_list = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
+        self.tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
         self._tool_instructions = [tool.get_usage_instructions() for tool in self.tool_list]
         self.register_for_tool_feedback()
 
@@ -55,7 +55,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Callback
 
-    def react(self, dialogue_line : dict) -> None:
+    def react(self, dialogue_line : Dialgoue_line) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             # threading.Thread(target=self.process_user_request).start()
             self.process_user_request()
@@ -71,7 +71,7 @@ class Agent(Conversation_Participant):
             function_call='auto')
 
         if not isinstance(openai_response,dict):
-            print('[Debug]: OpenAI response is not of dictionary type')
+            print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
 
         return Action(openai_response)
@@ -80,20 +80,21 @@ class Agent(Conversation_Participant):
     def use_tool(self, instructions : dict) -> None:
         if not isinstance(instructions,dict):
             print(f'[Debug]: Provided instructions {instructions} are not of dict type')
-
-        if not 'name' in instructions:
-            print(f'[Debug]: Could not find name in ')
             return
 
-        if 'arguments' in instructions:
-            print(f'[Debug: ')
+        if not 'name' in instructions:
+            print(f'[Debug]: Could not find name in dictionary. Aborting ... ')
+            return
+
+        if not 'arguments' in instructions:
+            print(f'[Debug: Could not find arguments in dictionary. Aborting ...')
+            return
 
         tool_args_dict = json.loads(instructions['arguments'])
         tool_name = instructions['name']
-        tool_dict : dict[str,Tool] = {tool.name : tool for tool in self.tool_list}
 
-        if tool_name in tool_dict:
-            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+        if tool_name in self.tool_dict:
+            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
 
     def process_user_request(self) -> None:
@@ -101,9 +102,6 @@ class Agent(Conversation_Participant):
             print("[Debug] Creating completion request.")
 
             openai.api_key = self._api_key
-
-            # TODO: Ideally i would like to know more exactly what can happen here
-            # I think that in particular it can happen that there is no message and just a function call
             actions = self.get_next_action()
             print("[Debug] Received response from the model.")
 
