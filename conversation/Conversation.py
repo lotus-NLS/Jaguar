@@ -1,4 +1,7 @@
-from typing import Callable,List
+from typing import List
+from conversation.Conversation_Entry import Conversation_Entry
+from conversation.Participant import Conversation_Participant
+from conversation.Roles import Dialogue_Roles
 
 # Conversation:
 # -> Only Conversation Particpants can join a conversation
@@ -9,36 +12,7 @@ from typing import Callable,List
 # ----------------------------------------------------
 
 # Those are the only three roles defined in the API. No other role can be introduced.
-class Dialogue_Roles:
-    user = 'user'
-    agent = 'assistant'
-    system = 'system'
 
-    @classmethod
-    def as_list(cls):
-        as_list = []
-        for name, value in cls.__dict__.items():
-            if not name.startswith("__"):
-                as_list.append(value)
-        return as_list
-
-
-class Dialgoue_line(dict):
-    def __init__(self,role : str,msg : str):
-        super().__init__()
-
-        if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}. Defaulting to agent role ...')
-            self['role'] = Dialogue_Roles.agent
-        else:
-            self['role'] = role
-
-        if not isinstance(msg,str):
-            print(f'[Debug]: Given message {msg} is not a string. Typecasting msg object to string to include as message content ...')
-            self['content'] = str(msg)
-
-        else:
-            self['content'] = msg
 
 
 class Reactive_List(list):
@@ -52,40 +26,12 @@ class Reactive_List(list):
             self.callback(item)
 
 
-class Conversation_Participant:
-    def __init__(self, role : str):
-        if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role is not part of the allowed roles {Dialogue_Roles.as_list()}')
-            return
-
-        self.role = role
-        self.broadcast : Callable = lambda *args, **kwargs: None
-        self._conversational_memory : Reactive_List[Dialgoue_line] = Reactive_List(callback=self._react)
-
-    def register_system_message(self, msg : str):
-        self._conversational_memory.append(Dialgoue_line(role=Dialogue_Roles.system, msg=msg))
-
-    def think(self,msg : str):
-        print(f'[Debug]:{self.role} thought: {msg}')
-
-        self._conversational_memory.append(Dialgoue_line(role=self.role, msg=msg))
-
-    def speak(self, message : str):
-        self.broadcast(self.role, message)
-
-    def _react(self, dialogue_line : dict):
-        pass
-
-    def print_memory(self):
-        print(self._conversational_memory)
-
-
 class Conversation:
     def __init__(self):
         self._participants : List[Conversation_Participant] = []
 
     def add_participant(self, participant  : Conversation_Participant):
-        if not isinstance(participant,Conversation_Participant):
+        if not isinstance(participant, Conversation_Participant):
             print(f'Given object is not a Conversation_Participant. Aborting add_participant routine ...')
             return
 
@@ -96,15 +42,7 @@ class Conversation:
         print(f'[Debug]: {role} said: {msg}')
 
         for participant in self._participants:
-            participant._conversational_memory.append(Dialgoue_line(role=role, msg=msg))
-
-
-
-
-
-
-
-
+            participant._conversational_memory.append(Conversation_Entry(role=role, msg=msg))
 
 
 

@@ -3,7 +3,10 @@ import openai
 from openai.openai_object import OpenAIObject
 from Actions import Action
 from tools.Toolbox import Toolbox, Tool
-from conversation.conversation import Conversation, Conversation_Participant, Dialogue_Roles, Dialgoue_line
+from conversation.Conversation import Conversation
+from conversation.Participant import Conversation_Participant
+from conversation.Conversation_Entry import Conversation_Entry
+from conversation.Roles import Dialogue_Roles
 
 
 # ---------------------------------------------------------
@@ -57,7 +60,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Callback
 
-    def _react(self, dialogue_line : Dialgoue_line) -> None:
+    def _react(self, dialogue_line : Conversation_Entry) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             # threading.Thread(target=self.process_user_request).start()
             self._process_user_request()
