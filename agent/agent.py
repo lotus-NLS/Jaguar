@@ -18,8 +18,6 @@ class Models:
     gpt_40_8k = 'gpt-4-0613'
 
 
-
-
 class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set model
@@ -40,7 +38,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Setup
 
-    def register_for_tool_feedback(self):
+    def register_for_tool_feedback(self) -> None:
         for tool in self.tool_list:
             tool.external_log = self.register_system_message
 
@@ -57,7 +55,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Callback
 
-    def react(self, dialogue_line : dict):
+    def react(self, dialogue_line : dict) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             threading.Thread(target=self.process_user_request).start()
 
@@ -65,11 +63,17 @@ class Agent(Conversation_Participant):
     # Other
 
     def get_next_action(self) -> Action:
-        return Action(openai.ChatCompletion.create(
-            model=Models.gpt_35_16k,
+        openai_response = openai.ChatCompletion.create(
+            model=self.model_type,
             messages=self.conversational_memory,
             functions=self.tool_instructions,
-            function_call='auto'))
+            function_call='auto')
+
+        if not isinstance(openai_response,dict):
+            print('[Debug]: OpenAI response is not of dictionary type')
+            openai_response = {}
+
+        return Action(openai_response)
 
 
     def use_tool(self, instructions : dict) -> None:

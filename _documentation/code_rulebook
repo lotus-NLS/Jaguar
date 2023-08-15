@@ -5,7 +5,11 @@ I: Functions
 -> Raise errors instead of returning None
 
 II: Naming
+-> All functions are named as verbs
+-> Functions that return something are of the format get_[object]. Ideally the name of the function
+should make the type of the returned object apparent already
 -> Plural with "object_list" not "objects"
+
 -> private attributes should be of the form "_[attribute]" so that they are properly hidden
 
 III: Contracts

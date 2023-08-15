@@ -2,7 +2,7 @@ from openai.openai_object import OpenAIObject
 from typing import Union
 
 class Action:
-    def __init__(self, openAI_response : OpenAIObject):
+    def __init__(self, openAI_response : dict):
         self.response = openAI_response
         try:
             self.best_response = openAI_response['choices'][0]['message']
