@@ -21,6 +21,8 @@ logger = logging.getLogger()
 def get_dialogue_line(role,msg):
     return {"role": role, "content": msg}
 
+
+
 # Those are the only three roles defined in the API. No other role can be introduced.
 class Dialogue_Roles:
     user = 'user'
@@ -94,6 +96,18 @@ class Conversation:
         for participant in self._participants:
             participant : Conversation_Participant
             participant.conversational_memory.append(get_dialogue_line(role=role,msg=msg))
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ----------------------------------------------------

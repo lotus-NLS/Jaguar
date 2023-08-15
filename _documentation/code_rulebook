@@ -2,7 +2,8 @@ I: Functions
 -> All function arguments must be type hinted
 -> All functions must be type labeled if they return anything
 -> Pass arguments only by keyword
--> Raise errors instead of returning None
+-> Functions must either return the type the hint at or raise an Error
+(Returning and raising are mutually exclusive)
 
 II: Naming
 -> All functions are named as verbs

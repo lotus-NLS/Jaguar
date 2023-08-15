@@ -21,9 +21,9 @@ class Models:
 class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set model
-        super().__init__(Dialogue_Roles.agent)
-        self.model_type = model_type
-        self.api_key = api_key if not api_key == '' else self.get_api_key()
+        super().__init__(role=Dialogue_Roles.agent)
+        self._model_type : str = model_type
+        self._api_key : str = api_key if not api_key == '' else self.get_api_key()
 
         # Set initial prompt
         with open('../protocol/prompt') as prompt_file:
@@ -32,7 +32,7 @@ class Agent(Conversation_Participant):
 
         # Set tools
         self.tool_list = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
-        self.tool_instructions = [tool.get_usage_instructions() for tool in self.tool_list]
+        self._tool_instructions = [tool.get_usage_instructions() for tool in self.tool_list]
         self.register_for_tool_feedback()
 
     # ---------------------------------------------------
@@ -49,24 +49,25 @@ class Agent(Conversation_Participant):
             key = os.environ.get('openai_key')
             return key
         except:
-            print('Failed to retrieve api key. Check /etc/environment for entry \’openai_key\’')
-            exit(code=1)
+            print('Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’')
+            raise KeyError
 
     # ---------------------------------------------------
     # Callback
 
     def react(self, dialogue_line : dict) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
-            threading.Thread(target=self.process_user_request).start()
+            # threading.Thread(target=self.process_user_request).start()
+            self.process_user_request()
 
     # ---------------------------------------------------
     # Other
 
     def get_next_action(self) -> Action:
         openai_response = openai.ChatCompletion.create(
-            model=self.model_type,
+            model=self._model_type,
             messages=self.conversational_memory,
-            functions=self.tool_instructions,
+            functions=self._tool_instructions,
             function_call='auto')
 
         if not isinstance(openai_response,dict):
@@ -99,7 +100,7 @@ class Agent(Conversation_Participant):
         try:
             print("[Debug] Creating completion request.")
 
-            openai.api_key = self.api_key
+            openai.api_key = self._api_key
 
             # TODO: Ideally i would like to know more exactly what can happen here
             # I think that in particular it can happen that there is no message and just a function call
