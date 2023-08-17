@@ -16,6 +16,7 @@ from s1_tools.Tool import Tool
 
 
 class Toolbox:
+
     class SAY(Tool):
         def __init__(self):
             super().__init__()

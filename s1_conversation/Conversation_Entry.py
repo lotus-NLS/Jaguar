@@ -4,7 +4,7 @@ from s1_conversation.Roles import Dialogue_Roles
 # ---------------------------------------------------------
 
 class Conversation_Entry(dict):
-    def __init__(self,role : str,msg : str):
+    def __init__(self,role : str, msg : str):
         super().__init__()
 
         if not role in Dialogue_Roles.as_list():
@@ -19,5 +19,4 @@ class Conversation_Entry(dict):
 
         else:
             self['content'] = msg
-
 

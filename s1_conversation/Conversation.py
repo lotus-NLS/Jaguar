@@ -17,7 +17,7 @@ class ReactiveList(list):
         super().__init__(*args, **kwargs)
         self.callback = callback
 
-    def append(self, item):
+    def append(self, item : object):
         super().append(item)
         if self.callback:
             self.callback(item)
@@ -39,4 +39,4 @@ class Conversation:
         print(f'[Debug]: {role} said: {msg}')
 
         for participant in self._participants:
-            participant._conversational_memory.append(Conversation_Entry(role=role, msg=msg))
+            participant.conversational_memory.append(Conversation_Entry(role=role, msg=msg))
