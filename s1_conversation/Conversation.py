@@ -1,3 +1,4 @@
+import queue
 import threading
 from typing import List, Callable
 from s1_conversation.Conversation_Entry import Conversation_Entry
@@ -58,7 +59,9 @@ class Conversation_Participant:
 
 class Conversation:
     def __init__(self):
-        self._participants : List[Conversation_Participant] = []
+        self._participants: List[Conversation_Participant] = []
+        self._message_queue = queue.Queue()
+        threading.Thread(target=self._process_queue).start()
 
     def add_participant(self, participant  : Conversation_Participant):
         if not isinstance(participant, Conversation_Participant):
@@ -69,11 +72,13 @@ class Conversation:
         self._participants.append(participant)
 
 
+    def _process_queue(self):
+        while True:
+            role, msg = self._message_queue.get()
+            print(f'[Debug]: {role} said: {msg}')
+            for participant in self._participants:
+                participant.conversational_memory.append(Conversation_Entry(role=role, msg=msg))
+
     # TODO: Change the argument to conversation entry
-    def broadcast_message(self, role : str, msg : str):
-        print(f'[Debug]: {role} said: {msg}')
-
-        for participant in self._participants:
-            participant.conversational_memory.append(Conversation_Entry(role=role, msg=msg))
-
-
+    def broadcast_message(self, role: str, msg: str):
+        self._message_queue.put((role, msg))
