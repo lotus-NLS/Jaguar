@@ -39,4 +39,6 @@ the changes to the contract have to be carried through upstream
 
 
 
-
+VI: Debugging
+-> Trace from entry point
+-> Check submodule contracts

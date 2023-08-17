@@ -45,37 +45,46 @@ def speak_and_think():
 # Logs for Participant2:
 # [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}, {'role': 'assistant', 'content': 'I do not even want to say hello to that guy!'}]
 
-if __name__ == "__main__":
-    speak_and_think()
+# if __name__ == "__main__":
+#     speak_and_think()
 
 
 # ----------------------------------------------------
 # Test driver code
 
 
-# Since rowdy_participant is itself an s2_agent
+# Since rowdy_participant is itself a s2_agent
 # this will trigger infinite recursion
 
+def test_reaction():
+    class Rowdy_participant(Conversation_Participant):
+
+        def _reaction_protocol(self, dialogue_line : dict):
+            role = dialogue_line['role']
+            if role == Dialogue_Roles.agent:
+                self.speak('Actually, leave me alone! Let me talk to the user')
+
+            if role == Dialogue_Roles.user:
+                self.speak('Hello, how can I assist you today')
+
+    this_conversation = Conversation()
+    participant1 = Conversation_Participant(role=Dialogue_Roles.agent)
+    participant2 = Conversation_Participant(role=Dialogue_Roles.agent)
+    participant3 = Rowdy_participant(Dialogue_Roles.agent)
+
+    this_conversation.add_participant(participant1)
+    this_conversation.add_participant(participant2)
+    this_conversation.add_participant(participant3)
 
 
+    participant1.speak('How are you :)')
 
-class Rowdy_participant(Conversation_Participant):
-    def react(self, dialogue_line : dict):
-        role = dialogue_line['role']
-        if role == Dialogue_Roles.s2_agent:
-            self.speak('Actually, leave me alone! Let me talk to the user')
+    time.sleep(1)
+    # Participants print their logs
+    print("Logs for Participant1:")
+    participant1.print_memory()
 
-        if role == Dialogue_Roles.user:
-            self.speak('Hello, how can I assist you today')
+    print("Logs for Participant2:")
+    participant2.print_memory()
 
-participant3 = Rowdy_participant(Dialogue_Roles.s2_agent)
-this_conversation.add_participant(participant3)
-
-participant1.speak('How are you :)')
-
-# Participants print their logs
-print("Logs for Participant1:")
-participant1.print_memory()
-
-print("Logs for Participant2:")
-participant2.print_memory()
+test_reaction()
