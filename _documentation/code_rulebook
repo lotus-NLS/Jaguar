@@ -8,7 +8,7 @@ I: Functions
 -> Pass arguments only by keyword
 
 II: Classes
--> All class attributes must be type hinted
+-> All class attributes must be type hinted, except for inherited attributes which are already type hinted
 
 
 III: Implicit contracts: Fulfill type hints

@@ -34,7 +34,7 @@ class Agent(Conversation_Participant):
 
         # Set s1_tools
         self.tool_list : list[Tool] = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
-        self._tool_instructions : list[dict] = [tool.get_usage_instructions() for tool in self.tool_list]
+        self._tool_instructions : list[dict] = [tool.get_tool_json_doc() for tool in self.tool_list]
         self._register_for_tool_feedback()
 
 

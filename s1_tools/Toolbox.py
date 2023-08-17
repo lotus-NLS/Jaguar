@@ -1,7 +1,7 @@
 # from typing import Callable
 # from typing import List
 import os
-from s1_tools.Tool import Tool
+from s1_tools.Tool import Tool,ToolArg
 
 # TOOL LOGGING Protocol:
 # -> 1: Log launch of tool using "[START]"
@@ -22,7 +22,7 @@ class Toolbox:
             super().__init__()
             self.description = 'Say hello to the guests we have in our home today via a message board '
 
-            self.text_argument = self.create_argument(name='text_content', dtype=str,
+            self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
                                                       description='This is what you will say to the guests')
 
         def do(self):
@@ -34,8 +34,9 @@ class Toolbox:
             super().__init__()
             self.description = 'The READ tool allows you to read the contents of a file.'
 
-            self.fpath_arg = self.create_argument(name='fpath', dtype=str,
+            self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
                                                      description='This is the path to the file which you will read')
+
 
         def do(self):
             location = self.fpath_arg.val
@@ -58,10 +59,10 @@ class Toolbox:
             super().__init__()
             self.description = 'The WRITE tool allows you to write content to a text file on the user system'
 
-            self.fpath_arg = self.create_argument(name='fpath', dtype=str,
+            self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
                                                      description='The path of the file that you will write')
 
-            self.content_arg = self.create_argument(name='content',dtype=str,
+            self.content_arg : ToolArg = self.create_argument(name='content',dtype=str,
                                                     description='The content that will be written to the file')
 
         # TODO Catch specfic errors
