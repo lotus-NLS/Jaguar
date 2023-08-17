@@ -76,7 +76,6 @@ def test_reaction():
     this_conversation.add_participant(participant2)
     this_conversation.add_participant(participant3)
 
-
     participant1.speak('How are you :)')
 
     time.sleep(1)

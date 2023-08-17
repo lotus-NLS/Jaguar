@@ -19,3 +19,4 @@ After every finished function or method you will evaluate and critque yourself o
 Where can errors arise in this function or method? Is it guranteed that no errors can appear if the input passes the validation?
 What parts of the methods could still be improved and made easier to read, understand and edit? What parts could be made more computationally efficient?
 However: Keep this discussion brief. Two sentence at most so keep it down to the most important aspects.
+
