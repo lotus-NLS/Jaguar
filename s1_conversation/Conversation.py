@@ -1,5 +1,8 @@
+import threading
 from typing import List, Callable
 from s1_conversation.Conversation_Entry import Conversation_Entry
+from s1_conversation.Roles import Dialogue_Roles
+
 
 # Conversation:
 # -> Only Conversation Particpants can join a s1_conversation
@@ -8,8 +11,7 @@ from s1_conversation.Conversation_Entry import Conversation_Entry
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
 
 # ----------------------------------------------------
-from s1_conversation.Roles import Dialogue_Roles
-from s4_tests.test_conversation import speak_and_think
+
 
 
 class ReactiveList(list):
@@ -44,11 +46,15 @@ class Conversation_Participant:
     def speak(self, message : str):
         self.broadcast(self.role, message)
 
-    def _react(self, dialogue_line : dict):
+    def _reaction_protocol(self, dialogue_line : dict):
         pass
+
+    def _react(self,dialogue_line : dict):
+        threading.Thread(target=self._reaction_protocol,kwargs=({'dialogue_line' : dialogue_line})).start()
 
     def print_memory(self):
         print(self.conversational_memory)
+
 
 class Conversation:
     def __init__(self):
