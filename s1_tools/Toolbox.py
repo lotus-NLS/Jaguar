@@ -2,7 +2,7 @@
 # from typing import List
 import os
 from s1_tools.Tool import Tool,ToolArg
-
+from s1_protocol.Directive import Directive
 # TOOL LOGGING Protocol:
 # -> 1: Log launch of tool using "[START]"
 # -> 2: If applicable log result of tool e.g. for READ file using [RESULT]
@@ -70,4 +70,11 @@ class Toolbox:
             with open(self.fpath_arg.val, 'w') as file:
                 file.write(self.content_arg.val)
 
+
+    class UPDATE_DIRECTIVE(Tool):
+        def __init__(self, Directive):
+            super().__init__()
+
+        def do(self):
+            pass
 

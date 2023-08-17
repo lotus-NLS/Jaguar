@@ -9,12 +9,22 @@ class AgendaEntry:
 
     def __init__(self,name, instruction, is_root = False):
         self.name: str = f'++++ {name} ++++'
-        self.instruction: str = f'Instructions: {instruction}'
+        self.desc: str = f'Instructions: {instruction}'
+        self.is_complete = False
 
         self._uuid = f'{uuid.uuid4()}-{uuid.uuid4()}'
         self._is_root = is_root
         self.children_list: list[AgendaEntry] = []
         self.subelement_dictionary : dict[str, AgendaEntry] = {}
+
+    def edit_name(self, new_name):
+        self.name = new_name
+
+    def edit_description(self, new_desc):
+        self.desc = new_desc
+
+    def mark_complete(self):
+        self.is_complete = True
 
     def _add_subelement(self, name : str, instruction: str):
         new_element = AgendaEntry(name=name, instruction=instruction)
@@ -22,12 +32,16 @@ class AgendaEntry:
         self.children_list.append(new_element)
         self.subelement_dictionary[new_element._uuid] = new_element
 
+
     def __str__(self, indent: int = 0):
         space = '    ' * indent
+        completion_str = '[x]' if self.is_complete else '[ ]'
 
         obj_string = f'{space}ID: {self._uuid}\n' \
-                   f'{space}{self.name}; Is root == {self._is_root}\n' \
-                   f'{space}{self.instruction}\n'
+                   f'{space}{self.name}\n' \
+                   f'{space}Is root?: {self._is_root}\n' \
+                   f'{space}Is done?: {completion_str}\n' \
+                   f'{space}{self.desc}\n'
 
         if self.children_list:
             obj_string += f'{space}Subtasks: \n'
