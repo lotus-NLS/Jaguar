@@ -1,20 +1,18 @@
 import uuid
 
+# ----------------------------------------------------
 
 class AgendaEntry:
-
     @classmethod
-    def _make_root_object(cls, name, instruction):
-        this_obj = cls(name=name, instruction=instruction)
-        this_obj._is_root = True
-        return this_obj
+    def make_root(cls, name, instruction):
+        return cls(name,instruction,is_root=True)
 
-    def __init__(self,name,instruction):
+    def __init__(self,name, instruction, is_root = False):
         self.name: str = f'++++ {name} ++++'
         self.instruction: str = f'Instructions: {instruction}'
 
         self._uuid = f'{uuid.uuid4()}-{uuid.uuid4()}'
-        self._is_root = False
+        self._is_root = is_root
         self.children_list: list[AgendaEntry] = []
         self.subelement_dictionary : dict[str, AgendaEntry] = {}
 
@@ -40,29 +38,22 @@ class AgendaEntry:
 
 
 class Task(AgendaEntry):
-    def add_sub_task(self, name, instruction):
+    def add_subtask(self, name, instruction):
         return self._add_subelement(name,instruction)
-
-    @classmethod
-    def make_root_task(cls,name='', instruction=''):
-        return cls._make_root_object(name, instruction)
 
 
 class Objective(AgendaEntry):
-    def add_sub_objective(self, name, instruction):
+    def add_subobjective(self, name, instruction):
         return self._add_subelement(name, instruction)
 
-    @classmethod
-    def make_root_objective(cls, name='', instruction=''):
-        return cls._make_root_object(name, instruction)
 
 
 # Example usage:
-root_task = Task.make_root_task("Complete project", "Finish the software project by end of month.")
-root_task.add_sub_task("Write code", "Implement the main features.")
-root_task.add_sub_task("Test", "Make sure there are no bugs.")
+root_task = Task.make_root("Complete project", "Finish the software project by end of month.")
+root_task.add_subtask("Write code", "Implement the main features.")
+root_task.add_subtask("Test", "Make sure there are no bugs.")
 print(root_task)
 
-root_objective = Objective.make_root_objective("Increase user engagement", "Aim for 20% more daily active users.")
-root_objective.add_sub_objective("Optimize UI", "Redesign the main landing page for better user experience.")
+root_objective = Objective.make_root("Increase user engagement", "Aim for 20% more daily active users.")
+root_objective.add_subobjective("Optimize UI", "Redesign the main landing page for better user experience.")
 print(root_objective)
