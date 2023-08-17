@@ -1,0 +1,68 @@
+import uuid
+
+
+class AgendaEntry:
+
+    @classmethod
+    def _make_root_object(cls, name, instruction):
+        this_obj = cls(name=name, instruction=instruction)
+        this_obj._is_root = True
+        return this_obj
+
+    def __init__(self,name,instruction):
+        self.name: str = f'++++ {name} ++++'
+        self.instruction: str = f'Instructions: {instruction}'
+
+        self._uuid = f'{uuid.uuid4()}-{uuid.uuid4()}'
+        self._is_root = False
+        self.children_list: list[AgendaEntry] = []
+        self.subelement_dictionary : dict[str, AgendaEntry] = {}
+
+    def _add_subelement(self, name : str, instruction: str):
+        new_element = AgendaEntry(name=name, instruction=instruction)
+        new_element._is_root = False
+        self.children_list.append(new_element)
+        self.subelement_dictionary[new_element._uuid] = new_element
+
+    def __str__(self, indent: int = 0):
+        space = '    ' * indent
+
+        obj_string = f'{space}ID: {self._uuid}\n' \
+                   f'{space}{self.name}; Is root == {self._is_root}\n' \
+                   f'{space}{self.instruction}\n'
+
+        if self.children_list:
+            obj_string += f'{space}Subtasks: \n'
+            for child_task in self.children_list:
+                obj_string += child_task.__str__(indent=indent + 1)
+
+        return obj_string
+
+
+class Task(AgendaEntry):
+    def add_sub_task(self, name, instruction):
+        return self._add_subelement(name,instruction)
+
+    @classmethod
+    def make_root_task(cls,name='', instruction=''):
+        return cls._make_root_object(name, instruction)
+
+
+class Objective(AgendaEntry):
+    def add_sub_objective(self, name, instruction):
+        return self._add_subelement(name, instruction)
+
+    @classmethod
+    def make_root_objective(cls, name='', instruction=''):
+        return cls._make_root_object(name, instruction)
+
+
+# Example usage:
+root_task = Task.make_root_task("Complete project", "Finish the software project by end of month.")
+root_task.add_sub_task("Write code", "Implement the main features.")
+root_task.add_sub_task("Test", "Make sure there are no bugs.")
+print(root_task)
+
+root_objective = Objective.make_root_objective("Increase user engagement", "Aim for 20% more daily active users.")
+root_objective.add_sub_objective("Optimize UI", "Redesign the main landing page for better user experience.")
+print(root_objective)
