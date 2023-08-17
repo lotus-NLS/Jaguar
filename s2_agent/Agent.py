@@ -4,7 +4,7 @@ import openai
 from openai.openai_object import OpenAIObject
 
 # from s1_conversation.Conversation import Conversation
-from s1_conversation.Participant import Conversation_Participant
+from s1_conversation.Conversation import Conversation_Participant
 from s1_conversation.Conversation_Entry import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
 

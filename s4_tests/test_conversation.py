@@ -1,5 +1,4 @@
-from s1_conversation.Conversation import Conversation
-from s1_conversation.Participant import Conversation_Participant
+from s1_conversation.Conversation import Conversation, Conversation_Participant
 from s1_conversation.Roles import Dialogue_Roles
 
 
