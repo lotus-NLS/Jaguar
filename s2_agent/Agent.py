@@ -8,8 +8,8 @@ from s1_conversation.Conversation import Conversation_Participant
 from s1_conversation.Conversation_Entry import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
 
-from s3_AgentEquipment.Toolbox import Toolbox, Tool
 from Actions import Action
+from Tool import Tool
 
 # ---------------------------------------------------------
 
@@ -32,18 +32,18 @@ class Agent(Conversation_Participant):
         self._model_type : str = model_type
         self._api_key : str = api_key if not api_key == '' else self._get_api_key()
 
-        # Set s1_tools
-        self.tool_list : list[Tool] = [Toolbox.SAY(), Toolbox.WRITE(), Toolbox.READ()]
-        self._tool_instructions : list[dict] = [tool.get_tool_json_doc() for tool in self.tool_list]
-        self._register_for_tool_feedback()
-
+        # Set up tools
+        self.tool_list : list[Tool] = []
+        self._tool_instructions : list[dict] = []
 
     # ---------------------------------------------------
     # Setup
 
-    def _register_for_tool_feedback(self) -> None:
-        for tool in self.tool_list:
+    def add_tool_list(self, tool_list : list[Tool]):
+        self.tool_list += tool_list
+        for tool in tool_list:
             tool.external_log = self.register_system_message
+        self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # TODO: Must Confirm that the API key works after getting it
     @staticmethod

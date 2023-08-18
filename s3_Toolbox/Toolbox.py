@@ -2,6 +2,7 @@
 # from typing import List
 import os
 from s2_agent.Tool import Tool,ToolArg
+from s2_agent.Agent import Agent
 
 
 # TOOL LOGGING Protocol:
@@ -78,3 +79,11 @@ class Toolbox:
 
         def do(self):
             pass
+
+class BasicAgent(Agent):
+
+    def __init__(self, tool_list : list[Tool]):
+        self.tool_list = tool_list
+
+        tool.get_tool_json_doc()
+        for tool in self.tool_list
