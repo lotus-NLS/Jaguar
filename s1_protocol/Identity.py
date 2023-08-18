@@ -9,7 +9,7 @@ class Identity:
         self.core : str = core
         self.principles : str = principles
 
-    def get_system_message(self):
+    def get_msg(self):
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
 

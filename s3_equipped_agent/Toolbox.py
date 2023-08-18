@@ -18,16 +18,16 @@ from s2_agent.Tool import Tool,ToolArg
 
 class Toolbox:
 
-    class SAY(Tool):
-        def __init__(self):
-            super().__init__()
-            self.description = 'Say hello to the guests we have in our home today via a message board '
-
-            self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
-                                                      description='This is what you will say to the guests')
-
-        def do(self):
-            self.log(f'**** {self.text_argument.val} ****')
+    # class SAY(Tool):
+    #     def __init__(self):
+    #         super().__init__()
+    #         self.description = 'Say hello to the guests we have in our home today via a message board '
+    #
+    #         self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
+    #                                                   description='This is what you will say to the guests')
+    #
+    #     def do(self):
+    #         self.log(f'**** {self.text_argument.val} ****')
 
 
     class READ(Tool):
@@ -72,12 +72,12 @@ class Toolbox:
                 file.write(self.content_arg.val)
 
 
-    class UPDATE_DIRECTIVE(Tool):
-        def __init__(self, Directive):
-            super().__init__()
+    # class UPDATE_DIRECTIVE(Tool):
+    #     def __init__(self, Directive):
+    #         super().__init__()
+    #
+    #     def do(self):
+    #         pass
 
-        def do(self):
-            pass
 
-
-basic_tools = [Toolbox.SAY(),Toolbox.READ(),Toolbox.WRITE()]
+basic_tools = [Toolbox.READ(),Toolbox.WRITE()]
