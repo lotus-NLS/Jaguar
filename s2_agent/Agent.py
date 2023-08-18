@@ -12,14 +12,19 @@ from s2_agent.Tool import Tool
 # ---------------------------------------------------------
 
 class Models:
-    gpt_35_16k = 'gpt-3.5-turbo-16k'
-    gpt_35_4k = 'gpt-3.5-turbo'
-    gpt_40_32k = 'gpt-4-32k-0613'
+    # The 0613 models (06.13.23, the date of the API update https://openai.com/blog/function-calling-and-other-api-updates)
+    # support function calling while the other models  both GPT3.5 and GPT 4 are only intended for pure text functionality
+    # e.g. The
+    # gpt_35_4k = 'gpt-3.5-turbo'
+
+    gpt_35_4k = 'gpt-3.5-turbo-0613'
+    gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
     gpt_40_8k = 'gpt-4-0613'
+    gpt_40_32k = 'gpt-4-32k-0613'
 
 
 class Agent(Conversation_Participant):
-    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
+    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_4k):
         # Set identity and directive
         super().__init__(role=Dialogue_Roles.agent)
         self._directive = Directive(task=None,objective=None)
@@ -27,8 +32,9 @@ class Agent(Conversation_Participant):
         with open('../s1_protocol/IdentityDefinition/core') as idenity_file:
             core = idenity_file.read()
 
-        with open('../s1_protocol/IdentityDefinition/principles') as principles_file:
-            principles = principles_file.read()
+        # Reconsider this later
+        # with open('../s1_protocol/IdentityDefinition/principles') as principles_file:
+        #     principles = principles_file.read()
 
         self._identity = Identity(core=core,principles='')
 
@@ -108,7 +114,8 @@ class Agent(Conversation_Participant):
             model=self._model_type,
             messages=messages,
             functions=self._tool_instructions,
-            function_call='auto')
+            function_call='auto',
+            temperature=0.2)
 
         # Action is promised a dict, so a dict must be delivered in any case
         if not isinstance(openai_response,dict):
