@@ -18,7 +18,6 @@ class ToolArg:
 
 
 class Tool:
-
     def __init__(self):
         self.name : str = self.__class__.__name__
         self.description : str = ''

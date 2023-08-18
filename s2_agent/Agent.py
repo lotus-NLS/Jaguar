@@ -8,7 +8,7 @@ from s1_conversation.Conversation import Conversation_Participant
 from s1_conversation.Conversation_Entry import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
 
-from s1_tools.Toolbox import Toolbox, Tool
+from s3_AgentEquipment.Toolbox import Toolbox, Tool
 from Actions import Action
 
 # ---------------------------------------------------------

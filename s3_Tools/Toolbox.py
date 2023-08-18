@@ -1,8 +1,9 @@
 # from typing import Callable
 # from typing import List
 import os
-from s1_tools.Tool import Tool,ToolArg
-from s1_protocol.Directive import Directive
+from s2_agent.Tool import Tool,ToolArg
+
+
 # TOOL LOGGING Protocol:
 # -> 1: Log launch of tool using "[START]"
 # -> 2: If applicable log result of tool e.g. for READ file using [RESULT]
@@ -77,4 +78,3 @@ class Toolbox:
 
         def do(self):
             pass
-
