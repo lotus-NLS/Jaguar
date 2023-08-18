@@ -1,5 +1,5 @@
 from s3_equipped_agent.BasicAgent import BasicAgent
-from s1_conversation.Conversation import Conversation_Participant,Conversation_Entry,Conversation, Dialogue_Roles
+from s1_conversation.Conversation import Conversation_Participant,Conversation, Dialogue_Roles
 
 
 test_conversation = Conversation()

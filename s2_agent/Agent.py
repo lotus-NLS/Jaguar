@@ -2,11 +2,10 @@ import os,json
 
 import openai
 from openai.openai_object import OpenAIObject
-from s1_conversation.Conversation import Conversation_Participant, Dialogue_Roles
-from s1_conversation.Conversation_Entry import Conversation_Entry
+from s1_conversation.Conversation import Conversation_Participant, Dialogue_Roles, Conversation_Entry
 
-from Actions import Action
-from Tool import Tool
+from s2_agent.Actions import Action
+from s2_agent.Tool import Tool
 
 # ---------------------------------------------------------
 
