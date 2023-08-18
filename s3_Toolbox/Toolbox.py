@@ -80,10 +80,12 @@ class Toolbox:
         def do(self):
             pass
 
+
+basic_tools = [Toolbox.SAY(),Toolbox.READ(),Toolbox.WRITE()]
+
+
 class BasicAgent(Agent):
 
-    def __init__(self, tool_list : list[Tool]):
-        self.tool_list = tool_list
-
-        tool.get_tool_json_doc()
-        for tool in self.tool_list
+    def __init__(self):
+        super().__init__()
+        self.add_tool_list(basic_tools)

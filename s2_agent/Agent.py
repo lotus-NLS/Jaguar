@@ -22,9 +22,9 @@ class Models:
 
 class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
-        # Set initial prompt
+        # Set initial principles
         super().__init__(role=Dialogue_Roles.agent)
-        with open('../s1_protocol/prompt') as prompt_file:
+        with open('../s1_protocol/text/principles') as prompt_file:
             initial_prompt = prompt_file.read()
         self.register_system_message(msg=initial_prompt)
 
@@ -39,11 +39,12 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Setup
 
-    def add_tool_list(self, tool_list : list[Tool]):
+    def add_tool_list(self, tool_list : list[Tool]) -> None:
         self.tool_list += tool_list
         for tool in tool_list:
             tool.external_log = self.register_system_message
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
+
 
     # TODO: Must Confirm that the API key works after getting it
     @staticmethod
