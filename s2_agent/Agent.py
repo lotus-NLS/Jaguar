@@ -2,8 +2,6 @@ import os,json
 
 import openai
 from openai.openai_object import OpenAIObject
-
-# from s1_conversation.Conversation import Conversation
 from s1_conversation.Conversation import Conversation_Participant
 from s1_conversation.Conversation_Entry import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
@@ -24,7 +22,7 @@ class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set initial principles
         super().__init__(role=Dialogue_Roles.agent)
-        with open('../s1_protocol/text/principles') as prompt_file:
+        with open('../s1_protocol/IdentityDefinition/principles') as prompt_file:
             initial_prompt = prompt_file.read()
         self.register_system_message(msg=initial_prompt)
 

@@ -59,7 +59,7 @@ class Toolbox:
     class WRITE(Tool):
         def __init__(self):
             super().__init__()
-            self.description = 'The WRITE tool allows you to write content to a text file on the user system'
+            self.description = 'The WRITE tool allows you to write content to a IdentityDefinition file on the user system'
 
             self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
                                                      description='The path of the file that you will write')

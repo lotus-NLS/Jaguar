@@ -11,7 +11,7 @@ class Action:
             print('[Debug]: Failed to retrieve response from OpenAI. Defaulting to empty action')
             self._best_response  : dict = {}
 
-    # To my knowledge 'content' is always a key in the dict but not always filled with text
+    # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinition
     def get_text_content(self) -> Union[str,None]:
         content = self._best_response['content'] if 'content' in self._best_response else None
         return content if isinstance(content,str) else None

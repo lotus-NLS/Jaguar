@@ -1,6 +1,9 @@
 from s1_conversation.Roles import Dialogue_Roles
 from s1_conversation.Conversation import Conversation_Entry
 
+# ----------------------------------------------------
+
+
 class Identity:
     def __init__(self,core,principles):
         self.core : str = core

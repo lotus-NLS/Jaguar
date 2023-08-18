@@ -2,6 +2,8 @@ from AgendaEntry import Objective,Task
 from s1_conversation.Conversation import Conversation_Entry
 from s1_conversation.Roles import Dialogue_Roles
 
+# ----------------------------------------------------
+
 
 class Directive:
     def __init__(self,task, objective):
