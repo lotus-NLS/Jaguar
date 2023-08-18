@@ -3,6 +3,8 @@ import os,json
 import openai
 from openai.openai_object import OpenAIObject
 from s1_conversation.Conversation import Conversation_Participant, Dialogue_Roles, Conversation_Entry
+from s1_protocol.Directive import Directive
+from s1_protocol.Identity import Identity
 
 from s2_agent.Actions import Action
 from s2_agent.Tool import Tool
@@ -18,11 +20,17 @@ class Models:
 
 class Agent(Conversation_Participant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
-        # Set initial principles
+        # Set identity and directive
         super().__init__(role=Dialogue_Roles.agent)
-        with open('../s1_protocol/IdentityDefinition/principles') as prompt_file:
-            initial_prompt = prompt_file.read()
-        self.register_system_message(msg=initial_prompt)
+        self._directive = Directive(task=None,objective=None)
+
+        with open('../s1_protocol/IdentityDefinition/core') as idenity_file:
+            core = idenity_file.read()
+
+        with open('../s1_protocol/IdentityDefinition/principles') as principles_file:
+            principles = principles_file.read()
+
+        self._identity = Identity(core=core,principles=principles)
 
         # Set model
         self._model_type : str = model_type
@@ -38,6 +46,10 @@ class Agent(Conversation_Participant):
     def add_tool_list(self, tool_list : list[Tool]) -> None:
         self.tool_list += tool_list
         for tool in tool_list:
+            # TODO:
+            # Here can try out to not register this as a system message but
+            # Rather to let the agent say something like 'I read the following ...'
+            # e.g. have it have an internal monologue
             tool.external_log = self.register_system_message
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
@@ -61,7 +73,6 @@ class Agent(Conversation_Participant):
 
     def _reaction_protocol(self, dialogue_line : Conversation_Entry) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
-            # threading.Thread(target=self.process_user_request).start()
             self._process_user_request()
 
     # ---------------------------------------------------
@@ -89,9 +100,10 @@ class Agent(Conversation_Participant):
 
 
     def _get_next_action(self) -> Action:
+        messages = [self._identity.get_system_message(),self._directive.get_system_message()]+self.conversational_memory
         openai_response = openai.ChatCompletion.create(
             model=self._model_type,
-            messages=self.conversational_memory,
+            messages=messages,
             functions=self._tool_instructions,
             function_call='auto')
 
