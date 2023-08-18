@@ -19,7 +19,7 @@ class Models:
 
 
 class Agent(Conversation_Participant):
-    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_4k):
+    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_16k):
         # Set identity and directive
         super().__init__(role=Dialogue_Roles.agent)
         self._directive = Directive(task=None,objective=None)
@@ -102,7 +102,7 @@ class Agent(Conversation_Participant):
     def _get_next_action(self) -> Action:
         # messages = [self._identity.get_system_message()]+self.conversational_memory+[self._directive.get_msg()]
         # messages = [self._directive.get_msg()]+self.conversational_memory
-        messages = [self._identity.get_msg()]+self.conversational_memory+[self._directive.get_msg()]
+        messages = [self._identity.get_msg()]+self.conversational_memory
 
         openai_response = openai.ChatCompletion.create(
             model=self._model_type,
