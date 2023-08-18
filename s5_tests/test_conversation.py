@@ -1,8 +1,6 @@
 import time
 
-from s1_conversation.Conversation import Conversation, Conversation_Participant
-from s1_conversation.Roles import Dialogue_Roles
-
+from s1_conversation.Conversation import Conversation, Conversation_Participant, Dialogue_Roles
 
 
 def speak_and_think():

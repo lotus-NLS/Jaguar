@@ -1,11 +1,9 @@
-from s2_agent.Agent import Agent
-from s1_conversation.Conversation import Conversation_Participant, Conversation, Dialogue_Roles
+from s3_equipped_agent.BasicAgent import BasicAgent
+from s1_conversation.Conversation import Conversation_Participant,Conversation_Entry,Conversation, Dialogue_Roles
 
-# -------------------------
-# Test driver code
 
 test_conversation = Conversation()
-the_bot = Agent()
+the_bot = BasicAgent()
 test_conversation.add_participant(the_bot)
 
 the_user = Conversation_Participant(role=Dialogue_Roles.user)

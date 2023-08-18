@@ -1,6 +1,6 @@
 from AgendaEntry import Objective,Task
-from s1_conversation.Conversation import Conversation_Entry
-from s1_conversation.Roles import Dialogue_Roles
+from s1_conversation.Conversation import Conversation_Entry, Dialogue_Roles
+
 
 # ----------------------------------------------------
 

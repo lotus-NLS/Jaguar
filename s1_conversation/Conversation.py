@@ -2,7 +2,6 @@ import queue
 import threading
 from typing import List, Callable
 from s1_conversation.Conversation_Entry import Conversation_Entry
-from s1_conversation.Roles import Dialogue_Roles
 
 
 # Conversation:
@@ -82,3 +81,17 @@ class Conversation:
     # TODO: Change the argument to conversation entry
     def broadcast_message(self, role: str, msg: str):
         self._message_queue.put((role, msg))
+
+
+class Dialogue_Roles:
+    user = 'user'
+    agent = 'assistant'
+    system = 'system'
+
+    @classmethod
+    def as_list(cls):
+        as_list = []
+        for name, value in cls.__dict__.items():
+            if not name.startswith("__"):
+                as_list.append(value)
+        return as_list
