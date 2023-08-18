@@ -98,11 +98,12 @@ class Agent(Conversation_Participant):
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
-
+    # TODO: This should probably also work when no no tools are defined.
     def _get_next_action(self) -> Action:
         # messages = [self._identity.get_system_message()]+self.conversational_memory+[self._directive.get_msg()]
         # messages = [self._directive.get_msg()]+self.conversational_memory
         messages = [self._identity.get_msg()]+self.conversational_memory+[self._directive.get_msg()]
+
         openai_response = openai.ChatCompletion.create(
             model=self._model_type,
             messages=messages,
