@@ -17,7 +17,7 @@
 
 ### IV: Naming (see also: [naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python))
 - All functions are named as verbs and classes as nouns.
-- Functions that return something are of the format `get_[object]`. Ideally, the name of the function should make the type of the returned object apparent already.
+- Functions that return something are of the format `get_[object]` or `create_[object]` if the function returns the object and also does something else. Ideally, the name of the function should make the type of the returned object apparent already.
 - Plural with `object_list`, not `objects`.
 - Private attributes should be of the form `_attribute` so that they are properly hidden.
 - Modules (Python source file): lowercase w/ snake_case for functions, lowercase w/ snake_case for classes, everything else: lowercase w/ snake_case.
