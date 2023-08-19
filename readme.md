@@ -32,8 +32,8 @@ Currently, the available tools are:
 - READ: Read a local text file
 - WRITE: Write out a local text file
 
-Disclaimer: Since even state-of-the-art models are still prone to hallucinations it can also occur that the agent claim to have access to other tools
-which is flat out untrue. Currently, these are the only tools implemented in the framework. 
+Disclaimer: Since even state-of-the-art models are still prone to hallucinations it can also occur that the agent claim to have access to other tools.
+As of the 19.08.23, these are the only tools implemented in the framework.
 
 # Roadmap
 ## LLM as python devs: Hard limitations
