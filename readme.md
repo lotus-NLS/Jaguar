@@ -69,7 +69,7 @@ pyWriter itself is just the first step of development. Beyond pyWriter other fea
 to make up for some more functionalities that human software developers offer:
 
 ### Other
-- Development of software other than python: pyWriter is developed and tested and developed only for python code. But in principle
+- Development of software other than python: pyWriter is developed and tested and developed only for python code. But in principle there is no reason why the program could not also be applied to other kinds of software.
 - Encapsulation: The software agent must be encapsulated in a virtual environment such as virtual box or a docker container to prevent the agent from
 taking any action that could affect the system the program is launched from, including user files
 
@@ -77,7 +77,6 @@ taking any action that could affect the system the program is launched from, inc
 - Visual runtime analysis: A lot of applications run with a GUI, crucially websites.
 The model should review how its code plays out visually as well. There is a version of GPT-4 which can work with image input
 which hasn't been released yet.\
-there is no reason why the program could not also be applied to other kinds of software.
 - Audio interface : You should be able to enter commands via voice, ideally without even pressing enter
 ### Persistent memory and skill acquiry
 - Persistent Note/Memory database: In order to effectively work in multiple sessions, the agent must remember relevant information
