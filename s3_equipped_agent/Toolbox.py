@@ -48,9 +48,9 @@ class Toolbox:
             try:
                 with open(location, 'f') as file:
                     file_content = file.read()
-                self.log('Successfully completed reading of file.')
+                    self.log(file_content)
+                    self.log('Successfully completed reading of file.')
 
-                return file_content
             except:
                 self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
 

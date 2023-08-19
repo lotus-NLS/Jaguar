@@ -37,7 +37,7 @@
   ```
   python from Directive import Directive
   ```
-  instead do:
+  ,instead do:
    ```
    from s1_Directive.Directive import Directive
    ```

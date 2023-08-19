@@ -51,10 +51,10 @@ class Tool:
         log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
 
         if self.external_log is None:
-            print(log_text)
+            print(to_log)
         else:
             # print(log_text)
-            self.external_log(log_text)
+            self.external_log(to_log)
 
 
     def handle_call(self, args_dict : dict):
@@ -74,9 +74,9 @@ class Tool:
         try:
             self.log(f'[PROGRESS]: Tool {self.name} has been launched')
             self.do()
-            self.log(f'[SUCCESS]: Tool {self.name} successfully completed execution')
+            self.log(f'[FINISH]: Tool {self.name} completed execution')
         except:
-            self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
+            self.log(f'[FINISH]: The Tool {self.name} encountered an error during execution. Aborting ...')
 
 
     def do(self):
