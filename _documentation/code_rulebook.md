@@ -46,7 +46,7 @@ VI: Debugging
 
 VII: Other
 -> No relative imports. Give full path, otherwise it will crash when importing the module from somewhere else
-e.g. no
+e.g. don't do:
 from Directive import Directive
 but
 from s1_Directive.Directive import Directive

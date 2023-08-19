@@ -104,6 +104,7 @@ class Agent(Conversation_Participant):
         except Exception as e:
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
+
     # TODO: This should probably also work when no no tools are defined.
     def _get_next_action(self) -> Action:
         # messages = [self._identity.get_system_message()]+self.conversational_memory+[self._directive.get_msg()]
