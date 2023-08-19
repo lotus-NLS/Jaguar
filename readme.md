@@ -1,28 +1,28 @@
 # pyWrite
 ## Hard limitations
-Bare LLMs are very good at producing python code snippets. Yet they cannot act as autonomous python developers, as they face several limitations. LLMs cannot:
+Bare LLMs are very good at producing python code snippets. Yet they cannot act as autonomous python developers, as they face several limitations. LLMs cannot:\
 -> Run code and view output including error messages \
 -> Use the command line to install packages, interact with VCS etc.\
 -> Look up documentation online\
 -> Look up existing work online that can serve as a starting off point\
--> Read or write files\
+-> Read or write files
 
 The first development objective of pyWriter is to remedy this by providing the LLM with the necessary tools to\
-perform those actions, thereby enabling autonomous python software development.\
+perform those actions, thereby enabling autonomous python software development.
 
 ## Soft limitaitons
 However, LLMs also face "soft" limitations. These are things that they should be able to do in theory\
 with a good enough model but state-of-the-art models nonethless struggle with. These include:\
 -> Planning out large scale objectives and keeping track of tasks over a large span of time\
 -> Producing consistent and throughly checked outputs\
--> Taking into account and paying attention to information far back in the conversation history\
+-> Taking into account and paying attention to information far back in the conversation history
 
 These issues are likely related to the fact that current models are optimized for the chatbot use case\
 of a ~30-minute conversation between the model and the user. In particular the limited context window\
 of 4k to 32k tokens presents a huge barrier in making the model work on larger bodies of code. And even things which appear
 within the context window are readily overlooked by the model.\
-The second development objective of pyWriter is to also remedy these limitations by providing the models with the necessary guidance \
-to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current\
+The second development objective of pyWriter is to also remedy these limitations 
+by providing the models with the necessary guidance to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current
 tasks and objectives and to distribute responsibilites so that each python developer agent can do his work within a single-module context.\
 
 ## Beyond pyWriter
@@ -37,9 +37,9 @@ there is no reason why the program could not also be applied to other kinds of s
 -> Persistent memory: In order to effectively work in multiple sessions, \
 -> Self acquiring skills : Humans often learn by performing a task with great care and attention for several times \
 until it becomes an integrated action that they can perform without thinking. In the same way the agent could 
-develop its own skill library and work on tasks on a higher level of abstraction. 
+develop its own skill library and work on tasks on a higher level of abstraction. \ 
 -> Self acquire tools: You can only plan out so much in terms of tools. If the agent decides that its current tools
-do not suffice to accomplish the task it could simply build the tool itself. \
+do not suffice to accomplish the task it could simply build the tool itself. 
 
 ## Links
 
