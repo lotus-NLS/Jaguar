@@ -53,7 +53,7 @@ class Tool:
         if self.external_log is None:
             print(log_text)
         else:
-            print(log_text)
+            # print(log_text)
             self.external_log(log_text)
 
 

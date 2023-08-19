@@ -14,6 +14,6 @@ test_conversation.add_participant(other_user)
 
 while True:
     the_user.speak(input(''))
-
-    # the_bot.print_memory()
+    print('Current conversation memory of the bot')
+    the_bot.print_memory()
     # other_user.print_memory()

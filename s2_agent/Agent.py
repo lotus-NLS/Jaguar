@@ -56,7 +56,7 @@ class Agent(Conversation_Participant):
             # Here can try out to not register this as a system message but
             # Rather to let the agent say something like 'I read the following ...'
             # e.g. have it have an internal monologue
-            tool.external_log = self.register_system_message
+            tool.external_log = self.think
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
 

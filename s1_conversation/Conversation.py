@@ -72,7 +72,10 @@ class Conversation_Participant:
     def think(self,msg : str):
         print(f'[Debug]:{self.role} thought: {msg}')
 
-        self.conversational_memory.append(Conversation_Entry(role=self.role, msg=msg))
+        thought_msg = f'## Internal Assistant Log\n' \
+                      f'{msg}'
+
+        self.conversational_memory.append(Conversation_Entry(role=self.role, msg=thought_msg))
 
     def speak(self, message : str):
         self.broadcast(self.role, message)
