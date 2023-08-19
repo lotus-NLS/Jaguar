@@ -1,4 +1,4 @@
-#pyWrite
+# pyWrite
 ## Hard limitations
 Bare LLMs are very good at producing python code snippets. Yet they cannot act as autonomous python developers, as they face several limitations. LLMs cannot:
 -> Run code and view output including error messages \
@@ -41,5 +41,8 @@ develop its own skill library and work on tasks on a higher level of abstraction
 -> Self acquire tools: You can only plan out so much in terms of tools. If the agent decides that its current tools
 do not suffice to accomplish the task it could simply build the tool itself. \
 
-[Project management page](https://furtive-point-c71.notion.site/GPT-pyWriter-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4) \
-[Code Rulebook](_documentation/code_rulebook.md) \
+## Links
+
+[Project management page](https://furtive-point-c71.notion.site/GPT-pyWriter-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4) : On this page
+you can view the development roadmap, current tasks and notes relevant to development\
+[Code Rulebook](_documentation/code_rulebook.md) : All contributed code must adhere to the code rulebook
