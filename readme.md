@@ -43,6 +43,7 @@ do not suffice to accomplish the task it could simply build the tool itself.
 
 ## Links
 
-[Project management page](https://furtive-point-c71.notion.site/GPT-pyWriter-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \ On this page
-you can view the development roadmap, current tasks and notes relevant to development\
-[Code Rulebook](_documentation/code_rulebook.md):\ All contributed code must adhere to the code rulebook
+[Project management page](https://furtive-point-c71.notion.site/GPT-pyWriter-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \
+On this page you can view the development roadmap, current tasks and notes relevant to development \
+[Code Rulebook](_documentation/code_rulebook.md):\ 
+All contributed code must adhere to the code rulebook
