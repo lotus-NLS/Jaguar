@@ -1,6 +1,3 @@
-# TODO: Code rulebook as md, can link other md also
-# TODO: Top level readme
-
 I: Functions
 -> All function arguments must be type hinted
 -> All functions must be type labeled. If they return nothing they must be labeled with None

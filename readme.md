@@ -30,6 +30,8 @@ OR:
 python3 s4_UI/run_command_line.py
 ```
 
+#Explain set API key
+
 Currently, the available tools are:
 - READ: Read a local text file
 - WRITE: Write out a local text file
