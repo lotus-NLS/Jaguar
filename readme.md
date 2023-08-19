@@ -3,6 +3,8 @@
 
 ## Overview
 pyWriter is a framework which aims to enable LLMs to do highly independent and autonomous software development.
+The first development objective of pyWriter is to provide the LLM with the necessary tools to
+perform software development, like reading or writing files or running code and reading the outputs.
 
 ## Setup 
 
