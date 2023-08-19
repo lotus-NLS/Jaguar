@@ -19,8 +19,11 @@
 - All functions are named as verbs and classes as nouns.
 - Functions that return something are of the format `get_[object]` or `create_[object]` if the function returns the object and also does something else. Ideally, the name of the function should make the type of the returned object apparent already.
 - Plural with `object_list`, not `objects`.
-- Private attributes should be of the form `_attribute` so that they are properly hidden.
-- Modules (Python source file): lowercase w/ snake_case for functions, lowercase w/ snake_case for classes, everything else: lowercase w/ snake_case.
+- Private attributes should be of the form `_attribute` so that they are properly hidden. \
+- Case and spacing conventions:
+  - Modules (Python source file): lowercase w/ snake_case, 
+  - functions,  lowercase w/ snake_case 
+  - classes, everything else: lowercase w/ snake_case.
 
 ### V: Making changes
 - Any change that you make has to either not influence the contract of that section of code or the changes to the contract have to be carried through upstream.
