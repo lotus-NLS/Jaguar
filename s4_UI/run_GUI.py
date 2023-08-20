@@ -2,25 +2,38 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-import threading
-import os
-import openai
-
-from s2_agent.Agent import Agent
+from s1_conversation.Conversation import Conversation_Participant,Conversation_Entry,Conversation,Dialogue_Roles
+from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
 
-api_key = os.environ.get('openai_key')
-if api_key is None:
-    print("Key not found. Aborting program ...")
-    exit(1)
+# class ChatApplication:
+#
+#     def __init__(self,):
+#
+#
+    # def send_message(self, event=None):
+    #     message = self.input_area.get()
+    #     if message:
+    #         self.display_message(f'You: {message}\n')
+    #         self.input_area.delete(0, 'end')
+    #         threading.Thread(target=self.get_response, args=(message,)).start()
+    #
+    # def get_response(self, message):
+    #     try:
+    #         self.agent._process_user_request(message)  # Call the s2_agent to handle the user's message
+    #         agent_response = self.agent.last_response
+    #         self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the s2_agent's response
+    #
+    #     except Exception as e:
+    #         self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')
 
-openai.api_key = api_key
 
 
-class ChatApplication:
+class GUI_User(Conversation_Participant):
 
     def __init__(self):
+        super().__init__(Dialogue_Roles.user)
         self.width = 600
         self.height = 600
 
@@ -36,30 +49,21 @@ class ChatApplication:
 
         self.input_area = tk.Entry(self.window, fg='black', bg='white', font=self.font)
         self.input_area.pack(fill='x')
+        self.input_area.bind("<Return>", self.send_message)
 
         send_button = tk.Button(self.window, text="Send", command=self.send_message, fg='white', bg='#87CEFA',
                                 font=self.font)
 
         send_button.pack(fill='x')
 
-        self.input_area.bind("<Return>", self.send_message)
-        self.agent = Agent()  # Initialize the Agent object
-
     def send_message(self, event=None):
-        message = self.input_area.get()
-        if message:
-            self.display_message(f'You: {message}\n')
-            self.input_area.delete(0, 'end')
-            threading.Thread(target=self.get_response, args=(message,)).start()
+        self.speak(self.input_area.get())
+        self.input_area.delete(0, 'end')
 
-    def get_response(self, message):
-        try:
-            self.agent._process_user_request(message)  # Call the s2_agent to handle the user's message
-            agent_response = self.agent.last_response
-            self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the s2_agent's response
-
-        except Exception as e:
-            self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')
+    def _reaction_protocol(self, dialogue_line : Conversation_Entry):
+        role = dialogue_line.get_role()
+        msg = dialogue_line.get_content()
+        self.display_message(f'{role}: {msg}\n')
 
     def display_message(self, message):
         self.message_area.configure(state='normal')
@@ -68,5 +72,14 @@ class ChatApplication:
 
 
 if __name__ == "__main__":
-    app = ChatApplication()
-    app.window.mainloop()
+
+    the_conversation = Conversation()
+    the_user = GUI_User()
+    the_bot = BasicAgent()
+
+    the_conversation.add_participant(the_bot)
+    the_conversation.add_participant(the_user)
+
+    the_user.window.mainloop()
+
+

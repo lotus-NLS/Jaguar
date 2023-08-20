@@ -92,7 +92,7 @@ class Conversation_Participant:
     def _reaction_protocol(self, dialogue_line : dict):
         pass
 
-    def _react(self,dialogue_line : dict):
+    def _react(self,dialogue_line : Conversation_Entry):
         threading.Thread(target=self._reaction_protocol,kwargs=({'dialogue_line' : dialogue_line})).start()
 
     def print_memory(self):
