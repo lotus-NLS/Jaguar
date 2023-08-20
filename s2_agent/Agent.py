@@ -14,10 +14,10 @@ from s2_agent.Tool import Tool
 # ---------------------------------------------------------
 
 class Models:
-    # The 0613 models (06.13.23, the date of the API update https://openai.com/blog/function-calling-and-other-api-updates)
-    # support function calling while the other models  both GPT3.5 and GPT 4 are only intended for pure text functionality
-    # e.g. The
-    # gpt_35_4k = 'gpt-3.5-turbo'
+    # The 0613 models (06.13.23, the date of the
+    # API updates (https://openai.com/blog/function-calling-and-other-api-updates)
+    # support function calling
+    # But gpt-4 or gpt-3.5-turbo will always point to the newest version anyway
 
     gpt_35_4k = 'gpt-3.5-turbo-0613'
     gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
@@ -116,8 +116,6 @@ class Agent(Conversation_Participant):
 
 
     def _get_next_action(self) -> Action:
-        # messages = [self._identity.get_system_message()]+self.conversational_memory+[self._directive.get_msg()]
-        # messages = [self._directive.get_msg()]+self.conversational_memory
         messages = [self._identity.get_msg()]+self.conversational_memory
 
 

@@ -66,10 +66,12 @@ class Conversation_Entry(dict):
 class Conversation_Participant:
     def __init__(self, role : str):
         if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role is not part of the allowed roles {Dialogue_Roles.as_list()}')
-            return
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}'
+                  f'Defaulting to the agent role')
+            self.role = Dialogue_Roles.agent
+        else:
+            self.role : str = role
 
-        self.role : str = role
         self.broadcast : Callable = lambda *args, **kwargs: None
         self.conversational_memory : ReactiveList[Conversation_Entry] = ReactiveList(callback=self._react)
 
