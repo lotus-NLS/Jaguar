@@ -2,9 +2,11 @@ import os,json
 
 import openai
 from openai.openai_object import OpenAIObject
+from s2_agent.Actions import ToolInstructions
 from s1_conversation.Conversation import Conversation_Participant, Dialogue_Roles, Conversation_Entry
 from s1_protocol.Directive import Directive
 from s1_protocol.Identity import Identity
+
 
 from s2_agent.Actions import Action
 from s2_agent.Tool import Tool
@@ -101,9 +103,7 @@ class Agent(Conversation_Participant):
             print("[Debug] Received response from the model.")
 
             text_content = action.get_text_content()
-            # TODO: It would be better to make an "Instructions class" have this method
-            # return instrutions and carry that downstream
-            tool_instructions = action.get_function_call()
+            tool_instructions = action.get_tool_instructions()
 
             if not text_content is None:
                 self.speak(message=text_content)
@@ -115,7 +115,6 @@ class Agent(Conversation_Participant):
             print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
 
 
-    # TODO: This should probably also work when no no tools are defined.
     def _get_next_action(self) -> Action:
         # messages = [self._identity.get_system_message()]+self.conversational_memory+[self._directive.get_msg()]
         # messages = [self._directive.get_msg()]+self.conversational_memory
@@ -142,28 +141,11 @@ class Agent(Conversation_Participant):
         return Action(openai_response)
 
 
-    def _use_tool(self, instructions : OpenAIObject) -> None:
-        if not isinstance(instructions,dict):
-            print(f'[Debug]: Provided instructions {instructions} are not of dict type')
-            return
+    def _use_tool(self, instructions : ToolInstructions) -> None:
+        tool_name = instructions.name
+        tool_args_dict = instructions.arguments
 
-        if not 'name' in instructions:
-            print(f'[Debug]: Could not find name in dictionary. Aborting ... ')
-            return
-
-        if not 'arguments' in instructions:
-            print(f'[Debug: Could not find arguments in dictionary. Aborting ...')
-            return
-
-        try:
-            tool_args_dict = json.loads(instructions['arguments'])
-        except:
-            print(f'[Debug]: An error occured while trying to parse given tool arguments. Aborting ...')
-            return
-
-        tool_name = instructions['name']
         tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
-
         if tool_name in tool_dict:
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 

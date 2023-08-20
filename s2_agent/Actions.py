@@ -1,7 +1,16 @@
 from openai.openai_object import OpenAIObject
 from typing import Union
+import json
 
 # ---------------------------------------------------------
+
+
+class ToolInstructions:
+
+    def __init__(self,name : str, arguments : dict):
+        self.name = name
+        self.arguments = arguments
+
 
 class Action:
     def __init__(self, openAI_response : dict):
@@ -17,7 +26,33 @@ class Action:
         return content if isinstance(content,str) else None
 
 
-    def get_function_call(self) -> Union[OpenAIObject,None]:
+    def get_tool_instructions(self) -> Union[ToolInstructions, None]:
         funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
-        return funct_call if isinstance(funct_call,dict) else None
+
+        if not isinstance(funct_call, dict):
+            print(f'[Debug]: Provided funct_call {funct_call} are not of dict type')
+            return
+
+        if not 'name' in funct_call:
+            print(f'[Debug]: Could not find name in dictionary. Aborting ... ')
+            return
+
+        if not 'arguments' in funct_call:
+            print(f'[Debug: Could not find arguments in dictionary. Aborting ...')
+            return
+
+        try:
+            tool_name = funct_call['name']
+            tool_args_dict = json.loads(funct_call['arguments'])
+
+            if not isinstance(tool_name,str):
+                raise TypeError
+            if not isinstance(tool_args_dict,dict):
+                raise TypeError
+        except:
+            print(f'[Debug]: An error occured while trying to parse given tool arguments. Aborting ...')
+            return
+
+
+        return ToolInstructions(name=tool_name,arguments=tool_args_dict)
 
