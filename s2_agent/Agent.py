@@ -89,6 +89,8 @@ class Agent(Conversation_Participant):
             print("[Debug] Received response from the model.")
 
             text_content = action.get_text_content()
+            # TODO: It would be better to make an "Instructions class" have this method
+            # return instrutions and carry that downstream
             tool_instructions = action.get_function_call()
 
             if not text_content is None:
