@@ -52,10 +52,6 @@ class Agent(Conversation_Participant):
     def add_tool_list(self, tool_list : list[Tool]) -> None:
         self.tool_list += tool_list
         for tool in tool_list:
-            # TODO:
-            # Here can try out to not register this as a system message but
-            # Rather to let the agent say something like 'I read the following ...'
-            # e.g. have it have an internal monologue
             tool.external_log = self.think
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
