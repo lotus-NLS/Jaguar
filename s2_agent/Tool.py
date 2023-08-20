@@ -1,11 +1,13 @@
-class Tool_arg:
-    def __init__(self, name: str, dtype : type, description: str, value = None):
-        self.name = name
-        self.dtype = dtype
-        self.description = description
-        self.val = value
+from typing import Callable
 
-    def generate_argument_doc(self):
+class ToolArg:
+    def __init__(self, name: str, dtype : type, description: str, value = None):
+        self.name : str = name
+        self.dtype : type = dtype
+        self.description : str = description
+        self.val : dtype = value
+
+    def get_arg_json_doc(self):
         arg_doc = {
             self.name: {
                 'type': f'{self.dtype}',
@@ -16,20 +18,20 @@ class Tool_arg:
 
 
 class Tool:
-    arguments = []
-
     def __init__(self):
-        self.name = self.__class__.__name__
+        self.name : str = self.__class__.__name__
         self.description : str = ''
-        self.external_log = None
-        self.arguments = []
+        self.external_log : Callable = lambda *args, **kwargs: None
+        self.arguments : list[ToolArg] = []
 
-    def create_argument(self, name: str, dtype: type, description: str):
-        this_arg = Tool_arg(name, dtype, description)
+
+    def create_argument(self, name: str, dtype: type, description: str) -> ToolArg:
+        this_arg = ToolArg(name, dtype, description)
         self.arguments.append(this_arg)
         return this_arg
 
-    def get_usage_instructions(self):
+
+    def get_tool_json_doc(self) -> dict[str, str]:
         tool_doc = {
             'name': f'{self.name}',
             'description': f'{self.description}',
@@ -40,18 +42,18 @@ class Tool:
         }
 
         for arg in self.arguments:
-            tool_doc['parameters']['properties'][arg.name] = arg.generate_argument_doc()
+            tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
         return tool_doc
 
-    def log(self,to_log):
-        log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
+
+    def log(self,to_log : str):
+        # log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
 
         if self.external_log is None:
-            print(log_text)
+            print(to_log)
         else:
-            print(log_text)
-            self.external_log(log_text)
+            self.external_log(to_log)
 
 
     def handle_call(self, args_dict : dict):
@@ -61,7 +63,7 @@ class Tool:
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
-            self.log(f'[ERROR]: Call failed since provided dictionary {args_dict}'
+            self.log(f'[FINISH]: Call failed since provided dictionary {args_dict}'
                      f' did not cover all required tool arguments')
             return
 
@@ -71,9 +73,9 @@ class Tool:
         try:
             self.log(f'[PROGRESS]: Tool {self.name} has been launched')
             self.do()
-            self.log(f'[SUCCESS]: Tool {self.name} successfully completed execution')
+            self.log(f'[FINISH]: Tool {self.name} completed execution')
         except:
-            self.log(f'[ERROR]: The Tool {self.name} encountered an error during execution. Aborting ...')
+            self.log(f'[FINISH]: The Tool {self.name} encountered an unhandeled exception during execution. Aborting ...')
 
 
     def do(self):
