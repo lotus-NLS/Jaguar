@@ -87,7 +87,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Callback
 
-    def _reaction_protocol(self, dialogue_line : Conversation_Entry) -> None:
+    def reaction_protocol(self, dialogue_line : Conversation_Entry) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             self._process_user_request()
 

@@ -75,25 +75,20 @@ class Conversation_Participant:
         self.broadcast : Callable = lambda *args, **kwargs: None
         self.conversational_memory : ReactiveList[Conversation_Entry] = ReactiveList(callback=self._react)
 
-    def register_system_message(self, msg : str):
-        self.conversational_memory.append(Conversation_Entry(role=Dialogue_Roles.system, msg=msg))
-
     def think(self,msg : str):
         print(f'[Debug]:{self.role} thought: {msg}')
-
         thought_msg = f'## Internal Assistant Log\n' \
                       f'{msg}'
-
         self.conversational_memory.append(Conversation_Entry(role=self.role, msg=thought_msg))
 
     def speak(self, message : str):
         self.broadcast(Conversation_Entry(role=self.role,msg=message))
 
-    def _reaction_protocol(self, dialogue_line : dict):
+    def reaction_protocol(self, dialogue_line : dict):
         pass
 
     def _react(self,dialogue_line : Conversation_Entry):
-        threading.Thread(target=self._reaction_protocol,kwargs=({'dialogue_line' : dialogue_line})).start()
+        threading.Thread(target=self.reaction_protocol, kwargs=({'dialogue_line' : dialogue_line})).start()
 
     def print_memory(self):
         print(self.conversational_memory)

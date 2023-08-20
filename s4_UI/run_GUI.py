@@ -60,7 +60,7 @@ class GUI_User(Conversation_Participant):
         self.speak(self.input_area.get())
         self.input_area.delete(0, 'end')
 
-    def _reaction_protocol(self, dialogue_line : Conversation_Entry):
+    def reaction_protocol(self, dialogue_line : Conversation_Entry):
         role = dialogue_line.get_role()
         msg = dialogue_line.get_content()
         self.display_message(f'{role}: {msg}\n')

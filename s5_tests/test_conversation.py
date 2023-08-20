@@ -57,7 +57,7 @@ def test_speak_and_think():
 def test_reaction():
     class Rowdy_participant(Conversation_Participant):
 
-        def _reaction_protocol(self, dialogue_line : dict):
+        def reaction_protocol(self, dialogue_line : dict):
             role = dialogue_line['role']
             if role == Dialogue_Roles.agent:
                 self.speak('Actually, leave me alone! Let me talk to the user')
