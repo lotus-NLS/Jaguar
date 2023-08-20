@@ -48,12 +48,11 @@ class Tool:
 
 
     def log(self,to_log : str):
-        log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
+        # log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
 
         if self.external_log is None:
             print(to_log)
         else:
-            # print(log_text)
             self.external_log(to_log)
 
 
@@ -64,7 +63,7 @@ class Tool:
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
-            self.log(f'[ERROR]: Call failed since provided dictionary {args_dict}'
+            self.log(f'[FINISH]: Call failed since provided dictionary {args_dict}'
                      f' did not cover all required tool arguments')
             return
 
@@ -76,7 +75,7 @@ class Tool:
             self.do()
             self.log(f'[FINISH]: Tool {self.name} completed execution')
         except:
-            self.log(f'[FINISH]: The Tool {self.name} encountered an error during execution. Aborting ...')
+            self.log(f'[FINISH]: The Tool {self.name} encountered an unhandeled exception during execution. Aborting ...')
 
 
     def do(self):
