@@ -56,6 +56,12 @@ class Conversation_Entry(dict):
         else:
             self['content'] = msg
 
+    def get_role(self):
+        return self['role']
+
+    def get_content(self):
+        return self['content']
+
 
 class Conversation_Participant:
     def __init__(self, role : str):
@@ -109,13 +115,13 @@ class Conversation:
 
     def _process_queue(self):
         while True:
-            this_conversation_entry = self._message_queue.get()
-            role = this_conversation_entry['role']
-            msg = this_conversation_entry['content']
+            entry = self._message_queue.get()
+            role = entry.get_role()
+            msg = entry.get_content()
             print(f'[Debug]: {role} said: {msg}')
             for participant in self._participants:
-                participant.conversational_memory.append(this_conversation_entry)
+                participant.conversational_memory.append(entry)
 
 
-    def broadcast_message(self, this_conversation_entry : Conversation_Entry):
-        self._message_queue.put(this_conversation_entry)
+    def broadcast_message(self, entry : Conversation_Entry):
+        self._message_queue.put(entry)
