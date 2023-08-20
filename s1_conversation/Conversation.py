@@ -1,4 +1,5 @@
 import queue
+from queue import Queue
 import threading
 from typing import List, Callable
 
@@ -78,7 +79,7 @@ class Conversation_Participant:
         self.conversational_memory.append(Conversation_Entry(role=self.role, msg=thought_msg))
 
     def speak(self, message : str):
-        self.broadcast(self.role, message)
+        self.broadcast(Conversation_Entry(role=self.role,msg=message))
 
     def _reaction_protocol(self, dialogue_line : dict):
         pass
@@ -93,8 +94,9 @@ class Conversation_Participant:
 class Conversation:
     def __init__(self):
         self._participants: List[Conversation_Participant] = []
-        self._message_queue = queue.Queue()
+        self._message_queue : Queue[Conversation_Entry] = queue.Queue()
         threading.Thread(target=self._process_queue).start()
+
 
     def add_participant(self, participant  : Conversation_Participant):
         if not isinstance(participant, Conversation_Participant):
@@ -107,13 +109,13 @@ class Conversation:
 
     def _process_queue(self):
         while True:
-            role, msg = self._message_queue.get()
+            this_conversation_entry = self._message_queue.get()
+            role = this_conversation_entry['role']
+            msg = this_conversation_entry['content']
             print(f'[Debug]: {role} said: {msg}')
             for participant in self._participants:
-                participant.conversational_memory.append(Conversation_Entry(role=role, msg=msg))
-
-    # TODO: Change the argument to conversation entry
-    def broadcast_message(self, role: str, msg: str):
-        self._message_queue.put((role, msg))
+                participant.conversational_memory.append(this_conversation_entry)
 
 
+    def broadcast_message(self, this_conversation_entry : Conversation_Entry):
+        self._message_queue.put(this_conversation_entry)

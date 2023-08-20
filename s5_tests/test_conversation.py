@@ -3,7 +3,7 @@ import time
 from s1_conversation.Conversation import Conversation, Conversation_Participant, Dialogue_Roles
 
 
-def speak_and_think():
+def test_speak_and_think():
     # Create a handler
     this_conversation = Conversation()
 
@@ -84,4 +84,5 @@ def test_reaction():
     print("Logs for Participant2:")
     participant2.print_memory()
 
-test_reaction()
+# test_reaction()
+test_speak_and_think()
