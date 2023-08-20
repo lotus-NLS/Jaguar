@@ -92,7 +92,3 @@ class Toolbox:
 basic_tools = [Toolbox.READ(),Toolbox.WRITE()]
 
 
-import os
-print(os.access('/home/aiproj/pyWriter/s4_UI/run_GUddI.py',os.W_OK))
-
-path = '/home/aiproj/pyWriter/s4_UI/run_GUddI.py'

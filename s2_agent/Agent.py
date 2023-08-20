@@ -56,19 +56,31 @@ class Agent(Conversation_Participant):
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
 
-    # TODO: Must Confirm that the API key works after getting it
     @staticmethod
     def _get_api_key() -> str:
         try:
             key = os.environ.get('openai_key')
-            if not isinstance(key,str):
+            if not isinstance(key, str):
                 raise TypeError
         except:
-            key = input('Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’ and relaunch program'
-                  'OR: Enter key manually and hit ENTER:')
+            key = input(
+                'Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’ and relaunch program'
+                'OR: Enter API key manually and hit ENTER to continue:\n')
+
+        try:
+            openai.Completion.create(
+                api_key=key,
+                engine="davinci",
+                prompt="This is a test.",
+                max_tokens=5
+            )
+        except Exception as e:
+            print(f'The given key {key} raised the following error after test run:'
+                  f' {e}')
+            print(f'Aborting ...')
+            raise ValueError
 
         return key
-
 
     # ---------------------------------------------------
     # Callback
