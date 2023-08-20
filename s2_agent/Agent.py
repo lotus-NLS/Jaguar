@@ -121,12 +121,18 @@ class Agent(Conversation_Participant):
         # messages = [self._directive.get_msg()]+self.conversational_memory
         messages = [self._identity.get_msg()]+self.conversational_memory
 
-        openai_response = openai.ChatCompletion.create(
-            model=self._model_type,
-            messages=messages,
-            functions=self._tool_instructions,
-            function_call='auto',
-            temperature=0.2)
+
+        args_dict = {
+            'model' : self._model_type,
+            'messages' : messages,
+            'temperature' : 0.2
+        }
+
+        if not len(self.tool_list) == 0:
+            args_dict['functions'] = self._tool_instructions
+            args_dict['function_call'] = 'auto'
+
+        openai_response = openai.ChatCompletion.create(**args_dict)
 
         # Action is promised a dict, so a dict must be delivered in any case
         if not isinstance(openai_response,dict):

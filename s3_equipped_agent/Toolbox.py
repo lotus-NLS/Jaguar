@@ -89,6 +89,6 @@ class Toolbox:
     #         pass
 
 
-basic_tools = [Toolbox.READ(),Toolbox.WRITE()]
-
+# basic_tools = [Toolbox.READ(),Toolbox.WRITE()]
+basic_tools = []
 
