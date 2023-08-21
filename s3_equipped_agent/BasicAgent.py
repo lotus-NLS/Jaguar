@@ -1,5 +1,5 @@
 from s2_agent.Agent import Agent
-from s3_equipped_agent.Toolbox import  Toolbox,basic_tools
+from s3_equipped_agent.Toolbox import basic_tools
 
 
 class BasicAgent(Agent):

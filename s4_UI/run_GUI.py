@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s1_conversation.Conversation import Conversation_Participant,Conversation_Entry,Conversation,Dialogue_Roles
+from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Conversation,Dialogue_Roles
 from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
@@ -30,7 +30,7 @@ from s3_equipped_agent.BasicAgent import BasicAgent
 
 
 
-class GUI_User(Conversation_Participant):
+class GUI_User(ConversationParticipant):
 
     def __init__(self):
         super().__init__(Dialogue_Roles.user)
@@ -60,7 +60,7 @@ class GUI_User(Conversation_Participant):
         self.speak(self.input_area.get())
         self.input_area.delete(0, 'end')
 
-    def reaction_protocol(self, dialogue_line : Conversation_Entry):
+    def reaction_protocol(self, dialogue_line : ConversationEntry):
         role = dialogue_line.get_role()
         msg = dialogue_line.get_content()
         self.display_message(f'{role}: {msg}\n')

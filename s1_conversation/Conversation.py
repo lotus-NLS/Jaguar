@@ -12,18 +12,8 @@ from typing import List, Callable
 
 # ----------------------------------------------------
 
-
-
-class ReactiveList(list):
-    def __init__(self, *args, callback=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.callback = callback
-
-    def append(self, item : object):
-        super().append(item)
-        if self.callback:
-            self.callback(item)
-
+class ReactiveList:
+    pass
 
 class Dialogue_Roles:
     user = 'user'
@@ -39,7 +29,7 @@ class Dialogue_Roles:
         return as_list
 
 
-class Conversation_Entry(dict):
+class ConversationEntry(dict):
     def __init__(self,role : str, msg : str):
         super().__init__()
 
@@ -63,52 +53,51 @@ class Conversation_Entry(dict):
         return self['content']
 
 
-class Conversation_Participant:
+class ConversationParticipant:
     def __init__(self, role : str):
         if not role in Dialogue_Roles.as_list():
             print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}'
                   f'Defaulting to the agent role')
-            self.role = Dialogue_Roles.agent
+            self._role = Dialogue_Roles.agent
         else:
-            self.role : str = role
+            self._role : str = role
 
-        self.broadcast : Callable = lambda *args, **kwargs: None
-        self.conversational_memory : ReactiveList[Conversation_Entry] = ReactiveList(callback=self._react)
+        self._broadcast : Callable = lambda *args, **kwargs: None
+        self._conversational_memory : List[ConversationEntry] = []
+
+    def register(self, entry : ConversationEntry):
+        self._conversational_memory.append(entry)
+        threading.Thread(target=self.reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
     def think(self,msg : str):
-        print(f'[Debug]:{self.role} thought: {msg}')
+        print(f'[Debug]:{self._role} thought: {msg}')
         thought_msg = f'## Internal Assistant Log\n' \
                       f'{msg}'
-        self.conversational_memory.append(Conversation_Entry(role=self.role, msg=thought_msg))
+        self._conversational_memory.append(ConversationEntry(role=self._role, msg=thought_msg))
 
     def speak(self, message : str):
-        self.broadcast(Conversation_Entry(role=self.role,msg=message))
+        self._broadcast(ConversationEntry(role=self._role, msg=message))
 
     def reaction_protocol(self, dialogue_line : dict):
         pass
 
-    def _react(self,dialogue_line : Conversation_Entry):
-        threading.Thread(target=self.reaction_protocol, kwargs=({'dialogue_line' : dialogue_line})).start()
-
     def print_memory(self):
-        print(self.conversational_memory)
+        print(self._conversational_memory)
 
 
 class Conversation:
     def __init__(self):
-        self._participants: List[Conversation_Participant] = []
-        self._message_queue : Queue[Conversation_Entry] = queue.Queue()
+        self._participants: List[ConversationParticipant] = []
+        self._message_queue : Queue[ConversationEntry] = queue.Queue()
         threading.Thread(target=self._process_queue).start()
 
-
-    def add_participant(self, participant  : Conversation_Participant):
-        if not isinstance(participant, Conversation_Participant):
+    def add_participant(self, participant  : ConversationParticipant):
+        if not isinstance(participant, ConversationParticipant):
             print(f'Given object is not a Conversation_Participant. Aborting add_participant routine ...')
             return
 
-        participant.broadcast = self.broadcast_message
+        participant._broadcast = self.broadcast_message
         self._participants.append(participant)
-
 
     def _process_queue(self):
         while True:
@@ -117,8 +106,9 @@ class Conversation:
             msg = entry.get_content()
             print(f'[Debug]: {role} said: {msg}')
             for participant in self._participants:
-                participant.conversational_memory.append(entry)
+                # participant.conversational_memory.append(entry)
+                participant.register(entry)
 
 
-    def broadcast_message(self, entry : Conversation_Entry):
+    def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)

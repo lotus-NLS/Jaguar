@@ -1,5 +1,5 @@
 from s2_agent.Agent import Agent
-from s1_conversation.Conversation import Conversation_Participant, Conversation, Dialogue_Roles
+from s1_conversation.Conversation import ConversationParticipant, Conversation, Dialogue_Roles
 
 # -------------------------
 # Test driver code
@@ -8,10 +8,10 @@ test_conversation = Conversation()
 the_bot = Agent()
 test_conversation.add_participant(the_bot)
 
-the_user = Conversation_Participant(role=Dialogue_Roles.user)
+the_user = ConversationParticipant(role=Dialogue_Roles.user)
 test_conversation.add_participant(the_user)
 
-other_user = Conversation_Participant(role=Dialogue_Roles.user)
+other_user = ConversationParticipant(role=Dialogue_Roles.user)
 test_conversation.add_participant(other_user)
 
 

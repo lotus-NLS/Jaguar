@@ -3,7 +3,7 @@ import os,json
 import openai
 from openai.openai_object import OpenAIObject
 from s2_agent.Actions import ToolInstructions
-from s1_conversation.Conversation import Conversation_Participant, Dialogue_Roles, Conversation_Entry
+from s1_conversation.Conversation import ConversationParticipant, Dialogue_Roles, ConversationEntry
 from s1_protocol.Directive import Directive
 from s1_protocol.Identity import Identity
 
@@ -25,7 +25,7 @@ class Models:
     gpt_40_32k = 'gpt-4-32k-0613'
 
 
-class Agent(Conversation_Participant):
+class Agent(ConversationParticipant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_4k):
         # Set identity and directive
         super().__init__(role=Dialogue_Roles.agent)
@@ -87,7 +87,7 @@ class Agent(Conversation_Participant):
     # ---------------------------------------------------
     # Callback
 
-    def reaction_protocol(self, dialogue_line : Conversation_Entry) -> None:
+    def reaction_protocol(self, dialogue_line : ConversationEntry) -> None:
         if dialogue_line['role'] == Dialogue_Roles.user:
             self._process_user_request()
 
@@ -116,7 +116,7 @@ class Agent(Conversation_Participant):
 
 
     def _get_next_action(self) -> Action:
-        messages = [self._identity.get_msg()]+self.conversational_memory
+        messages = [self._identity.get_msg()]+self._conversational_memory
 
 
         args_dict = {
