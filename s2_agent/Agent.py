@@ -116,7 +116,7 @@ class Agent(ConversationParticipant):
 
 
     def _get_next_action(self) -> Action:
-        messages = [self._identity.get_msg()]+self._conversational_memory
+        messages = [self._identity.get_msg()]+self._conversational_log
 
 
         args_dict = {

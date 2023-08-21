@@ -54,15 +54,15 @@ class ConversationParticipant:
             self._role : str = role
 
         self._broadcast : Callable = lambda *args, **kwargs: None
-        self._conversational_memory : List[ConversationEntry] = []
+        self._conversational_log : List[ConversationEntry] = []
 
-    def register_entry(self, entry : ConversationEntry):
-        self._conversational_memory.append(entry)
+    def log_entry(self, entry : ConversationEntry):
+        self._conversational_log.append(entry)
         threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
     def think(self,msg : str):
         print(f'[Debug]:{self._role} thought: {msg}')
-        self.register_entry(entry=ConversationEntry(role=self._role,msg=msg))
+        self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
 
     def speak(self, msg : str):
         print(f'[Debug]: {self._role} said: {msg}')
@@ -72,12 +72,12 @@ class ConversationParticipant:
         pass
 
     def print_memory(self):
-        print(self._conversational_memory)
+        print(self._conversational_log)
 
 
 class Conversation:
     def __init__(self, participant_list : List[ConversationParticipant]):
-        self._participants: List[ConversationParticipant] = []
+        self._listeners: List[ConversationParticipant] = []
         for participant in participant_list:
             self.add_participant(participant)
 
@@ -85,18 +85,14 @@ class Conversation:
         threading.Thread(target=self._process_queue).start()
 
     def add_participant(self, participant  : ConversationParticipant):
-        if not isinstance(participant, ConversationParticipant):
-            print(f'Given object is not a Conversation_Participant. Aborting add_participant routine ...')
-            return
-
         participant._broadcast = self._broadcast_message
-        self._participants.append(participant)
+        self._listeners.append(participant)
 
     def _process_queue(self):
         while True:
             entry = self._message_queue.get()
-            for participant in self._participants:
-                participant.register_entry(entry)
+            for participant in self._listeners:
+                participant.log_entry(entry)
 
 
     def _broadcast_message(self, entry : ConversationEntry):
