@@ -1,6 +1,5 @@
-import queue
+import queue, threading
 from queue import Queue
-import threading
 from typing import List, Callable
 
 
@@ -11,9 +10,6 @@ from typing import List, Callable
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
 
 # ----------------------------------------------------
-
-class ReactiveList:
-    pass
 
 class Dialogue_Roles:
     user = 'user'
@@ -65,18 +61,17 @@ class ConversationParticipant:
         self._broadcast : Callable = lambda *args, **kwargs: None
         self._conversational_memory : List[ConversationEntry] = []
 
-    def register(self, entry : ConversationEntry):
+    def register_entry(self, entry : ConversationEntry):
         self._conversational_memory.append(entry)
         threading.Thread(target=self.reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
     def think(self,msg : str):
         print(f'[Debug]:{self._role} thought: {msg}')
-        thought_msg = f'## Internal Assistant Log\n' \
-                      f'{msg}'
-        self._conversational_memory.append(ConversationEntry(role=self._role, msg=thought_msg))
+        self.register_entry(entry=ConversationEntry(role=self._role,msg=msg))
 
-    def speak(self, message : str):
-        self._broadcast(ConversationEntry(role=self._role, msg=message))
+    def speak(self, msg : str):
+        print(f'[Debug]: {self._role} said: {msg}')
+        self._broadcast(ConversationEntry(role=self._role, msg=msg))
 
     def reaction_protocol(self, dialogue_line : dict):
         pass
@@ -102,12 +97,8 @@ class Conversation:
     def _process_queue(self):
         while True:
             entry = self._message_queue.get()
-            role = entry.get_role()
-            msg = entry.get_content()
-            print(f'[Debug]: {role} said: {msg}')
             for participant in self._participants:
-                # participant.conversational_memory.append(entry)
-                participant.register(entry)
+                participant.register_entry(entry)
 
 
     def broadcast_message(self, entry : ConversationEntry):

@@ -106,7 +106,7 @@ class Agent(ConversationParticipant):
             tool_instructions = action.get_tool_instructions()
 
             if not text_content is None:
-                self.speak(message=text_content)
+                self.speak(msg=text_content)
 
             if not tool_instructions is None:
                 self._use_tool(instructions=tool_instructions)
