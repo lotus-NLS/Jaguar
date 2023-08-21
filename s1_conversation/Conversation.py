@@ -85,14 +85,16 @@ class Conversation:
         threading.Thread(target=self._process_queue).start()
 
     def add_participant(self, participant  : ConversationParticipant):
+        # Set upstream
         participant._broadcast = self._broadcast_message
+        # Set downstream
         self._listeners.append(participant)
 
     def _process_queue(self):
         while True:
             entry = self._message_queue.get()
-            for participant in self._listeners:
-                participant.log_entry(entry)
+            for listener in self._listeners:
+                listener.log_entry(entry)
 
 
     def _broadcast_message(self, entry : ConversationEntry):
