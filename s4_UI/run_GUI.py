@@ -60,7 +60,7 @@ class GUI_User(ConversationParticipant):
         self.speak(self.input_area.get())
         self.input_area.delete(0, 'end')
 
-    def reaction_protocol(self, dialogue_line : ConversationEntry):
+    def _reaction_protocol(self, dialogue_line : ConversationEntry):
         role = dialogue_line.get_role()
         msg = dialogue_line.get_content()
         self.display_message(f'{role}: {msg}\n')
@@ -73,12 +73,9 @@ class GUI_User(ConversationParticipant):
 
 if __name__ == "__main__":
 
-    the_conversation = Conversation()
     the_user = GUI_User()
     the_bot = BasicAgent()
-
-    the_conversation.add_participant(the_bot)
-    the_conversation.add_participant(the_user)
+    the_conversation = Conversation(participant_list=[the_bot,the_user])
 
     the_user.window.mainloop()
 

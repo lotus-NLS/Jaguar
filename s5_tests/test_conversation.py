@@ -4,17 +4,13 @@ from s1_conversation.Conversation import Conversation, ConversationParticipant, 
 
 
 def test_speak_and_think():
-    # Create a handler
-    this_conversation = Conversation()
 
     # Create participants and add them to the handler
     participant1 = ConversationParticipant(role=Dialogue_Roles.agent)
     participant2 = ConversationParticipant(role=Dialogue_Roles.agent)
     participant3 = ConversationParticipant(role=Dialogue_Roles.agent)
 
-    this_conversation.add_participant(participant1)
-    this_conversation.add_participant(participant2)
-    this_conversation.add_participant(participant3)
+    this_conversation = Conversation(participant_list=[participant1,participant2,participant3])
 
     # Participants write messages
     participant1.speak('Hello from participant 1!')
@@ -56,7 +52,7 @@ def test_speak_and_think():
 def test_reaction():
     class Rowdy_participant(ConversationParticipant):
 
-        def reaction_protocol(self, dialogue_line : dict):
+        def _reaction_protocol(self, dialogue_line : dict):
             role = dialogue_line['role']
             if role == Dialogue_Roles.agent:
                 self.speak('Actually, leave me alone! Let me talk to the user')
@@ -64,14 +60,12 @@ def test_reaction():
             if role == Dialogue_Roles.user:
                 self.speak('Hello, how can I assist you today')
 
-    this_conversation = Conversation()
+
     participant1 = ConversationParticipant(role=Dialogue_Roles.agent)
     participant2 = ConversationParticipant(role=Dialogue_Roles.agent)
     participant3 = Rowdy_participant(Dialogue_Roles.agent)
 
-    this_conversation.add_participant(participant1)
-    this_conversation.add_participant(participant2)
-    this_conversation.add_participant(participant3)
+    this_conversation = Conversation(participant_list=[participant1,participant2,participant3])
 
     participant1.speak('How are you :)')
 

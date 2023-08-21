@@ -35,12 +35,7 @@ class ConversationEntry(dict):
         else:
             self['role'] = role
 
-        if not isinstance(msg,str):
-            print(f'[Debug]: Given message {msg} is not a string. Typecasting msg object to string to include as message content ...')
-            self['content'] = str(msg)
-
-        else:
-            self['content'] = msg
+        self['content'] = msg
 
     def get_role(self):
         return self['role']
@@ -63,7 +58,7 @@ class ConversationParticipant:
 
     def register_entry(self, entry : ConversationEntry):
         self._conversational_memory.append(entry)
-        threading.Thread(target=self.reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
+        threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
     def think(self,msg : str):
         print(f'[Debug]:{self._role} thought: {msg}')
@@ -73,7 +68,7 @@ class ConversationParticipant:
         print(f'[Debug]: {self._role} said: {msg}')
         self._broadcast(ConversationEntry(role=self._role, msg=msg))
 
-    def reaction_protocol(self, dialogue_line : dict):
+    def _reaction_protocol(self, dialogue_line : dict):
         pass
 
     def print_memory(self):
@@ -81,8 +76,11 @@ class ConversationParticipant:
 
 
 class Conversation:
-    def __init__(self):
+    def __init__(self, participant_list : List[ConversationParticipant]):
         self._participants: List[ConversationParticipant] = []
+        for participant in participant_list:
+            self.add_participant(participant)
+
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         threading.Thread(target=self._process_queue).start()
 
@@ -91,7 +89,7 @@ class Conversation:
             print(f'Given object is not a Conversation_Participant. Aborting add_participant routine ...')
             return
 
-        participant._broadcast = self.broadcast_message
+        participant._broadcast = self._broadcast_message
         self._participants.append(participant)
 
     def _process_queue(self):
@@ -101,5 +99,5 @@ class Conversation:
                 participant.register_entry(entry)
 
 
-    def broadcast_message(self, entry : ConversationEntry):
+    def _broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
