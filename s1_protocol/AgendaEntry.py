@@ -5,12 +5,12 @@ import uuid
 
 class AgendaEntry:
     @classmethod
-    def make_root(cls, name, instruction):
-        return cls(name,instruction,is_root=True)
+    def make_root(cls, name : str, instruction_text : str):
+        return cls(name, instruction_text, is_root=True)
 
-    def __init__(self,name, instruction, is_root = False):
+    def __init__(self, name : str, instruction_text : str, is_root = False):
         self.name: str = f'++++ {name} ++++'
-        self.desc: str = f'Instructions: {instruction}'
+        self.desc: str = f'Instructions: {instruction_text}'
         self.is_complete : bool = False
 
         self._uuid = f'{uuid.uuid4()}-{uuid.uuid4()}'
@@ -30,7 +30,7 @@ class AgendaEntry:
         self.is_complete = True
 
     def add_subelement(self, name : str, instruction: str):
-        new_element = AgendaEntry(name=name, instruction=instruction)
+        new_element = AgendaEntry(name=name, instruction_text=instruction)
         new_element._is_root = False
         self.subelement_dictionary[new_element._uuid] = new_element
 

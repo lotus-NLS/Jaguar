@@ -97,8 +97,6 @@ class Agent(ConversationParticipant):
     def _process_user_request(self) -> None:
         try:
             print("[Debug] Creating completion request.")
-
-            openai.api_key = self._api_key
             action = self._get_next_action()
             print("[Debug] Received response from the model.")
 
@@ -116,8 +114,8 @@ class Agent(ConversationParticipant):
 
 
     def _get_next_action(self) -> Action:
+        openai.api_key = self._api_key
         messages = [self._identity.get_msg()]+self._conversational_log
-
 
         args_dict = {
             'model' : self._model_type,
