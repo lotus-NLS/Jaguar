@@ -77,18 +77,15 @@ class ConversationParticipant:
 
 class Conversation:
     def __init__(self, participant_list : List[ConversationParticipant]):
-        self._listeners: List[ConversationParticipant] = []
+        self._listeners: List[ConversationParticipant] = participant_list
         for participant in participant_list:
-            self.add_participant(participant)
+            self._set_upstream(participant)
 
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         threading.Thread(target=self._process_queue).start()
 
-    def add_participant(self, participant  : ConversationParticipant):
-        # Set upstream
+    def _set_upstream(self, participant  : ConversationParticipant):
         participant._broadcast = self._broadcast_message
-        # Set downstream
-        self._listeners.append(participant)
 
     def _process_queue(self):
         while True:
