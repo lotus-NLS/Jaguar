@@ -43,7 +43,8 @@ class ConversationEntry(dict):
     def get_content(self):
         return self['content']
 
-
+# TODO: The responsibility for managing the conversations should be entirely with the
+# Participant. They should be able to both enter and leave conversations
 class ConversationParticipant:
     def __init__(self, role : str):
         if not role in Dialogue_Roles.as_list():
@@ -74,7 +75,7 @@ class ConversationParticipant:
     def print_memory(self):
         print(self._conversational_log)
 
-
+# TODO: Conversations should not get initialized with any participants
 class Conversation:
     def __init__(self, participant_list : List[ConversationParticipant]):
         self._listeners: List[ConversationParticipant] = participant_list
