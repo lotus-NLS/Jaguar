@@ -52,9 +52,11 @@ class GUI_User(ConversationParticipant):
 
 if __name__ == "__main__":
 
+    the_conversation = Conversation()
     the_user = GUI_User()
     the_bot = BasicAgent()
-    the_conversation = Conversation()
+
+    the_conversation.join_participants([the_user, the_bot])
 
     the_user.window.mainloop()
 

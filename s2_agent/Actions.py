@@ -26,8 +26,11 @@ class Action:
     def get_tool_instructions(self) -> Union[ToolInstructions, None]:
         funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
 
+        if funct_call is None:
+            return
+
         if not isinstance(funct_call, dict):
-            print(f'[Debug]: Provided funct_call {funct_call} are not of dict type')
+            print(f'[Debug]: Provided funct_call {funct_call} is not of dict type')
             return
 
         if not 'name' in funct_call:

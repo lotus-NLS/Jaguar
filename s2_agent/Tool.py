@@ -57,7 +57,7 @@ class Tool:
 
 
     def handle_call(self, args_dict : dict):
-        self.log(f'[START]: Attempting to launch tool {self.name}')
+        self.log(f'[START]: Attempting to launch tool {self.name} with args {args_dict}')
 
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])

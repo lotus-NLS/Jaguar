@@ -65,9 +65,10 @@ class ConversationParticipant:
         self._broadcast = conversation.broadcast_message
         conversation.add_listener(self)
 
-    def leave_conversation(self):
+    def leave_conversation(self) -> None:
         self._broadcast = lambda *args, **kwargs: None
-        self._conversation.remove_listener(self)
+        if not self._conversation is None:
+            self._conversation.remove_listener(self)
 
     # ------------------------------
     # Speak and react
@@ -123,3 +124,8 @@ class Conversation:
 
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
+
+    def join_participants(self, participant_list : list[ConversationParticipant]):
+        for participant in participant_list:
+            participant.leave_conversation()
+            participant.join_conversation(self)

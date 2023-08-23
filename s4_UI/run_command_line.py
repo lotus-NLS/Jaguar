@@ -2,11 +2,14 @@ from s3_equipped_agent.BasicAgent import BasicAgent
 from s1_conversation.Conversation import ConversationParticipant,Conversation, Dialogue_Roles
 
 
+
+the_conversation = Conversation()
 the_bot = BasicAgent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
 
-test_conversation = Conversation()
+the_conversation.join_participants([the_bot, the_user, other_user])
+
 
 while True:
     the_user.speak(input(''))
