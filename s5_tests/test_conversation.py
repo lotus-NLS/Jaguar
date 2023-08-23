@@ -29,6 +29,8 @@ class ConversationTestModule(TestModule):
         for particpant in self.agent_participants:
             particpant.join_conversation(self.conversation)
 
+        self.all_participants = self.agent_participants+[self.rowdy_user_participant]
+
     # Expects output:
     # assistant said: Hello from participant 1!
     # assistant said: Hello from participant 2!
@@ -37,6 +39,10 @@ class ConversationTestModule(TestModule):
     # [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}]
     # Logs for Participant2:
     # [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}, {'role': 'assistant', 'content': 'I do not even want to say hello to that guy!'}]
+
+    def clear_logs(self):
+        for participant in self.all_participants:
+            participant._conversational_log = []
 
     @TestModule.test
     def test_speak_and_think(self):
@@ -53,7 +59,6 @@ class ConversationTestModule(TestModule):
 
         print("Logs for Participant3:")
         self.agent_participant3.print_memory()
-        self.conversation.stop()
 
     @TestModule.test
     def test_reaction(self):
@@ -72,4 +77,6 @@ class ConversationTestModule(TestModule):
 if __name__ == "__main__":
     test = ConversationTestModule()
     test.test_speak_and_think()
-    # test.test_reaction()
+    test.clear_logs()
+    test.test_reaction()
+    test.conversation.stop()

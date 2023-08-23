@@ -8,6 +8,6 @@ class TestModule:
         def wrapped_func(*args,**kwargs):
             print(f'--- Starting test {func.__name__} ---')
             func(*args,**kwargs)
-            print(f'--- Completed test {func.__name__} ---')
+            print(f'--- Completed test {func.__name__} ---\n')
 
         return wrapped_func
