@@ -9,7 +9,7 @@ the_bot = Agent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
 
-test_conversation = Conversation(participant_list=[the_bot,the_user,other_user])
+test_conversation = Conversation()
 
 while True:
     the_user.speak(input(''))

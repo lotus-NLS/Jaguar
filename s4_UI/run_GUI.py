@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     the_user = GUI_User()
     the_bot = BasicAgent()
-    the_conversation = Conversation(participant_list=[the_bot,the_user])
+    the_conversation = Conversation()
 
     the_user.window.mainloop()
 

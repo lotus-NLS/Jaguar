@@ -6,7 +6,7 @@ the_bot = BasicAgent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
 
-test_conversation = Conversation(participant_list=[the_user, the_bot, other_user])
+test_conversation = Conversation()
 
 while True:
     the_user.speak(input(''))

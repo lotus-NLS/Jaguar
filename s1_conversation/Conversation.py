@@ -76,11 +76,8 @@ class ConversationParticipant:
         print(self._conversational_log)
 
 class Conversation:
-    def __init__(self, participant_list : List[ConversationParticipant]):
-        self._listeners: List[ConversationParticipant] = participant_list
-        for participant in participant_list:
-            self._set_upstream(participant)
-
+    def __init__(self):
+        self._listeners: List[ConversationParticipant] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         threading.Thread(target=self._process_queue).start()
 
