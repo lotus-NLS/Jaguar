@@ -75,7 +75,6 @@ class ConversationParticipant:
     def print_memory(self):
         print(self._conversational_log)
 
-# TODO: Conversations should not get initialized with any participants
 class Conversation:
     def __init__(self, participant_list : List[ConversationParticipant]):
         self._listeners: List[ConversationParticipant] = participant_list

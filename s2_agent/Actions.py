@@ -1,4 +1,3 @@
-from openai.openai_object import OpenAIObject
 from typing import Union
 import json
 

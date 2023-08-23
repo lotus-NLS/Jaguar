@@ -1,7 +1,7 @@
-import os,json
+import os
 
 import openai
-from openai.openai_object import OpenAIObject
+# from openai.openai_object import OpenAIObject
 from s2_agent.Actions import ToolInstructions
 from s1_conversation.Conversation import ConversationParticipant, Dialogue_Roles, ConversationEntry
 from s1_protocol.Directive import Directive
@@ -26,7 +26,7 @@ class Models:
 
 
 class Agent(ConversationParticipant):
-    def __init__(self,api_key : str = '', model_type: str = Models.gpt_35_4k):
+    def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k):
         # Set identity and directive
         super().__init__(role=Dialogue_Roles.agent)
         self._directive = Directive(task=None,objective=None)
@@ -77,7 +77,7 @@ class Agent(ConversationParticipant):
                 max_tokens=5
             )
         except Exception as e:
-            print(f'The given key {key} raised the following error after test run:'
+            print(f'The given key raised the following error after test run:\n'
                   f' {e}')
             print(f'Aborting ...')
             raise ValueError

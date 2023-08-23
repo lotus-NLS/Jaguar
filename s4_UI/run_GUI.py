@@ -7,28 +7,6 @@ from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
 
-# class ChatApplication:
-#
-#     def __init__(self,):
-#
-#
-    # def send_message(self, event=None):
-    #     message = self.input_area.get()
-    #     if message:
-    #         self.display_message(f'You: {message}\n')
-    #         self.input_area.delete(0, 'end')
-    #         threading.Thread(target=self.get_response, args=(message,)).start()
-    #
-    # def get_response(self, message):
-    #     try:
-    #         self.agent._process_user_request(message)  # Call the s2_agent to handle the user's message
-    #         agent_response = self.agent.last_response
-    #         self.display_message(f'GPT-3.5: {agent_response}\n')  # Display the s2_agent's response
-    #
-    #     except Exception as e:
-    #         self.display_message(f'Error: Unable to get response from GPT-3.5. {str(e)}\n')
-
-
 
 class GUI_User(ConversationParticipant):
 
@@ -38,7 +16,7 @@ class GUI_User(ConversationParticipant):
         self.height = 600
 
         self.window = tk.Tk()
-        self.window.title("Chat with GPT-3.5")
+        self.window.title("Chat with GPT-4")
         self.window.geometry(f'{self.width}x{self.height}')
         self.window.configure(bg='#D3D3D3')
 
@@ -57,6 +35,7 @@ class GUI_User(ConversationParticipant):
         send_button.pack(fill='x')
 
     def send_message(self, event=None):
+        _ = event
         self.speak(self.input_area.get())
         self.input_area.delete(0, 'end')
 
