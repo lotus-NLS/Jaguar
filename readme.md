@@ -59,9 +59,6 @@ with a good enough model but state-of-the-art models nonethless struggle with. T
 - Producing consistent and throughly checked outputs
 - Taking into account and paying attention to information far back in the conversation history
 
-These issues are likely related to the fact that current models are optimized for the chatbot use case of a ~30-minute conversation between the model and the user. In particular the limited context window
-of 4k to 32k tokens presents a huge barrier in making the model work on larger bodies of code. And even things which appear
-within the context window are readily overlooked by the model.\
 The second development objective of pyWriter is to also remedy these limitations 
 by providing the models with the necessary guidance to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current
 tasks and objectives and to distribute responsibilites so that each python developer agent can do his work within a single-module context.
