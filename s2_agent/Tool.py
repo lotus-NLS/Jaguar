@@ -49,11 +49,12 @@ class Tool:
 
     def log(self,to_log : str):
         # log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
+        log_text = f'## Internal Assistant log:{to_log}'
 
         if self.external_log is None:
-            print(to_log)
+            print(log_text)
         else:
-            self.external_log(to_log)
+            self.external_log(log_text)
 
 
     def handle_call(self, args_dict : dict):

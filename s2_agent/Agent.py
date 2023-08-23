@@ -138,6 +138,7 @@ class Agent(ConversationParticipant):
 
 
     def _use_tool(self, instructions : ToolInstructions) -> None:
+        print('[Debug]: agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
 
