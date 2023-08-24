@@ -128,7 +128,3 @@ class Channel:
 
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
-
-    def join_participants(self, participant_list : list[ConversationParticipant]):
-        for participant in participant_list:
-            participant.join_channel(self)

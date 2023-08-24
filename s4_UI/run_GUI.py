@@ -56,7 +56,8 @@ if __name__ == "__main__":
     the_user = GUI_User()
     the_bot = BasicAgent()
 
-    the_conversation.join_participants([the_user, the_bot])
+    for participant in [the_user, the_bot]:
+        the_conversation.add_participant(participant)
 
     the_user.window.mainloop()
 

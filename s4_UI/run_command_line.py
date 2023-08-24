@@ -7,8 +7,8 @@ the_conversation = Channel()
 the_bot = BasicAgent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
-
-the_conversation.join_participants([the_bot, the_user, other_user])
+for participant in [the_bot,the_user,other_user]:
+    the_conversation.add_participant(participant)
 
 
 while True:
