@@ -44,62 +44,17 @@ class ConversationEntry(dict):
         return self['content']
 
 
-class ConversationParticipant:
-    def __init__(self, role : str):
-        if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}'
-                  f'Defaulting to the agent role')
-            self._role = Dialogue_Roles.agent
-        else:
-            self._role : str = role
-
-        self._channel : Union[Channel, None] = None
+class LogKeeper:
+    def __init__(self):
         self._personal_log : List[ConversationEntry] = []
-
-    # ------------------------------
-    # Update
-
-    def join_channel(self, conversation):
-        self.leave_channel()
-        self._channel  = conversation
-        conversation.add_participant(self)
-
-    def leave_channel(self) -> None:
-        if not self._channel is None:
-            self._channel.remove_particpant(self)
-            self._channel = None
-
-    # ------------------------------
-    # Speak and react
 
     def log_entry(self, entry : ConversationEntry):
         self._personal_log.append(entry)
-        threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
-
-    def think(self,msg : str):
-        print(f'[Debug]:{self._role} thought: {msg}')
-        self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
-
-    def speak(self, msg : str):
-        if self._channel is None:
-            return
-
-        print(f'[Debug]: {self._role} said: {msg}')
-        self._channel.broadcast_message(ConversationEntry(role=self._role, msg=msg))
-
-    def _reaction_protocol(self, dialogue_line : dict):
-        pass
-
-    # ------------------------------
-    # Log
-
-    def print_memory(self):
-        print(self._personal_log)
 
 
 class Channel:
     def __init__(self):
-        self._participants: List[ConversationParticipant] = []
+        self._participants: List[LogKeeper] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         self._is_running = True
 
@@ -117,14 +72,68 @@ class Channel:
             except queue.Empty:
                 pass  # Continue the loop if the queue is empty
 
-    def remove_particpant(self, participant : ConversationParticipant):
+    def remove_particpant(self, participant : LogKeeper):
         try:
             self._participants.remove(participant)
         except:
             print(f'[Debug]: Tried to remove participant {participant} who is not listed in participants')
 
-    def add_participant(self, participant  : ConversationParticipant):
+    def add_participant(self, participant  : LogKeeper):
         self._participants.append(participant)
 
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
+
+
+class ConversationParticipant(LogKeeper):
+    def __init__(self, role : str):
+        super().__init__()
+        if not role in Dialogue_Roles.as_list():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}'
+                  f'Defaulting to the agent role')
+            self._role = Dialogue_Roles.agent
+        else:
+            self._role : str = role
+
+        self._channel : Union[Channel, None] = None
+
+    # ------------------------------
+    # Update
+
+    def join_channel(self, channel : Channel):
+        self.leave_channel()
+        self._channel  = channel
+        channel.add_participant(self)
+
+    def leave_channel(self) -> None:
+        if not self._channel is None:
+            self._channel.remove_particpant(self)
+            self._channel = None
+
+    # ------------------------------
+    # Speak and react
+
+    def log_entry(self, entry : ConversationEntry):
+        self._personal_log.append(entry)
+        threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
+
+    def _reaction_protocol(self, dialogue_line : dict):
+        pass
+
+    def think(self,msg : str):
+        print(f'[Debug]:{self._role} thought: {msg}')
+        self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
+
+    def speak(self, msg : str):
+        if self._channel is None:
+            return
+
+        print(f'[Debug]: {self._role} said: {msg}')
+        self._channel.broadcast_message(ConversationEntry(role=self._role, msg=msg))
+
+    # ------------------------------
+    # Log
+
+    def print_memory(self):
+        print(self._personal_log)
+
