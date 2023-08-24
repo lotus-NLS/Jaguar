@@ -1,9 +1,9 @@
-# pyWriter : Current state
+# pyWrite : Current state
 
 
 ## Overview
-pyWriter is a framework which aims to enable LLMs to do highly independent and autonomous software development.
-The first development objective of pyWriter is to provide the LLM with the necessary tools to
+pyWrite aims to enable LLMs to do highly independent and autonomous software development.
+The first development objective of pyWrite is to provide the LLM with the necessary tools to
 perform software development, like reading or writing files or running code and reading the outputs.
 
 ## Setup 
@@ -49,7 +49,7 @@ Yet they cannot act as autonomous python developers, as they face several limita
 - Look up existing work online that can serve as a starting off point
 - Read or write files
 
-The first development objective of pyWriter is to remedy this by providing the LLM with the necessary tools to
+The first development objective of pyWrite is to remedy this by providing the LLM with the necessary tools to
 perform those actions, thereby enabling autonomous python software development.
 
 ## LLM as python devs: Soft limitations
@@ -59,16 +59,16 @@ with a good enough model but state-of-the-art models nonethless struggle with. T
 - Producing consistent and throughly checked outputs
 - Taking into account and paying attention to information far back in the conversation history
 
-The second development objective of pyWriter is to also remedy these limitations 
+The second development objective of pyWrite is to also remedy these limitations 
 by providing the models with the necessary guidance to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current
 tasks and objectives and to distribute responsibilites so that each python developer agent can do his work within a single-module context.
 
-## Beyond pyWriter
-pyWriter itself is just the first step of development. Beyond pyWriter other features are planned
+## Beyond pyWrite
+pyWrite itself is just the first step of development. Beyond pyWrite other features are planned
 to make up for some more functionalities that human software developers offer:
 
 ### Other
-- Development of software other than python: pyWriter is developed and tested and developed only for python code. But in principle there is no reason why the program could not also be applied to other kinds of software.
+- Development of software other than python: pyWrite is developed and tested and developed only for python code. But in principle there is no reason why the program could not also be applied to other kinds of software.
 - Encapsulation: The software agent must be encapsulated in a virtual environment such as virtual box or a docker container to prevent the agent from
 taking any action that could affect the system the program is launched from, including user files
 
@@ -89,7 +89,7 @@ do not suffice to accomplish the task it could simply build the tool itself.
 
 ## Links
 
-[Project management page](https://furtive-point-c71.notion.site/GPT-pyWriter-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \
+[Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \
 On this page you can view current objectives, tasks and notes relevant to development
 
 [Code Rulebook](_documentation/code_rulebook.md): \

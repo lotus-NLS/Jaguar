@@ -1,7 +1,7 @@
 import queue, threading
 from queue import Queue
 from typing import List, Callable, Union
-
+from s1_conversation.CustomQueue import CustomQueue
 
 # Conversation:
 # -> Only Conversation Particpants can join a s1_conversation
