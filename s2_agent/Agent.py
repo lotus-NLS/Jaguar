@@ -115,7 +115,7 @@ class Agent(ConversationParticipant):
 
     def _get_next_action(self) -> Action:
         openai.api_key = self._api_key
-        messages = [self._identity.get_msg()]+self._conversational_log
+        messages = [self._identity.get_msg()]+self._personal_log
 
         args_dict = {
             'model' : self._model_type,

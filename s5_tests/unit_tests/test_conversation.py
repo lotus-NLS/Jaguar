@@ -1,6 +1,6 @@
 import time
 
-from s1_conversation.Conversation import Conversation, ConversationParticipant, Dialogue_Roles
+from s1_conversation.Conversation import Channel, ConversationParticipant, Dialogue_Roles
 from s5_tests.TestModule import TestModule
 
 
@@ -16,7 +16,7 @@ class ConversationTestModule(TestModule):
 
     def __init__(self):
         super().__init__()
-        self.conversation = Conversation()
+        self.conversation = Channel()
 
         # Create participants and add them to the handler
         self.agent_participant1 = ConversationParticipant(role=Dialogue_Roles.agent)
@@ -27,7 +27,7 @@ class ConversationTestModule(TestModule):
         self.agent_participants = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
 
         for particpant in self.agent_participants:
-            particpant.join_conversation(self.conversation)
+            particpant.join_channel(self.conversation)
 
         self.all_participants = self.agent_participants+[self.rowdy_user_participant]
 
@@ -42,7 +42,7 @@ class ConversationTestModule(TestModule):
 
     def clear_logs(self):
         for participant in self.all_participants:
-            participant._conversational_log = []
+            participant._personal_log = []
 
     @TestModule.test
     def test_speak_and_think(self):
@@ -62,7 +62,7 @@ class ConversationTestModule(TestModule):
 
     @TestModule.test
     def test_reaction(self):
-        self.rowdy_user_participant.join_conversation(self.conversation)
+        self.rowdy_user_participant.join_channel(self.conversation)
         self.agent_participant1.speak('How are you :)')
 
         time.sleep(1)

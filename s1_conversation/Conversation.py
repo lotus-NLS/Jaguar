@@ -53,28 +53,27 @@ class ConversationParticipant:
         else:
             self._role : str = role
 
-        self._conversation : Union[Conversation,None] = None
-        self._broadcast : Callable = lambda *args, **kwargs: None
-        self._conversational_log : List[ConversationEntry] = []
+        self._channel : Union[Channel, None] = None
+        self._personal_log : List[ConversationEntry] = []
 
     # ------------------------------
     # Update
 
-    def join_conversation(self,conversation):
-        self._conversation  = conversation
-        self._broadcast = conversation.broadcast_message
-        conversation.add_listener(self)
+    def join_channel(self, conversation):
+        self.leave_channel()
+        self._channel  = conversation
+        conversation.add_participant(self)
 
-    def leave_conversation(self) -> None:
-        self._broadcast = lambda *args, **kwargs: None
-        if not self._conversation is None:
-            self._conversation.remove_listener(self)
+    def leave_channel(self) -> None:
+        if not self._channel is None:
+            self._channel.remove_particpant(self)
+            self._channel = None
 
     # ------------------------------
     # Speak and react
 
     def log_entry(self, entry : ConversationEntry):
-        self._conversational_log.append(entry)
+        self._personal_log.append(entry)
         threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
     def think(self,msg : str):
@@ -82,8 +81,11 @@ class ConversationParticipant:
         self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
 
     def speak(self, msg : str):
+        if self._channel is None:
+            return
+
         print(f'[Debug]: {self._role} said: {msg}')
-        self._broadcast(ConversationEntry(role=self._role, msg=msg))
+        self._channel.broadcast_message(ConversationEntry(role=self._role, msg=msg))
 
     def _reaction_protocol(self, dialogue_line : dict):
         pass
@@ -92,16 +94,15 @@ class ConversationParticipant:
     # Log
 
     def print_memory(self):
-        print(self._conversational_log)
+        print(self._personal_log)
 
 
-
-class Conversation:
+class Channel:
     def __init__(self):
-        self._listeners: List[ConversationParticipant] = []
+        self._participants: List[ConversationParticipant] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
-
         self._is_running = True
+
         threading.Thread(target=self._process_queue).start()
 
     def stop(self):
@@ -111,21 +112,23 @@ class Conversation:
         while self._is_running:
             try:
                 entry = self._message_queue.get(block=True, timeout=1)  # Adjust timeout as needed
-                for listener in self._listeners:
+                for listener in self._participants:
                     listener.log_entry(entry)
             except queue.Empty:
                 pass  # Continue the loop if the queue is empty
 
-    def remove_listener(self, participant : ConversationParticipant):
-        self._listeners.remove(participant)
+    def remove_particpant(self, participant : ConversationParticipant):
+        try:
+            self._participants.remove(participant)
+        except:
+            print(f'[Debug]: Tried to remove participant {participant} who is not listed in participants')
 
-    def add_listener(self, participant  : ConversationParticipant):
-        self._listeners.append(participant)
+    def add_participant(self, participant  : ConversationParticipant):
+        self._participants.append(participant)
 
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
 
     def join_participants(self, participant_list : list[ConversationParticipant]):
         for participant in participant_list:
-            participant.leave_conversation()
-            participant.join_conversation(self)
+            participant.join_channel(self)

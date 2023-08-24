@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Conversation,Dialogue_Roles
+from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,Dialogue_Roles
 from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
@@ -52,7 +52,7 @@ class GUI_User(ConversationParticipant):
 
 if __name__ == "__main__":
 
-    the_conversation = Conversation()
+    the_conversation = Channel()
     the_user = GUI_User()
     the_bot = BasicAgent()
 

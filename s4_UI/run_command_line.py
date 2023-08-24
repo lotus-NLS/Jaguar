@@ -1,9 +1,9 @@
 import time
 from s3_equipped_agent.BasicAgent import BasicAgent
-from s1_conversation.Conversation import ConversationParticipant,Conversation, Dialogue_Roles
+from s1_conversation.Conversation import ConversationParticipant,Channel, Dialogue_Roles
 
 
-the_conversation = Conversation()
+the_conversation = Channel()
 the_bot = BasicAgent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
