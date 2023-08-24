@@ -11,6 +11,7 @@ from s1_conversation.CustomQueue import CustomQueue
 
 # ----------------------------------------------------
 
+# TODO: Make this into a class so that I can use ConversationParticipant __init__ role : DialogueRole
 class Dialogue_Roles:
     user = 'user'
     agent = 'assistant'
