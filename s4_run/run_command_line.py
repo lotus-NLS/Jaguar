@@ -11,6 +11,7 @@ the_user = ConversationParticipant(role=DialogueRole.user)
 basic_channel = Channel()
 enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_user])
 
+# pdf_file_path = '/home/aiproj/Downloads/sample.pdf'
 
 while True:
     the_user.speak(input(''))

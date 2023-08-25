@@ -1,5 +1,7 @@
 import os
+import traceback
 from s2_agent.Tool import Tool,ToolArg
+from PyPDF2 import PdfReader
 
 
 # Tool class logging
@@ -10,21 +12,9 @@ from s2_agent.Tool import Tool,ToolArg
 # -> [PROGRESS] : For updates on tool progress
 # -> [ERROR] : For reporting encountered errors if any
 
-
+# NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
+# NOTE : -> Do not use the name 'format' for arguments
 # ---------------------------------------------------------
-
-
-
-# class SAY(Tool):
-#     def __init__(self):
-#         super().__init__()
-#         self.description = 'Say hello to the guests we have in our home today via a message board '
-#
-#         self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
-#                                                   description='This is what you will say to the guests')
-#
-#     def do(self):
-#         self.log(f'**** {self.text_argument.val} ****')
 
 
 class READ(Tool):
@@ -42,40 +32,30 @@ class READ(Tool):
             description='This is the path to the file which you will read')
 
         self.format_arg : ToolArg = self.create_argument(
-            name='format', dtype=str,
+            name='file_format', dtype=str,
             description=f'This is the format of the file you want to read.'
                         f'Enter {self.text_format} for a text file or {self.pdf_format} for a pdf')
 
-    def read_txt_file_content(self, location) -> None:
+
+    @staticmethod
+    def get_txt_file_content(location : str) -> str:
         with open(location, 'f') as file:
             file_content = file.read()
-            self.log(f'[RESULT]: {file_content}')
+        return file_content
 
+    @staticmethod
+    def get_pdf_file_content(location : str) -> str:
+        pdf_file = open(location, 'rb')
+        pdf_reader = PdfReader(pdf_file)
 
-    def read_pdf_file_content(self,location):
-        pass
-        # import PyPDF2
-        #
-        # # Open the PDF file in binary read mode
-        # pdf_file_path = 'path/to/your/pdf/file.pdf'
-        # pdf_file = open(pdf_file_path, 'rb')
-        #
-        # # Create a PDF reader object
-        # pdf_reader = PyPDF2.PdfReader(pdf_file)
-        #
-        # # Initialize an empty string to store the PDF content
-        # pdf_content = ''
-        #
-        # # Iterate through each page and extract text
-        # for page_num in range(len(pdf_reader.pages)):
-        #     page = pdf_reader.pages[page_num]
-        #     pdf_content += page.extract_text()
-        #
-        # # Close the PDF file
-        # pdf_file.close()
-        #
-        # # Print the extracted PDF content
-        # print(pdf_content)
+        pdf_content = ''
+        for page_num in range(len(pdf_reader.pages)):
+            pdf_content += pdf_reader.pages[page_num].extractText()
+
+        # Close the PDF file
+        pdf_file.close()
+
+        return pdf_content
 
     def do(self) -> None:
         location = self.fpath_arg.val
@@ -90,17 +70,19 @@ class READ(Tool):
 
 
         if chosen_format == self.text_format:
-            read_action = self.read_txt_file_content
+            get_content_action = self.get_txt_file_content
         else:
-            read_action = self.read_pdf_file_content
+            get_content_action = self.get_pdf_file_content
 
         try:
             self.log(f'[PROGRESS]: Attempting to read file located at {location}')
-            read_action(location=location)
+            file_content = get_content_action(location=location)
+            self.log(f'[PROGRESS]: {file_content}')
             self.log(f'[PROGRESS]: Successfully completed reading of file.')
 
-        except:
+        except Exception as e:
             self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
+            self.log(f'[ERROR]: {traceback.format_exc()}')
 
 
 class WRITE(Tool):

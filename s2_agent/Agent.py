@@ -109,7 +109,7 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception as e:
-            print(f'[Error] Unable to get response from GPT-3.5. {str(e)}\n')
+            print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
     def _get_next_action(self) -> Action:
