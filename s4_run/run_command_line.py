@@ -1,5 +1,5 @@
 import time
-from s3_equipped_agent.BasicAgent import BasicAgent
+from s3_tool_agent.BasicAgent import BasicAgent
 from s1_conversation.Conversation import ConversationParticipant,Channel, DialogueRole,enter_into_conversation
 
 

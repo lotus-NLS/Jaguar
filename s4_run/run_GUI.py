@@ -3,7 +3,7 @@ from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
 from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,DialogueRole,enter_into_conversation
-from s3_equipped_agent.BasicAgent import BasicAgent
+from s3_tool_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
 
