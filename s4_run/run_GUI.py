@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,DialogueRole
+from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,DialogueRole,enter_into_conversation
 from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
@@ -55,10 +55,8 @@ if __name__ == "__main__":
     the_user = GUI_User()
     the_bot = BasicAgent()
 
-    the_conversation = Channel()
-    for participant in [the_user, the_bot]:
-        the_conversation.add_participant(logger=participant.log_entry)
-
+    basic_channel = Channel()
+    enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_bot])
     the_user.window.mainloop()
 
 

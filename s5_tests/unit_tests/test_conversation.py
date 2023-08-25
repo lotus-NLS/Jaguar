@@ -1,6 +1,6 @@
 import time
 
-from s1_conversation.Conversation import Channel, ConversationParticipant, DialogueRole
+from s1_conversation.Conversation import Channel, ConversationParticipant, DialogueRole, enter_into_conversation
 from s5_tests.composition_tests.TestModule import TestModule
 
 
@@ -16,7 +16,7 @@ class ConversationTestModule(TestModule):
 
     def __init__(self):
         super().__init__()
-        self.conversation = Channel()
+        self.basic_channel = Channel()
 
         # Create participants and add them to the handler
         self.agent_participant1 = ConversationParticipant(role=DialogueRole.agent)
@@ -24,12 +24,11 @@ class ConversationTestModule(TestModule):
         self.agent_participant3 = ConversationParticipant(role=DialogueRole.agent)
 
         self.rowdy_user_participant = ConversationTestModule.RowdyParticipant(role=DialogueRole.user)
-        self.agent_participants = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
+        self.agent_participant_list = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
 
-        for particpant in self.agent_participants:
-            particpant.join_channel(self.conversation)
+        enter_into_conversation(channel=self.basic_channel, participant_list=self.agent_participant_list)
 
-        self.all_participants = self.agent_participants+[self.rowdy_user_participant]
+        self.all_participants = self.agent_participant_list + [self.rowdy_user_participant]
 
     # Expects output:
     # assistant said: Hello from participant 1!
@@ -62,7 +61,7 @@ class ConversationTestModule(TestModule):
 
     @TestModule.test
     def test_reaction(self):
-        self.rowdy_user_participant.join_channel(self.conversation)
+        self.rowdy_user_participant.join_channel(self.basic_channel)
         self.agent_participant1.speak('How are you :)')
 
         time.sleep(1)
@@ -79,4 +78,4 @@ if __name__ == "__main__":
     test.test_speak_and_think()
     test.clear_logs()
     test.test_reaction()
-    test.conversation.stop_after_next_timeout()
+    test.basic_channel.stop_after_next_timeout()

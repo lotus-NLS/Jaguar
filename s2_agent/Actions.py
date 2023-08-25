@@ -6,8 +6,8 @@ import json
 
 class ToolInstructions:
     def __init__(self,name : str, arguments : dict):
-        self.name = name
-        self.arguments = arguments
+        self.name : str = name
+        self.arguments : dict = arguments
 
 class Action:
     def __init__(self, openAI_response : dict):

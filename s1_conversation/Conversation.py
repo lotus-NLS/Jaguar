@@ -27,7 +27,7 @@ class ConversationEntry(dict):
 
 class Channel:
     def __init__(self):
-        self._participant_loggers: list[Callable[[ConversationEntry],None]] = []
+        self.participant_loggers: list[Callable[[ConversationEntry], None]] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         self._is_running = True
 
@@ -40,31 +40,19 @@ class Channel:
         while self._is_running:
             try:
                 entry = self._message_queue.get(block=True, timeout=0.1)
-                [logger(entry) for logger in self._participant_loggers]
+                [logger(entry) for logger in self.participant_loggers]
             except queue.Empty:
                 pass
 
     # ------------------------------
-    # Update
+    # Other
 
-    def remove_participant(self, logger : Callable[[ConversationEntry], None]):
-        try:
-            self._participant_loggers.remove(logger)
-        except:
-            print(f'[Debug]: Tried to remove logger {logger} who is not listed in participant loggers')
-
-    def add_participant(self, logger : Callable[[ConversationEntry],None]):
-        self._participant_loggers.append(logger)
-
+    def broadcast_message(self, entry : ConversationEntry):
+        self._message_queue.put(entry)
 
     def stop_after_next_timeout(self):
         self._is_running = False
 
-    # ------------------------------
-    # Broadcast
-
-    def broadcast_message(self, entry : ConversationEntry):
-        self._message_queue.put(entry)
 
 
 class ConversationParticipant:
@@ -80,11 +68,14 @@ class ConversationParticipant:
     def join_channel(self, channel : Channel):
         self.leave_channel()
         self._channel  = channel
-        channel.add_participant(logger=self.log_entry)
+        self._channel.participant_loggers.append(self.log_entry)
 
     def leave_channel(self) -> None:
         if not self._channel is None:
-            self._channel.remove_participant(logger=self.log_entry)
+            try:
+                self._channel.participant_loggers.remove(self.log_entry)
+            except:
+                print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
 
     # ------------------------------
@@ -113,3 +104,8 @@ class ConversationParticipant:
 
     def print_memory(self):
         print(self._personal_log)
+
+
+def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):
+    for participant in participant_list:
+        participant.join_channel(channel)
