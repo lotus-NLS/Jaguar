@@ -18,7 +18,6 @@ from PyPDF2 import PdfReader
 
 
 class READ(Tool):
-
     text_format = 'txt'
     pdf_format = 'pdf'
     allowed_formats = [text_format,pdf_format]

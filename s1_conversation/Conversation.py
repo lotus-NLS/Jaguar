@@ -89,7 +89,7 @@ class ConversationParticipant:
         pass
 
     def think(self,msg : str):
-        print(f'[Debug]:{self._role} thought: {msg}')
+        print(f'[Debug]: {self._role} thought: {msg}')
         self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
 
     def speak(self, msg : str):
