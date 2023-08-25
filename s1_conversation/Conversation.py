@@ -10,12 +10,10 @@ from typing import List, Callable, Union
 
 # ----------------------------------------------------
 
-
-class DialogueRole:
+class DialogueRole(str):
     user = 'user'
     agent = 'assistant'
     system = 'system'
-
 
     def __new__(cls, role : str):
         if not role in DialogueRole.as_list():
@@ -35,15 +33,9 @@ class DialogueRole:
 
 
 class ConversationEntry(dict):
-    def __init__(self,role : str, msg : str):
+    def __init__(self,role : DialogueRole, msg : str):
         super().__init__()
-
-        if not role in DialogueRole.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}. Defaulting to agent role ...')
-            self['role'] = DialogueRole.agent
-        else:
-            self['role'] = role
-
+        self['role'] = role
         self['content'] = msg
 
     def get_role(self):
@@ -51,7 +43,6 @@ class ConversationEntry(dict):
 
     def get_content(self):
         return self['content']
-
 
 
 class Channel:
@@ -62,8 +53,8 @@ class Channel:
 
         threading.Thread(target=self._process_queue).start()
 
-    def stop_after_next_timeout(self):
-        self._is_running = False
+    # ------------------------------
+    # Setup
 
     def _process_queue(self):
         while self._is_running:
@@ -72,6 +63,9 @@ class Channel:
                 [logger(entry) for logger in self._participant_loggers]
             except queue.Empty:
                 pass
+
+    # ------------------------------
+    # Update
 
     def remove_participant(self, logger : Callable[[ConversationEntry], None]):
         try:
@@ -82,22 +76,23 @@ class Channel:
     def add_participant(self, logger : Callable[[ConversationEntry],None]):
         self._participant_loggers.append(logger)
 
+
+    def stop_after_next_timeout(self):
+        self._is_running = False
+
+    # ------------------------------
+    # Broadcast
+
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
 
 
 class ConversationParticipant:
-    def __init__(self, role : str):
+    def __init__(self, role : DialogueRole):
         super().__init__()
-        if not role in DialogueRole.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}'
-                  f'Defaulting to the agent role')
-            self._role = DialogueRole.agent
-        else:
-            self._role : str = role
-
-        self._channel : Union[Channel, None] = None
+        self._role : DialogueRole = role
         self._personal_log : List[ConversationEntry] = []
+        self._channel : Union[Channel, None] = None
 
     # ------------------------------
     # Update
@@ -139,3 +134,5 @@ class ConversationParticipant:
     def print_memory(self):
         print(self._personal_log)
 
+
+conversation_modules = [ConversationEntry,ConversationParticipant,Channel,DialogueRole]

@@ -1,7 +1,6 @@
 import os
 
 import openai
-# from openai.openai_object import OpenAIObject
 from s2_agent.Actions import ToolInstructions
 from s1_conversation.Conversation import ConversationParticipant, DialogueRole, ConversationEntry
 from s1_protocol.Directive import Directive

@@ -49,6 +49,7 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
 
 - Pass arguments only by keyword.
 - Nesting: Max indentation level === 3
+- Module length: Max ~200 loc
 
 - No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
   ```
