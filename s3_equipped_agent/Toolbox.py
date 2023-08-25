@@ -19,7 +19,7 @@ from PyPDF2 import PdfReader
 
 class READ(Tool):
 
-    text_format = 'text'
+    text_format = 'txt'
     pdf_format = 'pdf'
     allowed_formats = [text_format,pdf_format]
 
@@ -39,7 +39,7 @@ class READ(Tool):
 
     @staticmethod
     def get_txt_file_content(location : str) -> str:
-        with open(location, 'f') as file:
+        with open(location, 'r') as file:
             file_content = file.read()
         return file_content
 
