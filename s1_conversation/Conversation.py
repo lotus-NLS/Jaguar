@@ -45,17 +45,10 @@ class ConversationEntry(dict):
         return self['content']
 
 
-class LogKeeper:
-    def __init__(self):
-        self._personal_log : List[ConversationEntry] = []
-
-    def log_entry(self, entry : ConversationEntry):
-        self._personal_log.append(entry)
-
 
 class Channel:
     def __init__(self):
-        self._participants: List[LogKeeper] = []
+        self._participant_loggers: list[Callable[[ConversationEntry],None]] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         self._is_running = True
 
@@ -68,25 +61,25 @@ class Channel:
         while self._is_running:
             try:
                 entry = self._message_queue.get(block=True, timeout=1)  # Adjust timeout as needed
-                for listener in self._participants:
-                    listener.log_entry(entry)
+                for logger in self._participant_loggers:
+                    logger(entry)
             except queue.Empty:
                 pass  # Continue the loop if the queue is empty
 
-    def remove_particpant(self, participant : LogKeeper):
+    def remove_participant(self, logger : Callable[[ConversationEntry], None]):
         try:
-            self._participants.remove(participant)
+            self._participant_loggers.remove(logger)
         except:
-            print(f'[Debug]: Tried to remove participant {participant} who is not listed in participants')
+            print(f'[Debug]: Tried to remove logger {logger} who is not listed in participant loggers')
 
-    def add_participant(self, participant  : LogKeeper):
-        self._participants.append(participant)
+    def add_participant(self, logger : Callable[[ConversationEntry],None]):
+        self._participant_loggers.append(logger)
 
     def broadcast_message(self, entry : ConversationEntry):
         self._message_queue.put(entry)
 
 
-class ConversationParticipant(LogKeeper):
+class ConversationParticipant:
     def __init__(self, role : str):
         super().__init__()
         if not role in Dialogue_Roles.as_list():
@@ -97,6 +90,7 @@ class ConversationParticipant(LogKeeper):
             self._role : str = role
 
         self._channel : Union[Channel, None] = None
+        self._personal_log : List[ConversationEntry] = []
 
     # ------------------------------
     # Update
@@ -104,11 +98,11 @@ class ConversationParticipant(LogKeeper):
     def join_channel(self, channel : Channel):
         self.leave_channel()
         self._channel  = channel
-        channel.add_participant(self)
+        channel.add_participant(logger=self.log_entry)
 
     def leave_channel(self) -> None:
         if not self._channel is None:
-            self._channel.remove_particpant(self)
+            self._channel.remove_participant(logger=self.log_entry)
             self._channel = None
 
     # ------------------------------
