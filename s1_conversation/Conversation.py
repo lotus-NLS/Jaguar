@@ -1,6 +1,7 @@
 import queue, threading
 from queue import Queue
 from typing import List, Callable, Union
+from s1_conversation.DialogueRoles import DialogueRole
 
 # Conversation:
 # -> Only Conversation Particpants can join a s1_conversation
@@ -9,27 +10,6 @@ from typing import List, Callable, Union
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
 
 # ----------------------------------------------------
-
-class DialogueRole(str):
-    user = 'user'
-    agent = 'assistant'
-    system = 'system'
-
-    def __new__(cls, role : str):
-        if not role in DialogueRole.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}. Defaulting to agent role ...')
-            return DialogueRole.agent
-
-        else:
-            return role
-
-    @classmethod
-    def as_list(cls):
-        as_list = []
-        for name, value in cls.__dict__.items():
-            if not name.startswith("__"):
-                as_list.append(value)
-        return as_list
 
 
 class ConversationEntry(dict):
@@ -133,6 +113,3 @@ class ConversationParticipant:
 
     def print_memory(self):
         print(self._personal_log)
-
-
-conversation_modules = [ConversationEntry,ConversationParticipant,Channel,DialogueRole]
