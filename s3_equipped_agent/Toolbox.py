@@ -50,7 +50,7 @@ class READ(Tool):
 
         pdf_content = ''
         for page_num in range(len(pdf_reader.pages)):
-            pdf_content += pdf_reader.pages[page_num].extractText()
+            pdf_content += pdf_reader.pages[page_num].extract_text()
 
         # Close the PDF file
         pdf_file.close()
@@ -121,4 +121,3 @@ class WRITE(Tool):
 
 
 basic_tools = [READ(),WRITE()]
-
