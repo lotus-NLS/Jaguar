@@ -52,12 +52,12 @@ class GUI_User(ConversationParticipant):
 
 if __name__ == "__main__":
 
-    the_conversation = Channel()
     the_user = GUI_User()
     the_bot = BasicAgent()
 
+    the_conversation = Channel()
     for participant in [the_user, the_bot]:
-        the_conversation.add_participant(participant)
+        the_conversation.add_participant(logger=participant.log_entry)
 
     the_user.window.mainloop()
 

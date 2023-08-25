@@ -1,13 +1,13 @@
 import time
 
 from s1_conversation.Conversation import Channel, ConversationParticipant, Dialogue_Roles
-from s5_tests.TestModule import TestModule
+from s5_tests.composition_tests.TestModule import TestModule
 
 
 
 class ConversationTestModule(TestModule):
 
-    class Rowdy_participant(ConversationParticipant):
+    class RowdyParticipant(ConversationParticipant):
         def _reaction_protocol(self, dialogue_line: dict):
             role = dialogue_line['role']
             if role == Dialogue_Roles.agent:
@@ -23,7 +23,7 @@ class ConversationTestModule(TestModule):
         self.agent_participant2 = ConversationParticipant(role=Dialogue_Roles.agent)
         self.agent_participant3 = ConversationParticipant(role=Dialogue_Roles.agent)
 
-        self.rowdy_user_participant = ConversationTestModule.Rowdy_participant(role=Dialogue_Roles.user)
+        self.rowdy_user_participant = ConversationTestModule.RowdyParticipant(role=Dialogue_Roles.user)
         self.agent_participants = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
 
         for particpant in self.agent_participants:
@@ -79,4 +79,4 @@ if __name__ == "__main__":
     test.test_speak_and_think()
     test.clear_logs()
     test.test_reaction()
-    test.conversation.stop()
+    test.conversation.stop_after_next_timeout()

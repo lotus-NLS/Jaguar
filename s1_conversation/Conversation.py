@@ -1,7 +1,6 @@
 import queue, threading
 from queue import Queue
 from typing import List, Callable, Union
-from s1_conversation.CustomQueue import CustomQueue
 
 # Conversation:
 # -> Only Conversation Particpants can join a s1_conversation
@@ -54,17 +53,16 @@ class Channel:
 
         threading.Thread(target=self._process_queue).start()
 
-    def stop(self):
+    def stop_after_next_timeout(self):
         self._is_running = False
 
     def _process_queue(self):
         while self._is_running:
             try:
-                entry = self._message_queue.get(block=True, timeout=1)  # Adjust timeout as needed
-                for logger in self._participant_loggers:
-                    logger(entry)
+                entry = self._message_queue.get(block=True, timeout=0.1)
+                [logger(entry) for logger in self._participant_loggers]
             except queue.Empty:
-                pass  # Continue the loop if the queue is empty
+                pass
 
     def remove_participant(self, logger : Callable[[ConversationEntry], None]):
         try:

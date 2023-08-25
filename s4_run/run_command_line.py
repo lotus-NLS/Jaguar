@@ -8,7 +8,7 @@ the_bot = BasicAgent()
 the_user = ConversationParticipant(role=Dialogue_Roles.user)
 other_user = ConversationParticipant(role=Dialogue_Roles.user)
 for participant in [the_bot,the_user,other_user]:
-    the_conversation.add_participant(participant)
+    the_conversation.add_participant(logger=participant.log_entry)
 
 
 while True:
