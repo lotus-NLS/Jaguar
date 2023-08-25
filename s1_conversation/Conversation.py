@@ -10,11 +10,20 @@ from typing import List, Callable, Union
 
 # ----------------------------------------------------
 
-# TODO: Make this into a class so that I can use ConversationParticipant __init__ role : DialogueRole
-class Dialogue_Roles:
+
+class DialogueRole:
     user = 'user'
     agent = 'assistant'
     system = 'system'
+
+
+    def __new__(cls, role : str):
+        if not role in DialogueRole.as_list():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}. Defaulting to agent role ...')
+            return DialogueRole.agent
+
+        else:
+            return role
 
     @classmethod
     def as_list(cls):
@@ -29,9 +38,9 @@ class ConversationEntry(dict):
     def __init__(self,role : str, msg : str):
         super().__init__()
 
-        if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}. Defaulting to agent role ...')
-            self['role'] = Dialogue_Roles.agent
+        if not role in DialogueRole.as_list():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}. Defaulting to agent role ...')
+            self['role'] = DialogueRole.agent
         else:
             self['role'] = role
 
@@ -80,10 +89,10 @@ class Channel:
 class ConversationParticipant:
     def __init__(self, role : str):
         super().__init__()
-        if not role in Dialogue_Roles.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {Dialogue_Roles.as_list()}'
+        if not role in DialogueRole.as_list():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}'
                   f'Defaulting to the agent role')
-            self._role = Dialogue_Roles.agent
+            self._role = DialogueRole.agent
         else:
             self._role : str = role
 

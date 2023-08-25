@@ -1,6 +1,6 @@
 import time
 
-from s1_conversation.Conversation import Channel, ConversationParticipant, Dialogue_Roles
+from s1_conversation.Conversation import Channel, ConversationParticipant, DialogueRole
 from s5_tests.composition_tests.TestModule import TestModule
 
 
@@ -10,7 +10,7 @@ class ConversationTestModule(TestModule):
     class RowdyParticipant(ConversationParticipant):
         def _reaction_protocol(self, dialogue_line: dict):
             role = dialogue_line['role']
-            if role == Dialogue_Roles.agent:
+            if role == DialogueRole.agent:
                 self.speak('Actually, leave me alone! Let me talk to another user')
 
 
@@ -19,11 +19,11 @@ class ConversationTestModule(TestModule):
         self.conversation = Channel()
 
         # Create participants and add them to the handler
-        self.agent_participant1 = ConversationParticipant(role=Dialogue_Roles.agent)
-        self.agent_participant2 = ConversationParticipant(role=Dialogue_Roles.agent)
-        self.agent_participant3 = ConversationParticipant(role=Dialogue_Roles.agent)
+        self.agent_participant1 = ConversationParticipant(role=DialogueRole.agent)
+        self.agent_participant2 = ConversationParticipant(role=DialogueRole.agent)
+        self.agent_participant3 = ConversationParticipant(role=DialogueRole.agent)
 
-        self.rowdy_user_participant = ConversationTestModule.RowdyParticipant(role=Dialogue_Roles.user)
+        self.rowdy_user_participant = ConversationTestModule.RowdyParticipant(role=DialogueRole.user)
         self.agent_participants = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
 
         for particpant in self.agent_participants:

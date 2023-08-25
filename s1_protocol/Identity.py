@@ -1,4 +1,4 @@
-from s1_conversation.Conversation import ConversationEntry, Dialogue_Roles
+from s1_conversation.Conversation import ConversationEntry, DialogueRole
 
 
 # ----------------------------------------------------
@@ -13,4 +13,4 @@ class Identity:
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
 
-        return ConversationEntry(role=Dialogue_Roles.system, msg=core_msg + principles_msg)
+        return ConversationEntry(role=DialogueRole.system, msg=core_msg + principles_msg)

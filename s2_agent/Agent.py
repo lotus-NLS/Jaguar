@@ -3,7 +3,7 @@ import os
 import openai
 # from openai.openai_object import OpenAIObject
 from s2_agent.Actions import ToolInstructions
-from s1_conversation.Conversation import ConversationParticipant, Dialogue_Roles, ConversationEntry
+from s1_conversation.Conversation import ConversationParticipant, DialogueRole, ConversationEntry
 from s1_protocol.Directive import Directive
 from s1_protocol.Identity import Identity
 
@@ -28,7 +28,7 @@ class Models:
 class Agent(ConversationParticipant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k):
         # Set identity and directive
-        super().__init__(role=Dialogue_Roles.agent)
+        super().__init__(role=DialogueRole.agent)
         self._directive = Directive(task=None,objective=None)
 
         with open('../s1_protocol/IdentityDefinition/core') as idenity_file:
@@ -88,7 +88,7 @@ class Agent(ConversationParticipant):
     # Callback
 
     def _reaction_protocol(self, dialogue_line : ConversationEntry) -> None:
-        if dialogue_line['role'] == Dialogue_Roles.user:
+        if dialogue_line['role'] == DialogueRole.user:
             self._process_user_request()
 
     # ---------------------------------------------------

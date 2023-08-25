@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,Dialogue_Roles
+from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,DialogueRole
 from s3_equipped_agent.BasicAgent import BasicAgent
 
 # ---------------------------------------------------------
@@ -11,7 +11,7 @@ from s3_equipped_agent.BasicAgent import BasicAgent
 class GUI_User(ConversationParticipant):
 
     def __init__(self):
-        super().__init__(Dialogue_Roles.user)
+        super().__init__(DialogueRole.user)
         self.width = 600
         self.height = 600
 
