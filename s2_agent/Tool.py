@@ -17,6 +17,7 @@ class ToolArg:
         return arg_doc
 
 
+# TODO: Create loggers for different logging types
 class Tool:
     def __init__(self):
         self.name : str = self.__class__.__name__

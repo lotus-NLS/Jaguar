@@ -1,93 +1,142 @@
-# from typing import Callable
-# from typing import List
 import os
 from s2_agent.Tool import Tool,ToolArg
 
 
-# TOOL LOGGING Protocol:
+# Tool class logging
 # -> [START] : For tool launch
-# -> [PROGRESS] : For updates on tool progress
-# -> [RESULT] : For what the tool retrieved if applicable
-# -> [ERROR] : For reporting encountered errors if any
 # -> [FINISH]: Tool done
+
+# Specifc tool implementations (READ, WRITE etc.) logging:
+# -> [PROGRESS] : For updates on tool progress
+# -> [ERROR] : For reporting encountered errors if any
+
 
 # ---------------------------------------------------------
 
 
-class Toolbox:
 
-    # class SAY(Tool):
-    #     def __init__(self):
-    #         super().__init__()
-    #         self.description = 'Say hello to the guests we have in our home today via a message board '
-    #
-    #         self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
-    #                                                   description='This is what you will say to the guests')
-    #
-    #     def do(self):
-    #         self.log(f'**** {self.text_argument.val} ****')
-
-
-    class READ(Tool):
-        def __init__(self):
-            super().__init__()
-            self.description = 'The READ tool allows you to read the contents of a file.'
-
-            self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
-                                                     description='This is the path to the file which you will read')
+# class SAY(Tool):
+#     def __init__(self):
+#         super().__init__()
+#         self.description = 'Say hello to the guests we have in our home today via a message board '
+#
+#         self.text_argument : ToolArg = self.create_argument(name='text_content', dtype=str,
+#                                                   description='This is what you will say to the guests')
+#
+#     def do(self):
+#         self.log(f'**** {self.text_argument.val} ****')
 
 
-        def do(self):
-            location = self.fpath_arg.val
+class READ(Tool):
 
-            if not os.path.isfile(location):
-                self.log(f'[ERROR]: There is no file located at given location {location}')
+    text_format = 'text'
+    pdf_format = 'pdf'
+    allowed_formats = [text_format,pdf_format]
 
-            try:
-                self.log(f'[PROGRESS]: Attempting to read file located at {location}')
-                with open(location, 'f') as file:
-                    file_content = file.read()
-                    self.log(f'[RESULT]: {file_content}')
-                    self.log('[PROGRESS]: Successfully completed reading of file.')
+    def __init__(self):
+        super().__init__()
+        self.description = 'The READ tool allows you to read the contents of a text file or a pdf.'
 
-            except:
-                self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
+        self.fpath_arg : ToolArg = self.create_argument(
+            name='fpath', dtype=str,
+            description='This is the path to the file which you will read')
 
+        self.format_arg : ToolArg = self.create_argument(
+            name='format', dtype=str,
+            description=f'This is the format of the file you want to read.'
+                        f'Enter {self.text_format} for a text file or {self.pdf_format} for a pdf')
 
-    class WRITE(Tool):
-        def __init__(self):
-            super().__init__()
-            self.description = 'The WRITE tool allows you to write content to a file on the user system'
-
-            self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
-                                                     description='The path of the file that you will write')
-
-            self.content_arg : ToolArg = self.create_argument(name='content',dtype=str,
-                                                    description='The content that will be written to the file')
-
-        def do(self):
-            location = self.fpath_arg.val
-
-            parent_dir = os.path.dirname(location)
-            if os.access(parent_dir,os.W_OK):
-                self.log(f'[ERROR]: {parent_dir} is not a writable directory')
-
-            try:
-                with open(self.fpath_arg.val, 'w') as file:
-                    file.write(self.content_arg.val)
-                    self.log(f'[PROGRESS]: Suceeded in writing out file')
-
-            except:
-                self.log(f'[ERROR]: An error occured while trying to write file')
+    def read_txt_file_content(self, location) -> None:
+        with open(location, 'f') as file:
+            file_content = file.read()
+            self.log(f'[RESULT]: {file_content}')
 
 
-    # class UPDATE_DIRECTIVE(Tool):
-    #     def __init__(self, Directive):
-    #         super().__init__()
-    #
-    #     def do(self):
-    #         pass
+    def read_pdf_file_content(self,location):
+        pass
+        # import PyPDF2
+        #
+        # # Open the PDF file in binary read mode
+        # pdf_file_path = 'path/to/your/pdf/file.pdf'
+        # pdf_file = open(pdf_file_path, 'rb')
+        #
+        # # Create a PDF reader object
+        # pdf_reader = PyPDF2.PdfReader(pdf_file)
+        #
+        # # Initialize an empty string to store the PDF content
+        # pdf_content = ''
+        #
+        # # Iterate through each page and extract text
+        # for page_num in range(len(pdf_reader.pages)):
+        #     page = pdf_reader.pages[page_num]
+        #     pdf_content += page.extract_text()
+        #
+        # # Close the PDF file
+        # pdf_file.close()
+        #
+        # # Print the extracted PDF content
+        # print(pdf_content)
+
+    def do(self) -> None:
+        location = self.fpath_arg.val
+
+        if not os.path.isfile(location):
+            self.log(f'[ERROR]: There is no file located at given location {location}')
+
+        chosen_format = self.format_arg.val
+        if not self.format_arg.val in [self.text_format, self.pdf_format]:
+            self.log(f'[ERROR]: Given format {chosen_format} is not an allowed format.'
+                     f' Please choose a format from {self.allowed_formats}')
 
 
-basic_tools = [Toolbox.READ(),Toolbox.WRITE()]
+        if chosen_format == self.text_format:
+            read_action = self.read_txt_file_content
+        else:
+            read_action = self.read_pdf_file_content
+
+        try:
+            self.log(f'[PROGRESS]: Attempting to read file located at {location}')
+            read_action(location=location)
+            self.log(f'[PROGRESS]: Successfully completed reading of file.')
+
+        except:
+            self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
+
+
+class WRITE(Tool):
+    def __init__(self):
+        super().__init__()
+        self.description = 'The WRITE tool allows you to write content to a file on the user system'
+
+        self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
+                                                 description='The path of the file that you will write')
+
+        self.content_arg : ToolArg = self.create_argument(name='content',dtype=str,
+                                                description='The content that will be written to the file')
+
+    def do(self):
+        location = self.fpath_arg.val
+
+        parent_dir = os.path.dirname(location)
+        if os.access(parent_dir,os.W_OK):
+            self.log(f'[ERROR]: {parent_dir} is not a writable directory')
+
+        try:
+            with open(self.fpath_arg.val, 'w') as file:
+                file.write(self.content_arg.val)
+                self.log(f'[PROGRESS]: Suceeded in writing out file')
+
+        except:
+            self.log(f'[ERROR]: An error occured while trying to write file')
+
+
+# class UPDATE_DIRECTIVE(Tool):
+#     def __init__(self, Directive):
+#         super().__init__()
+#
+#     def do(self):
+#         pass
+
+
+basic_tools = [READ(),WRITE()]
 

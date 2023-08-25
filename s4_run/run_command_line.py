@@ -6,10 +6,10 @@ from s1_conversation.Conversation import ConversationParticipant,Channel, Dialog
 
 the_bot = BasicAgent()
 the_user = ConversationParticipant(role=DialogueRole.user)
-other_user = ConversationParticipant(role=DialogueRole.user)
+# other_user = ConversationParticipant(role=DialogueRole.user)
 
 basic_channel = Channel()
-enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_user,other_user])
+enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_user])
 
 
 while True:
@@ -17,6 +17,6 @@ while True:
     time.sleep(1)
     print('Current conversation memory of the bot')
     the_bot.print_memory()
-    print('Current conversation memory of other user')
-    other_user.print_memory()
+    # print('Current conversation memory of other user')
+    # other_user.print_memory()
     # other_user.print_memory()
