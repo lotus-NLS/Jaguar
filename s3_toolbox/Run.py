@@ -5,6 +5,7 @@ import subprocess
 
 # NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
 # NOTE : -> Do not use the name 'format' for arguments
+# NOTE : Use only lowercase letters for argument names or argument choices i.e. snake_case
 # ---------------------------------------------------------
 
 class RUN(Tool):
@@ -16,8 +17,9 @@ class RUN(Tool):
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string'
 
         self.mode_arg: ToolArg = self.create_argument(name='mode', dtype=str,
-                                      description=f'Mode of operation: "{self.python_script_mode}" for Python script and'
-                                                  f' "{self.cmd_mode}" for command line')
+                                      description=f'Specify either "{self.python_script_mode}" or "{self.cmd_mode}" as the mode'
+                                                  f'to run your code in the corresponding way'
+                                                  f'Choices: [{self.cmd_mode},{self.python_script_mode}]')
 
         self.program_content_arg: ToolArg = self.create_argument(name='program_content', dtype=str,
                                       description='The content of the Python script or shell command to execute')

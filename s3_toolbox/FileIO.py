@@ -2,8 +2,11 @@ import os
 import traceback
 
 from PyPDF2 import PdfReader
-
 from s2_agent.Tool import Tool, ToolArg
+
+# NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
+# NOTE : -> Do not use the name 'format' for arguments
+# ---------------------------------------------------------
 
 
 class READ(Tool):

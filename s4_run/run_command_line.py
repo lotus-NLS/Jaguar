@@ -20,7 +20,7 @@ enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_user
 
 # TODO: The agent can introduce itself. Basically it's its own instruction manual.
 # This also should be general to all run applications
-the_user.speak('[Manual inquiry for user]: Who are you and what can you do?')
+# the_user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
 while True:
     the_user.speak(input(''))
