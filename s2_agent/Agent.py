@@ -56,7 +56,7 @@ class Agent(ConversationParticipant):
             tool.external_log = self.think
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
-
+    # TODO: get_api_key needs to be OS independent and set the api_key for only one user
     @staticmethod
     def _get_api_key() -> str:
         try:

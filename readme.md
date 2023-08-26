@@ -19,6 +19,14 @@ Install required packages
 pip install -r requirements.txt
 ```
 
+To communicate with the OpenAI API an API key is needed. It must be set as an environment variables
+```
+Windows: setx openai_key [your_api_key]
+Linux: echo "openai_key=[your_api_key]" | sudo tee -a /etc/environment
+```
+
+[//]: # (TODO: The setting of the API key should actually be per user. So setting it system wide is no good.)
+
 ## Usage
 
 Run either on command line or as GUI:
@@ -29,8 +37,6 @@ OR:
 ```
 python3 s4_UI/run_command_line.py
 ```
-
-#Explain set API key
 
 Currently, the available tools are:
 - READ: Read a local text file
