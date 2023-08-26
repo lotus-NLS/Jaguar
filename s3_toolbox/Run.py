@@ -8,7 +8,7 @@ import subprocess
 # ---------------------------------------------------------
 
 class RUN(Tool):
-    script_mode = 'script'
+    python_script_mode = 'python'
     cmd_mode = 'cmd'
 
     def __init__(self):
@@ -16,7 +16,7 @@ class RUN(Tool):
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string'
 
         self.mode_arg: ToolArg = self.create_argument(name='mode', dtype=str,
-                                      description=f'Mode of operation: "{self.script_mode}" for Python script and'
+                                      description=f'Mode of operation: "{self.python_script_mode}" for Python script and'
                                                   f' "{self.cmd_mode}" for command line')
 
         self.program_content_arg: ToolArg = self.create_argument(name='program_content', dtype=str,
@@ -25,12 +25,12 @@ class RUN(Tool):
     def do(self) -> None:
         mode = self.mode_arg.val
 
-        if not mode in [self.script_mode,self.cmd_mode]:
-            self.error_log(f'Invalid mode specified. Use "{self.script_mode}"'
+        if not mode in [self.python_script_mode, self.cmd_mode]:
+            self.error_log(f'Invalid mode specified. Use "{self.python_script_mode}"'
                            f' for Python script or "{self.cmd_mode}" for command line.')
             return
 
-        if mode == self.script_mode:
+        if mode == self.python_script_mode:
             execution_with_return_result = self.execute_py
         else:
             execution_with_return_result = self.execute_cmd
