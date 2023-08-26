@@ -1,5 +1,5 @@
 import time
-from s3_tool_agent.BasicAgent import BasicAgent
+from s4_run.BasicAgent import BasicAgent
 from s1_conversation.Conversation import ConversationParticipant,Channel, DialogueRole,enter_into_conversation
 
 # TODO: Collect common functionalities of run_command_line and run_GUI together

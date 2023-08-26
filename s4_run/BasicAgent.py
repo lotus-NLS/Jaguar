@@ -1,6 +1,7 @@
 from s2_agent.Agent import Agent
-from s3_tool_agent.Toolbox import basic_tools
+from s3_toolbox.FileIO import READ,WRITE
 
+basic_tools = [READ(), WRITE()]
 
 class BasicAgent(Agent):
     def __init__(self):

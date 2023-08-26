@@ -1,13 +1,9 @@
 import os
 import traceback
-from s2_agent.Tool import Tool,ToolArg
+
 from PyPDF2 import PdfReader
 
-
-
-# NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
-# NOTE : -> Do not use the name 'format' for arguments
-# ---------------------------------------------------------
+from s2_agent.Tool import Tool, ToolArg
 
 
 class READ(Tool):
@@ -83,10 +79,10 @@ class WRITE(Tool):
         self.description = 'The WRITE tool allows you to write content to a file on the user system'
 
         self.fpath_arg : ToolArg = self.create_argument(name='fpath', dtype=str,
-                                                 description='The path of the file that you will write')
+                                        description='The path of the file that you will write')
 
         self.content_arg : ToolArg = self.create_argument(name='content',dtype=str,
-                                                description='The content that will be written to the file')
+                                        description='The content that will be written to the file')
 
     def do(self):
         location = self.fpath_arg.val
@@ -102,14 +98,3 @@ class WRITE(Tool):
 
         except:
             self.error_log(f'An error occured while trying to write file')
-
-
-# class UPDATE_DIRECTIVE(Tool):
-#     def __init__(self, Directive):
-#         super().__init__()
-#
-#     def do(self):
-#         pass
-
-
-basic_tools = [READ(),WRITE()]
