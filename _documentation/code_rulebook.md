@@ -37,8 +37,9 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
 
 ### IV: Downstream dependencies
 
-- Apply stream terminology: x depends on y == x is upstream of y == y is downstream of x
-- Downstream dependency arrangement: Upstream == Upwards in directory/file; Downstream == Downwards in directory/file 
+- Apply stream terminology: x depends on y == x is downstream of y == y is upstream of x
+- Wherever possible apply downstream dependency arrangement: \
+Upstream == Upwards in directory/file; Downstream == Downwards in directory/file 
 - I.e.: Highest level modules/submodules first then the methods they depend on below
 
 ### V: Debugging

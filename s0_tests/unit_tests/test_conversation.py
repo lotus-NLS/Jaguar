@@ -1,6 +1,7 @@
 import time
 
-from s4_conversation.Conversation import Channel, ConversationParticipant, DialogueRole, enter_into_conversation
+from s4_conversation.ConversationParticipant import ConversationParticipant, DialogueRole, enter_into_conversation
+from s4_conversation.Channel import Channel
 from s0_tests.composition_tests.TestModule import TestModule
 
 

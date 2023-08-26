@@ -1,6 +1,8 @@
-import queue, threading
-from queue import Queue
-from typing import List, Callable, Union
+import threading
+from typing import List, Union
+
+from s4_conversation.Channel import Channel
+from s4_conversation.ConversationEntry import ConversationEntry
 from s4_conversation.DialogueRoles import DialogueRole
 
 # Conversation:
@@ -10,49 +12,6 @@ from s4_conversation.DialogueRoles import DialogueRole
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
 
 # ----------------------------------------------------
-
-
-class ConversationEntry(dict):
-    def __init__(self,role : DialogueRole, msg : str):
-        super().__init__()
-        self['role'] = role
-        self['content'] = msg
-
-    def get_role(self):
-        return self['role']
-
-    def get_content(self):
-        return self['content']
-
-
-class Channel:
-    def __init__(self):
-        self.participant_loggers: list[Callable[[ConversationEntry], None]] = []
-        self._message_queue : Queue[ConversationEntry] = queue.Queue()
-        self._is_running = True
-
-        threading.Thread(target=self._process_queue).start()
-
-    # ------------------------------
-    # Setup
-
-    def _process_queue(self):
-        while self._is_running:
-            try:
-                entry = self._message_queue.get(block=True, timeout=0.1)
-                [logger(entry) for logger in self.participant_loggers]
-            except queue.Empty:
-                pass
-
-    # ------------------------------
-    # Other
-
-    def broadcast_message(self, entry : ConversationEntry):
-        self._message_queue.put(entry)
-
-    def stop_after_next_timeout(self):
-        self._is_running = False
-
 
 
 class ConversationParticipant:
