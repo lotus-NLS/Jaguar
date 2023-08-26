@@ -1,9 +1,9 @@
 import threading
 from typing import List, Union
 
-from s4_conversation.Channel import Channel
-from s4_conversation.ConversationEntry import ConversationEntry
-from s4_conversation.DialogueRoles import DialogueRole
+from s4_conversation.s1_Channel import Channel
+from s4_conversation.s2_ConversationEntry import ConversationEntry
+from s4_conversation.s3_DialogueRoles import DialogueRole
 
 # Conversation:
 # -> Only Conversation Particpants can join a s4_conversation

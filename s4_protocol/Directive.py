@@ -1,6 +1,6 @@
 from s4_protocol.AgendaEntry import Objective,Task
-from s4_conversation.ConversationParticipant import DialogueRole
-from s4_conversation.ConversationEntry import ConversationEntry
+from s4_conversation.s0_ConversationParticipant import DialogueRole
+from s4_conversation.s2_ConversationEntry import ConversationEntry
 from typing import Union
 
 # ----------------------------------------------------

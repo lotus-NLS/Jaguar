@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s4_conversation.ConversationParticipant import ConversationParticipant, DialogueRole,enter_into_conversation
-from s4_conversation.Channel import Channel
-from s4_conversation.ConversationEntry import ConversationEntry
+from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole,enter_into_conversation
+from s4_conversation.s1_Channel import Channel
+from s4_conversation.s2_ConversationEntry import ConversationEntry
 from s1_run.ToolAgent import ToolAgent
 
 # ---------------------------------------------------------

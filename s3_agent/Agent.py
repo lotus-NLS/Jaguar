@@ -3,8 +3,8 @@ from typing import Type
 
 import openai
 from s3_agent.Actions import ToolInstructions
-from s4_conversation.ConversationParticipant import ConversationParticipant, DialogueRole
-from s4_conversation.ConversationEntry import ConversationEntry
+from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole
+from s4_conversation.s2_ConversationEntry import ConversationEntry
 from s4_protocol.Directive import Directive
 from s4_protocol.Identity import Identity
 

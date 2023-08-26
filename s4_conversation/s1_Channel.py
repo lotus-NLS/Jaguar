@@ -3,7 +3,7 @@ import threading
 from queue import Queue
 from typing import Callable
 
-from s4_conversation.ConversationEntry import ConversationEntry
+from s4_conversation.s2_ConversationEntry import ConversationEntry
 
 
 class Channel:
