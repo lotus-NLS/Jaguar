@@ -68,6 +68,7 @@ class Agent(ConversationParticipant):
                 'OR: Enter API key manually and hit ENTER to continue:\n')
 
         try:
+            openai.api_key = key
             args_dict = {
                 'model': self._model_type,
                 'messages': [ConversationEntry(role=DialogueRole.user(),msg='This is a test')],

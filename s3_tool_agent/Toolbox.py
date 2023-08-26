@@ -60,12 +60,12 @@ class READ(Tool):
         location = self.fpath_arg.val
 
         if not os.path.isfile(location):
-            self.log(f'[ERROR]: There is no file located at given location {location}')
+            self.error_log(f'There is no file located at given location {location}')
 
         chosen_format = self.format_arg.val
         if not self.format_arg.val in [self.text_format, self.pdf_format]:
-            self.log(f'[ERROR]: Given format {chosen_format} is not an allowed format.'
-                     f' Please choose a format from {self.allowed_formats}')
+            self.error_log(f'Given format {chosen_format} is not an allowed format.'
+                           f' Please choose a format from {self.allowed_formats}')
 
 
         if chosen_format == self.text_format:
@@ -74,14 +74,14 @@ class READ(Tool):
             get_content_action = self.get_pdf_file_content
 
         try:
-            self.log(f'[PROGRESS]: Attempting to read file located at {location}')
+            self.progress_log(f'Attempting to read file located at {location}')
             file_content = get_content_action(location=location)
-            self.log(f'[PROGRESS]: {file_content}')
-            self.log(f'[PROGRESS]: Successfully completed reading of file.')
+            self.progress_log(f'Read file content:\n{file_content}')
+            self.progress_log(f'Successfully completed reading of file.')
 
         except Exception:
-            self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
-            self.log(f'[ERROR]: {traceback.format_exc()}')
+            self.error_log(f'An error occured while trying to read the file located at {location}')
+            self.error_log(f'{traceback.format_exc()}')
 
 
 class WRITE(Tool):
@@ -100,15 +100,15 @@ class WRITE(Tool):
 
         parent_dir = os.path.dirname(location)
         if os.access(parent_dir,os.W_OK):
-            self.log(f'[ERROR]: {parent_dir} is not a writable directory')
+            self.error_log(f'{parent_dir} is not a writable directory')
 
         try:
             with open(self.fpath_arg.val, 'w') as file:
                 file.write(self.content_arg.val)
-                self.log(f'[PROGRESS]: Suceeded in writing out file')
+                self.progress_log(f'Suceeded in writing out file')
 
         except:
-            self.log(f'[ERROR]: An error occured while trying to write file')
+            self.error_log(f'An error occured while trying to write file')
 
 
 # class UPDATE_DIRECTIVE(Tool):

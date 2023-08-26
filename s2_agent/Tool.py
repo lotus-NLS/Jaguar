@@ -48,37 +48,52 @@ class Tool:
         return tool_doc
 
 
-    def log(self,to_log : str):
-        # log_text = f'{self.name} [TOOL LOGGER]: {to_log}'
-        log_text = f'## Internal Assistant log:{to_log}'
-
-        if self.external_log is None:
-            print(log_text)
-        else:
-            self.external_log(log_text)
-
-
     def handle_call(self, args_dict : dict):
-        self.log(f'[START]: Attempting to launch tool {self.name} with args {args_dict}')
+        self.start_log(f'Attempting to launch tool {self.name} with args {args_dict}')
 
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
-            self.log(f'[FINISH]: Call failed since provided dictionary {args_dict}'
-                     f' did not cover all required tool arguments')
+            self.finish_log(f'Call failed since provided dictionary {args_dict}'
+                            f' did not cover all required tool arguments')
             return
 
         for arg in self.arguments:
             arg.val = args_dict[arg.name]
 
         try:
-            self.log(f'[PROGRESS]: Tool {self.name} has been launched')
+            self.progress_log(f'Tool {self.name} has been launched')
             self.do()
-            self.log(f'[FINISH]: Tool {self.name} completed execution')
+            self.finish_log(f'Tool {self.name} completed execution')
         except:
-            self.log(f'[FINISH]: The Tool {self.name} encountered an unhandeled exception during execution. Aborting ...')
+            self.finish_log(f'The Tool {self.name} encountered an unhandeled exception during execution. Aborting ...')
 
 
     def do(self):
         pass
+
+    # ---------------------------------------------------
+    # Logging
+
+
+    def log(self, to_log: str):
+        log_text = f'## {self.name} log: {to_log}'
+
+        if self.external_log is None:
+            print(log_text)
+        else:
+            self.external_log(log_text)
+
+    def start_log(self, to_log):
+        self.log(f'[Start]: {to_log}')
+
+    def error_log(self, to_log):
+        self.log(f'[Error]: {to_log}')
+
+    def progress_log(self, to_log):
+        self.log(f'[Progress]: {to_log}')
+
+    def finish_log(self, to_log):
+        self.log(f'[Finish]: {to_log}')
+
