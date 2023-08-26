@@ -29,14 +29,6 @@ class ToolArg:
 
 
 class Tool:
-
-    all_tools = []
-    @classmethod
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.all_tools.append(cls)
-
-
     def __init__(self):
         self.name : str = self.__class__.__name__
         self.description : str = ''
