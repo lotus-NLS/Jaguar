@@ -23,6 +23,10 @@ class Models:
     gpt_40_8k = 'gpt-4-0613'
     gpt_40_32k = 'gpt-4-32k-0613'
 
+class FunctionCallModes:
+    auto = 'auto'
+    none = 'none'
+
 
 class Agent(ConversationParticipant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k):
@@ -112,7 +116,7 @@ class Agent(ConversationParticipant):
             print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
-    def _get_next_action(self) -> Action:
+    def _get_next_action(self,function_call_mode = FunctionCallModes.auto) -> Action:
         openai.api_key = self._api_key
         messages = [self._identity.get_msg()]+self._personal_log
 
@@ -124,7 +128,7 @@ class Agent(ConversationParticipant):
 
         if not len(self.tool_list) == 0:
             args_dict['functions'] = self._tool_instructions
-            args_dict['function_call'] = 'auto'
+            args_dict['function_call'] = function_call_mode
 
         openai_response = openai.ChatCompletion.create(**args_dict)
 
@@ -149,7 +153,7 @@ class Agent(ConversationParticipant):
 
 
         self.think(f'I must update the user on the results of the tool usage')
-        text_content = self._get_next_action().get_text_content()
+        text_content = self._get_next_action(function_call_mode=FunctionCallModes.none).get_text_content()
         if not text_content is None:
             self.speak(msg=text_content)
 
