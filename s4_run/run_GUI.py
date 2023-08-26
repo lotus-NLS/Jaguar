@@ -11,7 +11,7 @@ from s3_tool_agent.BasicAgent import BasicAgent
 class GUI_User(ConversationParticipant):
 
     def __init__(self):
-        super().__init__(DialogueRole.user)
+        super().__init__(DialogueRole.user())
         self.width = 600
         self.height = 600
 

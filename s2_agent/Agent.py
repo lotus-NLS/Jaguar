@@ -27,7 +27,7 @@ class Models:
 class Agent(ConversationParticipant):
     def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k):
         # Set identity and directive
-        super().__init__(role=DialogueRole.agent)
+        super().__init__(role=DialogueRole.agent())
         self._directive = Directive(task=None,objective=None)
 
         with open('../s1_protocol/IdentityDefinition/core') as idenity_file:
@@ -57,8 +57,7 @@ class Agent(ConversationParticipant):
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # TODO: get_api_key needs to be OS independent and set the api_key for only one user
-    @staticmethod
-    def _get_api_key() -> str:
+    def _get_api_key(self) -> str:
         try:
             key = os.environ.get('openai_key')
             if not isinstance(key, str):
@@ -69,12 +68,12 @@ class Agent(ConversationParticipant):
                 'OR: Enter API key manually and hit ENTER to continue:\n')
 
         try:
-            openai.Completion.create(
-                api_key=key,
-                engine="davinci",
-                prompt="This is a test.",
-                max_tokens=5
-            )
+            args_dict = {
+                'model': self._model_type,
+                'messages': [ConversationEntry(role=DialogueRole.user(),msg='This is a test')],
+            }
+            openai.ChatCompletion.create(**args_dict)
+
         except Exception as e:
             print(f'The given key raised the following error after test run:\n'
                   f' {e}')
@@ -87,7 +86,7 @@ class Agent(ConversationParticipant):
     # Callback
 
     def _reaction_protocol(self, dialogue_line : ConversationEntry) -> None:
-        if dialogue_line['role'] == DialogueRole.user:
+        if dialogue_line['role'] == DialogueRole.user():
             self._process_user_request()
 
     # ---------------------------------------------------

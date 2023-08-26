@@ -27,4 +27,4 @@ class Directive:
             # task_msg += f'I do not currently have any task to work on :)'
             task_msg += f'I must crack an egg!\n'
 
-        return ConversationEntry(role=DialogueRole.agent, msg=objective_msg + task_msg)
+        return ConversationEntry(role=DialogueRole.agent(), msg=objective_msg + task_msg)

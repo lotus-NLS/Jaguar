@@ -79,7 +79,7 @@ class READ(Tool):
             self.log(f'[PROGRESS]: {file_content}')
             self.log(f'[PROGRESS]: Successfully completed reading of file.')
 
-        except Exception as e:
+        except Exception:
             self.log(f'[ERROR]: An error occured while trying to read the file located at {location}')
             self.log(f'[ERROR]: {traceback.format_exc()}')
 

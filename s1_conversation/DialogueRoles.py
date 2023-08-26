@@ -1,20 +1,34 @@
+
 class DialogueRole(str):
-    user = 'user'
-    agent = 'assistant'
-    system = 'system'
+    _m_user = 'user'
+    _m_agent = 'assistant'
+    _m_system = 'system'
 
     def __new__(cls, role : str):
-        if not role in DialogueRole.as_list():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.as_list()}. Defaulting to agent role ...')
-            return DialogueRole.agent
+        if not role in DialogueRole.__as_list__():
+            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.__as_list__()}.'
+                  f' Defaulting to agent role ...')
+            return DialogueRole._m_agent
 
         else:
             return role
 
     @classmethod
-    def as_list(cls):
+    def user(cls):
+        return cls(DialogueRole._m_user)
+
+    @classmethod
+    def agent(cls):
+        return cls(DialogueRole._m_agent)
+
+    @classmethod
+    def system(cls):
+        return cls(DialogueRole._m_system)
+
+    @classmethod
+    def __as_list__(cls):
         as_list = []
         for name, value in cls.__dict__.items():
-            if not name.startswith("__"):
+            if name.startswith("_m_"):
                 as_list.append(value)
         return as_list

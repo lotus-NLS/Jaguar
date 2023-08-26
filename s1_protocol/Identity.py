@@ -13,4 +13,4 @@ class Identity:
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
 
-        return ConversationEntry(role=DialogueRole.system, msg=core_msg + principles_msg)
+        return ConversationEntry(role=DialogueRole.system(), msg=core_msg + principles_msg)

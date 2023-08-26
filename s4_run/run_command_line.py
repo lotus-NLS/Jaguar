@@ -10,7 +10,7 @@ from s1_conversation.Conversation import ConversationParticipant,Channel, Dialog
 # key working is model dependent anyway.
 
 the_bot = BasicAgent()
-the_user = ConversationParticipant(role=DialogueRole.user)
+the_user = ConversationParticipant(role=DialogueRole.user())
 # other_user = ConversationParticipant(role=DialogueRole.user)
 
 basic_channel = Channel()
