@@ -4,13 +4,6 @@ from s2_agent.Tool import Tool,ToolArg
 from PyPDF2 import PdfReader
 
 
-# Tool class logging
-# -> [START] : For tool launch
-# -> [FINISH]: Tool done
-
-# Specifc tool implementations (READ, WRITE etc.) logging:
-# -> [PROGRESS] : For updates on tool progress
-# -> [ERROR] : For reporting encountered errors if any
 
 # NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
 # NOTE : -> Do not use the name 'format' for arguments
@@ -64,8 +57,8 @@ class READ(Tool):
 
         chosen_format = self.format_arg.val
         if not self.format_arg.val in [self.text_format, self.pdf_format]:
-            self.error_log(f'Given format {chosen_format} is not an allowed format.'
-                           f' Please choose a format from {self.allowed_formats}')
+            self.error_log(f'Given format {chosen_format} is not an allowed format.\n'
+                           f'Please choose a format from {self.allowed_formats}')
 
 
         if chosen_format == self.text_format:
@@ -76,12 +69,12 @@ class READ(Tool):
         try:
             self.progress_log(f'Attempting to read file located at {location}')
             file_content = get_content_action(location=location)
-            self.progress_log(f'Read file content:\n{file_content}')
-            self.progress_log(f'Successfully completed reading of file.')
+            self.progress_log(f'Read file content:\n{file_content}\n'
+                              f'Successfully completed reading of file.')
 
         except Exception:
-            self.error_log(f'An error occured while trying to read the file located at {location}')
-            self.error_log(f'{traceback.format_exc()}')
+            self.error_log(f'An error occured while trying to read the file located at {location}\n'
+                           f'{traceback.format_exc()}')
 
 
 class WRITE(Tool):

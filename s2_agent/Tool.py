@@ -1,5 +1,16 @@
 from typing import Callable
 
+
+# Tool class logging
+# -> [START] : For tool launch
+# -> [FINISH]: Tool done
+
+# Specifc tool implementations (READ, WRITE etc.) logging:
+# -> [PROGRESS] : For updates on tool progress
+# -> [ERROR] : For reporting encountered errors if any
+
+# ---------------------------------------------------
+
 class ToolArg:
     def __init__(self, name: str, dtype : type, description: str, value = None):
         self.name : str = name
@@ -17,7 +28,6 @@ class ToolArg:
         return arg_doc
 
 
-# TODO: Create loggers for different logging types
 class Tool:
     def __init__(self):
         self.name : str = self.__class__.__name__
@@ -76,10 +86,7 @@ class Tool:
     # ---------------------------------------------------
     # Logging
 
-
     def log(self, to_log: str):
-        # log_text = f'## {self.name} log: {to_log}'
-
         if self.external_log is None:
             print(to_log)
         else:
