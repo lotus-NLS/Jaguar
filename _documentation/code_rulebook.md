@@ -2,7 +2,6 @@
 - All function arguments must be type hinted.
 - All functions returns must be type labeled. If they return nothing, they must be labeled with `None`.
 - Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
-
 - All class attributes must be type hinted, except for inherited attributes which are already type hinted.
 
 
@@ -10,7 +9,7 @@
 
 #### Functions
 Passing the correct type in arguments is caller responsibility \
-Returning the correct type given correct arguments responsibility of responder 
+Returning the correct type given correct arguments is responsibility of responder (callee) 
 
 - Guarantee in every function definition: Returns an object of the type it hints.
 - Assume in every function call: Function returns an object of the type it hints.
@@ -35,6 +34,7 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
   - functions,  lowercase w/ snake_case 
   - classes, everything else: lowercase w/ snake_case.
 
+
 ### IV: Downward depenency arrangement
 
 - Wherever possible apply downward reliance arrangement: x <- y == x depends on y == x above of y in directory/file
@@ -42,16 +42,13 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
 - The dependency direction is upwards i.e. further along dependency stream == upwards in directory/file
 - Analogy: The rest of a house of cards can still stand if you take away its uppermost layer. But if you so much as nudge one
 of the cards on the lower level the whole thing might collapse. Software works in the same way and their arrangement will reflect that.
+  
 
-### V: Debugging
-- Trace from the entry point.
-- Check submodule contracts (submodules == Classes, functions, methods)
+### V: Other
 
-### VI: Other
-
-- Pass arguments only by keyword.
+- Pass arguments only by keyword
 - Nesting: Max indentation level === 3
-- Module length: Max ~200 loc
+- Source file length: Max ~200 loc, Multiple dependent classes discouraged
 
 
 - No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
