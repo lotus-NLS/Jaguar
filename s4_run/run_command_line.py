@@ -1,5 +1,5 @@
 import time
-from s4_run.BasicAgent import BasicAgent
+from s4_run.ToolAgent import ToolAgent
 from s1_conversation.Conversation import ConversationParticipant,Channel, DialogueRole,enter_into_conversation
 
 # TODO: Collect common functionalities of run_command_line and run_GUI together
@@ -9,7 +9,7 @@ from s1_conversation.Conversation import ConversationParticipant,Channel, Dialog
 # Don't have to check the functionality of the key there since that's done in the model and the
 # key working is model dependent anyway.
 
-the_bot = BasicAgent()
+the_bot = ToolAgent()
 the_user = ConversationParticipant(role=DialogueRole.user())
 # other_user = ConversationParticipant(role=DialogueRole.user)
 

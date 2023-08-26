@@ -1,4 +1,5 @@
 import os
+from typing import Type
 
 import openai
 from s2_agent.Actions import ToolInstructions
@@ -54,9 +55,9 @@ class Agent(ConversationParticipant):
     # ---------------------------------------------------
     # Setup
 
-    def add_tool_list(self, tool_list : list[Tool]) -> None:
-        self.tool_list += tool_list
-        for tool in tool_list:
+    def add_tools(self, tool_classes : list[Type[Tool]]) -> None:
+        self.tool_list += [tool() for tool in tool_classes]
+        for tool in self.tool_list:
             tool.external_log = self.think
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 

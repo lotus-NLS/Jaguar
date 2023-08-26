@@ -3,7 +3,7 @@ from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
 from s1_conversation.Conversation import ConversationParticipant,ConversationEntry,Channel,DialogueRole,enter_into_conversation
-from s4_run.BasicAgent import BasicAgent
+from s4_run.ToolAgent import ToolAgent
 
 # ---------------------------------------------------------
 
@@ -53,7 +53,7 @@ class GUI_User(ConversationParticipant):
 if __name__ == "__main__":
 
     the_user = GUI_User()
-    the_bot = BasicAgent()
+    the_bot = ToolAgent()
 
     basic_channel = Channel()
     enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_bot])
