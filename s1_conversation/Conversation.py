@@ -89,8 +89,9 @@ class ConversationParticipant:
         pass
 
     def think(self,msg : str):
-        print(f'[Debug]: {self._role} thought: {msg}')
-        self.log_entry(entry=ConversationEntry(role=self._role, msg=msg))
+        the_msg = f'## Internal monologue: {msg}'
+        print(f'[Debug]: {self._role} thought: {the_msg}')
+        self.log_entry(entry=ConversationEntry(role=self._role, msg=the_msg))
 
     def speak(self, msg : str):
         if self._channel is None:

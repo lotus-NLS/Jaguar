@@ -78,12 +78,12 @@ class Tool:
 
 
     def log(self, to_log: str):
-        log_text = f'## {self.name} log: {to_log}'
+        # log_text = f'## {self.name} log: {to_log}'
 
         if self.external_log is None:
-            print(log_text)
+            print(to_log)
         else:
-            self.external_log(log_text)
+            self.external_log(to_log)
 
     def start_log(self, to_log):
         self.log(f'[Start]: {to_log}')

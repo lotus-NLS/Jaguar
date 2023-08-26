@@ -95,9 +95,9 @@ class Agent(ConversationParticipant):
 
     def _process_user_request(self) -> None:
         try:
-            print("[Debug] Creating completion request.")
+            print("[Debug]: Creating completion request.")
             action = self._get_next_action()
-            print("[Debug] Received response from the model.")
+            print("[Debug]: Received response from the model.")
 
             text_content = action.get_text_content()
             tool_instructions = action.get_tool_instructions()
@@ -141,11 +141,18 @@ class Agent(ConversationParticipant):
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
 
-        self.think(f'## Internal Assistant log: I called the tool {tool_name} with the arguments {tool_args_dict}')
+        self.think(f'I called the tool {tool_name} with the arguments {tool_args_dict}')
 
         tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
         if tool_name in tool_dict:
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+
+
+        self.think(f'I must update the user on the results of the tool usage')
+        text_content = self._get_next_action().get_text_content()
+        if not text_content is None:
+            self.speak(msg=text_content)
+
 
 
 
