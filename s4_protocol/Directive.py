@@ -1,5 +1,5 @@
-from s1_protocol.AgendaEntry import Objective,Task
-from s1_conversation.Conversation import ConversationEntry, DialogueRole
+from s4_protocol.AgendaEntry import Objective,Task
+from s4_conversation.Conversation import ConversationEntry, DialogueRole
 from typing import Union
 
 # ----------------------------------------------------

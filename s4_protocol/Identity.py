@@ -1,4 +1,4 @@
-from s1_conversation.Conversation import ConversationEntry, DialogueRole
+from s4_conversation.Conversation import ConversationEntry, DialogueRole
 
 
 # ----------------------------------------------------

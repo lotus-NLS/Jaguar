@@ -2,14 +2,14 @@ import os
 from typing import Type
 
 import openai
-from s2_agent.Actions import ToolInstructions
-from s1_conversation.Conversation import ConversationParticipant, DialogueRole, ConversationEntry
-from s1_protocol.Directive import Directive
-from s1_protocol.Identity import Identity
+from s3_agent.Actions import ToolInstructions
+from s4_conversation.Conversation import ConversationParticipant, DialogueRole, ConversationEntry
+from s4_protocol.Directive import Directive
+from s4_protocol.Identity import Identity
 
 
-from s2_agent.Actions import Action
-from s2_agent.Tool import Tool
+from s3_agent.Actions import Action
+from s3_agent.Tool import Tool
 
 # ---------------------------------------------------------
 
@@ -35,11 +35,11 @@ class Agent(ConversationParticipant):
         super().__init__(role=DialogueRole.agent())
         self._directive = Directive(task=None,objective=None)
 
-        with open('../s1_protocol/IdentityDefinition/core') as idenity_file:
+        with open('../s4_protocol/IdentityDefinition/core') as idenity_file:
             core = idenity_file.read()
 
         # Reconsider this later
-        # with open('../s1_protocol/IdentityDefinition/principles') as principles_file:
+        # with open('../s4_protocol/IdentityDefinition/principles') as principles_file:
         #     principles = principles_file.read()
 
         self._identity = Identity(core=core,principles='')

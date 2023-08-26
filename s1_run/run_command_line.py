@@ -1,6 +1,6 @@
 import time
-from s4_run.ToolAgent import ToolAgent
-from s1_conversation.Conversation import ConversationParticipant,Channel, DialogueRole,enter_into_conversation
+from s1_run.ToolAgent import ToolAgent
+from s4_conversation.Conversation import ConversationParticipant,Channel, DialogueRole,enter_into_conversation
 
 # TODO: Collect common functionalities of run_command_line and run_GUI together
 # it would probably best to do this through a dedicated RUN module that unifies command line and GUI

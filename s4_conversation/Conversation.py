@@ -1,10 +1,10 @@
 import queue, threading
 from queue import Queue
 from typing import List, Callable, Union
-from s1_conversation.DialogueRoles import DialogueRole
+from s4_conversation.DialogueRoles import DialogueRole
 
 # Conversation:
-# -> Only Conversation Particpants can join a s1_conversation
+# -> Only Conversation Particpants can join a s4_conversation
 # -> The argument of speak is logged to "conversational_memory" of every particpant
 # -> The arg of think is logged only to self
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
