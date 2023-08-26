@@ -2,3 +2,5 @@ openai
 dearpygui
 customtkinter
 PyPDF2
+selenium
+pytesseract

@@ -28,26 +28,6 @@ class READ(Tool):
                         f'Enter {self.text_format} for a text file or {self.pdf_format} for a pdf')
 
 
-    @staticmethod
-    def get_txt_file_content(location : str) -> str:
-        with open(location, 'r') as file:
-            file_content = file.read()
-        return file_content
-
-    @staticmethod
-    def get_pdf_file_content(location : str) -> str:
-        pdf_file = open(location, 'rb')
-        pdf_reader = PdfReader(pdf_file)
-
-        pdf_content = ''
-        for page_num in range(len(pdf_reader.pages)):
-            pdf_content += pdf_reader.pages[page_num].extract_text()
-
-        # Close the PDF file
-        pdf_file.close()
-
-        return pdf_content
-
     def do(self) -> None:
         location = self.fpath_arg.val
 
@@ -74,6 +54,26 @@ class READ(Tool):
         except Exception:
             self.error_log(f'An error occured while trying to read the file located at {location}\n'
                            f'{traceback.format_exc()}')
+
+    @staticmethod
+    def get_txt_file_content(location : str) -> str:
+        with open(location, 'r') as file:
+            file_content = file.read()
+        return file_content
+
+    @staticmethod
+    def get_pdf_file_content(location : str) -> str:
+        pdf_file = open(location, 'rb')
+        pdf_reader = PdfReader(pdf_file)
+
+        pdf_content = ''
+        for page_num in range(len(pdf_reader.pages)):
+            pdf_content += pdf_reader.pages[page_num].extract_text()
+
+        # Close the PDF file
+        pdf_file.close()
+
+        return pdf_content
 
 
 class WRITE(Tool):
