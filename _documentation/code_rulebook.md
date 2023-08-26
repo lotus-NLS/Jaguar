@@ -35,12 +35,13 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
   - functions,  lowercase w/ snake_case 
   - classes, everything else: lowercase w/ snake_case.
 
-### IV: Downstream dependencies
+### IV: Downward depenency arrangement
 
-- Apply stream terminology: x depends on y == x is downstream of y == y is upstream of x
-- Wherever possible apply downstream dependency arrangement: \
-Upstream == Upwards in directory/file; Downstream == Downwards in directory/file 
+- Wherever possible apply downward reliance arrangement: x <- y == x depends on y == x above of y in directory/file
 - I.e.: Highest level modules/submodules first then the methods they depend on below
+- The dependency direction is upwards i.e. further along dependency stream == upwards in directory/file
+- Analogy: The rest of a house of cards can still stand if you take away its uppermost layer. But if you so much as nudge one
+of the cards on the lower level the whole thing might collapse. Software works in the same way and their arrangement will reflect that.
 
 ### V: Debugging
 - Trace from the entry point.
