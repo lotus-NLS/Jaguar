@@ -4,9 +4,6 @@ import traceback
 from PyPDF2 import PdfReader
 from s3_agent.Tool import Tool, ToolArg
 
-# TODO: Formatting error
-# TODO: I know what the reason was for the format name failing.
-# TODO: But I don't know yet why it worked on every other naming scheme. And that I've gotta find out!
 # ---------------------------------------------------------
 
 

@@ -3,9 +3,6 @@ from s3_agent.Tool import Tool,ToolArg
 import tempfile
 import subprocess
 
-# NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
-# NOTE : -> Do not use the name 'format' for arguments
-# NOTE : Use only lowercase letters for argument names or argument choices i.e. snake_case
 # ---------------------------------------------------------
 
 class RUN(Tool):
