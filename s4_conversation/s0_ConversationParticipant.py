@@ -47,6 +47,10 @@ class ConversationParticipant:
     def _reaction_protocol(self, dialogue_line : dict):
         pass
 
+    def read(self,msg : str):
+        print(f'[Debug]: {self._role} read: {msg}')
+        self.log_entry(entry=ConversationEntry(role=DialogueRole.tool(), msg=msg))
+
     def think(self,msg : str):
         the_msg = f'## Internal monologue: {msg}'
         print(f'[Debug]: {self._role} thought: {the_msg}')

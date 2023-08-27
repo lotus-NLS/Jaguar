@@ -57,12 +57,9 @@ class Agent(ConversationParticipant):
     # Setup
 
     def set_tools(self, tool_classes : list[Type[Tool]]) -> None:
-        def tool_logger(msg : str):
-            self.log_entry(ConversationEntry(role=DialogueRole.tool(),msg=msg))
-
         self.tool_list += [tool() for tool in tool_classes]
         for tool in self.tool_list:
-            tool.external_log = tool_logger
+            tool.external_log = self.read
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # TODO: get_api_key needs to be OS independent and set the api_key for only one user
@@ -149,8 +146,6 @@ class Agent(ConversationParticipant):
         print('[Debug]: Agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
-
-        self.think(f'I called the tool {tool_name} with the arguments {tool_args_dict}')
 
         tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
         if tool_name in tool_dict:
