@@ -102,7 +102,7 @@ class Agent(ConversationParticipant):
     def _process_user_request(self) -> None:
         try:
             print("[Debug]: Creating completion request.")
-            action = self._get_next_action()
+            action = self.get_next_action()
             print("[Debug]: Received response from the model.")
 
             text_content = action.get_text_content()
@@ -118,19 +118,19 @@ class Agent(ConversationParticipant):
             print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
-    def _get_next_action(self,function_call_mode = FunctionCallModes.auto) -> Action:
+    def get_next_action(self, is_allowed_functioncall = True) -> Action:
         openai.api_key = self._api_key
         messages = [self._identity.get_msg()]+self._personal_log
 
         args_dict = {
             'model' : self._model_type,
             'messages' : messages,
-            'temperature' : 0.2
+            'temperature' : 0.3
         }
 
         if not len(self.tool_list) == 0:
             args_dict['functions'] = self._tool_instructions
-            args_dict['function_call'] = function_call_mode
+            args_dict['function_call'] =  FunctionCallModes.auto if is_allowed_functioncall else FunctionCallModes.none
 
         openai_response = openai.ChatCompletion.create(**args_dict)
 
@@ -155,7 +155,7 @@ class Agent(ConversationParticipant):
 
 
         self.think(f'I must update the user on the results of the tool usage')
-        text_content = self._get_next_action(function_call_mode=FunctionCallModes.none).get_text_content()
+        text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
         if not text_content is None:
             self.speak(msg=text_content)
 
