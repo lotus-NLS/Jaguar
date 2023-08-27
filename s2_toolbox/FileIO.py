@@ -20,8 +20,7 @@ class READ(Tool):
         self.description = 'The READ tool allows you to read the contents of a plain text file or a pdf.'
 
         self.fpath_arg : ToolArg = self.create_argument(
-            # name='fpath', dtype=str,
-            name='format', dtype=str,
+            name='fpath', dtype=str,
             description='This is the path to the file which you will read')
 
         self.format_arg : ToolArg = self.create_argument(
