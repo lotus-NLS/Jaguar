@@ -62,8 +62,8 @@ class ConversationParticipant:
     # ------------------------------
     # Log
 
-    def print_memory(self):
-        print(self._personal_log)
+    def get_memory(self):
+        return self._personal_log
 
 
 def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):

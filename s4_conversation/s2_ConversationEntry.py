@@ -2,10 +2,12 @@ from s4_conversation.s3_DialogueRoles import DialogueRole
 
 
 class ConversationEntry(dict):
-    def __init__(self,role : DialogueRole, msg : str):
+    def __init__(self,role : DialogueRole, msg : str, name = 'undefined_function'):
         super().__init__()
         self['role'] = role
         self['content'] = msg
+        if role == DialogueRole.tool():
+            self['name'] = name
 
     def get_role(self):
         return self['role']

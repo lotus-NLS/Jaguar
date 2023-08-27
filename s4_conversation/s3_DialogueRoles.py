@@ -3,6 +3,7 @@ class DialogueRole(str):
     _m_user = 'user'
     _m_agent = 'assistant'
     _m_system = 'system'
+    _m_tool = 'function'
 
     def __new__(cls, role : str):
         if not role in DialogueRole.__as_list__():
@@ -12,6 +13,10 @@ class DialogueRole(str):
 
         else:
             return role
+
+    @classmethod
+    def tool(cls):
+        return cls(DialogueRole._m_tool)
 
     @classmethod
     def user(cls):

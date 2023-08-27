@@ -52,13 +52,13 @@ class ConversationTestModule(TestModule):
 
         time.sleep(0.5)
         print("Logs for Participant1:")
-        self.agent_participant1.print_memory()
+        self.agent_participant1.get_memory()
 
         print("Logs for Participant2:")
-        self.agent_participant2.print_memory()
+        self.agent_participant2.get_memory()
 
         print("Logs for Participant3:")
-        self.agent_participant3.print_memory()
+        self.agent_participant3.get_memory()
 
     @TestModule.test
     def test_reaction(self):
@@ -68,10 +68,10 @@ class ConversationTestModule(TestModule):
         time.sleep(1)
         # Participants print their logs
         print("Logs for Participant1:")
-        self.agent_participant2.print_memory()
+        self.agent_participant2.get_memory()
 
         print("Logs for Participant2:")
-        self.agent_participant3.print_memory()
+        self.agent_participant3.get_memory()
 
 
 if __name__ == "__main__":

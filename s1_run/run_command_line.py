@@ -26,8 +26,7 @@ enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_user
 while True:
     the_user.speak(input(''))
     time.sleep(1)
-    print('[Debug]: Current conversation memory of the bot')
-    the_bot.print_memory()
+    print(f'[Debug]: Current conversation memory of the bot: {the_bot.get_memory()}')
     # print('Current conversation memory of other user')
     # other_user.print_memory()
     # other_user.print_memory()

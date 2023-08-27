@@ -5,7 +5,7 @@ from typing import Union
 
 # ----------------------------------------------------
 
-# TODO: This is currently in test mode because of disappointing performance
+# NOTE :This is currently in test mode because of disappointing performance
 class Directive:
     def __init__(self,task : Union[None,Task], objective : Union[None,Task]):
         self.current_task : Union[None,Task] = task
