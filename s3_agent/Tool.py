@@ -56,7 +56,7 @@ class Tool:
         self.arguments : list[ToolArg] = []
 
 
-    def create_argument(self, name: str, dtype: type, description: str) -> ToolArg:
+    def create_arg(self, name: str, dtype: type, description: str) -> ToolArg:
         this_arg = ToolArg(name, dtype, description)
         self.arguments.append(this_arg)
         return this_arg
@@ -77,7 +77,7 @@ class Tool:
         return tool_doc
 
 
-    def handle_call(self, args_dict : dict):
+    def handle_call(self, args_dict : dict) -> None:
         self.start_log(f'Attempting to launch tool {self.name} with args {args_dict}')
 
         arg_names = [arg.name for arg in self.arguments]
@@ -105,21 +105,21 @@ class Tool:
     # ---------------------------------------------------
     # Logging
 
-    def log(self, to_log: str):
+    def log(self, to_log: str) -> None:
         if self.external_log is None:
             print(to_log)
         else:
             self.external_log(to_log)
 
-    def start_log(self, to_log):
+    def start_log(self, to_log) -> None:
         self.log(f'[Start]: {to_log}')
 
-    def error_log(self, to_log):
+    def error_log(self, to_log) -> None:
         self.log(f'[Error]: {to_log}')
 
-    def progress_log(self, to_log):
+    def progress_log(self, to_log) -> None:
         self.log(f'[Progress]: {to_log}')
 
-    def finish_log(self, to_log):
+    def finish_log(self, to_log) -> None:
         self.log(f'[Finish]: {to_log}')
 

@@ -13,12 +13,12 @@ class RUN(Tool):
         super().__init__()
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string'
 
-        self.mode_arg: ToolArg = self.create_argument(name='mode', dtype=int,
-                                      description=f'I will type either {self.python_script_mode} for python scripts or '
+        self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
+                                                 description=f'I will type either {self.python_script_mode} for python scripts or '
                                                   f'{self.cmd_mode} for command line scripts')
 
-        self.program_content_arg: ToolArg = self.create_argument(name='program_content', dtype=str,
-                                      description='The content of the Python script or shell command to execute')
+        self.program_content_arg: ToolArg = self.create_arg(name='program_content', dtype=str,
+                                                            description='The content of the Python script or shell command to execute')
 
     def do(self) -> None:
         mode = self.mode_arg.val

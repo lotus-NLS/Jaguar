@@ -26,7 +26,11 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
 
 ### III: Naming (see also: [naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python))
 - All functions are named as verbs and classes as nouns.
-- Functions that return something are of the format `get_[object]` or `create_[object]` if the function returns the object and also does something else. Ideally, the name of the function should make the type of the returned object apparent already.
+- Functions that return something are of the format `get_[object]` or `create_[object]` if the function initializes and returns the object. \
+Ideally, the name of the function should make the type of the returned object apparent already.
+- Methods that update member variables are of the format `set_[object]` 
+- Apart from `create_[object]` methods which both set and get, getters don't set and setters don't get
+- Also Non getters don't get and non setters don't set
 - Plural with `object_list`, not `objects`.
 - Private attributes should be of the form `_attribute` so that they are properly hidden. \
 - Case and spacing conventions:
