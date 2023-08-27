@@ -56,7 +56,7 @@ class Agent(ConversationParticipant):
     # ---------------------------------------------------
     # Setup
 
-    def add_tools(self, tool_classes : list[Type[Tool]]) -> None:
+    def set_tools(self, tool_classes : list[Type[Tool]]) -> None:
         self.tool_list += [tool() for tool in tool_classes]
         for tool in self.tool_list:
             tool.external_log = self.think

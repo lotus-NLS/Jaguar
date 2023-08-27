@@ -5,4 +5,4 @@ from s2_toolbox.Run import RUN
 class ToolAgent(Agent):
     def __init__(self):
         super().__init__()
-        self.add_tools(tool_classes=[READ,WRITE,RUN])
+        self.set_tools(tool_classes=[READ, WRITE, RUN])
