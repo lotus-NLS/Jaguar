@@ -57,6 +57,7 @@ class Agent(ConversationParticipant):
     # Setup
 
     def set_tools(self, tool_classes : list[Type[Tool]]) -> None:
+        # TODO: Need to log not just tool role but tool name as well
         self.tool_list += [tool() for tool in tool_classes]
         for tool in self.tool_list:
             tool.external_log = self.read
