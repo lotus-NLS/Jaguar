@@ -2,7 +2,7 @@ import time
 
 from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole, enter_into_conversation
 from s4_conversation.s1_Channel import Channel
-from s0_tests.composition_tests.TestModule import TestModule
+from s0_tests.TestModule import TestModule
 
 
 
