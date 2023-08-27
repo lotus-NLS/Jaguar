@@ -20,10 +20,8 @@ class ToolArg:
 
     def get_arg_json_doc(self):
         arg_doc = {
-            self.name: {
-                'type': f'{self.dtype}',
+                'type': 'string',
                 'description': f'{self.description}'
-            }
         }
         return arg_doc
 
@@ -54,7 +52,6 @@ class Tool:
 
         for arg in self.arguments:
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
-
         return tool_doc
 
 

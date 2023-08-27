@@ -4,8 +4,9 @@ import traceback
 from PyPDF2 import PdfReader
 from s3_agent.Tool import Tool, ToolArg
 
-# NOTE : the name 'format' for an arugment seems to be a built in keyword which results in an error
-# NOTE : -> Do not use the name 'format' for arguments
+# TODO: Formatting error
+# TODO: I know what the reason was for the format name failing.
+# TODO: But I don't know yet why it worked on every other naming scheme. And that I've gotta find out!
 # ---------------------------------------------------------
 
 
@@ -20,6 +21,7 @@ class READ(Tool):
 
         self.fpath_arg : ToolArg = self.create_argument(
             name='fpath', dtype=str,
+            # name='format', dtype=str,
             description='This is the path to the file which you will read')
 
         self.format_arg : ToolArg = self.create_argument(
