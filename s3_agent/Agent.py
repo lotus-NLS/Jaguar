@@ -94,12 +94,12 @@ class Agent(ConversationParticipant):
 
     def _reaction_protocol(self, dialogue_line : ConversationEntry) -> None:
         if dialogue_line['role'] == DialogueRole.user():
-            self._process_user_request()
+            self._perform_next_action()
 
     # ---------------------------------------------------
     # Other
 
-    def _process_user_request(self) -> None:
+    def _perform_next_action(self) -> None:
         try:
             print("[Debug]: Creating completion request.")
             action = self.get_next_action()

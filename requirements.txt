@@ -1,6 +1,15 @@
+## LLM
 openai
+
+## GUI
 dearpygui
 customtkinter
+
+## READ
 PyPDF2
+
+## WEB
 selenium
-pytesseract
+googlesearch-python
+beautifulsoup4
+requests
