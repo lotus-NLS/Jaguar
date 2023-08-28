@@ -46,19 +46,18 @@ Disclaimer: Since even state-of-the-art models are still prone to hallucinations
 As of the 19.08.23, these are the only tools implemented in the framework.
 
 # Roadmap
-## LLM as python devs: Hard limitations
-Bare LLMs are very good at producing python code snippets. 
-Yet they cannot act as autonomous python developers, as they face several limitations. LLMs cannot:
+## Basic hard limitations
+Bare LLMs are very good at producing python code snippets. Yet they cannot act as autonomous software developers as LLMs cannot:
 - Run code and view output including error messages 
 - Use the command line to install packages, interact with VCS etc.
 - Look up documentation online
-- Look up existing work online that can serve as a starting off point
+- Look up existing work online that can serve as a starting point
 - Read or write files
 
 The first development objective of pyWrite is to remedy this by providing the LLM with the necessary tools to
 perform those actions, thereby enabling autonomous python software development.
 
-## LLM as python devs: Soft limitations
+## Basic Soft limitations
 However, LLMs also face "soft" limitations. These are things that they should be able to do in theory
 with a good enough model but state-of-the-art models nonethless struggle with. These include:
 - Planning out large scale objectives and keeping track of tasks over a large span of text
@@ -69,7 +68,7 @@ The second development objective of pyWrite is to also remedy these limitations
 by providing the models with the necessary guidance to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current
 tasks and objectives and to distribute responsibilites so that each python developer agent can do his work within a single-module context.
 
-## Beyond pyWrite
+## Beyond pyWrite: Advanced features
 pyWrite itself is just the first step of development. Beyond pyWrite other features are planned
 to make up for some more functionalities that human software developers offer:
 
