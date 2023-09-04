@@ -1,6 +1,4 @@
 import os
-import traceback
-
 from PyPDF2 import PdfReader
 from s3_agent.Tool import Tool, ToolArg
 
@@ -18,11 +16,11 @@ class READ(Tool):
 
         self.fpath_arg : ToolArg = self.create_arg(
             name='fpath', dtype=str,
-            description='This is the path to the file which you will read')
+            desc='This is the path to the file which you will read')
 
         self.format_arg : ToolArg = self.create_arg(
             name='file_format', dtype=str,
-            description=f'This is the format of the file you want to read.'
+            desc=f'This is the format of the file you want to read.'
                         f'Enter {self.text_format} for a text file or {self.pdf_format} for a pdf')
 
 
@@ -50,8 +48,7 @@ class READ(Tool):
                               f'Successfully completed reading of file.')
 
         except Exception:
-            self.error_log(f'An error occured while trying to read the file located at {location}\n'
-                           f'{traceback.format_exc()}')
+            self.error_log(f'An error occured while trying to read the file located at {location}\n')
 
     @staticmethod
     def get_txt_file_content(location : str) -> str:
@@ -80,10 +77,10 @@ class WRITE(Tool):
         self.description = 'The WRITE tool allows you to write content to a file on the user system'
 
         self.fpath_arg : ToolArg = self.create_arg(name='fpath', dtype=str,
-                                                   description='The path of the file that you will write')
+                                                   desc='The path of the file that you will write')
 
         self.content_arg : ToolArg = self.create_arg(name='content', dtype=str,
-                                                     description='The content that will be written to the file')
+                                                     desc='The content that will be written to the file')
 
     def do(self):
         location = self.fpath_arg.val

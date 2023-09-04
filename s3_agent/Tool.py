@@ -1,5 +1,6 @@
 from typing import Callable, Union
 from typing import Any
+import traceback
 
 # Tool class logging
 # -> [START] : For tool launch
@@ -51,13 +52,13 @@ class ToolArg:
 class Tool:
     def __init__(self):
         self.name : str = self.__class__.__name__
-        self.description : str = ''
+        self.desc : str = ''
         self.external_log : Callable = lambda *args, **kwargs: None
         self.arguments : list[ToolArg] = []
 
 
-    def create_arg(self, name: str, dtype: type, description: str) -> ToolArg:
-        this_arg = ToolArg(name, dtype, description)
+    def create_arg(self, name: str, dtype: type, desc: str) -> ToolArg:
+        this_arg = ToolArg(name, dtype, desc)
         self.arguments.append(this_arg)
         return this_arg
 
@@ -65,7 +66,7 @@ class Tool:
     def get_tool_json_doc(self) -> dict[str,Any]:
         tool_doc = {
             'name': f'{self.name}',
-            'description': f'{self.description}',
+            'description': f'{self.desc}',
             'parameters': {
                 'type': 'object',
                 'properties': {}
@@ -115,7 +116,8 @@ class Tool:
         self.log(f'[Start]: {to_log}')
 
     def error_log(self, to_log) -> None:
-        self.log(f'[Error]: {to_log}')
+        self.log(f'[Error]: {to_log}'
+                 f'{traceback.format_exc()}')
 
     def progress_log(self, to_log) -> None:
         self.log(f'[Progress]: {to_log}')

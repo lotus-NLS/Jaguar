@@ -31,19 +31,20 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
-    def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k):
+    def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k, identity = ''):
         # Set identity and directive
         super().__init__(role=DialogueRole.agent())
         self._directive = Directive(task=None,objective=None)
 
-        with open('../s4_protocol/IdentityDefinition/core') as idenity_file:
-            core = idenity_file.read()
+        if identity == '':
+            with open('../s4_protocol/IdentityDefinition/core') as identity_file:
+                identity = identity_file.read()
 
         # Reconsider this later
         # with open('../s4_protocol/IdentityDefinition/principles') as principles_file:
         #     principles = principles_file.read()
 
-        self._identity = Identity(core=core,principles='')
+        self._identity = Identity(core=identity,principles='')
 
         # Set model
         self._model_type : str = model_type
