@@ -1,4 +1,4 @@
-# TODO: Global source file naming convention checking
+
 
 import time
 from s1_run.Entities import DefaultAgent,GUI_User, User
@@ -9,11 +9,6 @@ class RunModes:
     gui = 0
     command_line = 1
 
-
-# TODO: Should prompt the user to set the API key if it's not already set introduce set_api_key_if_needed()
-# i.e. check for the key where you expect it then prompt if you can't find it.
-# Don't have to check the functionality of the key there since that's done in the model and the
-# key working is model dependent anyway.
 
 class RunHandler:
     def __init__(self, mode = RunModes.command_line, is_introduction_enabled = True):
