@@ -47,7 +47,7 @@ class ConversationParticipant:
     def _reaction_protocol(self, dialogue_line : dict):
         pass
 
-    def read(self,msg : str, tool_name : str):
+    def read(self,msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
         self.log_entry(entry=ConversationEntry(role=DialogueRole.tool(), msg=msg, tool_name= tool_name))
 

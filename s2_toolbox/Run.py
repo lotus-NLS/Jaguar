@@ -50,11 +50,15 @@ class RUN(Tool):
             temp.write(self.program_content_arg.val)
             temp_file_path = temp.name
 
-        result = subprocess.run(['python', temp_file_path], capture_output=True, text=True)
+        # Debug
+        print(f'Starting subprocess run')
+        result = subprocess.run(['python', temp_file_path], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        print(f'Subprocess run finished')
         os.unlink(temp_file_path)
 
         return result
 
     def execute_cmd(self):
-        result = subprocess.run(self.program_content_arg.val, shell=True, capture_output=True, text=True)
+        result = subprocess.run(self.program_content_arg.val, shell=True, text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result
