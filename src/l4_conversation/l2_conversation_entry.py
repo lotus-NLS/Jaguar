@@ -1,4 +1,4 @@
-from s4_conversation.s3_DialogueRoles import DialogueRole
+from src.l4_conversation.l3_dialogue_rules import DialogueRole
 
 
 class ConversationEntry(dict):

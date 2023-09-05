@@ -1,4 +1,4 @@
-from s4_protocol.AgendaEntry import Task,Objective
+from src.l4_protocol.AgendaEntry import Task,Objective
 
 
 

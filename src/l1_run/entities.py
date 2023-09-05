@@ -1,7 +1,7 @@
-from s4_conversation.s0_ConversationParticipant import ConversationParticipant,DialogueRole, ConversationEntry
-from s2_toolbox.FileIO import READ, WRITE
-from s2_toolbox.Run import RUN
-from s3_agent.Agent import Agent
+from src.l4_conversation.l0_conversation_participant import ConversationParticipant,DialogueRole, ConversationEntry
+from src.l2_toolbox.file_io import READ, WRITE
+from src.l2_toolbox.run import RUN
+from src.l3_agent.agents import Agent
 
 
 import tkinter as tk

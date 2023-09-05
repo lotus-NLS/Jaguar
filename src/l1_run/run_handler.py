@@ -1,9 +1,9 @@
 
 
 import time
-from s1_run.Entities import DefaultAgent,GUI_User, User
-from s4_conversation.s0_ConversationParticipant import Channel, enter_into_conversation, ConversationParticipant
-from s1_run.setup import setup
+from src.l1_run.entities import DefaultAgent,GUI_User, User
+from src.l4_conversation.l0_conversation_participant import Channel, enter_into_conversation, ConversationParticipant
+from src.l1_run.setup import setup
 
 class RunModes:
     gui = 0

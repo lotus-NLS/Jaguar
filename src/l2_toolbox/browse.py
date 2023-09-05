@@ -1,18 +1,14 @@
-import threading
-
-from s3_agent.Tool import Tool
-from s3_agent.Tool import ToolArg
+from src.l3_agent.tool import Tool
+from src.l3_agent.tool import ToolArg
 from googlesearch import search
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
 from concurrent.futures import ThreadPoolExecutor, Future
-from s3_agent.Agent import Agent
-from s4_conversation.s2_ConversationEntry import ConversationEntry, DialogueRole
+from src.l3_agent.agents import Agent
+from src.l4_conversation.l2_conversation_entry import ConversationEntry, DialogueRole
 # ---------------------------------------------------------
 
 

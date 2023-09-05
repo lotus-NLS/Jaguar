@@ -1,13 +1,15 @@
 import openai
 import os
 import configparser
-from s3_agent.Agent import Models
-from s4_conversation.s0_ConversationParticipant import ConversationEntry,DialogueRole
+from src.l3_agent.agents import Models
+from src.l4_conversation.l0_conversation_participant import ConversationEntry,DialogueRole
 
 def setup():
     while True:
         try:
             set_api_key()
+            print(f'[Debug]: API key is set')
+            break
         except:
             pass
 
@@ -23,7 +25,7 @@ def set_api_key() -> None:
         config.read(config_path)
         key = config.get(CONFIG_SECTION, API_KEY_FIELD)
         test_api_key(key)
-        save_key_to_file(config, config_path, key)
+        print(f'[Debug]: Valid API key obtained from settings file located at {config_path}')
 
     except Exception as err:
         print(f'[Debug]: Failed to retrieve valid API key from settings file: {err}')

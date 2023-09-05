@@ -1,1 +1,0 @@
-Bug in conversation participant read fixed; Bug in subprocess spawn that caused process blockage fixed; Added issue documentation

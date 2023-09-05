@@ -1,12 +1,12 @@
 import threading
 from typing import List, Union
 
-from s4_conversation.s1_Channel import Channel
-from s4_conversation.s2_ConversationEntry import ConversationEntry
-from s4_conversation.s3_DialogueRoles import DialogueRole
+from src.l4_conversation.l1_channel import Channel
+from src.l4_conversation.l2_conversation_entry import ConversationEntry
+from src.l4_conversation.l3_dialogue_rules import DialogueRole
 
 # Conversation:
-# -> Only Conversation Particpants can join a s4_conversation
+# -> Only Conversation Particpants can join a l4_conversation
 # -> The argument of speak is logged to "conversational_memory" of every particpant
 # -> The arg of think is logged only to self
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered

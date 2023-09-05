@@ -1,13 +1,13 @@
 from typing import Type
 
 import openai
-from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole
-from s4_conversation.s2_ConversationEntry import ConversationEntry
-from s4_protocol.Directive import Directive
-from s4_protocol.Identity import Identity
-from s3_agent.Actions import ToolInstructions
-from s3_agent.Actions import Action
-from s3_agent.Tool import Tool
+from src.l4_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
+from src.l4_conversation.l2_conversation_entry import ConversationEntry
+from src.l4_protocol.Directive import Directive
+from src.l4_protocol.Identity import Identity
+from src.l3_agent.actions import ToolInstructions
+from src.l3_agent.actions import Action
+from src.l3_agent.tool import Tool
 
 # ---------------------------------------------------------
 
@@ -34,11 +34,11 @@ class Agent(ConversationParticipant):
         self._directive = Directive(task=None,objective=None)
 
         if identity == '':
-            with open('../s4_protocol/IdentityDefinition/core') as identity_file:
+            with open('../l4_protocol/IdentityDefinition/core') as identity_file:
                 identity = identity_file.read()
 
         # Reconsider this later
-        # with open('../s4_protocol/IdentityDefinition/principles') as principles_file:
+        # with open('../l4_protocol/IdentityDefinition/principles') as principles_file:
         #     principles = principles_file.read()
 
         self._identity = Identity(core=identity,principles='')

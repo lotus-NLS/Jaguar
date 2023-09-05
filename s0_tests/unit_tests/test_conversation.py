@@ -1,8 +1,8 @@
 import time
 
-from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole, enter_into_conversation
-from s4_conversation.s1_Channel import Channel
-from s0_tests.TestModule import TestModule
+from src.l4_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole, enter_into_conversation
+from src.l4_conversation.l1_channel import Channel
+from s0_tests.test_module import TestModule
 
 
 
