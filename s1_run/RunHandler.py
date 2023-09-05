@@ -31,9 +31,10 @@ class RunHandler:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
         if self.mode == RunModes.command_line:
+            # self.user.speak('Run hello world for me')
             while True:
                 self.user.speak(input(''))
-                time.sleep(1)
+                time.sleep(0.5)
                 print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
 
         else:
