@@ -10,7 +10,6 @@ class RunModes:
     command_line = 1
 
 
-
 class RunHandler:
     def __init__(self, mode = RunModes.command_line, is_introduction_enabled = True):
         self.mode : int = mode
@@ -23,6 +22,8 @@ class RunHandler:
         self.start()
 
     def start(self):
+        print(f'[Debug]: Lotus started')
+
         if self.is_introduction_enabled:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
@@ -31,7 +32,7 @@ class RunHandler:
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
-                print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
+                # print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
 
         else:
             self.user : GUI_User

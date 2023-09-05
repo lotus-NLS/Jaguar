@@ -5,8 +5,11 @@ from s3_agent.Agent import Models
 from s4_conversation.s0_ConversationParticipant import ConversationEntry,DialogueRole
 
 def setup():
-    set_api_key()
-
+    while True:
+        try:
+            set_api_key()
+        except:
+            pass
 
 CONFIG_SECTION = 'API'
 API_KEY_FIELD = 'openai_key'
@@ -16,16 +19,20 @@ def set_api_key() -> None:
     config_path = os.path.join(home, 'settings.ini')
     config = configparser.ConfigParser()
 
-    # Check if the settings file exists and read it
-    if os.path.exists(config_path):
-        config.read(config_path)
-
     try:
+        config.read(config_path)
         key = config.get(CONFIG_SECTION, API_KEY_FIELD)
-    except:
-        key = input('[Debug]: Failed to retrieve API key from settings file. Enter API key manually:\n')
+        test_api_key(key)
         save_key_to_file(config, config_path, key)
 
+    except Exception as err:
+        print(f'[Debug]: Failed to retrieve valid API key from settings file: {err}')
+        key = input('[Debug]: Enter API key manually:\n')
+        test_api_key(key)
+        save_key_to_file(config,config_path,key)
+
+
+def test_api_key(key : str) -> None:
     try:
         openai.api_key = key
         args_dict = {
@@ -34,8 +41,8 @@ def set_api_key() -> None:
         }
         openai.ChatCompletion.create(**args_dict)
 
-    except Exception as e:
-        print(f'[Debug]: Error after test run:\n{e}')
+    except Exception as err:
+        print(f'[Debug]: Error after test run:\n{err}')
         raise ValueError('Invalid API key')
 
 
