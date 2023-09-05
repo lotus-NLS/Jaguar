@@ -10,6 +10,7 @@ class RunModes:
     command_line = 1
 
 
+
 class RunHandler:
     def __init__(self, mode = RunModes.command_line, is_introduction_enabled = True):
         self.mode : int = mode

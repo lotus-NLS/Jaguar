@@ -19,13 +19,8 @@ Install required packages
 pip install -r requirements.txt
 ```
 
-To communicate with the OpenAI API an API key is needed. It must be set as an environment variables
-```
-Windows: setx openai_key [your_api_key]
-Linux: echo "openai_key=[your_api_key]" | sudo tee -a /etc/environment
-```
-
-[//]: # (TODO: The setting of the API key should actually be per user. So setting it system wide is no good.)
+If the program is run for the first time you will be prompted for your OpenAI API key. After entering the key it will be
+saved in a config file in the home directory in plain text form. In subsequent runs the API key will be read from that location.
 
 ## Usage
 
