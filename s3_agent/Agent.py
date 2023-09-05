@@ -1,14 +1,11 @@
-import os
 from typing import Type
 
 import openai
-from s3_agent.Actions import ToolInstructions
 from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole
 from s4_conversation.s2_ConversationEntry import ConversationEntry
 from s4_protocol.Directive import Directive
 from s4_protocol.Identity import Identity
-
-
+from s3_agent.Actions import ToolInstructions
 from s3_agent.Actions import Action
 from s3_agent.Tool import Tool
 
@@ -31,7 +28,7 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
-    def __init__(self,api_key : str = '', model_type: str = Models.gpt_40_8k, identity = ''):
+    def __init__(self,model_type: str = Models.gpt_40_8k, identity = ''):
         # Set identity and directive
         super().__init__(role=DialogueRole.agent())
         self._directive = Directive(task=None,objective=None)
@@ -48,7 +45,6 @@ class Agent(ConversationParticipant):
 
         # Set model
         self._model_type : str = model_type
-        self._api_key : str = api_key if not api_key == '' else self._get_api_key()
 
         # Set up tools
         self.tool_list : list[Tool] = []
@@ -57,39 +53,13 @@ class Agent(ConversationParticipant):
     # ---------------------------------------------------
     # Setup
 
-    def set_tools(self, tool_classes : list[Type[Tool]]) -> None:
+    def set_tools(self, tool_types : list[Type[Tool]]) -> None:
         # TODO: Need to log not just tool role but tool name as well
-        self.tool_list += [tool() for tool in tool_classes]
+        self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
             tool.external_log = self.read
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
-    # TODO: get_api_key needs to be OS independent and set the api_key for only one user
-    def _get_api_key(self) -> str:
-        try:
-            key = os.environ.get('openai_key')
-            if not isinstance(key, str):
-                raise TypeError
-        except:
-            key = input(
-                'Failed to retrieve API key. Check /etc/environment for entry \’openai_key\’ and relaunch program'
-                'OR: Enter API key manually and hit ENTER to continue:\n')
-
-        try:
-            openai.api_key = key
-            args_dict = {
-                'model': self._model_type,
-                'messages': [ConversationEntry(role=DialogueRole.user(),msg='This is a test')],
-            }
-            openai.ChatCompletion.create(**args_dict)
-
-        except Exception as e:
-            print(f'The given key raised the following error after test run:\n'
-                  f' {e}')
-            print(f'Aborting ...')
-            raise ValueError
-
-        return key
 
     # ---------------------------------------------------
     # Callback
@@ -121,7 +91,6 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self, is_allowed_functioncall = True) -> Action:
-        openai.api_key = self._api_key
         messages = [self._identity.get_msg()]+self._personal_log
 
         args_dict = {

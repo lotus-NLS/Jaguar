@@ -1,17 +1,27 @@
+from s4_conversation.s0_ConversationParticipant import ConversationParticipant,DialogueRole, ConversationEntry
+from s2_toolbox.FileIO import READ, WRITE
+from s2_toolbox.Run import RUN
+from s3_agent.Agent import Agent
+
+
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
 
-from s4_conversation.s0_ConversationParticipant import ConversationParticipant, DialogueRole,enter_into_conversation
-from s4_conversation.s1_Channel import Channel
-from s4_conversation.s2_ConversationEntry import ConversationEntry
-from s1_run.ToolAgent import ToolAgent
-
 # ---------------------------------------------------------
 
+class DefaultAgent(Agent):
+    def __init__(self):
+        super().__init__()
+        self.set_tools(tool_types=[READ, WRITE, RUN])
 
+
+class User(ConversationParticipant):
+    def __init__(self):
+        super(User, self).__init__(role=DialogueRole.user())
+
+# TODO: This must be separated into two classes. The user must be separated from the GUI
 class GUI_User(ConversationParticipant):
-
     def __init__(self):
         super().__init__(DialogueRole.user())
         self.width = 600
@@ -50,15 +60,3 @@ class GUI_User(ConversationParticipant):
         self.message_area.configure(state='normal')
         self.message_area.insert(tk.END, message)
         self.message_area.configure(state='disabled')
-
-
-if __name__ == "__main__":
-
-    the_user = GUI_User()
-    the_bot = ToolAgent()
-
-    basic_channel = Channel()
-    enter_into_conversation(channel=basic_channel,participant_list=[the_bot,the_bot])
-    the_user.window.mainloop()
-
-
