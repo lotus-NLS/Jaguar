@@ -20,6 +20,7 @@ class User(ConversationParticipant):
     def __init__(self):
         super(User, self).__init__(role=DialogueRole.user())
 
+
 # TODO: This must be separated into two classes. The user must be separated from the GUI
 class GUI_User(ConversationParticipant):
     def __init__(self):

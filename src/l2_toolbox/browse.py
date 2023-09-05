@@ -12,10 +12,9 @@ from src.l4_conversation.l2_conversation_entry import ConversationEntry, Dialogu
 # ---------------------------------------------------------
 
 
-
+# TODO: The agent identity descriptions should not be he but rather in a file in protocol
 class BROWSE(Tool):
     num_results = 5
-
 
     def __init__(self):
         super().__init__()
@@ -29,12 +28,9 @@ class BROWSE(Tool):
         self.search_term_arg : ToolArg = self.create_arg(name='search_term', dtype=str,
                                                desc='The search_term is what will be used in the search engine to obtain relevant web pages')
 
-
-
-
     def do(self):
         try:
-            # This control flow element is only existed once all tasks are done
+            # This control flow element is only exited once all tasks are done
             with ThreadPoolExecutor() as executor:
                 search_result_urls_list = search(self.query_arg.val, num_results=BROWSE.num_results)
                 site_report_futures = [executor.submit(self.get_site_report, result_link_str) for result_link_str in search_result_urls_list]
@@ -85,49 +81,3 @@ class BROWSE(Tool):
         composition_agent.log_entry(ConversationEntry(role=DialogueRole.user(),msg=f'Reports:  {all_summaries}'
                                                                                    f'Query: {self.query_arg.val}'))
         return composition_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
-
-
-    # @staticmethod
-    # def fetch_title(url):
-    #     response = requests.get(url)
-    #     if response.status_code == 200:
-    #         soup = BeautifulSoup(response.text, 'html.parser')
-    #
-    #         # Fetch the title
-    #         title = soup.find('title').text if soup.find('title') else 'No title found'
-    #
-    #         return f"title: {title}"
-    #     else:
-    #         return "Could not fetch the title or description."
-
-    # To search
-    # query = "OpenAI GPT-4"
-    #
-    # text_result = ''
-    #
-    #     text_result += f'{result_link_str}\n'
-    #     text_result += f'{fetch_title(result_link_str)}\n'
-    #
-    # print(text_result)
-
-# url = "https://openai.com/blog/gpt-4-api-general-availability"
-# title_and_desc = fetch_title_and_description(url)
-
-# if title_and_desc:
-#     print(f"The title of the page is: {title_and_desc}")
-# else:
-#     print("Could not fetch the title.")
-
-
-# for result_link in search(query, num_results=10):
-#     print(result_link)
-#     print(fetch_title_and_description(result_link))
-
-
-#
-
-
-
-
-
-# Initialize Selenium with headless mode

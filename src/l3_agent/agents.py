@@ -1,6 +1,6 @@
 from typing import Type
-
 import openai
+
 from src.l4_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
 from src.l4_conversation.l2_conversation_entry import ConversationEntry
 from src.l4_protocol.Directive import Directive
@@ -127,7 +127,4 @@ class Agent(ConversationParticipant):
         text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
         if not text_content is None:
             self.speak(msg=text_content)
-
-
-
 

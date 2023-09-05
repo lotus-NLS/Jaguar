@@ -1,9 +1,7 @@
-
-
 import time
 from src.l1_run.entities import DefaultAgent,GUI_User, User
-from src.l4_conversation.l0_conversation_participant import Channel, enter_into_conversation, ConversationParticipant
 from src.l1_run.setup import setup
+from src.l4_conversation.l0_conversation_participant import Channel, enter_into_conversation, ConversationParticipant
 
 class RunModes:
     gui = 0
@@ -28,7 +26,6 @@ class RunHandler:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
         if self.mode == RunModes.command_line:
-            # self.user.speak('Run hello world for me')
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
