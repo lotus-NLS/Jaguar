@@ -3,6 +3,7 @@ import tempfile
 import subprocess
 
 from src.l3_agent.tool import Tool,ToolArg
+
 # ---------------------------------------------------------
 
 class RUN(Tool):
@@ -15,7 +16,7 @@ class RUN(Tool):
 
         self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
                                                  desc=f'I will type either {self.python_script_mode} for python scripts or '
-                                                  f'{self.cmd_mode} for command line scripts')
+                                                      f'{self.cmd_mode} for command line scripts')
 
         self.program_content_arg: ToolArg = self.create_arg(name='program_content', dtype=str,
                                                             desc='The content of the Python script or shell command to execute')
@@ -50,11 +51,7 @@ class RUN(Tool):
             temp.write(self.program_content_arg.val)
             temp_file_path = temp.name
 
-        # Debug
-        print(f'Starting subprocess run')
         result = subprocess.run(['python', temp_file_path], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        print(f'Subprocess run finished')
         os.unlink(temp_file_path)
 
         return result

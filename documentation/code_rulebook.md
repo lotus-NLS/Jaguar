@@ -14,7 +14,7 @@ Returning the correct type given correct arguments is responsibility of responde
 - Guarantee in every function definition: Returns an object of the type it hints.
 - Assume in every function call: Function returns an object of the type it hints.
 - Assume in every function definition: Arguments are of the type they are hinted to be.
-- Guarantee in every function call: Passed arguments are of the type they are hinted to be.
+- Guarantee in every function call: Passed arguments are of the type they are hinted to be
 
 #### Classes
 Init must guarantee fulfilling the type hints after init finish. The attribute types cannot be changed after init is complete.
@@ -26,7 +26,7 @@ Init must guarantee fulfilling the type hints after init finish. The attribute t
 
 ### III: Naming (see also: [naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python))
 - All functions are named as verbs and classes as nouns.
-- Functions that return something are of the format `get_[object]` or if the function initializes and returns the object `create_[object]` \
+- Functions that return something are of the format `get_[object]` or if the function initializes and returns the object `create_[object]` or  `make_[object]` for classmethods \
 - - Apart from `create_[object]` methods which both set and get, getters don't set and have absolutely no effect beyond their return statement \ 
 and possibly debug prints
 - However: The `set_[object]` syntax is entirely optional
@@ -51,7 +51,8 @@ of the cards on the lower level the whole thing might collapse. Software works i
 
 - Pass arguments only by keyword
 - Nesting: Max indentation level === 3
-- Source file length: Max ~200 loc, Multiple dependent classes discouraged
+- Source file length: Max ~200 loc, Multiple dependent classes within single file discouraged
+- Classmethods always return class instances
 
 
 - No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:

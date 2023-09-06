@@ -2,16 +2,14 @@ from typing import Type
 import openai
 
 from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
-from src.l4_protocol.Directive import Directive
-from src.l4_protocol.Identity import Identity
-from src.l3_agent.action import Action, ToolInstructions
-from src.l3_agent.tool import Tool
+from src.l4_protocol.priming import Priming
+from src.l3_agent.actionplan import ActionPlan
+from src.l3_agent.tool import Tool, ToolInstructions
 
 # ---------------------------------------------------------
 
 class Models:
-    # The 0613 models (06.13.23, the date of the
-    # API updates (https://openai.com/blog/function-calling-and-other-api-updates)
+    # The 0613 models (06.13.23, the date of the API updates (https://openai.com/blog/function-calling-and-other-api-updates)
     # support function calling
     # But gpt-4 or gpt-3.5-turbo will always point to the newest version anyway
 
@@ -26,20 +24,12 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
-    def __init__(self,model_type: str = Models.gpt_40_8k, identity = ''):
-        # Set identity and directive
+    def __init__(self,model_type: str = Models.gpt_40_8k, priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
-        self._directive = Directive(task=None,objective=None)
 
-        if identity == '':
-            with open('../l4_protocol/IdentityDefinition/core') as identity_file:
-                identity = identity_file.read()
-
-        # Reconsider this later
-        # with open('../l4_protocol/IdentityDefinition/principles') as principles_file:
-        #     principles = principles_file.read()
-
-        self._identity = Identity(core=identity,principles='')
+        # Set identity and directive
+        if priming is None:
+            self._priming = Priming.initialize_from_file()
 
         # Set model
         self._model_type : str = model_type
@@ -88,8 +78,8 @@ class Agent(ConversationParticipant):
             print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
-    def get_next_action(self, is_allowed_functioncall = True) -> Action:
-        core_entry = self.get_entry(role=DialogueRole.system(),msg=self._identity.get_msg())
+    def get_next_action(self, is_allowed_functioncall = True) -> ActionPlan:
+        core_entry = self.get_entry(role=DialogueRole.system(),msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
 
         args_dict = {
@@ -109,7 +99,7 @@ class Agent(ConversationParticipant):
             print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
 
-        return Action(openai_response)
+        return ActionPlan(openai_response)
 
 
     def _use_tool(self, instructions : ToolInstructions) -> None:

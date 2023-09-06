@@ -125,3 +125,8 @@ class Tool:
     def finish_log(self, to_log) -> None:
         self.log(f'[Finish]: {to_log}')
 
+
+class ToolInstructions:
+    def __init__(self,name : str, arguments : dict):
+        self.name : str = name
+        self.arguments : dict = arguments

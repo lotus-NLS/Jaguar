@@ -1,15 +1,11 @@
 from typing import Union
 import json
+from src.l3_agent.tool import ToolInstructions
 
 # ---------------------------------------------------------
 
 
-class ToolInstructions:
-    def __init__(self,name : str, arguments : dict):
-        self.name : str = name
-        self.arguments : dict = arguments
-
-class Action:
+class ActionPlan:
     def __init__(self, openAI_response : dict):
         try:
             self._best_response : dict = openAI_response['choices'][0]['message']
@@ -54,5 +50,5 @@ class Action:
             return
 
 
-        return ToolInstructions(name=tool_name,arguments=tool_args_dict)
+        return ToolInstructions(name=tool_name, arguments=tool_args_dict)
 

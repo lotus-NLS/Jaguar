@@ -1,8 +1,7 @@
 from src.l5_conversation.l0_conversation_participant import ConversationParticipant,DialogueRole
+from src.l3_agent.agent import Agent
 from src.l2_toolbox.file_io import READ, WRITE
 from src.l2_toolbox.run import RUN
-from src.l3_agent.agent import Agent
-
 
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
