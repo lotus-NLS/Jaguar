@@ -66,6 +66,12 @@ class Priming:
         directives = Directive.make_empty_directive()
         return cls(identity,directives)
 
+    @classmethod
+    def make_single_purpose_priming(cls, identity_desc : str) -> Priming:
+        identity = Identity(core=identity_desc,principles='')
+        directives = Directive.make_empty_directive()
+        return cls(identity,directives)
+
     def __init__(self,identity : Identity, directive : Directive):
         self._identity : Identity = identity
         self._directive : Directive = directive

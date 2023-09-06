@@ -24,6 +24,13 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
+
+    @classmethod
+    def make_single_purpose_agent(cls, single_purpose_desc : str, model_type = Models.gpt_35_4k):
+        the_priming = Priming.make_single_purpose_priming(single_purpose_desc)
+        cls(model_type=model_type, priming=the_priming)
+
+
     def __init__(self,model_type: str = Models.gpt_40_8k, priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
 

@@ -60,10 +60,12 @@ class BROWSE(Tool):
 
         driver.quit()
 
-        summary_agent = Agent(identity='You are tasked with summarizing the content of a website to answer a query.'
-                                       'You will be provided with a query and the text content of a website.'
-                                       'When you are provided with the text content of the website, write a report that summarizes'
-                                       'all information relevant to the query that you can find on the site')
+        summary_agent = Agent.make_single_purpose_agent(single_purpose_desc=
+                                                       'You are tasked with summarizing the content of a website to answer a query.'
+                                                       'You will be provided with a query and the text content of a website.'
+                                                       'When you are provided with the text content of the website, write a report that summarizes'
+                                                       'all information relevant to the query that you can find on the site')
+
         summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
                                        f'Query: {self.query_arg.val}')
         return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
@@ -75,11 +77,13 @@ class BROWSE(Tool):
             all_summaries += f'## Report {index} ##' \
                              f'{future.result()}\n'
         # TODO: The report length should be enforced through max_token = ... in openAI response options
-        composition_agent=Agent(identity='You are tasked with producing information that answers a query.'
+        composition_agent = Agent.make_single_purpose_agent(single_purpose_desc=
+                                        'You are tasked with producing information that answers a query.'
                                          'You will be provided with a list of reports which each present the information relevant to the query'
                                          'that was obtained from searching through a website.'
                                          'Upon request you will produce a report that answers the query using the information provided in the reports'
                                          'Keep the length of the report down to less than 200 words')
+
         composition_agent.log_user_msg(msg=f'Reports:  {all_summaries}'
                                            f'Query: {self.query_arg.val}')
         return composition_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
