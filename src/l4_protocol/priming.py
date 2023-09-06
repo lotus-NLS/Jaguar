@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Union
 from src.l4_protocol.agenda_entry import Objective,Task
+from src.l4_protocol.identity_definitions import *
 
 # ----------------------------------------------------
 
@@ -35,16 +36,6 @@ class Directive:
 
 
 class Identity:
-    @classmethod
-    def make_identity_from_file(cls, fpath : str) -> Identity:
-        try:
-            with open(fpath) as identity_file:
-                identity_desc = identity_file.read()
-            return Identity(core=identity_desc,principles='')
-        except Exception as e:
-            print(f'[Error]: An error has occured while trying to set agent identity: {e}')
-            raise ValueError
-
     def __init__(self,core : str, principles : str):
         self.core : str = core
         self.principles : str = principles
@@ -57,27 +48,30 @@ class Identity:
 
 
 class Priming:
-    def get_identity_msg(self) -> str:
-        return self._identity.get_msg()
 
     @classmethod
-    def make_lotus_priming(cls) -> Priming:
-        identity = Identity.make_identity_from_file(fpath='../l4_protocol/IdentityDefinitions/lotus_agent')
-        directives = Directive.make_empty_directive()
-        return cls(identity,directives)
+    def make_goto_priming(cls) -> Priming:
+        identity = Identity(core=goto,principles='')
+        return cls(identity)
 
     @classmethod
-    def make_from_fpath(cls,fpath):
-        identity = Identity.make_identity_from_file(fpath=fpath)
-        directives = Directive.make_empty_directive()
-        return cls(identity, directives)
+    def make_website_summarization_priming(cls) -> Priming:
+        return cls(Identity(core=website_summarizer,principles=''))
+    
+    @classmethod
+    def make_report_composition_priming(cls) -> Priming:
+        return cls(Identity(core=report_composer,principles=''))
 
     @classmethod
     def make_single_purpose_priming(cls, identity_desc : str) -> Priming:
-        identity = Identity(core=identity_desc,principles='')
-        directives = Directive.make_empty_directive()
-        return cls(identity,directives)
+        return cls(identity=Identity(core=identity_desc,principles=''))
 
-    def __init__(self,identity : Identity, directive : Directive):
+    def __init__(self,identity : Identity, directive : Directive = Directive.make_empty_directive()):
         self._identity : Identity = identity
         self._directive : Directive = directive
+
+    def get_identity_msg(self) -> str:
+        return self._identity.get_msg()
+
+
+

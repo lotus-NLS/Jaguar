@@ -44,7 +44,7 @@ class BROWSE(Tool):
 
     def get_site_report(self, site_url : str):
         site_text = BROWSE.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
-        summary_agent = SinglePurposeAgent.make_single_purpose_from_file(fpath='../../agent_identities/website_searcher')
+        summary_agent = SinglePurposeAgent.make_website_summarization_agent()
         summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
                                        f'Query: {self.query_arg.val}')
         return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
@@ -77,7 +77,9 @@ class BROWSE(Tool):
                              f'{future.result()}\n'
 
         # TODO: The report length should be enforced through max_token = ... in openAI response options
-        composition_agent = SinglePurposeAgent.make_single_purpose_from_file(fpath='../../agent_identities/report_composition')
+
+        # TODO: Fix
+        composition_agent = SinglePurposeAgent.make_report_composition_agent()
 
         return composition_agent.get_text_response(msg=f'Reports:  {all_summaries}'
                                                        f'Query: {self.query_arg.val}')

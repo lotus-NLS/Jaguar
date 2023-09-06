@@ -2,6 +2,7 @@ from src.l5_conversation.l0_conversation_participant import ConversationParticip
 from src.l3_agent.agent import Agent
 from src.l2_toolbox.file_io import READ, WRITE
 from src.l2_toolbox.run import RUN
+from src.l2_toolbox.browse import BROWSE
 
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -12,7 +13,7 @@ import customtkinter as ctk
 class DefaultAgent(Agent):
     def __init__(self):
         super().__init__()
-        self.set_tools(tool_types=[READ, WRITE, RUN])
+        self.set_tools(tool_types=[READ, WRITE, RUN,BROWSE])
 
 
 class User(ConversationParticipant):

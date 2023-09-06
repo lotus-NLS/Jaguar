@@ -28,7 +28,7 @@ class Agent(ConversationParticipant):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
-        self._priming = priming if not priming is None else Priming.make_lotus_priming()
+        self._priming = priming if not priming is None else Priming.make_goto_priming()
 
         # Set model
         self._model_type : str = model_type
@@ -120,9 +120,12 @@ class Agent(ConversationParticipant):
 class SinglePurposeAgent(Agent):
 
     @classmethod
-    def make_single_purpose_from_file(cls,fpath : str,model_type = Models.gpt_35_4k):
-        the_priming = Priming.make_from_fpath(fpath=fpath)
-        return cls( model_type=model_type,priming=the_priming)
+    def make_website_summarization_agent(cls):
+        return cls(priming=Priming.make_website_summarization_priming(),model_type=Models.gpt_35_4k)
+
+    @classmethod
+    def make_report_composition_agent(cls):
+        return cls(priming=Priming.make_report_composition_priming(),model_type=Models.gpt_35_4k)
 
     def __init__(self, priming: Priming, model_type=Models.gpt_35_4k):
         super().__init__(model_type=model_type,priming=priming)

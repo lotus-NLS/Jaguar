@@ -21,7 +21,6 @@ class RunHandler:
 
         ConversationParticipant.enter_into_conversation(channel=self.channel, participant_list=[self.user] + self.bots)
         self.is_introduction_enabled : bool = is_introduction_enabled
-        self.start()
 
     def start(self):
         print(f'[Debug]: Lotus started')

@@ -50,6 +50,7 @@ of the cards on the lower level the whole thing might collapse. Software works i
 ### V: Other
 
 - Pass arguments only by keyword
+- Minimal exposure/Maximal encapsulation: Keep the API between modules as minimal as possible
 - Nesting: Max indentation level === 3
 - Source file length: Max ~200 loc, Multiple dependent classes within single file discouraged
 - Classmethods always return class instances
