@@ -1,6 +1,6 @@
 from typing import Union
 import json
-from src.l3_agent.tool import ToolInstructions
+from src.l2_lotus_core.agent.tool import ToolInstructions
 
 # ---------------------------------------------------------
 

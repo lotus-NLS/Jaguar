@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup
 import time
 from concurrent.futures import ThreadPoolExecutor, Future
 
-from src.l3_agent.agent import SinglePurposeAgent
-from src.l3_agent.tool import Tool, ToolArg
+from src.l2_lotus_core.agent.agent import SinglePurposeAgent
+from src.l2_lotus_core.agent.tool import Tool, ToolArg
 
 
 # ---------------------------------------------------------

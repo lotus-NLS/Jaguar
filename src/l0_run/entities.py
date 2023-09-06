@@ -1,8 +1,8 @@
-from src.l5_conversation.conversation_participant import ConversationParticipant,DialogueRole
-from src.l3_agent.agent import Agent
-from src.l2_toolbox.file_io import READ, WRITE
-from src.l2_toolbox.run import RUN
-from src.l2_toolbox.browse import BROWSE
+from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant,DialogueRole
+from src.l2_lotus_core.agent.agent import Agent
+from src.l1_lotus_tools.file_io import READ, WRITE
+from src.l1_lotus_tools.run import RUN
+from src.l1_lotus_tools.browse import BROWSE
 
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
@@ -13,7 +13,7 @@ import customtkinter as ctk
 class DefaultAgent(Agent):
     def __init__(self):
         super().__init__()
-        self.set_tools(tool_types=[READ, WRITE, RUN,BROWSE])
+        self.set_tools(tool_types=[READ, WRITE, RUN, BROWSE])
 
 
 class User(ConversationParticipant):

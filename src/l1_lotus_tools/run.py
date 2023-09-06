@@ -2,7 +2,7 @@ import os
 import tempfile
 import subprocess
 
-from src.l3_agent.tool import Tool,ToolArg
+from src.l2_lotus_core.agent.tool import Tool,ToolArg
 
 # ---------------------------------------------------------
 
@@ -12,7 +12,7 @@ class RUN(Tool):
 
     def __init__(self):
         super().__init__()
-        self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string'
+        self.description = 'The RUN tool allows you to either l0_run a Python script or execute a command line command as input string'
 
         self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
                                                  desc=f'I will type either {self.python_script_mode} for python scripts or '
@@ -43,7 +43,7 @@ class RUN(Tool):
                 self.error_log(f'Standard Error:\n{result.stderr}')
 
         except Exception as e:
-            self.error_log(f'An error occurred while trying to run the Python script: {e}')
+            self.error_log(f'An error occurred while trying to l0_run the Python script: {e}')
 
 
     def execute_py(self):

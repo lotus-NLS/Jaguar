@@ -1,10 +1,10 @@
 from typing import Type
 import openai
 
-from src.l5_conversation.conversation_participant import ConversationParticipant, DialogueRole
-from src.l4_protocol.priming import Priming
-from src.l3_agent.actionplan import ActionPlan
-from src.l3_agent.tool import Tool, ToolInstructions
+from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant, DialogueRole
+from src.l2_lotus_core.protocol.priming import Priming
+from src.l2_lotus_core.agent.actionplan import ActionPlan
+from src.l2_lotus_core.agent.tool import Tool, ToolInstructions
 
 # ---------------------------------------------------------
 
