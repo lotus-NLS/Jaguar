@@ -1,9 +1,6 @@
 import time
-
-from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
-from src.l5_conversation.l1_channel import Channel
 from tests.test_module import TestModule
-
+from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole, Channel
 
 
 class ConversationTestModule(TestModule):

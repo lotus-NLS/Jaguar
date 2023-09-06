@@ -1,6 +1,5 @@
 # noinspection PyPackageRequirements
 from googlesearch import search #  It's googlesearch-python, it's in there
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup

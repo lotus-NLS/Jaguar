@@ -5,17 +5,8 @@ from typing import Union
 from src.l5_conversation.l1_channel import Channel
 from src.l5_conversation.l2_conversation_entry import ConversationEntry, DialogueRole
 
-
-# Conversation:
-# -> Only Conversation Particpants can join a l5_conversation
-# -> The argument of speak is logged to "conversational_memory" of every particpant
-# -> The arg of think is logged only to self
-# -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
-
 # ----------------------------------------------------
 
-
-# TODO: Log entry should not be exposed downstream. Instead use special loggers; Neither should Conversation entry be used
 class ConversationParticipant:
     def __init__(self, role : DialogueRole):
         super().__init__()

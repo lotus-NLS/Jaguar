@@ -79,7 +79,7 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self, is_allowed_functioncall = True) -> ActionPlan:
-        core_entry = self.get_entry(role=DialogueRole.system(),msg=self._priming.get_identity_msg())
+        core_entry = ConversationParticipant.get_entry(role=DialogueRole.system(),msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
 
         args_dict = {

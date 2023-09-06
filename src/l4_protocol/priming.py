@@ -57,10 +57,6 @@ class Identity:
 
 
 class Priming:
-    # ... Get or make directive
-
-    # ... Get or make identity
-
     def get_identity_msg(self) -> str:
         return self._identity.get_msg()
 
