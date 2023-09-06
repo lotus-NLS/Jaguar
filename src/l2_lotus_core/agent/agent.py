@@ -5,26 +5,17 @@ from src.l2_lotus_core.conversation.conversation_participant import Conversation
 from src.l2_lotus_core.protocol.priming import Priming
 from src.l2_lotus_core.agent.actionplan import ActionPlan
 from src.l2_lotus_core.agent.tool import Tool, ToolInstructions
+from src.l2_lotus_core.settings.constants import Models
+
 
 # ---------------------------------------------------------
-
-class Models:
-    # The 0613 models (06.13.23, the date of the API updates (https://openai.com/blog/function-calling-and-other-api-updates)
-    # support function calling
-    # But gpt-4 or gpt-3.5-turbo will always point to the newest version anyway
-
-    gpt_35_4k = 'gpt-3.5-turbo-0613'
-    gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
-    gpt_40_8k = 'gpt-4-0613'
-    gpt_40_32k = 'gpt-4-32k-0613'
 
 class FunctionCallModes:
     auto = 'auto'
     none = 'none'
 
-
 class Agent(ConversationParticipant):
-    def __init__(self,model_type: str = Models.gpt_40_8k, priming : Priming = None):
+    def __init__(self, model_type: str = Models.gpt_40_8k, priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
@@ -121,11 +112,11 @@ class SinglePurposeAgent(Agent):
 
     @classmethod
     def make_website_summarization_agent(cls):
-        return cls(priming=Priming.make_website_summarization_priming(),model_type=Models.gpt_35_4k)
+        return cls(priming=Priming.make_website_summarization_priming(), model_type=Models.gpt_35_4k)
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(priming=Priming.make_report_composition_priming(),model_type=Models.gpt_35_4k)
+        return cls(priming=Priming.make_report_composition_priming(), model_type=Models.gpt_35_4k)
 
     def __init__(self, priming: Priming, model_type=Models.gpt_35_4k):
         super().__init__(model_type=model_type,priming=priming)

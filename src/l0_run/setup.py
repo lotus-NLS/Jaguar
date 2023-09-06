@@ -2,7 +2,8 @@ import openai
 import os
 import configparser
 
-from src.l2_lotus_core.agent.agent import Models
+from src.l2_lotus_core.settings.constants import Models
+
 
 # ---------------------------------------------------------
 
