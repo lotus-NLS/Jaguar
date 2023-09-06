@@ -1,13 +1,12 @@
 import time
 
-from src.l4_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole, enter_into_conversation
-from src.l4_conversation.l1_channel import Channel
+from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
+from src.l5_conversation.l1_channel import Channel
 from tests.test_module import TestModule
 
 
 
 class ConversationTestModule(TestModule):
-
     class RowdyParticipant(ConversationParticipant):
         def _reaction_protocol(self, dialogue_line: dict):
             role = dialogue_line['role']
@@ -27,7 +26,7 @@ class ConversationTestModule(TestModule):
         self.rowdy_user_participant = ConversationTestModule.RowdyParticipant(role=DialogueRole.user())
         self.agent_participant_list = [self.agent_participant1, self.agent_participant2, self.agent_participant3]
 
-        enter_into_conversation(channel=self.basic_channel, participant_list=self.agent_participant_list)
+        ConversationParticipant.enter_into_conversation(channel=self.basic_channel, participant_list=self.agent_participant_list)
 
         self.all_participants = self.agent_participant_list + [self.rowdy_user_participant]
 

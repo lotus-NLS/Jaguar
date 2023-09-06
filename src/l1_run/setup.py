@@ -1,8 +1,10 @@
 import openai
 import os
 import configparser
-from src.l3_agent.agents import Models
-from src.l4_conversation.l0_conversation_participant import ConversationEntry,DialogueRole
+from src.l3_agent.agent import Models
+from src.l5_conversation.l0_conversation_participant import DialogueRole
+from src.l5_conversation.l2_conversation_entry import ConversationEntry
+
 
 def setup():
     while True:

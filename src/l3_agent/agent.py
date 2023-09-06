@@ -1,12 +1,11 @@
 from typing import Type
 import openai
 
-from src.l4_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
-from src.l4_conversation.l2_conversation_entry import ConversationEntry
+from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
+from src.l5_conversation.l2_conversation_entry import ConversationEntry
 from src.l4_protocol.Directive import Directive
 from src.l4_protocol.Identity import Identity
-from src.l3_agent.actions import ToolInstructions
-from src.l3_agent.actions import Action
+from src.l3_agent.action import Action, ToolInstructions
 from src.l3_agent.tool import Tool
 
 # ---------------------------------------------------------
@@ -57,7 +56,7 @@ class Agent(ConversationParticipant):
         # TODO: Need to log not just tool role but tool name as well
         self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
-            tool.external_log = self.read
+            tool.external_log = self.log_tool_msg
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
 
 

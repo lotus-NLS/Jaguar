@@ -1,7 +1,8 @@
-from src.l4_protocol.AgendaEntry import Objective,Task
-from src.l4_conversation.l0_conversation_participant import DialogueRole
-from src.l4_conversation.l2_conversation_entry import ConversationEntry
 from typing import Union
+from src.l4_protocol.AgendaEntry import Objective,Task
+from src.l5_conversation.l0_conversation_participant import DialogueRole
+from src.l5_conversation.l2_conversation_entry import ConversationEntry
+
 
 # ----------------------------------------------------
 

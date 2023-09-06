@@ -1,7 +1,7 @@
 import time
 from src.l1_run.entities import DefaultAgent,GUI_User, User
 from src.l1_run.setup import setup
-from src.l4_conversation.l0_conversation_participant import Channel, enter_into_conversation, ConversationParticipant
+from src.l5_conversation.l0_conversation_participant import Channel, ConversationParticipant
 
 class RunModes:
     gui = 0
@@ -15,7 +15,7 @@ class RunHandler:
         self.bots : list[ConversationParticipant] = [DefaultAgent()]
         self.channel = Channel()
 
-        enter_into_conversation(channel=self.channel, participant_list=[self.user] + self.bots)
+        ConversationParticipant.enter_into_conversation(channel=self.channel, participant_list=[self.user] + self.bots)
         self.is_introduction_enabled : bool = is_introduction_enabled
         self.start()
 

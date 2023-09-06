@@ -7,8 +7,10 @@ from bs4 import BeautifulSoup
 import time
 
 from concurrent.futures import ThreadPoolExecutor, Future
-from src.l3_agent.agents import Agent
-from src.l4_conversation.l2_conversation_entry import ConversationEntry, DialogueRole
+from src.l3_agent.agent import Agent
+from src.l5_conversation.l2_conversation_entry import DialogueRole, ConversationEntry
+
+
 # ---------------------------------------------------------
 
 

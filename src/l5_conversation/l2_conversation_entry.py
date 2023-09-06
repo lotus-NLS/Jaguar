@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 
 class DialogueRole(str):
     _m_user = 'user'
@@ -9,10 +11,11 @@ class DialogueRole(str):
         if not role in DialogueRole.__as_list__():
             print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.__as_list__()}.'
                   f' Defaulting to agent role ...')
-            return DialogueRole._m_agent
+            return str.__new__(cls, DialogueRole._m_agent)
 
         else:
-            return role
+            return str.__new__(cls, role)
+
 
     @classmethod
     def tool(cls):
@@ -37,3 +40,18 @@ class DialogueRole(str):
             if name.startswith("_m_"):
                 as_list.append(value)
         return as_list
+
+
+class ConversationEntry(dict):
+    def __init__(self, role : DialogueRole, msg : str, tool_name ='undefined_function'):
+        super().__init__()
+        self['role'] = role
+        self['content'] = msg
+        if role == DialogueRole.tool():
+            self['name'] = tool_name
+
+    def get_role(self):
+        return self['role']
+
+    def get_content(self):
+        return self['content']

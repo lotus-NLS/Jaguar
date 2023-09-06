@@ -1,12 +1,13 @@
+from __future__ import annotations
 import threading
-from typing import List, Union
+from typing import Union
 
-from src.l4_conversation.l1_channel import Channel
-from src.l4_conversation.l2_conversation_entry import ConversationEntry
-from src.l4_conversation.l3_dialogue_rules import DialogueRole
+from src.l5_conversation.l1_channel import Channel
+from src.l5_conversation.l2_conversation_entry import ConversationEntry, DialogueRole
+
 
 # Conversation:
-# -> Only Conversation Particpants can join a l4_conversation
+# -> Only Conversation Particpants can join a l5_conversation
 # -> The argument of speak is logged to "conversational_memory" of every particpant
 # -> The arg of think is logged only to self
 # -> For every new piece of dialgoue added to the conversational_memory "react" is triggered
@@ -14,11 +15,15 @@ from src.l4_conversation.l3_dialogue_rules import DialogueRole
 # ----------------------------------------------------
 
 
+
+
+# TODO: Log entry should not be exposed downstream. Instead use special loggers
+# TODO: Neither should Conversation entry be used
 class ConversationParticipant:
     def __init__(self, role : DialogueRole):
         super().__init__()
         self._role : DialogueRole = role
-        self._personal_log : List[ConversationEntry] = []
+        self._personal_log : list[ConversationEntry] = []
         self._channel : Union[Channel, None] = None
 
     # ------------------------------
@@ -47,11 +52,14 @@ class ConversationParticipant:
     def _reaction_protocol(self, dialogue_line : dict):
         pass
 
-    def read(self,msg : str, tool_name : str = 'undefined_tool'):
+    def log_user_msg(self, msg):
+        pass
+
+    def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
         self.log_entry(entry=ConversationEntry(role=DialogueRole.tool(), msg=msg, tool_name= tool_name))
 
-    def think(self,msg : str):
+    def think(self, msg : str):
         the_msg = f'## Internal monologue: {msg}'
         print(f'[Debug]: {self._role} thought: {the_msg}')
         self.log_entry(entry=ConversationEntry(role=self._role, msg=the_msg))
@@ -69,7 +77,7 @@ class ConversationParticipant:
     def get_memory(self):
         return self._personal_log
 
-
-def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):
-    for participant in participant_list:
-        participant.join_channel(channel)
+    @staticmethod
+    def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):
+        for participant in participant_list:
+            participant.join_channel(channel)
