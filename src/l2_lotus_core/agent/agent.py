@@ -77,6 +77,22 @@ class Agent(ConversationParticipant):
             print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
+    def _use_tool(self, instructions : ToolInstructions) -> None:
+        print('[Debug]: Agent requested tool usage')
+        tool_name = instructions.name
+        tool_args_dict = instructions.arguments
+
+        tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
+        if tool_name in tool_dict:
+            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+
+
+        self.think(f'I must update the user on the results of the tool usage')
+        text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
+        if not text_content is None:
+            self.speak(msg=text_content)
+
+
     def get_next_action(self, is_allowed_functioncall = True) -> ActionPlan:
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(), msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
@@ -99,22 +115,6 @@ class Agent(ConversationParticipant):
             openai_response = {}
 
         return ActionPlan(openai_response)
-
-
-    def _use_tool(self, instructions : ToolInstructions) -> None:
-        print('[Debug]: Agent requested tool usage')
-        tool_name = instructions.name
-        tool_args_dict = instructions.arguments
-
-        tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
-        if tool_name in tool_dict:
-            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-
-
-        self.think(f'I must update the user on the results of the tool usage')
-        text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
-        if not text_content is None:
-            self.speak(msg=text_content)
 
 
 class SinglePurposeAgent(Agent):
