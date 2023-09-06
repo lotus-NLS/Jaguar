@@ -2,7 +2,7 @@ import time
 
 from src.l0_run.setup import setup
 from src.l0_run.entities import DefaultAgent,GUI_User, User
-from src.l2_lotus_core.conversation.conversation_participant import Channel, ConversationParticipant
+from src.l2_lotus_core import Channel, ConversationParticipant
 
 # ---------------------------------------------------------
 

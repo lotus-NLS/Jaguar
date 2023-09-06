@@ -1,12 +1,9 @@
-from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant,DialogueRole
-from src.l2_lotus_core.agent.agent import Agent
-from src.l1_lotus_tools.file_io import READ, WRITE
-from src.l1_lotus_tools.run import RUN
-from src.l1_lotus_tools.browse import BROWSE
-
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import customtkinter as ctk
+
+from src.l2_lotus_core import Agent, ConversationParticipant, DialogueRole
+from src.l1_lotus_tools import RUN,READ,WRITE,BROWSE
 
 # ---------------------------------------------------------
 

@@ -2,7 +2,7 @@ import os
 import tempfile
 import subprocess
 
-from src.l2_lotus_core.agent.tool import Tool,ToolArg
+from src.l2_lotus_core import Tool,ToolArg
 
 # ---------------------------------------------------------
 
