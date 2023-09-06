@@ -24,19 +24,12 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
-
-    @classmethod
-    def make_single_purpose_agent(cls, single_purpose_desc : str, model_type = Models.gpt_35_4k):
-        the_priming = Priming.make_single_purpose_priming(single_purpose_desc)
-        cls(model_type=model_type, priming=the_priming)
-
-
     def __init__(self,model_type: str = Models.gpt_40_8k, priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
         if priming is None:
-            self._priming = Priming.initialize_from_file()
+            self._priming = Priming.make_lotus_agent()
 
         # Set model
         self._model_type : str = model_type
@@ -124,3 +117,26 @@ class Agent(ConversationParticipant):
         if not text_content is None:
             self.speak(msg=text_content)
 
+
+class SinglePurposeAgent(Agent):
+
+    @classmethod
+    def make_single_purpose_from_file(cls,fpath : str,model_type = Models.gpt_35_4k):
+        the_priming = Priming.make_from_fpath(fpath=fpath)
+        return cls(priming=the_priming, model_type=model_type)
+
+    def __init__(self, priming: Priming, model_type=Models.gpt_35_4k):
+        super().__init__(model_type=model_type,priming=priming)
+
+    def _reaction_protocol(self, dialogue_line) -> None:
+        pass
+
+    def get_text_response(self, task_desc : str) -> str:
+        self.log_user_msg(msg=task_desc)
+        text_response = self.get_next_action(is_allowed_functioncall=False).get_text_content()
+
+        if text_response is None:
+            print('[Error]: Could not obtain text response from single purpose agent. Returning empty string')
+            text_response = ''
+
+        return text_response

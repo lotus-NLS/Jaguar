@@ -4,17 +4,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
-
 from concurrent.futures import ThreadPoolExecutor, Future
 
-from src.l3_agent.agent import Agent
-from src.l3_agent.tool import Tool
-from src.l3_agent.tool import ToolArg
+from src.l3_agent.agent import Agent, SinglePurposeAgent
+from src.l3_agent.tool import Tool, ToolArg
 
 
 # ---------------------------------------------------------
 
-# TODO: The agent identity descriptions should not be he but rather in a file in protocol
 class BROWSE(Tool):
     num_results = 5
 
@@ -30,6 +27,7 @@ class BROWSE(Tool):
         self.search_term_arg : ToolArg = self.create_arg(name='search_term', dtype=str,
                                                desc='The search_term is what will be used in the search engine to obtain relevant web pages')
 
+
     def do(self):
         try:
             # This control flow element is only left once all tasks are done
@@ -40,17 +38,27 @@ class BROWSE(Tool):
             self.progress_log(f'The following information was obtained from web search \n'
                               f'{self.make_composition_report(site_report_futures)}')
 
-        except Exception:
-            self.error_log('An error occured while trying to browse for sites and summarize information on query')
+        except Exception as e:
+            self.error_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
 
 
-    def get_site_report(self, site_url):
+    def get_site_report(self, site_url : str):
+        site_text = BROWSE.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
+        summary_agent = SinglePurposeAgent.make_single_purpose_from_file(fpath='../../agent_identities/website_searcher')
+        summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
+                                       f'Query: {self.query_arg.val}')
+        return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
+
+
+    @staticmethod
+    def get_url_text(site_url : str, wait_for_load_in_sec = 2) -> str:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
 
         driver.get(site_url)
-        time.sleep(2)
+        # NOTE : If you should wait or for how long until page elements load is something to be contemplated
+        time.sleep(wait_for_load_in_sec)
         page_source = driver.page_source
 
         soup = BeautifulSoup(page_source, 'html.parser')
@@ -59,16 +67,7 @@ class BROWSE(Tool):
             site_text += text
 
         driver.quit()
-
-        summary_agent = Agent.make_single_purpose_agent(single_purpose_desc=
-                                                       'You are tasked with summarizing the content of a website to answer a query.'
-                                                       'You will be provided with a query and the text content of a website.'
-                                                       'When you are provided with the text content of the website, write a report that summarizes'
-                                                       'all information relevant to the query that you can find on the site')
-
-        summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
-                                       f'Query: {self.query_arg.val}')
-        return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
+        return site_text
 
 
     def make_composition_report(self, site_report_futures : list[Future]):
@@ -76,14 +75,9 @@ class BROWSE(Tool):
         for index,future in enumerate(site_report_futures):
             all_summaries += f'## Report {index} ##' \
                              f'{future.result()}\n'
-        # TODO: The report length should be enforced through max_token = ... in openAI response options
-        composition_agent = Agent.make_single_purpose_agent(single_purpose_desc=
-                                        'You are tasked with producing information that answers a query.'
-                                         'You will be provided with a list of reports which each present the information relevant to the query'
-                                         'that was obtained from searching through a website.'
-                                         'Upon request you will produce a report that answers the query using the information provided in the reports'
-                                         'Keep the length of the report down to less than 200 words')
 
-        composition_agent.log_user_msg(msg=f'Reports:  {all_summaries}'
-                                           f'Query: {self.query_arg.val}')
-        return composition_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
+        # TODO: The report length should be enforced through max_token = ... in openAI response options
+        composition_agent = SinglePurposeAgent.make_single_purpose_from_file(fpath='../../agent_identities/report_composition')
+
+        return composition_agent.get_text_response(msg=f'Reports:  {all_summaries}'
+                                                       f'Query: {self.query_arg.val}')

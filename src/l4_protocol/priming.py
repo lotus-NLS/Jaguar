@@ -61,10 +61,16 @@ class Priming:
         return self._identity.get_msg()
 
     @classmethod
-    def initialize_from_file(cls) -> Priming:
-        identity = Identity.make_identity_from_file(fpath='../l4_protocol/IdentityDefinition/core')
+    def make_lotus_agent(cls) -> Priming:
+        identity = Identity.make_identity_from_file(fpath='../l4_protocol/IdentityDefinitions/lotus_agent')
         directives = Directive.make_empty_directive()
         return cls(identity,directives)
+
+    @classmethod
+    def make_from_fpath(cls,fpath):
+        identity = Identity.make_identity_from_file(fpath=fpath)
+        directives = Directive.make_empty_directive()
+        return cls(identity, directives)
 
     @classmethod
     def make_single_purpose_priming(cls, identity_desc : str) -> Priming:
