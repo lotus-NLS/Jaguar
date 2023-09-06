@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import time
 from concurrent.futures import ThreadPoolExecutor, Future
 
-from src.l3_agent.agent import Agent, SinglePurposeAgent
+from src.l3_agent.agent import SinglePurposeAgent
 from src.l3_agent.tool import Tool, ToolArg
 
 
@@ -81,3 +81,8 @@ class BROWSE(Tool):
 
         return composition_agent.get_text_response(msg=f'Reports:  {all_summaries}'
                                                        f'Query: {self.query_arg.val}')
+
+
+# Test code
+# summary_agent_test = SinglePurposeAgent.make_single_purpose_from_file(fpath='../../agent_identities/website_searcher')
+# print(summary_agent_test.get_text_response(prompt='This is a test. Who are you?'))

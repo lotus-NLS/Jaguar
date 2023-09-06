@@ -53,7 +53,7 @@ of the cards on the lower level the whole thing might collapse. Software works i
 - Nesting: Max indentation level === 3
 - Source file length: Max ~200 loc, Multiple dependent classes within single file discouraged
 - Classmethods always return class instances
-
+- Logging: \[Debug\] for control flow information; \[Error\] for Exceptions or unintended output, error message includes Exception
 
 - No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
   ```

@@ -61,7 +61,7 @@ class Priming:
         return self._identity.get_msg()
 
     @classmethod
-    def make_lotus_agent(cls) -> Priming:
+    def make_lotus_priming(cls) -> Priming:
         identity = Identity.make_identity_from_file(fpath='../l4_protocol/IdentityDefinitions/lotus_agent')
         directives = Directive.make_empty_directive()
         return cls(identity,directives)

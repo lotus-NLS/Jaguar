@@ -28,8 +28,7 @@ class Agent(ConversationParticipant):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
-        if priming is None:
-            self._priming = Priming.make_lotus_agent()
+        self._priming = priming if not priming is None else Priming.make_lotus_priming()
 
         # Set model
         self._model_type : str = model_type
@@ -123,7 +122,7 @@ class SinglePurposeAgent(Agent):
     @classmethod
     def make_single_purpose_from_file(cls,fpath : str,model_type = Models.gpt_35_4k):
         the_priming = Priming.make_from_fpath(fpath=fpath)
-        return cls(priming=the_priming, model_type=model_type)
+        return cls( model_type=model_type,priming=the_priming)
 
     def __init__(self, priming: Priming, model_type=Models.gpt_35_4k):
         super().__init__(model_type=model_type,priming=priming)
@@ -131,8 +130,8 @@ class SinglePurposeAgent(Agent):
     def _reaction_protocol(self, dialogue_line) -> None:
         pass
 
-    def get_text_response(self, task_desc : str) -> str:
-        self.log_user_msg(msg=task_desc)
+    def get_text_response(self, prompt : str) -> str:
+        self.log_user_msg(msg=prompt)
         text_response = self.get_next_action(is_allowed_functioncall=False).get_text_content()
 
         if text_response is None:
