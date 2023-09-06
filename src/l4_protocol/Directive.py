@@ -1,8 +1,5 @@
 from typing import Union
 from src.l4_protocol.AgendaEntry import Objective,Task
-from src.l5_conversation.l0_conversation_participant import DialogueRole
-from src.l5_conversation.l2_conversation_entry import ConversationEntry
-
 
 # ----------------------------------------------------
 
@@ -29,4 +26,4 @@ class Directive:
             # task_msg += f'I do not currently have any task to work on :)'
             task_msg += f'I must crack an egg!\n'
 
-        return ConversationEntry(role=DialogueRole.agent(), msg=objective_msg + task_msg)
+        return objective_msg+task_msg

@@ -1,8 +1,3 @@
-from src.l5_conversation.l0_conversation_participant import DialogueRole
-from src.l5_conversation.l2_conversation_entry import ConversationEntry
-
-
-# ----------------------------------------------------
 
 
 class Identity:
@@ -14,4 +9,4 @@ class Identity:
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
 
-        return ConversationEntry(role=DialogueRole.system(), msg=core_msg + principles_msg)
+        return core_msg+principles_msg

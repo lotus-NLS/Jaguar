@@ -1,5 +1,4 @@
 from src.l5_conversation.l0_conversation_participant import ConversationParticipant,DialogueRole
-from src.l5_conversation.l2_conversation_entry import ConversationEntry
 from src.l2_toolbox.file_io import READ, WRITE
 from src.l2_toolbox.run import RUN
 from src.l3_agent.agent import Agent
@@ -53,9 +52,9 @@ class GUI_User(ConversationParticipant):
         self.speak(self.input_area.get())
         self.input_area.delete(0, 'end')
 
-    def _reaction_protocol(self, dialogue_line : ConversationEntry):
-        role = dialogue_line.get_role()
-        msg = dialogue_line.get_content()
+    def _reaction_protocol(self, conversation_entry):
+        role = conversation_entry.get_role()
+        msg = conversation_entry.get_content()
         self.display_message(f'{role}: {msg}\n')
 
     def display_message(self, message):

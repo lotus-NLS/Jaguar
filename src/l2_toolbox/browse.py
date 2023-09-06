@@ -1,18 +1,19 @@
-from src.l3_agent.tool import Tool
-from src.l3_agent.tool import ToolArg
-from googlesearch import search
+# noinspection PyPackageRequirements
+from googlesearch import search #  It's googlesearch-python, it's in there
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
 from concurrent.futures import ThreadPoolExecutor, Future
+
 from src.l3_agent.agent import Agent
-from src.l5_conversation.l2_conversation_entry import DialogueRole, ConversationEntry
+from src.l3_agent.tool import Tool
+from src.l3_agent.tool import ToolArg
 
 
 # ---------------------------------------------------------
-
 
 # TODO: The agent identity descriptions should not be he but rather in a file in protocol
 class BROWSE(Tool):
@@ -32,7 +33,7 @@ class BROWSE(Tool):
 
     def do(self):
         try:
-            # This control flow element is only exited once all tasks are done
+            # This control flow element is only left once all tasks are done
             with ThreadPoolExecutor() as executor:
                 search_result_urls_list = search(self.query_arg.val, num_results=BROWSE.num_results)
                 site_report_futures = [executor.submit(self.get_site_report, result_link_str) for result_link_str in search_result_urls_list]
@@ -64,8 +65,8 @@ class BROWSE(Tool):
                                        'You will be provided with a query and the text content of a website.'
                                        'When you are provided with the text content of the website, write a report that summarizes'
                                        'all information relevant to the query that you can find on the site')
-        summary_agent.log_entry(ConversationEntry(role=DialogueRole.user(),msg=f'Website text:\n {site_text}\n'
-                                                                               f'Query: {self.query_arg.val}'))
+        summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
+                                       f'Query: {self.query_arg.val}')
         return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
 
 
@@ -80,6 +81,6 @@ class BROWSE(Tool):
                                          'that was obtained from searching through a website.'
                                          'Upon request you will produce a report that answers the query using the information provided in the reports'
                                          'Keep the length of the report down to less than 200 words')
-        composition_agent.log_entry(ConversationEntry(role=DialogueRole.user(),msg=f'Reports:  {all_summaries}'
-                                                                                   f'Query: {self.query_arg.val}'))
+        composition_agent.log_user_msg(msg=f'Reports:  {all_summaries}'
+                                           f'Query: {self.query_arg.val}')
         return composition_agent.get_next_action(is_allowed_functioncall=False).get_text_content()

@@ -2,8 +2,6 @@ import openai
 import os
 import configparser
 from src.l3_agent.agent import Models
-from src.l5_conversation.l0_conversation_participant import DialogueRole
-from src.l5_conversation.l2_conversation_entry import ConversationEntry
 
 
 def setup():
@@ -41,7 +39,7 @@ def test_api_key(key : str) -> None:
         openai.api_key = key
         args_dict = {
             'model': Models.gpt_40_8k,
-            'messages': [ConversationEntry(role=DialogueRole.user(), msg='This is a test')],
+            'messages': [{'role' : 'user', 'content' : 'This is a test'}]
         }
         openai.ChatCompletion.create(**args_dict)
 

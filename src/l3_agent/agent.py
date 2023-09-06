@@ -2,7 +2,6 @@ from typing import Type
 import openai
 
 from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
-from src.l5_conversation.l2_conversation_entry import ConversationEntry
 from src.l4_protocol.Directive import Directive
 from src.l4_protocol.Identity import Identity
 from src.l3_agent.action import Action, ToolInstructions
@@ -63,7 +62,7 @@ class Agent(ConversationParticipant):
     # ---------------------------------------------------
     # Callback
 
-    def _reaction_protocol(self, dialogue_line : ConversationEntry) -> None:
+    def _reaction_protocol(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
             self._perform_next_action()
 
@@ -90,7 +89,8 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self, is_allowed_functioncall = True) -> Action:
-        messages = [self._identity.get_msg()]+self._personal_log
+        core_entry = self.get_entry(role=DialogueRole.system(),msg=self._identity.get_msg())
+        messages = [core_entry]+self._personal_log
 
         args_dict = {
             'model' : self._model_type,

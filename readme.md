@@ -92,5 +92,5 @@ do not suffice to accomplish the task it could simply build the tool itself.
 [Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \
 On this page you can view current objectives, tasks and notes relevant to development
 
-[Code Rulebook](_documentation/code_rulebook.md): \
+[Code Rulebook](documentation/code_rulebook.md): \
 All contributed code must adhere to the code rulebook
