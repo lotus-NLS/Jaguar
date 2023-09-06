@@ -2,8 +2,8 @@ from __future__ import annotations
 import threading
 from typing import Union
 
-from src.l5_conversation.l1_channel import Channel
-from src.l5_conversation.l2_conversation_entry import ConversationEntry, DialogueRole
+from src.l5_conversation.channel import Channel
+from src.l5_conversation.conversation_entry import ConversationEntry, DialogueRole
 
 # ----------------------------------------------------
 
@@ -37,20 +37,24 @@ class ConversationParticipant:
         self._personal_log.append(entry)
         threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
-    def _reaction_protocol(self, dialogue_line : ConversationEntry):
-        pass
-
     def log_user_msg(self, msg):
         self._log_entry(ConversationEntry(role=DialogueRole.user(), msg=msg))
+
 
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
         self._log_entry(entry=ConversationEntry(role=DialogueRole.tool(), msg=msg, tool_name= tool_name))
 
+
+    def _reaction_protocol(self, dialogue_line : ConversationEntry):
+        pass
+
+
     def think(self, msg : str):
         the_msg = f'## Internal monologue: {msg}'
         print(f'[Debug]: {self._role} thought: {the_msg}')
         self._log_entry(entry=ConversationEntry(role=self._role, msg=the_msg))
+
 
     def speak(self, msg : str):
         if self._channel is None:
@@ -60,10 +64,10 @@ class ConversationParticipant:
         self._channel.broadcast_message(ConversationEntry(role=self._role, msg=msg))
 
     # ------------------------------
-    # Log
+    # Other
 
     @staticmethod
-    def get_entry(role : DialogueRole, msg : str):
+    def make_entry(role : DialogueRole, msg : str):
         return ConversationEntry(role,msg)
 
     def get_memory(self):

@@ -1,7 +1,7 @@
 from typing import Type
 import openai
 
-from src.l5_conversation.l0_conversation_participant import ConversationParticipant, DialogueRole
+from src.l5_conversation.conversation_participant import ConversationParticipant, DialogueRole
 from src.l4_protocol.priming import Priming
 from src.l3_agent.actionplan import ActionPlan
 from src.l3_agent.tool import Tool, ToolInstructions
@@ -78,7 +78,7 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self, is_allowed_functioncall = True) -> ActionPlan:
-        core_entry = ConversationParticipant.get_entry(role=DialogueRole.system(),msg=self._priming.get_identity_msg())
+        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(), msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
 
         args_dict = {

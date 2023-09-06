@@ -2,7 +2,7 @@ import time
 
 from src.l1_run.entities import DefaultAgent,GUI_User, User
 from src.l1_run.setup import setup
-from src.l5_conversation.l0_conversation_participant import Channel, ConversationParticipant
+from src.l5_conversation.conversation_participant import Channel, ConversationParticipant
 
 # ---------------------------------------------------------
 

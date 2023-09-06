@@ -1,4 +1,4 @@
-from src.l5_conversation.l0_conversation_participant import ConversationParticipant,DialogueRole
+from src.l5_conversation.conversation_participant import ConversationParticipant,DialogueRole
 from src.l3_agent.agent import Agent
 from src.l2_toolbox.file_io import READ, WRITE
 from src.l2_toolbox.run import RUN
