@@ -29,10 +29,11 @@ class Agent(ConversationParticipant):
     # Setup
 
     def set_tools(self, tool_types : list[Type[Tool]]) -> None:
-        # TODO: Need to log not just tool role but tool name as well
         self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
-            tool.external_log = self.log_tool_msg
+            def tool_log(msg : str):
+                self.log_tool_msg(msg, tool_name=tool.name)
+            tool.external_log = tool_log
         self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # ---------------------------------------------------
@@ -106,9 +107,9 @@ class SinglePurposeAgent(Agent):
     def _reaction_protocol(self, dialogue_line) -> None:
         pass
 
-    def get_text_response(self, prompt : str) -> str:
+    def get_text_response(self, prompt : str, max_token : Optional[int] = None) -> str:
         self.log_user_msg(msg=prompt)
-        text_response = self.get_next_action(is_allowed_functioncall=False).get_text_content()
+        text_response = self.get_next_action(is_allowed_functioncall=False, max_tokens=max_token).get_text_content()
 
         if text_response is None:
             print('[Error]: Could not obtain text response from single purpose m0_agent. Returning empty string')

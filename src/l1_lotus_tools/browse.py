@@ -45,7 +45,7 @@ class BROWSE(Tool):
         summary_agent = SinglePurposeAgent.make_website_summarization_agent()
         summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
                                        f'Query: {self.query_arg.val}')
-        return summary_agent.get_next_action(is_allowed_functioncall=False).get_text_content()
+        return summary_agent.get_next_action(is_allowed_functioncall=False, max_tokens=200).get_text_content()
 
 
     @staticmethod
@@ -74,8 +74,7 @@ class BROWSE(Tool):
             all_summaries += f'## Report {index} ##' \
                              f'{future.result()}\n'
 
-        # TODO: The report length should be enforced through max_token = ... in openAI response options
         composition_agent = SinglePurposeAgent.make_report_composition_agent()
-
         return composition_agent.get_text_response(msg=f'Reports:  {all_summaries}'
-                                                       f'Query: {self.query_arg.val}')
+                                                       f'Query: {self.query_arg.val}'
+                                                   ,max_token=300)

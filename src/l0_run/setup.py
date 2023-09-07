@@ -21,7 +21,7 @@ API_KEY_FIELD = 'openai_key'
 
 def set_api_key() -> None:
     home = os.path.expanduser("~")
-    config_path = os.path.join(home, 'm1_settings.ini')
+    config_path = os.path.join(home, 'settings.ini')
     config = configparser.ConfigParser()
 
     try:

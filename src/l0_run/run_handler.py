@@ -31,7 +31,7 @@ class RunHandler:
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
-                # print(f'[Debug]: Current m1_conversation memory of the bot: {self.bots[0].get_memory()}')
+                print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
 
         else:
             self.user : GUI_User
