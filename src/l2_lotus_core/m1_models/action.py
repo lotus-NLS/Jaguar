@@ -1,6 +1,6 @@
-from typing import Union
+from typing import Union, Optional
 import json
-from src.l2_lotus_core.agent.tool import ToolInstruction
+from src.l2_lotus_core.m0_agent.tool import ToolInstruction
 
 # ---------------------------------------------------------
 
@@ -51,3 +51,10 @@ class Action:
 
 
         return ToolInstruction(name=tool_name, arguments=tool_args_dict)
+
+
+class ActionOptions:
+    def __init__(self, is_allowed_functioncall : bool, max_tokens : Optional[int], temperature : float = 0.3):
+        self.is_allowed_functioncall = is_allowed_functioncall
+        self.max_tokens = max_tokens
+        self.temperature = temperature

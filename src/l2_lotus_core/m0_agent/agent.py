@@ -1,10 +1,12 @@
 from typing import Type, Optional
-from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant, DialogueRole
-from src.l2_lotus_core.protocol.priming import Priming
-from src.l2_lotus_core.agent.action import Action
-from src.l2_lotus_core.agent.tool import Tool, ToolInstruction
-from src.l2_lotus_core.models.model_class import LLM
-from src.l2_lotus_core.models.model_definitions import OpenAIModel
+from src.l2_lotus_core.m0_agent.tool import Tool, ToolInstruction
+
+from src.l2_lotus_core.m1_conversation.conversation_participant import ConversationParticipant, DialogueRole
+from src.l2_lotus_core.m1_protocol.priming import Priming
+from src.l2_lotus_core.m1_models.action import Action, ActionOptions
+from src.l2_lotus_core.m1_models.model_class import LLM, Context
+from src.l2_lotus_core.m1_models.model_definitions import OpenAIModel
+
 
 # ---------------------------------------------------------
 
@@ -21,7 +23,7 @@ class Agent(ConversationParticipant):
 
         # Set up tools
         self.tool_list : list[Tool] = []
-        self._tool_instructions : list[dict] = []
+        self._tool_docs : list[dict] = []
 
     # ---------------------------------------------------
     # Setup
@@ -31,7 +33,7 @@ class Agent(ConversationParticipant):
         self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
             tool.external_log = self.log_tool_msg
-        self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
+        self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # ---------------------------------------------------
     # Callback
@@ -83,11 +85,10 @@ class Agent(ConversationParticipant):
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
         messages = [core_entry] + self._personal_log
-        return self._model.get_next_action(msg_history=messages
-                                          ,tool_instructions=self._tool_instructions
-                                          ,is_allowed_functioncall=is_allowed_functioncall
-                                          ,max_tokens=max_tokens
-                                          ,temperature=temperature)
+        this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
+        this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall, max_tokens=max_tokens, temperature=temperature)
+
+        return self._model.get_next_action(context=this_context,action_options=this_options)
 
 class SinglePurposeAgent(Agent):
     @classmethod
@@ -109,7 +110,7 @@ class SinglePurposeAgent(Agent):
         text_response = self.get_next_action(is_allowed_functioncall=False).get_text_content()
 
         if text_response is None:
-            print('[Error]: Could not obtain text response from single purpose agent. Returning empty string')
+            print('[Error]: Could not obtain text response from single purpose m0_agent. Returning empty string')
             text_response = ''
 
         return text_response

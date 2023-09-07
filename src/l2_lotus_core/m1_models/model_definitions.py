@@ -1,15 +1,14 @@
-from typing import Optional
 import openai
 
-from src.l2_lotus_core.models.model_class import LLM, FunctionCallModes
-from src.l2_lotus_core.conversation.conversation_participant import ConversationEntry
-from src.l2_lotus_core.agent.action import Action
-from src.l2_lotus_core.agent.tool import ToolInstruction
+from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
+from src.l2_lotus_core.m1_models.action import Action, ActionOptions
+from src.l2_lotus_core.m1_models.model_class import Context
+
 
 # ---------------------------------------------------------
 
 class OpenAI_ModelTypes:
-    # The 0613 models (06.13.23, the date of the API updates (https://openai.com/blog/function-calling-and-other-api-updates)
+    # The 0613 m1_models (06.13.23, the date of the API updates (https://openai.com/blog/function-calling-and-other-api-updates)
     # support function calling
     # But gpt-4 or gpt-3.5-turbo will always point to the newest version anyway
 
@@ -44,24 +43,19 @@ class OpenAIModel(LLM):
     def make_gpt_40_32k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
 
-    def get_next_action(self, msg_history : list[ConversationEntry]
-                        , tool_instructions : Optional[ToolInstruction]
-                        , is_allowed_functioncall : bool = True
-                        , max_tokens : Optional[int] = None
-                        , temperature : float = 0.3) -> Action:
-
+    def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
         args_dict = {
             'model': self._model_type,
-            'messages': msg_history,
-            'temperature': temperature
+            'messages': context.msg_history,
+            'temperature': action_options.temperature
         }
 
-        if not tool_instructions == 0:
-            args_dict['functions'] = tool_instructions
-            args_dict['function_call'] = FunctionCallModes.auto if is_allowed_functioncall else FunctionCallModes.none
+        if not context.tool_docs == 0:
+            args_dict['functions'] = context.tool_docs
+            args_dict['function_call'] = FunctionCallModes.auto if action_options.is_allowed_functioncall else FunctionCallModes.none
 
-        if not max_tokens is None:
-            args_dict['max_tokens'] = max_tokens
+        if not action_options.max_tokens is None:
+            args_dict['max_tokens'] = action_options.max_tokens
 
         openai_response = openai.ChatCompletion.create(**args_dict)
 

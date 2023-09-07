@@ -7,8 +7,8 @@ import os
 import configparser
 import requests
 
-# New settings workflow:
-# Issue: Cannot always test individual settings, therefore
+# New m1_settings workflow:
+# Issue: Cannot always test individual m1_settings, therefore
 # -> each Settings group will get its own tests that are performed on setup
 # -> Settings will not get invididual test functions, but rather: is_validated attribute
 

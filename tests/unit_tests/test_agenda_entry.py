@@ -1,4 +1,4 @@
-from src.l2_lotus_core.protocol.agenda_entry import Task,Objective
+from src.l2_lotus_core.m1_protocol.agenda_entry import Task,Objective
 
 
 
