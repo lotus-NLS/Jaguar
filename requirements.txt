@@ -13,3 +13,6 @@ selenium
 googlesearch-python
 beautifulsoup4
 requests
+
+## MISC
+PyInquirer

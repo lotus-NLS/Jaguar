@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Union, Optional
 import openai
 
 from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant, DialogueRole
@@ -83,20 +83,22 @@ class Agent(ConversationParticipant):
         if not text_content is None:
             self.speak(msg=text_content)
 
-
-    def get_next_action(self, is_allowed_functioncall = True) -> ActionPlan:
+    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> ActionPlan:
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(), msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
 
         args_dict = {
             'model' : self._model_type,
             'messages' : messages,
-            'temperature' : 0.3
+            'temperature' : temperature
         }
 
         if not len(self.tool_list) == 0:
             args_dict['functions'] = self._tool_instructions
             args_dict['function_call'] =  FunctionCallModes.auto if is_allowed_functioncall else FunctionCallModes.none
+
+        if not max_tokens is None:
+            args_dict['max_tokens'] = max_tokens
 
         openai_response = openai.ChatCompletion.create(**args_dict)
 

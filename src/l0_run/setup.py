@@ -42,8 +42,9 @@ def test_api_key(key : str) -> None:
     try:
         openai.api_key = key
         args_dict = {
-            'model': Models.gpt_40_8k,
-            'messages': [{'role' : 'user', 'content' : 'This is a test'}]
+            'model': Models.gpt_35_4k,
+            'messages': [{'role' : 'user', 'content' : 'This is a test'}],
+            'max_tokens' : 5
         }
         openai.ChatCompletion.create(**args_dict)
 
