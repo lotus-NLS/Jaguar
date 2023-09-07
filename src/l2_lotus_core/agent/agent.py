@@ -1,11 +1,8 @@
 from typing import Type, Optional
-import openai
-
 from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant, DialogueRole
 from src.l2_lotus_core.protocol.priming import Priming
 from src.l2_lotus_core.agent.action import Action
 from src.l2_lotus_core.agent.tool import Tool, ToolInstruction
-from src.l2_lotus_core.models.model_definitions import OpenAI_ModelTypes
 from src.l2_lotus_core.models.model_class import LLM
 from src.l2_lotus_core.models.model_definitions import OpenAIModel
 
@@ -17,15 +14,14 @@ class FunctionCallModes:
 
 
 class Agent(ConversationParticipant):
-    def __init__(self, model_type: str = OpenAI_ModelTypes.gpt_40_8k, priming : Priming = None):
+    def __init__(self, model = OpenAIModel.get_gpt_40_8k(), priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
         self._priming = priming if not priming is None else Priming.make_goto_priming()
 
         # Set model
-        self._model_type : str = model_type
-        self._model : LLM = OpenAIModel(model_type=OpenAI_ModelTypes.gpt_40_8k)
+        self._model : LLM = model
 
         # Set up tools
         self.tool_list : list[Tool] = []
@@ -67,7 +63,7 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception as e:
-            print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
+            print(f'[Error] Unable to get response from {self._model.name}. {str(e)}\n')
 
 
     def _use_tool(self, instructions : ToolInstruction) -> None:
@@ -85,45 +81,29 @@ class Agent(ConversationParticipant):
         if not text_content is None:
             self.speak(msg=text_content)
 
-    # TODO: Rebuild this using the model attribute
+
     def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
-        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(), msg=self._priming.get_identity_msg())
-        messages = [core_entry]+self._personal_log
 
-        args_dict = {
-            'model' : self._model_type,
-            'messages' : messages,
-            'temperature' : temperature
-        }
-
-        if not len(self.tool_list) == 0:
-            args_dict['functions'] = self._tool_instructions
-            args_dict['function_call'] =  FunctionCallModes.auto if is_allowed_functioncall else FunctionCallModes.none
-
-        if not max_tokens is None:
-            args_dict['max_tokens'] = max_tokens
-
-        openai_response = openai.ChatCompletion.create(**args_dict)
-
-        # Action is promised a dict, so a dict must be delivered in any case
-        if not isinstance(openai_response,dict):
-            print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
-            openai_response = {}
-
-            return Action(openai_response)
-
+        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
+                                                        msg=self._priming.get_identity_msg())
+        messages = [core_entry] + self._personal_log
+        return self._model.get_next_action(msg_history=messages
+                                          ,tool_instructions=self._tool_instructions
+                                          ,is_allowed_functioncall=is_allowed_functioncall
+                                          ,max_tokens=max_tokens
+                                          ,temperature=temperature)
 
 class SinglePurposeAgent(Agent):
     @classmethod
     def make_website_summarization_agent(cls):
-        return cls(priming=Priming.make_website_summarization_priming(), model_type=OpenAI_ModelTypes.gpt_35_4k)
+        return cls(priming=Priming.make_website_summarization_priming(), model=OpenAIModel.get_gpt_35_4k())
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(priming=Priming.make_report_composition_priming(), model_type=OpenAI_ModelTypes.gpt_35_4k)
+        return cls(priming=Priming.make_report_composition_priming(),model=OpenAIModel.get_gpt_35_4k())
 
-    def __init__(self, priming: Priming, model_type=OpenAI_ModelTypes.gpt_35_4k):
-        super().__init__(model_type=model_type,priming=priming)
+    def __init__(self, priming: Priming, model : LLM):
+        super().__init__(model=model, priming=priming)
 
     def _reaction_protocol(self, dialogue_line) -> None:
         pass

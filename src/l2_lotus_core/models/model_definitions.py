@@ -25,7 +25,7 @@ class OpenAI_ModelTypes:
 
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
-        super().__init__()
+        super().__init__(name=model_type)
         self._model_type = model_type
 
     @classmethod

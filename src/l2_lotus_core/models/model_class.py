@@ -9,8 +9,8 @@ class FunctionCallModes:
     none = 'none'
 
 class LLM:
-    def __init__(self):
-        pass
+    def __init__(self,name : str):
+        self.name = name
 
     # TODO: It's probably better to consolidate this into one or two arguments, like context and options
     def get_next_action(self

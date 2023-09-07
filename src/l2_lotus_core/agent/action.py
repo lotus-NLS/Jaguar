@@ -51,4 +51,3 @@ class Action:
 
 
         return ToolInstruction(name=tool_name, arguments=tool_args_dict)
-
