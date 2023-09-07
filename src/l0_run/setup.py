@@ -2,7 +2,7 @@ import openai
 import os
 import configparser
 
-from src.l2_lotus_core.settings.constants import Models
+from src.l2_lotus_core.models.model_definitions import OpenAI_ModelTypes
 
 
 # ---------------------------------------------------------
@@ -42,7 +42,7 @@ def test_api_key(key : str) -> None:
     try:
         openai.api_key = key
         args_dict = {
-            'model': Models.gpt_35_4k,
+            'model': OpenAI_ModelTypes.gpt_35_4k,
             'messages': [{'role' : 'user', 'content' : 'This is a test'}],
             'max_tokens' : 5
         }

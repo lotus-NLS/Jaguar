@@ -7,9 +7,6 @@ import os
 import configparser
 import requests
 
-from .constants import Models
-
-
 # New settings workflow:
 # Issue: Cannot always test individual settings, therefore
 # -> each Settings group will get its own tests that are performed on setup
@@ -97,7 +94,7 @@ class CredentialSettings:
             test()
 
         if not len(self.get_non_validated_settings()) == 0:
-            
+
 
             self.setup()
 
@@ -108,7 +105,7 @@ class CredentialSettings:
         try:
             openai.api_key = self.openai_apikey_setting.value
             args_dict = {
-                'model': Models.get_test_model(),
+                'model': '',
                 'messages': [{'role' : 'user', 'content' : 'This is a test'}]
             }
             openai.ChatCompletion.create(**args_dict)

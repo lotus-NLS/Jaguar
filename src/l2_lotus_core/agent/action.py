@@ -1,11 +1,11 @@
 from typing import Union
 import json
-from src.l2_lotus_core.agent.tool import ToolInstructions
+from src.l2_lotus_core.agent.tool import ToolInstruction
 
 # ---------------------------------------------------------
 
 
-class ActionPlan:
+class Action:
     def __init__(self, openAI_response : dict):
         try:
             self._best_response : dict = openAI_response['choices'][0]['message']
@@ -19,7 +19,7 @@ class ActionPlan:
         return content if isinstance(content,str) else None
 
 
-    def get_tool_instructions(self) -> Union[ToolInstructions, None]:
+    def get_tool_instructions(self) -> Union[ToolInstruction, None]:
         funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
 
         if funct_call is None:
@@ -50,5 +50,5 @@ class ActionPlan:
             return
 
 
-        return ToolInstructions(name=tool_name, arguments=tool_args_dict)
+        return ToolInstruction(name=tool_name, arguments=tool_args_dict)
 

@@ -1,12 +1,13 @@
-from typing import Type, Union, Optional
+from typing import Type, Optional
 import openai
 
 from src.l2_lotus_core.conversation.conversation_participant import ConversationParticipant, DialogueRole
 from src.l2_lotus_core.protocol.priming import Priming
-from src.l2_lotus_core.agent.actionplan import ActionPlan
-from src.l2_lotus_core.agent.tool import Tool, ToolInstructions
-from src.l2_lotus_core.settings.constants import Models
-
+from src.l2_lotus_core.agent.action import Action
+from src.l2_lotus_core.agent.tool import Tool, ToolInstruction
+from src.l2_lotus_core.models.model_definitions import OpenAI_ModelTypes
+from src.l2_lotus_core.models.model_class import LLM
+from src.l2_lotus_core.models.model_definitions import OpenAIModel
 
 # ---------------------------------------------------------
 
@@ -14,8 +15,9 @@ class FunctionCallModes:
     auto = 'auto'
     none = 'none'
 
+
 class Agent(ConversationParticipant):
-    def __init__(self, model_type: str = Models.gpt_40_8k, priming : Priming = None):
+    def __init__(self, model_type: str = OpenAI_ModelTypes.gpt_40_8k, priming : Priming = None):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
@@ -23,6 +25,7 @@ class Agent(ConversationParticipant):
 
         # Set model
         self._model_type : str = model_type
+        self._model : LLM = OpenAIModel(model_type=OpenAI_ModelTypes.gpt_40_8k)
 
         # Set up tools
         self.tool_list : list[Tool] = []
@@ -37,7 +40,6 @@ class Agent(ConversationParticipant):
         for tool in self.tool_list:
             tool.external_log = self.log_tool_msg
         self._tool_instructions = [tool.get_tool_json_doc() for tool in self.tool_list]
-
 
     # ---------------------------------------------------
     # Callback
@@ -68,7 +70,7 @@ class Agent(ConversationParticipant):
             print(f'[Error] Unable to get response from {self._model_type}. {str(e)}\n')
 
 
-    def _use_tool(self, instructions : ToolInstructions) -> None:
+    def _use_tool(self, instructions : ToolInstruction) -> None:
         print('[Debug]: Agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
@@ -83,7 +85,8 @@ class Agent(ConversationParticipant):
         if not text_content is None:
             self.speak(msg=text_content)
 
-    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> ActionPlan:
+    # TODO: Rebuild this using the model attribute
+    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(), msg=self._priming.get_identity_msg())
         messages = [core_entry]+self._personal_log
 
@@ -107,20 +110,19 @@ class Agent(ConversationParticipant):
             print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
 
-        return ActionPlan(openai_response)
+            return Action(openai_response)
 
 
 class SinglePurposeAgent(Agent):
-
     @classmethod
     def make_website_summarization_agent(cls):
-        return cls(priming=Priming.make_website_summarization_priming(), model_type=Models.gpt_35_4k)
+        return cls(priming=Priming.make_website_summarization_priming(), model_type=OpenAI_ModelTypes.gpt_35_4k)
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(priming=Priming.make_report_composition_priming(), model_type=Models.gpt_35_4k)
+        return cls(priming=Priming.make_report_composition_priming(), model_type=OpenAI_ModelTypes.gpt_35_4k)
 
-    def __init__(self, priming: Priming, model_type=Models.gpt_35_4k):
+    def __init__(self, priming: Priming, model_type=OpenAI_ModelTypes.gpt_35_4k):
         super().__init__(model_type=model_type,priming=priming)
 
     def _reaction_protocol(self, dialogue_line) -> None:
