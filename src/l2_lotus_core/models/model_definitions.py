@@ -29,20 +29,20 @@ class OpenAIModel(LLM):
         self._model_type = model_type
 
     @classmethod
-    def get_gpt_35_4k(cls):
-        cls(model_type=OpenAI_ModelTypes.gpt_35_4k)
+    def make_gpt_35_4k(cls):
+        return cls(model_type=OpenAI_ModelTypes.gpt_35_4k)
 
     @classmethod
-    def get_gpt_35_16k(cls):
-        cls(model_type=OpenAI_ModelTypes.gpt_35_16k)
+    def make_gpt_35_16k(cls):
+        return cls(model_type=OpenAI_ModelTypes.gpt_35_16k)
 
     @classmethod
-    def get_gpt_40_8k(cls):
-        cls(model_type=OpenAI_ModelTypes.gpt_40_8k)
+    def make_gpt_40_8k(cls):
+        return cls(model_type=OpenAI_ModelTypes.gpt_40_8k)
 
     @classmethod
-    def get_gpt_40_32k(cls):
-        cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
+    def make_gpt_40_32k(cls):
+        return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
 
     def get_next_action(self, msg_history : list[ConversationEntry]
                         , tool_instructions : Optional[ToolInstruction]
@@ -70,4 +70,4 @@ class OpenAIModel(LLM):
             print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
 
-            return Action(openai_response)
+        return Action(openai_response)
