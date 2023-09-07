@@ -1,4 +1,4 @@
-from src.l2_lotus_core.m1_models.action import Action, ActionOptions
+from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
 from src.l2_lotus_core.m1_conversation.conversation_participant import ConversationEntry
 from src.l2_lotus_core.m0_agent.tool import ToolInstruction
 
@@ -18,5 +18,5 @@ class LLM:
     def __init__(self,name : str):
         self.name = name
 
-    def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
+    def get_next_action(self, context : Context, action_options : ActionOptions) -> ActionContent:
         pass

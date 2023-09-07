@@ -3,7 +3,7 @@ from src.l2_lotus_core.m0_agent.tool import Tool, ToolInstruction
 
 from src.l2_lotus_core.m1_conversation.conversation_participant import ConversationParticipant, DialogueRole
 from src.l2_lotus_core.m1_protocol.priming import Priming
-from src.l2_lotus_core.m1_models.action import Action, ActionOptions
+from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
 from src.l2_lotus_core.m1_models.model_class import LLM, Context
 from src.l2_lotus_core.m1_models.model_definitions import OpenAIModel
 
@@ -80,7 +80,7 @@ class Agent(ConversationParticipant):
             self.speak(msg=text_content)
 
 
-    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
+    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> ActionContent:
 
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
@@ -89,6 +89,7 @@ class Agent(ConversationParticipant):
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall, max_tokens=max_tokens, temperature=temperature)
 
         return self._model.get_next_action(context=this_context,action_options=this_options)
+
 
 class SinglePurposeAgent(Agent):
     @classmethod
