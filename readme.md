@@ -24,68 +24,13 @@ saved in a config file in the home directory in plain text form. In subsequent r
 
 ## Usage
 
-Run either on command line or as GUI:
+Navigate to src/l0_run and run the following command:
 ```
-python3 s4_UI/run_GUI.py
-```
-OR:
-```
-python3 s4_UI/run_command_line.py
+python3 run_handler.py
 ```
 
-Currently, the available tools are:
-- READ: Read a local text file
-- WRITE: Write out a local text file
+For further information simply ask the agent: "Who are you and what you can do?"
 
-Disclaimer: Since even state-of-the-art models are still prone to hallucinations it can also occur that the agent claim to have access to other tools.
-As of the 19.08.23, these are the only tools implemented in the framework.
-
-# Roadmap
-## Basic hard limitations
-Bare LLMs are very good at producing python code snippets. Yet they cannot act as autonomous software developers as LLMs cannot:
-- Run code and view output including error messages 
-- Use the command line to install packages, interact with VCS etc.
-- Look up documentation online
-- Look up existing work online that can serve as a starting point
-- Read or write files
-
-The first development objective of pyWrite is to remedy this by providing the LLM with the necessary tools to
-perform those actions, thereby enabling autonomous python software development.
-
-## Basic Soft limitations
-However, LLMs also face "soft" limitations. These are things that they should be able to do in theory
-with a good enough model but state-of-the-art models nonethless struggle with. These include:
-- Planning out large scale objectives and keeping track of tasks over a large span of text
-- Producing consistent and throughly checked outputs
-- Taking into account and paying attention to information far back in the conversation history
-
-The second development objective of pyWrite is to also remedy these limitations 
-by providing the models with the necessary guidance to ensure that the software development is carried out with a consistent and predictable protocol, to keep track of the current
-tasks and objectives and to distribute responsibilites so that each python developer agent can do his work within a single-module context.
-
-## Beyond pyWrite: Advanced features
-pyWrite itself is just the first step of development. Beyond pyWrite other features are planned
-to make up for some more functionalities that human software developers offer:
-
-### Other
-- Development of software other than python: pyWrite is developed and tested and developed only for python code. But in principle there is no reason why the program could not also be applied to other kinds of software.
-- Encapsulation: The software agent must be encapsulated in a virtual environment such as virtual box or a docker container to prevent the agent from
-taking any action that could affect the system the program is launched from, including user files
-
-### Non-textual in/out
-- Visual runtime analysis: A lot of applications run with a GUI, crucially websites.
-The model should review how its code plays out visually as well. There is a version of GPT-4 which can work with image input
-which hasn't been released yet.\
-- Audio interface : You should be able to enter commands via voice, ideally without even pressing enter
-### Persistent memory and skill acquiry
-- Persistent Note/Memory database: In order to effectively work in multiple sessions, the agent must remember relevant information
-beyond the program shutdown. To do that, the agent has to recall that information either through "reading up on it" or "recalling it" whichever
-way you want to frame it. There should be a persistent database of notes that the agent can access on request.
-- Self acquiring skills : Humans often learn by performing a task with great care and attention for several times 
-until it becomes an integrated action that they can perform without thinking. In the same way the agent could 
-develop its own skill library and work on tasks on a higher level of abstraction. 
-- Self acquire tools: You can only plan out so much in terms of tools. If the agent decides that its current tools
-do not suffice to accomplish the task it could simply build the tool itself.
 
 ## Links
 

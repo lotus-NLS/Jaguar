@@ -2,7 +2,7 @@ import time
 
 from src.l0_run.entities import DefaultAgent, User
 from src.l0_run.gui_element import ChatGUI
-from src.l2_lotus_core import Channel, ConversationParticipant, the_settings_manager
+from src.l2_lotus_core import Channel, ConversationParticipant,SettingsController
 
 # ---------------------------------------------------------
 
@@ -40,7 +40,8 @@ class Engine:
             self.gui.run()
 
 def main():
-    the_settings_manager.setup()
+    settings_controller = SettingsController()
+    settings_controller.setup()
 
     this_run_handler = Engine(is_introduction_enabled=False, mode=RunModes.gui)
     this_run_handler.start()

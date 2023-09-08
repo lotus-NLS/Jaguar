@@ -3,8 +3,8 @@ import openai
 from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
 from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
 from src.l2_lotus_core.m1_models.model_class import Context
+from src.l2_lotus_core.m2_settings.settings_manager import get_setting, Credentials
 
-from src.l2_lotus_core.m2_settings.settings_manager import get_openai_apikey
 # ---------------------------------------------------------
 
 class OpenAI_ModelTypes:
@@ -57,7 +57,7 @@ class OpenAIModel(LLM):
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        openai.api_key = get_openai_apikey()
+        openai.api_key = get_setting(label=Credentials.openai_apikey_label)
         openai_response = openai.ChatCompletion.create(**args_dict)
 
         # Action is promised a dict, so a dict must be delivered in any case
