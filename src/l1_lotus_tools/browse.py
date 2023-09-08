@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, Future
 
 from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
 
+
 # ---------------------------------------------------------
 
 class BROWSE(Tool):

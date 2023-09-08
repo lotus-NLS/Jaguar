@@ -72,6 +72,7 @@ class Setting:
         else:
             self.value = input(f'Enter value for setting {self.label}\n')
 
+
 class SettingGrouping:
     all_settings = []
 
@@ -87,7 +88,6 @@ class SettingGrouping:
         return [setting for setting in CredentialSettings.all_settings if not setting.get_is_validated()]
 
 
-# TODO: Make new absctract class: Settings grouping
 class CredentialSettings(SettingGrouping):
     def __init__(self):
         def CredentialSetting(label : str) -> Setting:
@@ -174,7 +174,7 @@ class CredentialSettings(SettingGrouping):
 
 
 # TODO : The settings (through the SettingManager) be must be exposed with read only access to all but the run module, else it has the characteristic of a variable global to the whole project
-# TODO : It works as it is now but the price is heavy redundancies (at least 2 instances of get methods are redundant per setting). Think about smarter ways to do this
+# It works as it is now but the price is heavy redundancies (at least 4 (!) instances of EACH settings mention are redundant
 class SettingManager:
     def __init__(self):
         self.credential_settings : Union[None, CredentialSettings] = CredentialSettings()
@@ -194,13 +194,7 @@ class SettingManager:
 
 
 the_settings_manager = SettingManager()
-
-# Debug/test:
-the_settings_manager.setup()
-
 get_openai_apikey = the_settings_manager.get_openai_apikey
 get_google_apikey = the_settings_manager.get_google_apikey
 get_searchengine_id = the_settings_manager.get_searchengine_id
-
-
 

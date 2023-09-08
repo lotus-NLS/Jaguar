@@ -8,7 +8,7 @@ from src.l2_lotus_core.m1_conversation.conversation_entry import ConversationEnt
 
 class Channel:
     def __init__(self):
-        self.participant_loggers: list[Callable[[ConversationEntry], None]] = []
+        self.listener_loggers: list[Callable[[ConversationEntry], None]] = []
         self._message_queue : Queue[ConversationEntry] = queue.Queue()
         self._is_running = True
 
@@ -21,7 +21,7 @@ class Channel:
         while self._is_running:
             try:
                 entry = self._message_queue.get(block=True, timeout=0.1)
-                [logger(entry) for logger in self.participant_loggers]
+                [logger(entry) for logger in self.listener_loggers]
             except queue.Empty:
                 pass
 

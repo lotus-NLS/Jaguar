@@ -20,12 +20,12 @@ class ConversationParticipant:
     def join_channel(self, channel : Channel):
         self.leave_channel()
         self._channel  = channel
-        self._channel.participant_loggers.append(self._log_entry)
+        self._channel.listener_loggers.append(self._log_entry)
 
     def leave_channel(self) -> None:
         if not self._channel is None:
             try:
-                self._channel.participant_loggers.remove(self._log_entry)
+                self._channel.listener_loggers.remove(self._log_entry)
             except:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
