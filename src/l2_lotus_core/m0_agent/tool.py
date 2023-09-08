@@ -106,11 +106,12 @@ class Tool:
     # ---------------------------------------------------
     # Logging
 
-    def log(self, to_log: str) -> None:
-        if self.external_log is None:
-            print(to_log)
-        else:
-            self.external_log(to_log)
+    def log(self, to_log : str) -> None:
+        if not self.external_log is None:
+            try:
+                self.external_log(to_log)
+            except Exception:
+                print(f'[Error]: Failed to log tool message: {to_log}')
 
     def start_log(self, to_log) -> None:
         self.log(f'[Start]: {to_log}')

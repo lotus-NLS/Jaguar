@@ -55,14 +55,19 @@ class Agent(ConversationParticipant):
             text_content = action.get_text_content()
             tool_instructions = action.get_tool_instructions()
 
+        except Exception as e:
+            print(f'[Error]: Unable to get response from {self._model.name}. {str(e)}\n')
+            return
+
+        try:
             if not text_content is None:
                 self.speak(msg=text_content)
 
             if not tool_instructions is None:
                 self._use_tool(instructions=tool_instructions)
-
         except Exception as e:
-            print(f'[Error] Unable to get response from {self._model.name}. {str(e)}\n')
+            print(f'[Error]: The following error occured while trying to perform specified action: {e}')
+
 
 
     def _use_tool(self, instructions : ToolInstruction) -> None:
