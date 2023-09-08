@@ -2,12 +2,11 @@ from typing import Union, Optional
 import json
 from src.l2_lotus_core.m0_agent.tool import ToolInstruction
 
-# 08.09.23: D.H.:
+# 08.09.23: (D.H.):
 # The agent has two options for an action: "Speak" or "Use a tool"
 # The content of an action is either the text which is to be spoken or the instructions for the tool usage
 
 # ---------------------------------------------------------
-
 
 class ActionContent:
     def __init__(self, openAI_response : dict):

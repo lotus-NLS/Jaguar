@@ -8,9 +8,17 @@ from src.l2_lotus_core.m1_conversation.channel import Channel
 from src.l2_lotus_core.m1_conversation.conversation_entry import ConversationEntry
 
 
-# TODO: Prepare for GUI extensions
-class ChatGUI:
+class GUI_Element:
+    def __init__(self,*args,**kwargs):
+        self.sub_elements = None
+
+    def run(self):
+        pass
+
+
+class ChatGUI(GUI_Element):
     def __init__(self, send_callback : Callable[[str],None], channel : Channel):
+        super(ChatGUI, self).__init__()
         self.channel : Optional[Channel] = channel
         self.join_channel(channel)
 

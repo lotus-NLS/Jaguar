@@ -7,8 +7,8 @@ import os
 import configparser
 import requests
 
-# New m1_settings workflow:
-# Issue: Cannot always test individual m1_settings, therefore
+# New m2_settings workflow:
+# Issue: Cannot always test individual m2_settings, therefore
 # -> each Settings group will get its own tests that are performed on setup
 # -> Settings will not get invididual test functions, but rather: is_validated attribute
 
@@ -74,25 +74,25 @@ class Setting:
 
 
 class SettingGrouping:
-    all_settings = []
+    all_settings_in_group = []
 
     def setup(self):
         pass
 
     @staticmethod
     def get_validated_settings() -> list[Setting]:
-        return [setting for setting in CredentialSettings.all_settings if setting.get_is_validated()]
+        return [setting for setting in CredentialSettings.all_settings_in_group if setting.get_is_validated()]
 
     @staticmethod
     def get_non_validated_settings() -> list[Setting]:
-        return [setting for setting in CredentialSettings.all_settings if not setting.get_is_validated()]
+        return [setting for setting in CredentialSettings.all_settings_in_group if not setting.get_is_validated()]
 
 
 class CredentialSettings(SettingGrouping):
     def __init__(self):
         def CredentialSetting(label : str) -> Setting:
             new_setting = Setting(label=label, section=CredentialSettings.__name__)
-            CredentialSettings.all_settings.append(new_setting)
+            CredentialSettings.all_settings_in_group.append(new_setting)
             return new_setting
 
         self.openai_apikey_setting : Setting = CredentialSetting(label='openai_api_key')
