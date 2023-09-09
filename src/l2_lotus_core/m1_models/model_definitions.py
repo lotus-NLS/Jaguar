@@ -1,9 +1,11 @@
 import openai
 
+from src.l2_lotus_core.m3_settings import get_setting, Credentials
+
 from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
 from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
 from src.l2_lotus_core.m1_models.model_class import Context
-from src.l2_lotus_core.m2_settings.settings_manager import get_setting, Credentials
+
 
 # ---------------------------------------------------------
 

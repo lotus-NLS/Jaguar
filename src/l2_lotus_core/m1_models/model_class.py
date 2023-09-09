@@ -1,5 +1,5 @@
-from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
-from src.l2_lotus_core.m1_conversation.conversation_participant import ConversationEntry
+from src.l2_lotus_core.m1_models import ActionContent, ActionOptions
+from src.l2_lotus_core.m2_conversation import ConversationEntry
 
 # ---------------------------------------------------------
 

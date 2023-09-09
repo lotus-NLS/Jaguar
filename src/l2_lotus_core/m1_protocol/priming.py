@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Union
+
 from src.l2_lotus_core.m1_protocol.agenda_entry import Objective,Task
 from src.l2_lotus_core.m1_protocol.identity_definitions import *
 

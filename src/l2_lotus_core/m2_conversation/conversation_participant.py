@@ -2,8 +2,8 @@ from __future__ import annotations
 import threading
 from typing import Union
 
-from src.l2_lotus_core.m1_conversation.channel import Channel
-from src.l2_lotus_core.m1_conversation.conversation_entry import ConversationEntry, DialogueRole
+from src.l2_lotus_core.m2_conversation.channel import Channel
+from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEntry, DialogueRole
 
 # ----------------------------------------------------
 

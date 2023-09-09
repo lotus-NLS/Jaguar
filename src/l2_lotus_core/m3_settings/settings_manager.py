@@ -4,7 +4,7 @@ from typing import Optional, Callable
 import openai
 import requests
 
-from src.l2_lotus_core.m2_settings.setting_class import all_settings, Setting
+from src.l2_lotus_core.m3_settings.setting_class import all_settings, Setting
 
 # (08.09.23) DH:
 # Each Settings group has its own tests that are performed on setup which are used to validate the settings

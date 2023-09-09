@@ -1,11 +1,11 @@
 from typing import Type, Optional
-from src.l2_lotus_core.m0_agent.tool import Tool, ToolInstruction
+from src.l2_lotus_core.m1_models.tool import Tool, ToolInstruction
 
-from src.l2_lotus_core.m1_conversation.conversation_participant import ConversationParticipant, DialogueRole
-from src.l2_lotus_core.m1_protocol.priming import Priming
-from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
-from src.l2_lotus_core.m1_models.model_class import LLM, Context
-from src.l2_lotus_core.m1_models.model_definitions import OpenAIModel
+from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
+from src.l2_lotus_core.m1_protocol import Priming
+from src.l2_lotus_core.m1_models import ActionContent, ActionOptions
+from src.l2_lotus_core.m1_models import LLM, Context
+from src.l2_lotus_core.m1_models import OpenAIModel
 
 
 # ---------------------------------------------------------

@@ -1,6 +1,6 @@
 from typing import Union, Optional
 import json
-from src.l2_lotus_core.m0_agent.tool import ToolInstruction
+from src.l2_lotus_core.m1_models.tool import ToolInstruction
 
 # 08.09.23: (D.H.):
 # The agent has two options for an action: "Speak" or "Use a tool"
