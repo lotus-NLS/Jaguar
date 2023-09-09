@@ -12,39 +12,37 @@ class RunModes:
 
 
 class Engine:
-    def __init__(self, mode = RunModes.command_line, is_introduction_enabled = True):
-        self.mode : int = mode
-        self.user_channel = Channel()
+    def __init__(self, is_introduction_enabled = True):
+        self.user_channel : Channel = Channel()
         self.user : ConversationParticipant = User()
         self.bots : list[ConversationParticipant] = [DefaultAgent()]
-
-        self.gui : ChatGUI = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
 
         ConversationParticipant.enter_into_conversation(channel=self.user_channel, participant_list=[self.user] + self.bots)
         self.is_introduction_enabled : bool = is_introduction_enabled
 
 
-    def start(self):
+    def start(self, mode = RunModes.gui):
         print(f'[Debug]: Lotus started')
 
         if self.is_introduction_enabled:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
-        if self.mode == RunModes.command_line:
+        if mode == RunModes.command_line:
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
                 print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
 
         else:
-            self.gui.run()
+            gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
+            gui.run()
 
 def main():
     settings_controller = SettingsController()
     settings_controller.setup()
 
-    this_run_handler = Engine(is_introduction_enabled=False, mode=RunModes.gui)
-    this_run_handler.start()
+    this_run_handler = Engine(is_introduction_enabled=False)
+    this_run_handler.start(mode=RunModes.command_line)
 
 if __name__ == "__main__":
     main()
