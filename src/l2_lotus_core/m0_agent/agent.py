@@ -80,7 +80,7 @@ class Agent(ConversationParticipant):
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
 
-        self.think(f'I must update the user on the results of the tool usage')
+        self.think(f'I must update the user on the tool usage')
         text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
         if not text_content is None:
             self.speak(msg=text_content)

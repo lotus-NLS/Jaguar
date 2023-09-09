@@ -94,5 +94,5 @@ class WRITE(Tool):
                 file.write(self.content_arg.val)
                 self.progress_log(f'Suceeded in writing out file')
 
-        except:
-            self.error_log(f'An error occured while trying to write file')
+        except Exception as e:
+            self.error_log(f'An error occured while trying to write file: {e}')
