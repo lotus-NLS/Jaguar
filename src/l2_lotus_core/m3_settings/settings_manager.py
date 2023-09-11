@@ -33,6 +33,11 @@ class SettingGrouping:
     def get_non_validated_settings() -> list[Setting]:
         return [setting for setting in Credentials.all_settings_in_group if not setting.get_is_validated()]
 
+    @classmethod
+    def pass_all(cls):
+        for setting in cls.all_settings_in_group:
+            setting.validate()
+
     def test_all(self):
         for test in self.tests:
             try:
@@ -54,15 +59,17 @@ class Credentials(SettingGrouping):
         self.search_engineID_setting : Setting = self.make_credential_setting(label=Credentials.search_engineID_label)
 
 
-    def setup(self, is_first_run = True) -> None:
+    def setup(self, is_first_run = True, is_perform_validation = True) -> None:
         for the_setting in self.get_non_validated_settings():
             the_setting.try_setup_from_file() if is_first_run else the_setting.setup_from_user_input()
 
+        if is_perform_validation:
+            self.test_all()
+        else:
+            self.pass_all()
 
         for setting in self.get_validated_settings():
             setting.save_state_to_file()
-
-        self.test_all()
 
         non_validated_settings = self.get_non_validated_settings()
         count_non_validated_settings = len(non_validated_settings)
@@ -135,8 +142,8 @@ class SettingsController:
 
     # TODO 0.4: Instead of listing each of the settings group can introduce some mechanism to
     # introduce every instance of SettingsGroup to some list and then iterate through that, could also save the init listings
-    def setup(self):
-        self.credential_settings.setup()
+    def setup(self, perform_validation = True):
+        self.credential_settings.setup(is_perform_validation=perform_validation)
         print(f'[Debug]: Completed setup for all Settings')
 
 

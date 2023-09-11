@@ -8,7 +8,7 @@ from src.l2_lotus_core.m1_models.tool import ToolInstruction
 
 # ---------------------------------------------------------
 
-class ActionContent:
+class Action:
     def __init__(self, openAI_response : dict):
         try:
             self._best_response : dict = openAI_response['choices'][0]['message']
@@ -17,7 +17,7 @@ class ActionContent:
             self._best_response  : dict = {}
 
     # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
-    def get_text_content(self) -> Union[str,None]:
+    def get_text(self) -> Union[str, None]:
         content = self._best_response['content'] if 'content' in self._best_response else None
         return content if isinstance(content,str) else None
 
@@ -53,6 +53,12 @@ class ActionContent:
             raise ValueError('Unable to parse tool instructions ')
 
         return ToolInstruction(name=tool_name, arguments=tool_args_dict)
+
+
+    def __str__(self):
+        return  self._best_response
+
+
 
 
 class ActionOptions:

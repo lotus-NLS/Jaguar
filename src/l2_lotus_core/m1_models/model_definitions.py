@@ -3,7 +3,7 @@ import openai
 from src.l2_lotus_core.m3_settings import get_setting, Credentials
 
 from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
-from src.l2_lotus_core.m1_models.actioncontent import ActionContent, ActionOptions
+from src.l2_lotus_core.m1_models.action import Action, ActionOptions
 from src.l2_lotus_core.m1_models.model_class import Context
 
 
@@ -45,7 +45,7 @@ class OpenAIModel(LLM):
     def make_gpt_40_32k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
 
-    def get_next_action(self, context : Context, action_options : ActionOptions) -> ActionContent:
+    def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
         args_dict = {
             'model': self._model_type,
             'messages': context.msg_history,
@@ -67,4 +67,4 @@ class OpenAIModel(LLM):
             print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
             openai_response = {}
 
-        return ActionContent(openai_response)
+        return Action(openai_response)

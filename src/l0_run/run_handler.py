@@ -39,7 +39,7 @@ class Engine:
 
 def main():
     settings_controller = SettingsController()
-    settings_controller.setup()
+    settings_controller.setup(perform_validation = False)
 
     this_run_handler = Engine(is_introduction_enabled=False)
     this_run_handler.start(mode=RunModes.command_line)

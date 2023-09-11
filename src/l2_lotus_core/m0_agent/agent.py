@@ -3,7 +3,7 @@ from src.l2_lotus_core.m1_models.tool import Tool, ToolInstruction
 
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
 from src.l2_lotus_core.m1_protocol import Priming
-from src.l2_lotus_core.m1_models import ActionContent, ActionOptions
+from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import LLM, Context
 from src.l2_lotus_core.m1_models import OpenAIModel
 
@@ -48,16 +48,16 @@ class Agent(ConversationParticipant):
     def _perform_next_action(self) -> None:
         try:
             print("[Debug]: Creating completion request.")
-            action = self.get_next_action()
-            print("[Debug]: Received response from the model.")
+            action_content = self.get_next_action()
+            print(f"[Debug]: Received response from the model. Action: {action_content}")
 
         except Exception as e:
             print(f'[Error]: Unable to obtain response from {self._model.name}.\n{str(e)}\n')
             return
 
         try:
-            text_content = action.get_text_content()
-            tool_instructions = action.get_tool_instructions()
+            text_content = action_content.get_text()
+            tool_instructions = action_content.get_tool_instructions()
         except Exception as e:
             self.think(f'[Error]: An error occured while trying to parse tool call arguments: {e}')
             return
@@ -70,7 +70,7 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception as e:
-            self.think(f'[Error]: The following error occured while trying to perform specified action: {e}')
+            self.think(f'[Error]: The following error occured while trying to perform specified action {action_content}: {e}')
 
 
     def _use_tool(self, instructions : ToolInstruction) -> None:
@@ -84,12 +84,12 @@ class Agent(ConversationParticipant):
 
 
         self.think(f'I must update the user on the tool usage')
-        text_content = self.get_next_action(is_allowed_functioncall=False).get_text_content()
+        text_content = self.get_next_action(is_allowed_functioncall=False).get_text()
         if not text_content is None:
             self.speak(msg=text_content)
 
 
-    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> ActionContent:
+    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
 
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
@@ -98,6 +98,7 @@ class Agent(ConversationParticipant):
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall, max_tokens=max_tokens, temperature=temperature)
 
         return self._model.get_next_action(context=this_context,action_options=this_options)
+
 
 
 class SinglePurposeAgent(Agent):
@@ -117,7 +118,7 @@ class SinglePurposeAgent(Agent):
 
     def get_text_response(self, prompt : str, max_token : Optional[int] = None) -> str:
         self.log_user_msg(msg=prompt)
-        text_response = self.get_next_action(is_allowed_functioncall=False, max_tokens=max_token).get_text_content()
+        text_response = self.get_next_action(is_allowed_functioncall=False, max_tokens=max_token).get_text()
 
         if text_response is None:
             print('[Error]: Could not obtain text response from single purpose m0_agent. Returning empty string')

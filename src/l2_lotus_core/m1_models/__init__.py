@@ -1,5 +1,5 @@
-from .actioncontent import ActionContent
-from .actioncontent import ActionOptions
+from .action import Action
+from .action import ActionOptions
 from .model_class import FunctionCallModes
 from .model_class import Context
 from .model_class import LLM
