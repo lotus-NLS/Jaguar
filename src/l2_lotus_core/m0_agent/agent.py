@@ -7,7 +7,6 @@ from src.l2_lotus_core.m1_models import ActionContent, ActionOptions
 from src.l2_lotus_core.m1_models import LLM, Context
 from src.l2_lotus_core.m1_models import OpenAIModel
 
-
 # ---------------------------------------------------------
 
 
@@ -52,11 +51,15 @@ class Agent(ConversationParticipant):
             action = self.get_next_action()
             print("[Debug]: Received response from the model.")
 
+        except Exception as e:
+            print(f'[Error]: Unable to obtain response from {self._model.name}.\n{str(e)}\n')
+            return
+
+        try:
             text_content = action.get_text_content()
             tool_instructions = action.get_tool_instructions()
-
         except Exception as e:
-            print(f'[Error]: Unable to get response from {self._model.name}. {str(e)}\n')
+            self.think(f'[Error]: An error occured while trying to parse tool call arguments: {e}')
             return
 
         try:
@@ -65,9 +68,9 @@ class Agent(ConversationParticipant):
 
             if not tool_instructions is None:
                 self._use_tool(instructions=tool_instructions)
-        except Exception as e:
-            print(f'[Error]: The following error occured while trying to perform specified action: {e}')
 
+        except Exception as e:
+            self.think(f'[Error]: The following error occured while trying to perform specified action: {e}')
 
 
     def _use_tool(self, instructions : ToolInstruction) -> None:

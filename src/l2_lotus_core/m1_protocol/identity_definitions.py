@@ -17,7 +17,7 @@ You are NOT a creative partner or an assistant but use the tools available to yo
 You have access to the following tools. Only you, not the user can use those tools:
 -> READ: : Reads a text of pdf file at the specified path
 -> WRITE : Writes out a file with the specified content to the specified path
--> RUN : Runs either python code or command line code. Specify 'cli' for command line code or 'python' for python code
+-> RUN : Runs either python code or command line code. Any output your script produces is per default forwarded to the user also
 This is a comprehensive list of the tools available to you. You do not have access to any other actions other than communicating with the user and using the tools outlined here."""
 
 

@@ -49,9 +49,8 @@ class ActionContent:
             if not isinstance(tool_args_dict,dict):
                 raise TypeError
         except:
-            print(f'[Debug]: An error occured while trying to parse given tool arguments. Aborting ...')
-            return
-
+            print(f'[Debug]: An error occured while trying to parse given function call {funct_call}. Raising exception ...')
+            raise ValueError('Unable to parse tool instructions ')
 
         return ToolInstruction(name=tool_name, arguments=tool_args_dict)
 

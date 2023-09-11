@@ -15,8 +15,7 @@ class RUN(Tool):
         self.description = 'The RUN tool allows you to either l0_run a Python script or execute a command line command as input string'
 
         self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
-                                                 desc=f'I will type either {self.python_script_mode} for python scripts or '
-                                                      f'{self.cmd_mode} for command line scripts')
+                                                 desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line ')
 
         self.program_content_arg: ToolArg = self.create_arg(name='program_content', dtype=str,
                                                             desc='The content of the Python script or shell command to execute')
@@ -25,8 +24,7 @@ class RUN(Tool):
         mode = self.mode_arg.val
 
         if not mode in [self.python_script_mode, self.cmd_mode]:
-            self.error_log(f'Invalid mode specified. Use "{self.python_script_mode}"'
-                           f' for Python script or "{self.cmd_mode}" for command line.')
+            self.error_log(f'Invalid mode specified. Use "{self.python_script_mode} for Python script or "{self.cmd_mode}" for command line.')
             return
 
         if mode == self.python_script_mode:

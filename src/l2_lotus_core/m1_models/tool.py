@@ -79,14 +79,14 @@ class Tool:
 
 
     def handle_call(self, args_dict : dict) -> None:
-        self.start_log(f'Attempting to launch tool {self.name} with args {args_dict}')
+        self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
         arg_names = [arg.name for arg in self.arguments]
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
             self.finish_log(f'Call failed since provided dictionary {args_dict}'
-                            f' did not cover all required tool arguments')
+                            f'did not cover all required tool arguments')
             return
 
         for arg in self.arguments:
