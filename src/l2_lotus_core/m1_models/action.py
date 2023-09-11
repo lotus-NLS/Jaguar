@@ -56,7 +56,7 @@ class Action:
 
 
     def __str__(self):
-        return  self._best_response
+        return str(self._best_response)
 
 
 

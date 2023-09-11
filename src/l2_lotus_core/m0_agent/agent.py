@@ -18,7 +18,7 @@ class Agent(ConversationParticipant):
         self._priming = priming if not priming is None else Priming.make_goto_priming()
 
         # Set model
-        self._model : LLM = model
+        self._model : OpenAIModel = model
 
         # Set up tools
         self.tool_list : list[Tool] = []
@@ -90,7 +90,6 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
-
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
         messages = [core_entry] + self._personal_log

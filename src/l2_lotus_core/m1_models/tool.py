@@ -85,8 +85,7 @@ class Tool:
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
-            self.finish_log(f'Call failed since provided dictionary {args_dict}'
-                            f'did not cover all required tool arguments')
+            self.finish_log(f'Call failed since provided dictionary {args_dict} did not cover all required tool arguments')
             return
 
         for arg in self.arguments:
@@ -97,7 +96,7 @@ class Tool:
             self.do()
             self.finish_log(f'Tool {self.name} completed execution')
         except:
-            self.finish_log(f'The Tool {self.name} encountered an unhandeled exception during execution. Aborting ...')
+            self.finish_log(f'The Tool {self.name} encountered an error during execution. Aborting ...')
 
 
     def do(self):
