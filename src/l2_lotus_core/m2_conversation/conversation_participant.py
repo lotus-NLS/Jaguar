@@ -37,9 +37,11 @@ class ConversationParticipant:
         self._personal_log.append(entry)
         threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
 
-    def log_user_msg(self, msg):
-        self._log_entry(ConversationEntry(role=DialogueRole.user(), msg=msg))
-
+    def log_user_msg(self, msg : str, is_without_reaction = False):
+        if is_without_reaction:
+            self._personal_log.append(ConversationEntry(role=DialogueRole.user(), msg=msg))
+        else:
+            self._log_entry(ConversationEntry(role=DialogueRole.user(), msg=msg))
 
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')

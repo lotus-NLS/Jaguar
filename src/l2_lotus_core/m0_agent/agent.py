@@ -47,9 +47,7 @@ class Agent(ConversationParticipant):
 
     def _perform_next_action(self) -> None:
         try:
-            print("[Debug]: Creating completion request.")
             action_content = self.get_next_action()
-            print(f"[Debug]: Received response from the model. Action: {action_content}")
 
         except Exception as e:
             print(f'[Error]: Unable to obtain response from {self._model.name}.\n{str(e)}\n')
@@ -82,21 +80,28 @@ class Agent(ConversationParticipant):
         if tool_name in tool_dict:
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-
-        self.think(f'I must update the user on the tool usage')
+        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide an update'
+                          ,is_without_reaction=True)
         text_content = self.get_next_action(is_allowed_functioncall=False).get_text()
         if not text_content is None:
             self.speak(msg=text_content)
 
 
     def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
+
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
         messages = [core_entry] + self._personal_log
         this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall, max_tokens=max_tokens, temperature=temperature)
 
-        return self._model.get_next_action(context=this_context,action_options=this_options)
+        print("[Debug]: Creating completion request.")
+        action_content = self._model.get_next_action(context=this_context,action_options=this_options)
+        print(f"[Debug]: Received response from the model. Action: {action_content}")
+
+        return action_content
+
+
 
 
 

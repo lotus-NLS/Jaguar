@@ -12,7 +12,7 @@ class RUN(Tool):
 
     def __init__(self):
         super().__init__()
-        self.description = 'The RUN tool allows you to either l0_run a Python script or execute a command line command as input string'
+        self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string.'
 
         self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
                                                  desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line ')
