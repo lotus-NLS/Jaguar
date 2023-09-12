@@ -1,4 +1,5 @@
 from typing import Type, Optional
+from functools import partial
 from src.l2_lotus_core.m1_models.tool import Tool, ToolInstruction
 
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
@@ -28,11 +29,15 @@ class Agent(ConversationParticipant):
     # Setup
 
     def set_tools(self, tool_types : list[Type[Tool]]) -> None:
+        def get_tool_logger(tool_name : str):
+            def tool_log(msg : str):
+                self.log_tool_msg(msg=msg, tool_name=tool_name)
+            return tool_log
+
         self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
-            def tool_log(msg : str):
-                self.log_tool_msg(msg, tool_name=tool.name)
-            tool.external_log = tool_log
+            tool.external_log = get_tool_logger(tool_name=tool.name)
+
         self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # ---------------------------------------------------
@@ -80,7 +85,8 @@ class Agent(ConversationParticipant):
         if tool_name in tool_dict:
             tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide an update'
+        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                          f'In your update it is not necessary to provide the user with the function output'
                           ,is_without_reaction=True)
         text_content = self.get_next_action(is_allowed_functioncall=False).get_text()
         if not text_content is None:
@@ -100,9 +106,6 @@ class Agent(ConversationParticipant):
         print(f"[Debug]: Received response from the model. Action: {action_content}")
 
         return action_content
-
-
-
 
 
 class SinglePurposeAgent(Agent):
