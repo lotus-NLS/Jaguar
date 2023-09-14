@@ -1,8 +1,8 @@
-# pyWrite : Current state
+# Nucifera : Current state
 
 
 ## Overview
-pyWrite aims to enable LLMs to do highly independent and autonomous software development.
+Nucifera aims to enable LLMs to do highly independent and autonomous software development.
 The first development objective of pyWrite is to provide the LLM with the necessary tools to
 perform software development, like reading or writing files or running code and reading the outputs.
 

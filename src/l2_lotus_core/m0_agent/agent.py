@@ -128,7 +128,7 @@ class SinglePurposeAgent(Agent):
         text_response = self.get_next_action(is_allowed_functioncall=False, max_tokens=max_token).get_text()
 
         if text_response is None:
-            print('[Error]: Could not obtain text response from single purpose m0_agent. Returning empty string')
+            print('[Error]: Could not obtain text response from single purpose agent. Returning empty string')
             text_response = ''
 
         return text_response
