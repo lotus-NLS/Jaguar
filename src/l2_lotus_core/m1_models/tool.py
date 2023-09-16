@@ -2,6 +2,9 @@ from typing import Callable, Union
 from typing import Any
 import traceback
 
+from func_timeout import func_timeout, FunctionTimedOut
+
+
 # Tool class logging
 # -> [START] : For tool launch
 # -> [FINISH]: Tool done
@@ -28,8 +31,8 @@ class ToolArg:
 
     @staticmethod
     def get_json_type(python_type) -> Union[str,None]:
-        # The 'array' type corresponding to dict and list, seem to break something on OpenAI end
-        # ,hence why I didn't include them; See logs (@ https://www.notion.so/pyWrite0-3-a53c1b16ef3646df9c141a144f8197a2)
+        # The 'array' type corresponding to dict and list, seem to break something on OpenAI end,
+        # hence why I didn't include them; See logs (@ https://www.notion.so/pyWrite0-3-a53c1b16ef3646df9c141a144f8197a2)
 
         default_type = 'string'
         type_mapping = {
@@ -50,6 +53,8 @@ class ToolArg:
 
 
 class Tool:
+    timout_in_sec = 60
+
     def __init__(self):
         self.name : str = self.__class__.__name__
         self.desc : str = ''
@@ -93,14 +98,18 @@ class Tool:
 
         try:
             self.progress_log(f'Tool {self.name} has been launched')
-            self.do()
+            func_timeout(timeout=5, func= self.do)
             self.finish_log(f'Tool {self.name} completed execution')
-        except:
-            self.finish_log(f'The Tool {self.name} encountered an error during execution. Aborting ...')
 
+        except FunctionTimedOut:
+            self.finish_log(f'The tool {self.name} timed out without completing after {Tool.timout_in_sec} seconds. Aborting ...')
+
+        except Exception as e:
+            self.finish_log(f'The Tool {self.name} encountered the following error during execution: {e}. Aborting ...')
 
     def do(self):
         pass
+
 
     # ---------------------------------------------------
     # Logging

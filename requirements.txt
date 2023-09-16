@@ -16,3 +16,4 @@ requests
 
 ## MISC
 PyInquirer
+func_timeout
