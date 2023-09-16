@@ -62,3 +62,5 @@ class RUN(Tool):
     def execute_cmd(self):
         result = subprocess.run(self.program_content_arg.val, shell=True, text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result
+
+
