@@ -8,7 +8,7 @@ from src.l2_lotus_core import Tool,ToolArg
 
 class RUN(Tool):
     python_script_mode = 'py'
-    cmd_mode = 'cmd'
+    cmd_mode = 'terminal'
 
     def __init__(self):
         super().__init__()
@@ -18,8 +18,7 @@ class RUN(Tool):
             name='mode', dtype=str,
             available_options=[RUN.python_script_mode,RUN.cmd_mode],
             desc='')
-
-            # desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line ')
+            # desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line '
 
         self.program_content_arg: ToolArg = self.create_arg(
             name='program_content', dtype=str,

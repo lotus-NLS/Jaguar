@@ -1,5 +1,4 @@
 from typing import Type, Optional
-from functools import partial
 from src.l2_lotus_core.m1_models.tool import Tool, ToolInstruction
 
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole

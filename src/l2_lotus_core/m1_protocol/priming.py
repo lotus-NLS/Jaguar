@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Union
+import platform, distro
 
 from src.l2_lotus_core.m1_protocol.agenda_entry import Objective,Task
 from src.l2_lotus_core.m1_protocol.identity_definitions import *
@@ -40,12 +41,33 @@ class Identity:
     def __init__(self,core : str, principles : str):
         self.core : str = core
         self.principles : str = principles
+        self.os_information : str = self.get_detailed_os_info()
+
+    @staticmethod
+    def get_detailed_os_info():
+        system = platform.system()
+        detail = system
+
+        try:
+            if system == "Windows":
+                detail += f" version {platform.release()}"
+            elif system == "Darwin":
+                mac_ver, _, _ = platform.mac_ver()
+                detail += f" version {mac_ver}"
+            elif system == "Linux":
+                distro_name, distro_version, _ = distro.id()
+                detail += f" - {distro_name} version {distro_version}"
+        except Exception as e:
+            detail += f" (Error obtaining additional details: {e})"
+
+        return detail
 
     def get_msg(self) -> str:
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
+        os_msg = f'You operate on the OS: {self.os_information}'
 
-        return core_msg+principles_msg
+        return core_msg+principles_msg+os_msg
 
 
 class Priming:
