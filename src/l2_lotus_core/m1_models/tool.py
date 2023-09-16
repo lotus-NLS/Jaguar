@@ -98,7 +98,7 @@ class Tool:
 
         try:
             self.progress_log(f'Tool {self.name} has been launched')
-            func_timeout(timeout=5, func= self.do)
+            func_timeout(timeout=Tool.timout_in_sec, func= self.do)
             self.finish_log(f'Tool {self.name} completed execution')
 
         except FunctionTimedOut:
