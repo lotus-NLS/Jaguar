@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from typing import Any
 import traceback
 
@@ -16,18 +16,24 @@ from func_timeout import func_timeout, FunctionTimedOut
 # ---------------------------------------------------
 
 class ToolArg:
-    def __init__(self, name: str, dtype : type, description: str, value = None):
+    def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None):
         self.name : str = name
         self.dtype : type = dtype
         self.description : str = description
-        self.val : dtype = value
+        self.val : dtype = None
+        self.available_options: Optional[list[str]] = available_options
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
                 'type': self.get_json_type(self.dtype),
-                'description': f'{self.description}'
+                'description': f'{self.description}',
         }
+
+        if not self.available_options is None:
+            arg_doc['enum'] = self.available_options
+
         return arg_doc
+
 
     @staticmethod
     def get_json_type(python_type) -> Union[str,None]:
@@ -62,8 +68,8 @@ class Tool:
         self.arguments : list[ToolArg] = []
 
 
-    def create_arg(self, name: str, dtype: type, desc: str) -> ToolArg:
-        this_arg = ToolArg(name, dtype, desc)
+    def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None) -> ToolArg:
+        this_arg = ToolArg(name, dtype, desc,available_options)
         self.arguments.append(this_arg)
         return this_arg
 
@@ -124,9 +130,15 @@ class Tool:
     def start_log(self, to_log) -> None:
         self.log(f'[Start]: {to_log}')
 
-    def error_log(self, to_log) -> None:
-        self.log(f'[Error]: {to_log}'
-                 f'{traceback.format_exc()}')
+    def semantic_error(self,to_log):
+        self.log(f'[Error]: {to_log}')
+
+    def exception_log(self, to_log) -> None:
+        to_log = f'[Error]: {to_log}'
+        if not traceback.format_exc() is None:
+            to_log +=f'Traceback: {traceback.format_exc()}'
+
+        self.log(to_log)
 
     def progress_log(self, to_log) -> None:
         self.log(f'[Progress]: {to_log}')

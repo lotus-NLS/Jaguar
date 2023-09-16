@@ -20,35 +20,31 @@ class READ(Tool):
 
         self.format_arg : ToolArg = self.create_arg(
             name='file_format', dtype=str,
-            desc=f'This is the format of the file you want to read.'
-                        f'Enter {self.text_format} for a text file or {self.pdf_format} for a pdf')
+            available_options=[READ.text_format,READ.pdf_format],
+            desc=f'This is the format of the file you want to read')
 
 
     def do(self) -> None:
         location = self.fpath_arg.val
 
         if not os.path.isfile(location):
-            self.error_log(f'There is no file located at given location {location}')
+            self.semantic_error(f'There is no file located at given location {location}. Aborting ...')
+            return
 
         chosen_format = self.format_arg.val
-        if not self.format_arg.val in [self.text_format, self.pdf_format]:
-            self.error_log(f'Given format {chosen_format} is not an allowed format.\n'
-                           f'Please choose a format from {self.allowed_formats}')
+        if not self.format_arg.val in [READ.text_format, READ.pdf_format]:
+            self.semantic_error(f'Given format {chosen_format} is not an allowed format.'
+                                f'Please choose a format from {self.allowed_formats}')
 
-
-        if chosen_format == self.text_format:
-            get_content_action = self.get_txt_file_content
-        else:
-            get_content_action = self.get_pdf_file_content
+        get_content_action = self.get_txt_file_content if chosen_format == self.text_format else self.get_pdf_file_content
 
         try:
             self.progress_log(f'Attempting to read file located at {location}')
             file_content = get_content_action(location=location)
             self.progress_log(f'Read file content:\n{file_content}\n'
                               f'Successfully completed reading of file.')
-
         except Exception:
-            self.error_log(f'An error occured while trying to read the file located at {location}\n')
+            self.exception_log(f'An exception occured while trying to read the file located at {location}\n')
 
     @staticmethod
     def get_txt_file_content(location : str) -> str:
@@ -87,7 +83,7 @@ class WRITE(Tool):
 
         parent_dir = os.path.dirname(location)
         if os.access(parent_dir,os.W_OK):
-            self.error_log(f'{parent_dir} is not a writable directory')
+            self.exception_log(f'{parent_dir} is not a writable directory')
 
         try:
             with open(self.fpath_arg.val, 'w') as file:
@@ -95,4 +91,4 @@ class WRITE(Tool):
                 self.progress_log(f'Suceeded in writing out file')
 
         except Exception as e:
-            self.error_log(f'An error occured while trying to write file: {e}')
+            self.exception_log(f'An error occured while trying to write file: {e}')

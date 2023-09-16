@@ -38,7 +38,7 @@ class BROWSE(Tool):
                               f'{self.make_composition_report(site_report_futures)}')
 
         except Exception as e:
-            self.error_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
+            self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
 
 
     def get_site_report(self, site_url : str):

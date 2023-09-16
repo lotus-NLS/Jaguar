@@ -7,24 +7,29 @@ from src.l2_lotus_core import Tool,ToolArg
 # ---------------------------------------------------------
 
 class RUN(Tool):
-    python_script_mode = 0
-    cmd_mode = 1
+    python_script_mode = 'py'
+    cmd_mode = 'cmd'
 
     def __init__(self):
         super().__init__()
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string.'
 
-        self.mode_arg: ToolArg = self.create_arg(name='mode', dtype=int,
-                                                 desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line ')
+        self.mode_arg: ToolArg = self.create_arg(
+            name='mode', dtype=str,
+            available_options=[RUN.python_script_mode,RUN.cmd_mode],
+            desc='')
 
-        self.program_content_arg: ToolArg = self.create_arg(name='program_content', dtype=str,
-                                                            desc='The content of the Python script or shell command to execute')
+            # desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line ')
+
+        self.program_content_arg: ToolArg = self.create_arg(
+            name='program_content', dtype=str,
+            desc='The content of the Python script or shell command to execute')
 
     def do(self) -> None:
         mode = self.mode_arg.val
 
         if not mode in [self.python_script_mode, self.cmd_mode]:
-            self.error_log(f'Invalid mode specified. Use "{self.python_script_mode} for Python script or "{self.cmd_mode}" for command line.')
+            self.semantic_error(f'Invalid mode specified. Use "{self.python_script_mode} for Python script or "{self.cmd_mode}" for command line.')
             return
 
         if mode == self.python_script_mode:
@@ -38,10 +43,10 @@ class RUN(Tool):
             if result.stdout:
                 self.progress_log(f'Standard Output:\n{result.stdout}')
             if result.stderr:
-                self.error_log(f'Standard Error:\n{result.stderr}')
+                self.exception_log(f'Standard Error:\n{result.stderr}')
 
         except Exception as e:
-            self.error_log(f'An error occurred while trying to l0_run the Python script: {e}')
+            self.exception_log(f'An exception occurred while trying to run the Python script: {e}')
 
 
     def execute_py(self):
