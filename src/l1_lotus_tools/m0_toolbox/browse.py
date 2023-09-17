@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from src.l1_lotus_tools.functionalities.webtools import Webtools
+from src.l1_lotus_tools.m1_python_utils.webtools import Webtools
 from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
 
 

@@ -21,7 +21,7 @@ class Agent(ConversationParticipant):
         # Set model
         self.model : OpenAIModel = model
 
-        # Set up tools
+        # Set up m0_toolbox
         self.tool_list : list[Tool] = []
         self._tool_docs : Optional[list[dict]] = None
 
