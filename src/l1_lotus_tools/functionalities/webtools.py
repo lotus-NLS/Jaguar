@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options
 
 from src.l2_lotus_core import Tool, get_setting, Credentials
 
+# ---------------------------------------------------------
+
 
 class ScrapeModes:
     dynamic = 'dynamic'

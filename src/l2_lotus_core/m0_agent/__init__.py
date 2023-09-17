@@ -1,2 +1,2 @@
 from .agent import Agent
-from .agent import SinglePurposeAgent
+from .single_purpose_agent import SinglePurposeAgent
