@@ -1,12 +1,25 @@
 from typing import Union, Optional
 import json
-from src.l2_lotus_core.m1_models.tool import ToolInstruction
+
 
 # 08.09.23: (D.H.):
 # The agent has two options for an action: "Speak" or "Use a tool"
 # The content of an action is either the text which is to be spoken or the instructions for the tool usage
 
 # ---------------------------------------------------------
+
+class ToolInstruction:
+    def __init__(self,name : str, arguments : dict):
+        self.name : str = name
+        self.arguments : dict = arguments
+
+
+class ActionOptions:
+    def __init__(self, is_allowed_functioncall : bool, max_tokens : Optional[int], temperature : float = 0.3):
+        self.is_allowed_functioncall = is_allowed_functioncall
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+
 
 class Action:
     def __init__(self, openAI_response : dict):
@@ -57,12 +70,3 @@ class Action:
 
     def __str__(self):
         return str(self._best_response)
-
-
-
-
-class ActionOptions:
-    def __init__(self, is_allowed_functioncall : bool, max_tokens : Optional[int], temperature : float = 0.3):
-        self.is_allowed_functioncall = is_allowed_functioncall
-        self.max_tokens = max_tokens
-        self.temperature = temperature

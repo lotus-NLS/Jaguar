@@ -27,14 +27,11 @@ class ConversationTestModule(TestModule):
 
         self.all_participants = self.agent_participant_list + [self.rowdy_user_participant]
 
-    # Expects output:
     # assistant said: Hello from participant 1!
     # assistant said: Hello from participant 2!
     # assistant thought: I do not even want to say hello to that guy!
     # Logs for Participant1:
-    # [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}]
-    # Logs for Participant2:
-    # [{'role': 'assistant', 'content': 'Hello from participant 1!'}, {'role': 'assistant', 'content': 'Hello from participant 2!'}, {'role': 'assistant', 'content': 'I do not even want to say hello to that guy!'}]
+    # [...]
 
     def clear_logs(self):
         for participant in self.all_participants:

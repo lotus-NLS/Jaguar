@@ -34,17 +34,21 @@ class OpenAIModel(LLM):
     def make_gpt_35_4k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_35_4k)
 
+
     @classmethod
     def make_gpt_35_16k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_35_16k)
+
 
     @classmethod
     def make_gpt_40_8k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_40_8k)
 
+
     @classmethod
     def make_gpt_40_32k(cls):
         return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
+
 
     def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
         args_dict = {
@@ -70,9 +74,10 @@ class OpenAIModel(LLM):
         total_tokens_openai = openai_response['usage']['prompt_tokens']
 
         print(f'[Debug]: Before generation at {total_tokens_openai} tokens used; '
-              f'Estimation: {self.get_total_token_count(context=context)}')
+              f'Estimation: {self.get_total_token_count_estimation(context=context)}')
 
         return Action(openai_response)
+
 
     # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
     def get_token_count(self,the_str: str):
@@ -80,7 +85,7 @@ class OpenAIModel(LLM):
         return len(encoding.encode(the_str))
 
 
-    def get_total_token_count(self, context : Context):
+    def get_total_token_count_estimation(self, context : Context):
         msg_history = context.msg_history
         tool_docs = context.tool_docs
 

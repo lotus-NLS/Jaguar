@@ -147,7 +147,3 @@ class Tool:
         self.log(f'[Finish]: {to_log}')
 
 
-class ToolInstruction:
-    def __init__(self,name : str, arguments : dict):
-        self.name : str = name
-        self.arguments : dict = arguments
