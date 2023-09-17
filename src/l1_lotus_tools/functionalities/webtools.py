@@ -81,7 +81,7 @@ class Webtools:
 
 
     @staticmethod
-    def get_search_result_urls(search_term: str, num_results : int = 4):
+    def get_search_urls(search_term: str, num_results : int = 4):
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             'q': f'{search_term}',

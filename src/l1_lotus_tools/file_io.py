@@ -33,24 +33,25 @@ class READ(Tool):
 
         chosen_format = self.format_arg.val
         if not self.format_arg.val in [READ.text_format, READ.pdf_format]:
-            self.semantic_error(f'Given format {chosen_format} is not an allowed format.'
-                                f'Please choose a format from {self.allowed_formats}')
+            self.semantic_error(f'Given format {chosen_format} is not an allowed format. Please choose a format from {self.allowed_formats}')
 
-        get_content_action = self.get_txt_file_content if chosen_format == self.text_format else self.get_pdf_file_content
+        retrieval_function = self.get_txt_file_content if chosen_format == self.text_format else self.get_pdf_file_content
 
         try:
             self.progress_log(f'Attempting to read file located at {location}')
-            file_content = get_content_action(location=location)
-            self.progress_log(f'Read file content:\n{file_content}\n'
-                              f'Successfully completed reading of file.')
+            file_content = retrieval_function(location=location)
+            self.progress_log(f'File content:\n{file_content}')
+
         except Exception:
             self.exception_log(f'An exception occured while trying to read the file located at {location}\n')
+
 
     @staticmethod
     def get_txt_file_content(location : str) -> str:
         with open(location, 'r') as file:
             file_content = file.read()
         return file_content
+
 
     @staticmethod
     def get_pdf_file_content(location : str) -> str:

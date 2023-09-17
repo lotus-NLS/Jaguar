@@ -14,11 +14,13 @@ class BROWSE(Tool):
         super().__init__()
         self.desc : str = """The BROWSE tool allows you to search for information online.Provide both a "search_term" and specify the "requested_information"."""
 
-        self.query_arg : ToolArg = self.create_arg(name='requested_information', dtype=str,
-                                               desc='This is the information that you seek to obtain')
+        self.query_arg : ToolArg = self.create_arg(
+            name='requested_information', dtype=str,
+            desc='This is the information that you seek to obtain')
 
-        self.search_term_arg : ToolArg = self.create_arg(name='search_term', dtype=str,
-                                               desc='The search_term is what will be used in the search engine to obtain relevant web pages')
+        self.search_term_arg : ToolArg = self.create_arg(
+            name='search_term', dtype=str,
+            desc='The search_term is what will be used in the search engine to obtain relevant web pages')
 
         self.webtools : Webtools = Webtools(initial_driver_count=4)
 
@@ -26,12 +28,10 @@ class BROWSE(Tool):
     def do(self):
         try:
             with ThreadPoolExecutor() as executor:
-                url_list = self.webtools.get_search_result_urls(search_term=self.query_arg.val,num_results=BROWSE.num_results)
+                url_list = self.webtools.get_search_urls(search_term=self.query_arg.val, num_results=BROWSE.num_results)
                 self.progress_log(f'The following URLs were found: {url_list}')
                 site_reports = list(executor.map(self.get_site_report, url_list))
 
-
-            self.progress_log(f'All reports are done')
             self.progress_log(f'The following information was obtained from web search:'
                               f'{self.make_composition_report(site_report_list=site_reports)}')
 
@@ -54,7 +54,7 @@ class BROWSE(Tool):
 
         return result
 
-    #
+
     def make_composition_report(self, site_report_list : list[str]):
         all_summaries = ''
         for index, info_text in enumerate(site_report_list):
