@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import time
 import requests
 from concurrent.futures import ThreadPoolExecutor
+import trafilatura
 
 from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
 from src.l2_lotus_core import get_setting, Credentials
@@ -59,7 +60,7 @@ class BROWSE(Tool):
         except:
             result = f'An exception occured while trying to get report on site {site_url}. Aborting ...'
 
-        print(f'The following summary was acquired for {site_url}: {result}')
+        # print(f'The following summary was acquired for {site_url}: {result}')
         return result
 
     #
@@ -136,11 +137,16 @@ class Webtools:
 
     @staticmethod
     def fetch_static_content(site_url: str) -> str:
+        # def get_website_text():
+        #     response = requests.get(site_url)
+        #     soup = BeautifulSoup(response.text, 'html.parser')
+        #     the_site_text = ''.join(element for element in soup.stripped_strings)
+        #     return the_site_text
+
         def get_website_text():
-            response = requests.get(site_url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            the_site_text = ''.join(element for element in soup.stripped_strings)
-            return the_site_text
+            downloaded = trafilatura.fetch_url(site_url)
+            return trafilatura.extract(downloaded)
+
 
         return func_timeout(timeout=Tool.timout_in_sec/2., func=get_website_text)
 
