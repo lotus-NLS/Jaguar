@@ -78,8 +78,7 @@ class OpenAIModel(LLM):
 
         total_tokens_openai = openai_response['usage']['prompt_tokens']
 
-        print(f'[Debug]: Before generation at {total_tokens_openai} tokens used; '
-              f'Estimation: {self.get_total_token_count_estimation(context=context)}')
+        print(f'[Debug]: Before generation at {total_tokens_openai} tokens used')
 
         return Action(openai_response)
 
@@ -92,17 +91,3 @@ class OpenAIModel(LLM):
     def get_limited_string(self, the_str : str, max_tokens : int):
         encoded_str = self.encoder(the_str)
         return self.decoder(encoded_str[:max_tokens])
-
-    def get_total_token_count_estimation(self, context : Context):
-        msg_history = context.msg_history
-        tool_docs = context.tool_docs
-
-        num_tokens = 0
-
-        for msg in msg_history:
-            num_tokens += self.get_token_count(the_str=msg.get_content())
-            num_tokens += 3
-
-        num_tokens += self.get_token_count(the_str=str(tool_docs))
-
-        return num_tokens
