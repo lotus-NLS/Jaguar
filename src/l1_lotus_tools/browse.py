@@ -1,27 +1,27 @@
-# noinspection PyPackageRequirements
+import threading
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 import requests
-from concurrent.futures import ThreadPoolExecutor, Future
 
 from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
 from src.l2_lotus_core import get_setting, Credentials
 
 
+# NOTE : If you should wait or for how long until page elements load is something to be contemplated
+
 # ---------------------------------------------------------
 
 # TODO: Investigate: Heavy delay btw site report init and completion request
+# -> I think the heaviest part of that is starting up the
 
 class BROWSE(Tool):
     num_results = 5
 
     def __init__(self):
         super().__init__()
-        self.desc : str = 'The BROWSE tool allows you to search for information online. ' \
-                           'The information you request will be complied based on the top search results from the search term that you specify' \
-                           # 'You can use for example to look up documentation or software that can be useful to your project'
+        self.desc : str = """The BROWSE tool allows you to search for information online.Provide both a "search_term" and specify the "requested_information"."""
 
         self.query_arg : ToolArg = self.create_arg(name='requested_information', dtype=str,
                                                desc='This is the information that you seek to obtain')
@@ -29,18 +29,14 @@ class BROWSE(Tool):
         self.search_term_arg : ToolArg = self.create_arg(name='search_term', dtype=str,
                                                desc='The search_term is what will be used in the search engine to obtain relevant web pages')
 
+        self.webtools : Webtools = Webtools(initial_driver_count=4)
 
     def do(self):
         try:
-            # This control flow element is only left once all tasks are done
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                url_list = Webtools.get_search_result_urls(search_term=self.query_arg.val)
-                site_report_futures = [executor.submit(self.get_site_report, url) for url in url_list]
+            url_list = self.webtools.get_search_result_urls(search_term=self.query_arg.val)
+            site_reports = [self.get_site_report(url) for url in url_list]
 
             self.progress_log(f'All reports are done')
-
-
-            site_reports = [future.result() for future in site_report_futures]
             self.progress_log(f'The following information was obtained from web search:'
                               f'{self.make_composition_report(site_report_list=site_reports)}')
 
@@ -49,7 +45,7 @@ class BROWSE(Tool):
 
 
     def get_site_report(self, site_url : str):
-        raw_site_text = Webtools.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
+        raw_site_text = self.webtools.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
 
         summary_agent = SinglePurposeAgent.make_website_summarization_agent()
         input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
@@ -72,25 +68,63 @@ class BROWSE(Tool):
                                                        f'Query: {self.query_arg.val}'
                                                        ,max_token=500)
 
-class Webtools:
 
-    @staticmethod
-    def get_url_text(site_url: str, wait_for_load_in_sec : int =1) -> str:
+class Webtools:
+    def __init__(self, initial_driver_count : int = 4):
+        self.drivers = []
+        self.busy_drivers = []
+
+        for _ in range(initial_driver_count):
+            threading.Thread(target=self.make_driver).start()
+
+    def make_driver(self):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
-        driver = webdriver.Chrome(options=chrome_options)
+        prefs = {"profile.managed_default_content_settings.images": 2}
+        chrome_options.add_experimental_option("prefs", prefs)
+        new_driver = webdriver.Chrome(options=chrome_options)
+
+        self.drivers.append(new_driver)
+
+        return new_driver
+
+    def get_free_driver(self):
+        unoccupied_drivers = [driver for driver in self.drivers if driver not in self.busy_drivers]
+        if len(unoccupied_drivers) > 0:
+            return unoccupied_drivers[0]
+
+        else:
+            return self.make_driver()
+
+    def get_url_text(self,site_url: str, wait_for_load_in_sec : float = 0.2) -> str:
+        start_time = time.time()
+
+        driver = self.get_free_driver()
+        self.busy_drivers.append(driver)
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: It took {elapsed_time} seconds to retrieve a driver")
 
         driver.get(site_url)
-        # NOTE : If you should wait or for how long until page elements load is something to be contemplated
         time.sleep(wait_for_load_in_sec)
         page_source = driver.page_source
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: It took {elapsed_time} seconds to get the site info")
 
         soup = BeautifulSoup(page_source, 'html.parser')
         site_text = ''
         for text in [element for element in soup.stripped_strings]:
             site_text += text
 
-        driver.quit()
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: It took {elapsed_time} seconds to scrape the site")
+
+        self.busy_drivers.remove(driver)
+
         return site_text
 
 
