@@ -1,6 +1,7 @@
 from __future__ import annotations
 import threading
-from typing import Union
+from typing import Union, Optional
+
 
 from src.l2_lotus_core.m2_conversation.channel import Channel
 from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEntry, DialogueRole
@@ -8,11 +9,12 @@ from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEnt
 # ----------------------------------------------------
 
 class ConversationParticipant:
-    def __init__(self, role : DialogueRole):
+    def __init__(self, role : DialogueRole, name : Optional[str] = None):
         super().__init__()
         self._role : DialogueRole = role
         self._personal_log : list[ConversationEntry] = []
         self._channel : Union[Channel, None] = None
+        self.name = name if not name is None else self._role
 
     # ------------------------------
     # Update

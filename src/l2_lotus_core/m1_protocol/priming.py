@@ -7,7 +7,7 @@ from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------
 
-# NOTE :This is currently in test mode because of disappointing performance
+# NOTE :This is currently in test mode because of disappointing performance with GPT 3.5
 class Directive:
     @classmethod
     def make_empty_directive(cls) -> Directive:

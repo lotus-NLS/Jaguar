@@ -19,3 +19,7 @@ class LLM:
 
     def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
         pass
+
+
+    def get_token_count(self,the_str: str) -> int:
+        pass

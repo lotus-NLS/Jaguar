@@ -1,4 +1,5 @@
 import openai
+import tiktoken
 
 from src.l2_lotus_core.m3_settings import get_setting, Credentials
 
@@ -64,7 +65,31 @@ class OpenAIModel(LLM):
 
         # Action is promised a dict, so a dict must be delivered in any case
         if not isinstance(openai_response, dict):
-            print('[Debug]: OpenAI response is not of dictionary type. Defaulting to empty response')
-            openai_response = {}
+            raise TypeError(f'[Error]: OpenAI response is not of dictionary form')
+
+        total_tokens_openai = openai_response['usage']['prompt_tokens']
+
+        print(f'[Debug]: Before generation at {total_tokens_openai} tokens used; '
+              f'Estimation: {self.get_total_token_count(context=context)}')
 
         return Action(openai_response)
+
+    # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
+    def get_token_count(self,the_str: str):
+        encoding = tiktoken.get_encoding('cl100k_base')
+        return len(encoding.encode(the_str))
+
+
+    def get_total_token_count(self, context : Context):
+        msg_history = context.msg_history
+        tool_docs = context.tool_docs
+
+        num_tokens = 0
+
+        for msg in msg_history:
+            num_tokens += self.get_token_count(the_str=msg.get_content())
+            num_tokens += 3
+
+        num_tokens += self.get_token_count(the_str=str(tool_docs))
+
+        return num_tokens

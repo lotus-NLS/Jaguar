@@ -18,3 +18,4 @@ requests
 PyInquirer
 func_timeout
 distro
+tiktoken

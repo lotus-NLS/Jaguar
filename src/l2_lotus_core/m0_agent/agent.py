@@ -98,7 +98,9 @@ class Agent(ConversationParticipant):
                                                         msg=self._priming.get_identity_msg())
         messages = [core_entry] + self._personal_log
         this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
-        this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall, max_tokens=max_tokens, temperature=temperature)
+        this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall,
+                                     max_tokens=max_tokens,
+                                     temperature=temperature)
 
         print("[Debug]: Creating completion request.")
         action_content = self._model.get_next_action(context=this_context,action_options=this_options)
