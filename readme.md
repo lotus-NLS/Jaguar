@@ -1,6 +1,6 @@
 # Nucifera
 <p align="center">
-  <img src="documentation/logo.png" alt="Logo" width="200">
+  <img src="documentation/logo.jpg" alt="Logo" width="200">
   <br>
   <em>Caption goes here</em>
 </p>
