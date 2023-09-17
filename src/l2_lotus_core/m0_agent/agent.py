@@ -140,9 +140,11 @@ class SinglePurposeAgent(Agent):
     def _reaction_protocol(self, dialogue_line) -> None:
         pass
 
-    def get_text_response(self, prompt : str, max_token : Optional[int] = None) -> str:
+    def get_text_response(self, prompt : str, max_token : Optional[int] = None, verbose = True) -> str:
         self.log_user_msg(msg=prompt)
+        self.log_system_msg(f'Your next message is limited to {max_token} tokens')
         text_response = self.get_next_action(is_allowed_functcall=False, max_tokens=max_token).get_text()
+        self.think(text_response, verbose=verbose)
 
         if text_response is None:
             print('[Error]: Could not obtain text response from single purpose agent. Returning empty string')

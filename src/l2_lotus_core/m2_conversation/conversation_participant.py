@@ -49,14 +49,17 @@ class ConversationParticipant:
         print(f'[Debug]: {self._role} read: {msg}')
         self._log_entry(entry=ConversationEntry(role=DialogueRole.tool(), msg=msg, tool_name= tool_name))
 
+    def log_system_msg(self,msg : str):
+        self._log_entry(ConversationEntry(role=DialogueRole.system(), msg=msg))
 
     def _reaction_protocol(self, dialogue_line : ConversationEntry):
         pass
 
 
-    def think(self, msg : str):
+    def think(self, msg : str, verbose = True):
         the_msg = f'## Internal monologue: {msg}'
-        print(f'[Debug]: {self._role} thought: {the_msg}')
+        if verbose:
+            print(f'[Debug]: {self._role} thought: {the_msg}')
         self._log_entry(entry=ConversationEntry(role=self._role, msg=the_msg))
 
 
