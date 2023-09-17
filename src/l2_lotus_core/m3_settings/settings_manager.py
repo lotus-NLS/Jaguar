@@ -38,6 +38,17 @@ class SettingGrouping:
         for setting in cls.all_settings_in_group:
             setting.validate()
 
+    @staticmethod
+    def get_y_or_n(msg : str):
+        while True:
+            user_input = input(msg)
+            if user_input.lower() in ['y', 'n']:
+                break
+            else:
+                print("Invalid input. Please enter (y/n)")
+
+        return user_input
+
     def test_all(self):
         for test in self.tests:
             try:
@@ -84,17 +95,6 @@ class Credentials(SettingGrouping):
         Credentials.all_settings_in_group.append(new_setting)
         return new_setting
 
-
-    @staticmethod
-    def get_y_or_n(msg : str):
-        while True:
-            user_input = input(msg)
-            if user_input.lower() in ['y', 'n']:
-                break
-            else:
-                print("Invalid input. Please enter (y/n)")
-
-        return user_input
 
 
     def openai_apikey_test(self) -> None:

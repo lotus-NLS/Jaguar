@@ -19,11 +19,11 @@ class Agent(ConversationParticipant):
         self._priming = priming if not priming is None else Priming.make_goto_priming()
 
         # Set model
-        self._model : OpenAIModel = model
+        self.model : OpenAIModel = model
 
         # Set up tools
         self.tool_list : list[Tool] = []
-        self._tool_docs : list[dict] = []
+        self._tool_docs : Optional[list[dict]] = None
 
     # ---------------------------------------------------
     # Setup
@@ -46,10 +46,10 @@ class Agent(ConversationParticipant):
         max_tokens_tool = 1000
 
         def tool_log(msg: str):
-            num_tokens = self._model.get_token_count(the_str=msg)
+            num_tokens = self.model.get_token_count(the_str=msg)
 
             if num_tokens > max_tokens_tool:
-                msg = self._model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)
+                msg = self.model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)
 
             self.log_tool_msg(msg=msg, tool_name=tool_name)
 
@@ -67,7 +67,7 @@ class Agent(ConversationParticipant):
             action_content = self.get_next_action()
 
         except Exception as e:
-            print(f'[Error]: Unable to obtain response from {self._model.name}.\n{str(e)}\n')
+            print(f'[Error]: Unable to obtain response from {self.model.name}.\n{str(e)}\n')
             return
 
         try:
@@ -119,7 +119,7 @@ class Agent(ConversationParticipant):
                                      temperature=temperature)
 
         print("[Debug]: Creating completion request.")
-        action_content = self._model.get_next_action(context=this_context,action_options=this_options)
+        action_content = self.model.get_next_action(context=this_context, action_options=this_options)
         print(f"[Debug]: Received response from the model. Action: {action_content}")
 
         return action_content

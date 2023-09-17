@@ -62,9 +62,9 @@ class OpenAIModel(LLM):
             'temperature': action_options.temperature
         }
 
-        if not context.tool_docs == 0:
+        if not context.tool_docs is None and action_options.is_allowed_functioncall:
             args_dict['functions'] = context.tool_docs
-            args_dict['function_call'] = FunctionCallModes.auto if action_options.is_allowed_functioncall else FunctionCallModes.none
+            args_dict['function_call'] = FunctionCallModes.auto
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens

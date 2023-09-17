@@ -4,13 +4,19 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
+import requests
 from concurrent.futures import ThreadPoolExecutor, Future
 
 from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
+from src.l2_lotus_core import get_setting, Credentials
 
 
 # ---------------------------------------------------------
 
+# TODO: Separate search and text scrape functionality into webtools class
+# TODO: There is some bug with display  https://www.dkfindout.com/uk/animals-and-nature/squid-<b>snails</b>.../<b>snails</b>/
+# TODO: Investigate: Heavy delay btw site report init and completion request
+# TODO: Handle website scraping fail
 class BROWSE(Tool):
     num_results = 5
 
@@ -30,27 +36,56 @@ class BROWSE(Tool):
     def do(self):
         try:
             # This control flow element is only left once all tasks are done
-            with ThreadPoolExecutor() as executor:
-                search_result_urls_list = search(self.query_arg.val, num_results=BROWSE.num_results)
-                site_report_futures = [executor.submit(self.get_site_report, result_link_str) for result_link_str in search_result_urls_list]
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                url_list = self.get_search_result_urls(search_term=self.query_arg.val)
+                site_report_futures = [executor.submit(self.get_site_report, url) for url in url_list]
 
-            self.progress_log(f'The following information was obtained from web search \n'
-                              f'{self.make_composition_report(site_report_futures)}')
+            self.progress_log(f'All reports are done')
+
+
+            site_reports = [future.result() for future in site_report_futures]
+            self.progress_log(f'The following information was obtained from web search:'
+                              f'{self.make_composition_report(site_report_list=site_reports)}')
 
         except Exception as e:
             self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
 
+    @staticmethod
+    # TODO: Implement num results option
+    def get_search_result_urls(search_term: str):
+        url = "https://www.googleapis.com/customsearch/v1"
+        params = {
+            'q': f'{search_term}',
+            'key': get_setting(Credentials.google_apikey_label),
+            'cx': get_setting(Credentials.search_engineID_label)
+        }
+        search_results = requests.get(url, params=params).json()['items']
+        trimmed_results = search_results[:5]
+        return [result['htmlFormattedUrl'] for result in trimmed_results]
+
 
     def get_site_report(self, site_url : str):
-        site_text = BROWSE.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
+        # TODO: Temp debug
+        print(f'Site report initiated for {site_url}')
+
         summary_agent = SinglePurposeAgent.make_website_summarization_agent()
-        summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
-                                       f'Query: {self.query_arg.val}')
-        return summary_agent.get_next_action(is_allowed_functcall=False, max_tokens=300).get_text()
+
+
+        raw_site_text = BROWSE.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
+        input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
+
+        the_text = summary_agent.get_text_response(
+            prompt=f'Website text:\n {input_text}\n Query: {self.query_arg.val}',
+            max_token=300)
+
+        print(f'[Temp debug]: Now starting summarization')
+        # TODO: Remove this
+        print(f'[Temp debug]: I found out the following {the_text}')
+        return the_text
 
 
     @staticmethod
-    def get_url_text(site_url : str, wait_for_load_in_sec = 2) -> str:
+    def get_url_text(site_url : str, wait_for_load_in_sec = 0) -> str:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
@@ -69,13 +104,13 @@ class BROWSE(Tool):
         return site_text
 
 
-    def make_composition_report(self, site_report_futures : list[Future]):
+    def make_composition_report(self, site_report_list : list[str]):
         all_summaries = ''
-        for index,future in enumerate(site_report_futures):
+        for index, info_text in enumerate(site_report_list):
             all_summaries += f'## Report {index} ##' \
-                             f'{future.result()}\n'
+                             f'{info_text}\n'
 
         composition_agent = SinglePurposeAgent.make_report_composition_agent()
-        return composition_agent.get_text_response(msg=f'Reports:  {all_summaries}'
+        return composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}'
                                                        f'Query: {self.query_arg.val}'
-                                                   ,max_token=200)
+                                                       ,max_token=200)
