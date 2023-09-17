@@ -10,7 +10,6 @@ PyPDF2
 
 ## WEB
 selenium
-googlesearch-python
 beautifulsoup4
 requests
 

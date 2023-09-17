@@ -1,5 +1,4 @@
 # noinspection PyPackageRequirements
-from googlesearch import search #  It's googlesearch-python, it's in there
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
@@ -13,10 +12,8 @@ from src.l2_lotus_core import get_setting, Credentials
 
 # ---------------------------------------------------------
 
-# TODO: Separate search and text scrape functionality into webtools class
-# TODO: There is some bug with display  https://www.dkfindout.com/uk/animals-and-nature/squid-<b>snails</b>.../<b>snails</b>/
 # TODO: Investigate: Heavy delay btw site report init and completion request
-# TODO: Handle website scraping fail
+
 class BROWSE(Tool):
     num_results = 5
 
@@ -36,8 +33,8 @@ class BROWSE(Tool):
     def do(self):
         try:
             # This control flow element is only left once all tasks are done
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                url_list = self.get_search_result_urls(search_term=self.query_arg.val)
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                url_list = Webtools.get_search_result_urls(search_term=self.query_arg.val)
                 site_report_futures = [executor.submit(self.get_site_report, url) for url in url_list]
 
             self.progress_log(f'All reports are done')
@@ -50,42 +47,35 @@ class BROWSE(Tool):
         except Exception as e:
             self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
 
-    @staticmethod
-    # TODO: Implement num results option
-    def get_search_result_urls(search_term: str):
-        url = "https://www.googleapis.com/customsearch/v1"
-        params = {
-            'q': f'{search_term}',
-            'key': get_setting(Credentials.google_apikey_label),
-            'cx': get_setting(Credentials.search_engineID_label)
-        }
-        search_results = requests.get(url, params=params).json()['items']
-        trimmed_results = search_results[:5]
-        return [result['htmlFormattedUrl'] for result in trimmed_results]
-
 
     def get_site_report(self, site_url : str):
-        # TODO: Temp debug
-        print(f'Site report initiated for {site_url}')
+        raw_site_text = Webtools.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
 
         summary_agent = SinglePurposeAgent.make_website_summarization_agent()
-
-
-        raw_site_text = BROWSE.get_url_text(site_url=site_url, wait_for_load_in_sec=1)
         input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
 
         the_text = summary_agent.get_text_response(
             prompt=f'Website text:\n {input_text}\n Query: {self.query_arg.val}',
             max_token=300)
 
-        print(f'[Temp debug]: Now starting summarization')
-        # TODO: Remove this
-        print(f'[Temp debug]: I found out the following {the_text}')
         return the_text
 
 
+    def make_composition_report(self, site_report_list : list[str]):
+        all_summaries = ''
+        for index, info_text in enumerate(site_report_list):
+            all_summaries += f'## Report {index} ##' \
+                             f'{info_text}\n'
+
+        composition_agent = SinglePurposeAgent.make_report_composition_agent()
+        return composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}'
+                                                       f'Query: {self.query_arg.val}'
+                                                       ,max_token=500)
+
+class Webtools:
+
     @staticmethod
-    def get_url_text(site_url : str, wait_for_load_in_sec = 0) -> str:
+    def get_url_text(site_url: str, wait_for_load_in_sec : int =1) -> str:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
@@ -104,13 +94,18 @@ class BROWSE(Tool):
         return site_text
 
 
-    def make_composition_report(self, site_report_list : list[str]):
-        all_summaries = ''
-        for index, info_text in enumerate(site_report_list):
-            all_summaries += f'## Report {index} ##' \
-                             f'{info_text}\n'
+    @staticmethod
+    def get_search_result_urls(search_term: str, num_results : int = 4):
+        url = "https://www.googleapis.com/customsearch/v1"
+        params = {
+            'q': f'{search_term}',
+            'key': get_setting(Credentials.google_apikey_label),
+            'cx': get_setting(Credentials.search_engineID_label),
+            'num' : num_results
+        }
+        search_results = requests.get(url, params=params).json()['items']
+        search_result_urls = [result['link'] for result in search_results]
 
-        composition_agent = SinglePurposeAgent.make_report_composition_agent()
-        return composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}'
-                                                       f'Query: {self.query_arg.val}'
-                                                       ,max_token=200)
+        print(f'[Temp debug]: The following URLs were found: {search_result_urls}')
+
+        return search_result_urls

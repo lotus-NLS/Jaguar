@@ -120,7 +120,7 @@ class Agent(ConversationParticipant):
 
         print("[Debug]: Creating completion request.")
         action_content = self.model.get_next_action(context=this_context, action_options=this_options)
-        print(f"[Debug]: Received response from the model. Action: {action_content}")
+        print(f"[Debug]: Received response from the model.")
 
         return action_content
 
