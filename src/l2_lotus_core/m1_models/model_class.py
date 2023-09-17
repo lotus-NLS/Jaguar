@@ -21,5 +21,8 @@ class LLM:
         pass
 
 
+    def get_limited_string(self, the_str : str, max_tokens : int):
+        pass
+
     def get_token_count(self,the_str: str) -> int:
         pass

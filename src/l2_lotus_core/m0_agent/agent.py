@@ -29,26 +29,38 @@ class Agent(ConversationParticipant):
     # Setup
 
     def set_tools(self, tool_types : list[Type[Tool]]) -> None:
-        def get_tool_logger(tool_name : str):
-            def tool_log(msg : str):
-                self.log_tool_msg(msg=msg, tool_name=tool_name)
-            return tool_log
-
         self.tool_list += [tool() for tool in tool_types]
         for tool in self.tool_list:
-            tool.external_log = get_tool_logger(tool_name=tool.name)
+            tool.external_log = self.get_tool_logger(tool_name=tool.name)
 
         self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # ---------------------------------------------------
-    # Callback
+    # Other
 
     def _reaction_protocol(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
             self._perform_next_action()
 
+    def get_tool_logger(self,tool_name: str):
+        max_tokens_tool = 1000
+
+        def tool_log(msg: str):
+            num_tokens = self._model.get_token_count(the_str=msg)
+
+            if num_tokens > max_tokens_tool:
+                msg = self._model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)
+
+            self.log_tool_msg(msg=msg, tool_name=tool_name)
+
+            if num_tokens > max_tokens_tool:
+                warning_msg = '[Progress]: The tool output exceeded the maximum number of tokens of 1000 and was shortened to that length ...'
+                self.log_tool_msg(msg=warning_msg)
+
+        return tool_log
+
     # ---------------------------------------------------
-    # Other
+    # Main routine
 
     def _perform_next_action(self) -> None:
         try:
@@ -88,18 +100,21 @@ class Agent(ConversationParticipant):
         self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                           f'In your update it is not necessary to provide the user with the function output'
                           ,is_without_reaction=True)
-        text_content = self.get_next_action(is_allowed_functioncall=False).get_text()
+        text_content = self.get_next_action(is_allowed_functcall=False).get_text()
         if not text_content is None:
             self.speak(msg=text_content)
 
 
-    def get_next_action(self, is_allowed_functioncall : bool = True, max_tokens : Optional[int] = None, temperature : float = 0.3) -> Action:
+    def get_next_action(self,
+                        is_allowed_functcall : bool = True,
+                        max_tokens : Optional[int] = None,
+                        temperature : float = 0.3) -> Action:
 
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self._priming.get_identity_msg())
         messages = [core_entry] + self._personal_log
         this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
-        this_options = ActionOptions(is_allowed_functioncall=is_allowed_functioncall,
+        this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)
 
@@ -127,7 +142,7 @@ class SinglePurposeAgent(Agent):
 
     def get_text_response(self, prompt : str, max_token : Optional[int] = None) -> str:
         self.log_user_msg(msg=prompt)
-        text_response = self.get_next_action(is_allowed_functioncall=False, max_tokens=max_token).get_text()
+        text_response = self.get_next_action(is_allowed_functcall=False, max_tokens=max_token).get_text()
 
         if text_response is None:
             print('[Error]: Could not obtain text response from single purpose agent. Returning empty string')

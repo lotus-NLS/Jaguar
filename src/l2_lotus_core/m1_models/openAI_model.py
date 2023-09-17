@@ -29,6 +29,11 @@ class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(name=model_type)
         self._model_type = model_type
+        encoder_type = tiktoken.get_encoding('cl100k_base')
+        self.encoder = encoder_type.encode
+        self.decoder = encoder_type.decode
+
+
 
     @classmethod
     def make_gpt_35_4k(cls):
@@ -81,9 +86,12 @@ class OpenAIModel(LLM):
 
     # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
     def get_token_count(self,the_str: str):
-        encoding = tiktoken.get_encoding('cl100k_base')
-        return len(encoding.encode(the_str))
+        return len(self.encoder(the_str))
 
+
+    def get_limited_string(self, the_str : str, max_tokens : int):
+        encoded_str = self.encoder(the_str)
+        return self.decoder(encoded_str[:max_tokens])
 
     def get_total_token_count_estimation(self, context : Context):
         msg_history = context.msg_history

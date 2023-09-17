@@ -46,7 +46,7 @@ class BROWSE(Tool):
         summary_agent = SinglePurposeAgent.make_website_summarization_agent()
         summary_agent.log_user_msg(msg=f'Website text:\n {site_text}\n'
                                        f'Query: {self.query_arg.val}')
-        return summary_agent.get_next_action(is_allowed_functioncall=False, max_tokens=300).get_text()
+        return summary_agent.get_next_action(is_allowed_functcall=False, max_tokens=300).get_text()
 
 
     @staticmethod
