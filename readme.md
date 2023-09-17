@@ -1,5 +1,9 @@
 # Nucifera
-![Nelumbo Nucifera](documentation/logo.jpg)
+<p align="center">
+  <img src="documentation/logo.png" alt="Logo" width="200">
+  <br>
+  <em>Caption goes here</em>
+</p>
 
 ## Overview
 Nucifera aims to enable LLMs to do highly independent and autonomous software development.
