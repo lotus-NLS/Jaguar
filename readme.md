@@ -2,7 +2,7 @@
 <p align="center">
   <img src="documentation/logo.jpg" alt="Logo" width="200">
   <br>
-  <em>Caption goes here</em>
+  <em>Nelumbo Nucifera</em>
 </p>
 
 ## Overview
