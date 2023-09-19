@@ -37,11 +37,24 @@ class Engine:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
             gui.run()
 
+
+def log_uptime(start_time):
+    elapsed_time = time.time() - start_time
+    print(f'[Debug]: Uptime: {elapsed_time:.2f} seconds')
+
+
 def main():
+    start_time = time.time()
+
     settings_controller = SettingsController()
+    log_uptime(start_time=start_time)
+
     settings_controller.setup(perform_validation = False)
+    log_uptime(start_time=start_time)
 
     this_run_handler = Engine(enable_introduction=False)
+    log_uptime(start_time=start_time)
+
     this_run_handler.start(mode=RunModes.command_line)
 
 if __name__ == "__main__":

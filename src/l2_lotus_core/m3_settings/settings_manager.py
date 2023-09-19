@@ -96,7 +96,6 @@ class Credentials(SettingGrouping):
         return new_setting
 
 
-
     def openai_apikey_test(self) -> None:
         temp = openai.api_key
 

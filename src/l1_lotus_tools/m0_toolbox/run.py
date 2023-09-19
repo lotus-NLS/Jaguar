@@ -34,7 +34,6 @@ class RUN(Tool):
         self.is_error_state = False
         self.last_msg_time = time.time()
 
-
         threading.Thread(target=self.log_when_idle).start()
         threading.Thread(target=self.read_std_out).start()
         threading.Thread(target=self.read_std_err).start()
