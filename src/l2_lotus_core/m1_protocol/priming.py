@@ -79,7 +79,7 @@ class Priming:
 
     @classmethod
     def make_website_summarization_priming(cls) -> Priming:
-        return cls(Identity(core=website_summarizer,principles=''))
+        return cls(Identity(core=website_information_retriever, principles=''))
     
     @classmethod
     def make_report_composition_priming(cls) -> Priming:
