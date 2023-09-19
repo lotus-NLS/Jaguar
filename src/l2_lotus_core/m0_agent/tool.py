@@ -10,7 +10,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 # -> [FINISH]: Tool done
 
 # Specifc tool implementations (READ, WRITE etc.) logging:
-# -> [PROGRESS] : For updates on tool progress
+# -> [Update] : For updates on tool progress
 # -> [ERROR] : For reporting encountered errors if any
 
 # ---------------------------------------------------
@@ -103,7 +103,7 @@ class Tool:
             arg.val = args_dict[arg.name]
 
         try:
-            self.progress_log(f'Tool {self.name} has been launched')
+            self.update_log(f'Tool {self.name} has been launched')
             func_timeout(timeout=Tool.timout_in_sec, func= self.do)
             self.finish_log(f'Tool {self.name} completed execution')
 
@@ -140,8 +140,8 @@ class Tool:
 
         self.log(to_log)
 
-    def progress_log(self, to_log) -> None:
-        self.log(f'[Progress]: {to_log}')
+    def update_log(self, to_log) -> None:
+        self.log(f'[Update]: {to_log}')
 
     def finish_log(self, to_log) -> None:
         self.log(f'[Finish]: {to_log}')
