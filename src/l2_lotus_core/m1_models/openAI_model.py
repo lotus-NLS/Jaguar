@@ -78,7 +78,8 @@ class OpenAIModel(LLM):
 
         total_tokens_openai = openai_response['usage']['prompt_tokens']
 
-        print(f'[Debug]: Before generation at {total_tokens_openai} tokens used')
+        extra_text = 'w/o functions' if not action_options.is_allowed_functioncall else ''
+        print(f'[Debug]: Before generation {extra_text} at {total_tokens_openai} tokens used')
 
         return Action(openai_response)
 
