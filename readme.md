@@ -6,9 +6,19 @@
 </p>
 
 ## Overview
-Nucifera aims to enable LLMs to do highly independent and autonomous software development.
-The first development objective of pyWrite is to provide the LLM with the necessary tools to
-perform software development, like reading or writing files or running code and reading the outputs.
+Nucifera aims to provide a natural language interface to your software and to formal computer languages through the usage of LLMs. \
+Its aim is to write software modules by specification and integrate them with existing software, provide intuitive explanations and add comments
+for existing software, rewrite local source files and enable usage of auxiliary 
+tools like the Terminal on Windows or Linux, git, AutoDevOps or Docker through natrual language
+specifications.
+
+In particular, agents in the Nucifera framework can make use of the following tools:
+
+-> READ: Read text files on the computer \
+-> WRITE: Write out text files locally \
+-> RUN: Execute python or Terminal code \
+-> BROWSE: Search for information on the web in text form 
+
 
 ## Setup 
 
