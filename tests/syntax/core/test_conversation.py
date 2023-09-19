@@ -1,5 +1,5 @@
 import time
-from tests.test_module import TestModule
+from tests.syntax.test_module import TestModule
 from src.l2_lotus_core.m2_conversation.conversation_participant import ConversationParticipant, DialogueRole, Channel
 
 
