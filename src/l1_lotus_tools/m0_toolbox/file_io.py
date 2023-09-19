@@ -38,9 +38,9 @@ class READ(Tool):
         retrieval_function = self.get_txt_file_content if chosen_format == self.text_format else self.get_pdf_file_content
 
         try:
-            self.progress_log(f'Attempting to read file located at {location}')
+            self.update_log(f'Attempting to read file located at {location}')
             file_content = retrieval_function(location=location)
-            self.progress_log(f'File content:\n{file_content}')
+            self.update_log(f'File content:\n{file_content}')
 
         except Exception:
             self.exception_log(f'An exception occured while trying to read the file located at {location}\n')
@@ -85,7 +85,7 @@ class WRITE(Tool):
         try:
             with open(location, 'w') as file:
                 file.write(self.content_arg.val)
-                self.progress_log(f'Suceeded in writing out file')
+                self.update_log(f'Suceeded in writing out file')
 
         except Exception as e:
             self.exception_log(f'An error occured while trying to write file: {e}')

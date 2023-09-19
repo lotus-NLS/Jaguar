@@ -32,10 +32,10 @@ class SEARCH(Tool):
         try:
             with ThreadPoolExecutor() as executor:
                 url_list = self.webtools.get_search_urls(search_term=self.query_arg.val, num_results=SEARCH.num_results)
-                self.progress_log(f'The following URLs were found: {url_list}')
+                self.update_log(f'The following URLs were found: {url_list}')
                 site_reports = list(executor.map(self.get_site_report, url_list))
 
-            self.progress_log(f'The following information was obtained from web search:'
+            self.update_log(f'The following information was obtained from web search:'
                               f'{self.make_composition_report(site_report_list=site_reports)}')
 
         except Exception as e:
