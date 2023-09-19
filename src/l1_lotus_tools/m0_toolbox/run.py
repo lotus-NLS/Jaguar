@@ -4,6 +4,8 @@ import subprocess
 import platform
 import threading
 import time
+from typing import Optional
+from subprocess import Popen
 
 from src.l2_lotus_core import Tool,ToolArg
 
@@ -16,22 +18,6 @@ class RUN(Tool):
 
     def __init__(self):
         super().__init__()
-
-        shell_cmd = 'cmd.exe' if platform.system() == 'Windows' else '/bin/sh'
-        try:
-            self.shell_session = subprocess.Popen(shell_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f'[Error]: An exception occured while trying to start terminal session using {shell_cmd}: {e}')
-            self.shell_session = None
-
-        self.shell_history = ''
-
-        self.stdout_thread = threading.Thread(target=self.read_stdout)
-        self.stderr_thread = threading.Thread(target=self.read_stderr)
-
-        self.stdout_thread.start()
-        self.stderr_thread.start()
-
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string.'
         self.mode_arg: ToolArg = self.create_arg(
             name='mode', dtype=str,
@@ -42,15 +28,30 @@ class RUN(Tool):
             name='program_content', dtype=str,
             desc='The content of the Python script or shell command to execute')
 
+        self.shell_history = ''
+        self.shell_session = self.get_shell_session()
+        for stream in [self.shell_session.stdout, self.shell_session.stderr]:
+            threading.Thread(target=self.read_stream, args=(stream,)).start()
 
-    def read_stdout(self):
-        for line in iter(self.shell_session.stdout.readline, ''):
+
+    def read_stream(self, stream) -> None:
+        for line in iter(stream.readline, ''):
             self.shell_history += line
 
-    def read_stderr(self):
-        for line in iter(self.shell_session.stderr.readline, ''):
-            self.shell_history += line
 
+    @staticmethod
+    def get_shell_session() -> Optional[Popen]:
+        shell_cmd = 'cmd.exe' if platform.system() == 'Windows' else '/bin/sh'
+        try:
+            shell_session = subprocess.Popen(shell_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        except Exception as e:
+            print(f'[Error]: An exception occured while trying to start terminal session using {shell_cmd}: {e}')
+            shell_session = None
+
+        return shell_session
+
+    # --------------------------------------------
+    #
 
     def do(self) -> None:
         mode = self.mode_arg.val
@@ -72,7 +73,7 @@ class RUN(Tool):
             self.exception_log(f'An exception occured during program execution: {e}')
 
 
-    def execute_py(self):
+    def execute_py(self) -> None:
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.py') as temp:
             temp.write(self.program_content_arg.val)
             temp_file_path = temp.name
@@ -86,7 +87,7 @@ class RUN(Tool):
             self.exception_log(f'Standard Error:\n{result.stderr}')
 
 
-    def execute_cmd(self):
+    def execute_cmd(self)  -> None:
         if self.shell_session is None:
             self.progress_log(f'No shell executable set. Aborting RUN ...')
             return

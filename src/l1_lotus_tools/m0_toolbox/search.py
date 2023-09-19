@@ -25,6 +25,8 @@ class SEARCH(Tool):
 
         self.webtools : Webtools = Webtools(initial_driver_count=4)
 
+    # --------------------------------------------
+    #
 
     def do(self):
         try:
@@ -39,6 +41,8 @@ class SEARCH(Tool):
         except Exception as e:
             self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
 
+    # --------------------------------------------
+    #
 
     def get_site_report(self, site_url : str):
         try:
