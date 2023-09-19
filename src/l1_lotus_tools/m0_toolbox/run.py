@@ -3,21 +3,12 @@ import tempfile
 import subprocess
 import platform
 import threading
-import queue
 import time
 
 from src.l2_lotus_core import Tool,ToolArg
 
 # ---------------------------------------------------------
 
-
-
-
-
-class CommandResult:
-    def __init__(self, stdout='', stderr=''):
-        self.stdout = stdout
-        self.stderr = stderr
 
 class RUN(Tool):
     python_script_mode = 'py'
@@ -34,6 +25,7 @@ class RUN(Tool):
             self.shell_session = None
 
         self.shell_history = ''
+
         self.stdout_thread = threading.Thread(target=self.read_stdout)
         self.stderr_thread = threading.Thread(target=self.read_stderr)
 
@@ -45,7 +37,6 @@ class RUN(Tool):
             name='mode', dtype=str,
             available_options=[RUN.python_script_mode,RUN.cmd_mode],
             desc='')
-            # desc=f'Type either {self.python_script_mode} for python scripts or {self.cmd_mode} for command line '
 
         self.program_content_arg: ToolArg = self.create_arg(
             name='program_content', dtype=str,
