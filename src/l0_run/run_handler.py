@@ -12,13 +12,13 @@ class RunModes:
 
 
 class Engine:
-    def __init__(self, is_introduction_enabled = True):
+    def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()
         self.user : ConversationParticipant = User()
         self.bots : list[ConversationParticipant] = [DefaultAgent()]
 
         ConversationParticipant.enter_into_conversation(channel=self.user_channel, participant_list=[self.user] + self.bots)
-        self.is_introduction_enabled : bool = is_introduction_enabled
+        self.is_introduction_enabled : bool = enable_introduction
 
 
     def start(self, mode = RunModes.gui):
@@ -39,9 +39,9 @@ class Engine:
 
 def main():
     settings_controller = SettingsController()
-    settings_controller.setup(perform_validation = False)
+    settings_controller.setup(perform_validation = True)
 
-    this_run_handler = Engine(is_introduction_enabled=False)
+    this_run_handler = Engine(enable_introduction=False)
     this_run_handler.start(mode=RunModes.command_line)
 
 if __name__ == "__main__":
