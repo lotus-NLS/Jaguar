@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.l2_lotus_core import Agent
+from src.l2_lotus_core.m0_agent.agent import Agent
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM
 from src.l2_lotus_core.m1_protocol import Priming
 

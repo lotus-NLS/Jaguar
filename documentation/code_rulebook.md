@@ -48,7 +48,6 @@ of the cards on the lower level the whole thing might collapse. Software works i
   
 
 ### V: Other
-
 - Pass arguments only by keyword
 - Minimal exposure/Maximal encapsulation: Keep the API between modules as minimal as possible
 - Nesting: Max indentation level === 3
@@ -56,6 +55,7 @@ of the cards on the lower level the whole thing might collapse. Software works i
 - Classmethods always return class instances
 - Logging: \[Debug\] for control flow information; \[Error\] for Exceptions or unintended output, error message includes Exception
 
+- Imports within directory: Full path, outside directory: Use init files 
 - No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
   ```
   python from Directive import Directive

@@ -1,6 +1,6 @@
 from typing import Type, Optional
 from src.l2_lotus_core.m0_agent.tool import Tool
-from src.l2_lotus_core.m1_models.action import ToolInstruction
+from src.l2_lotus_core.m1_models import ToolInstruction
 
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
 from src.l2_lotus_core.m1_protocol import Priming
