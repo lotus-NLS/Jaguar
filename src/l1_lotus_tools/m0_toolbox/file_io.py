@@ -82,12 +82,8 @@ class WRITE(Tool):
     def do(self):
         location = self.fpath_arg.val
 
-        parent_dir = os.path.dirname(location)
-        if os.access(parent_dir,os.W_OK):
-            self.exception_log(f'{parent_dir} is not a writable directory')
-
         try:
-            with open(self.fpath_arg.val, 'w') as file:
+            with open(location, 'w') as file:
                 file.write(self.content_arg.val)
                 self.progress_log(f'Suceeded in writing out file')
 
