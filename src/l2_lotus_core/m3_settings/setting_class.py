@@ -47,8 +47,6 @@ class Setting:
             print(
                 f'[Error]: An error occured while trying to obtain valid setting value for setting {self.label} from settings file: {e}')
             self.set_value(is_from_file=False)
-        time.sleep(0.1)
-
 
     def setup_from_user_input(self):
         self.set_value(is_from_file=False)

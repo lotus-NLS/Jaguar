@@ -89,6 +89,7 @@ class Credentials(SettingGrouping):
             if self.get_y_or_n(msg) == 'y':
                 self.setup(is_first_run=False)
 
+
     @staticmethod
     def make_credential_setting(label : str) -> Setting:
         new_setting = Setting(label=label, section=Credentials.__name__)
