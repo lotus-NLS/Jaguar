@@ -127,23 +127,23 @@ class Tool:
             except Exception:
                 print(f'[Error]: Failed to log tool message: {to_log}')
 
-    def start_log(self, to_log) -> None:
+    def start_log(self, to_log : str) -> None:
         self.log(f'[Start]: {to_log}')
 
-    def semantic_error(self,to_log):
+    def semantic_error(self,to_log: str):
         self.log(f'[Error]: {to_log}')
 
-    def exception_log(self, to_log) -> None:
+    def exception_log(self, to_log : str) -> None:
         to_log = f'[Error]: {to_log}'
         if not traceback.format_exc() is None:
-            to_log +=f'Traceback: {traceback.format_exc()}'
+            to_log += f'Traceback: {traceback.format_exc()}'
 
         self.log(to_log)
 
-    def update_log(self, to_log) -> None:
+    def update_log(self, to_log: str) -> None:
         self.log(f'[Update]: {to_log}')
 
-    def finish_log(self, to_log) -> None:
+    def finish_log(self, to_log: str) -> None:
         self.log(f'[Finish]: {to_log}')
 
 

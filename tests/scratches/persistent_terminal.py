@@ -31,22 +31,28 @@ class RUN(Tool):
 
         self.logging_backlog = ''
         self.shell_session = self.get_shell_session()
+        threading.Thread(target=self.log_when_idle).start()
+
         threading.Thread(target=self.read_std_out).start()
         threading.Thread(target=self.read_std_err).start()
-        self.shell_active = False
 
-        self.last_received_time = time.time()
-        self.logging_thread = threading.Thread(target=self.log_when_idle)
-        self.logging_thread.start()
+        self.is_error_state = False
+        self.last_msg_time = time.time()
 
 
     def log_when_idle(self) -> None:
         while True:
             current_time = time.time()
-            if current_time - self.last_received_time >= 0.25 and not self.logging_backlog == '' and self.shell_active:
-                self.update_log(f'{self.logging_backlog}')
+            if self.is_error_state:
+                logger = self.update_log
+            else:
+                logger = self.exception_log
+
+            if current_time - self.last_msg_time >= 0.25 and self.logging_backlog != '':
+                logger(f'{self.logging_backlog}')
                 self.logging_backlog = ''
-                self.last_received_time = time.time()
+                self.is_error_state = False
+                self.last_msg_time = time.time()
 
             time.sleep(0.05)
 
@@ -61,6 +67,7 @@ class RUN(Tool):
         for line in iter(self.shell_session.stderr.readline, ''):
             cleaned_line = line.strip()
             if cleaned_line != '':
+                self.is_error_state = True
                 self.logging_backlog += f'An error occured; STDERR:\n{cleaned_line}\n'
 
 
@@ -115,8 +122,6 @@ class RUN(Tool):
         if self.shell_session is None:
             self.update_log(f'No shell executable set. Aborting RUN ...')
             return
-
-        self.shell_active = True
 
         self.shell_session.stdin.write(self.program_content_arg.val + '\n')
         self.shell_session.stdin.flush()
