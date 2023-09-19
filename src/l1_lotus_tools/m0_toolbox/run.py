@@ -33,18 +33,12 @@ class RUN(Tool):
             print(f'[Error]: An exception occured while trying to start terminal session using {shell_cmd}: {e}')
             self.shell_session = None
 
-        self.stdout_q = queue.Queue()
-        self.stderr_q = queue.Queue()
-
-        self.stdout_thread = threading.Thread(target=self.reader_thread, args=(self.shell_session.stdout, self.stdout_q))
-        self.stderr_thread = threading.Thread(target=self.reader_thread, args=(self.shell_session.stderr, self.stderr_q))
-
-        self.stdout_thread.daemon = True
-        self.stderr_thread.daemon = True
+        self.shell_history = ''
+        self.stdout_thread = threading.Thread(target=self.read_stdout)
+        self.stderr_thread = threading.Thread(target=self.read_stderr)
 
         self.stdout_thread.start()
         self.stderr_thread.start()
-
 
         self.description = 'The RUN tool allows you to either run a Python script or execute a command line command as input string.'
         self.mode_arg: ToolArg = self.create_arg(
@@ -57,14 +51,15 @@ class RUN(Tool):
             name='program_content', dtype=str,
             desc='The content of the Python script or shell command to execute')
 
-    @staticmethod
-    def reader_thread(pipe, q):
-        while True:
-            line = pipe.readline()
-            if line:
-                q.put(line)
-            else:
-                break
+
+    def read_stdout(self):
+        for line in iter(self.shell_session.stdout.readline, ''):
+            self.shell_history += line
+
+    def read_stderr(self):
+        for line in iter(self.shell_session.stderr.readline, ''):
+            self.shell_history += line
+
 
     def do(self) -> None:
         mode = self.mode_arg.val
@@ -74,17 +69,13 @@ class RUN(Tool):
             return
 
         if mode == self.python_script_mode:
-            execution_with_return_result = self.execute_py
+            execute = self.execute_py
         else:
-            execution_with_return_result = self.execute_cmd
+            execute = self.execute_cmd
 
         try:
-            result = execution_with_return_result()
+            execute()
 
-            if result.stdout:
-                self.progress_log(f'Standard Output:\n{result.stdout}')
-            if result.stderr:
-                self.exception_log(f'Standard Error:\n{result.stderr}')
 
         except Exception as e:
             self.exception_log(f'An exception occured during program execution: {e}')
@@ -98,12 +89,13 @@ class RUN(Tool):
         result = subprocess.run(['python', temp_file_path], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         os.unlink(temp_file_path)
 
-        return result
-
+        if result.stdout:
+            self.progress_log(f'Standard Output:\n{result.stdout}')
+        if result.stderr:
+            self.exception_log(f'Standard Error:\n{result.stderr}')
 
 
     def execute_cmd(self):
-
         if self.shell_session is None:
             self.progress_log(f'No shell executable set. Aborting RUN ...')
             return
@@ -111,19 +103,5 @@ class RUN(Tool):
         self.shell_session.stdin.write(self.program_content_arg.val + '\n')
         self.shell_session.stdin.flush()
 
-        time.sleep(0.1)  # Adjust the time as needed
-
-        stdout_data = []
-        stderr_data = []
-
-        # Collect stdout
-        while not self.stdout_q.empty():
-            stdout_data.append(self.stdout_q.get().strip())
-
-        # Collect stderr
-        while not self.stderr_q.empty():
-            stderr_data.append(self.stderr_q.get().strip())
-
-        return CommandResult(stdout='\n'.join(stdout_data), stderr='\n'.join(stderr_data))
-
-
+        time.sleep(0.1)
+        self.progress_log(f'{self.shell_history}')

@@ -8,11 +8,12 @@ from src.l2_lotus_core import Tool, ToolArg, SinglePurposeAgent
 
 # ---------------------------------------------------------
 
-class BROWSE(Tool):
+class SEARCH(Tool):
     num_results = 4
     def __init__(self):
         super().__init__()
-        self.desc : str = """The BROWSE tool allows you to search for information online.Provide both a "search_term" and specify the "requested_information"."""
+        self.desc : str = """The SEARCH tool allows you to obtain a report on your query composed from the top search results from your
+        search_term. Provide both a "search_term" and specify the "requested_information" to use this tool."""
 
         self.query_arg : ToolArg = self.create_arg(
             name='requested_information', dtype=str,
@@ -28,7 +29,7 @@ class BROWSE(Tool):
     def do(self):
         try:
             with ThreadPoolExecutor() as executor:
-                url_list = self.webtools.get_search_urls(search_term=self.query_arg.val, num_results=BROWSE.num_results)
+                url_list = self.webtools.get_search_urls(search_term=self.query_arg.val, num_results=SEARCH.num_results)
                 self.progress_log(f'The following URLs were found: {url_list}')
                 site_reports = list(executor.map(self.get_site_report, url_list))
 
