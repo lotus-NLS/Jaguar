@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Union
 import platform, distro
 
-from src.l2_lotus_core.m1_protocol.agenda_entry import Objective,Task
+from src.l2_lotus_core.m1_protocol.objectives import Objective,Task
 from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------
@@ -11,30 +11,33 @@ from src.l2_lotus_core.m1_protocol.identity_definitions import *
 class Directive:
     @classmethod
     def make_empty_directive(cls) -> Directive:
-        return cls(task=None,objective=None)
+        return cls(objective=None)
 
-    def __init__(self,task : Union[None,Task], objective : Union[None,Task]):
-        self.current_task : Union[None,Task] = task
-        self.current_objective : Union[None, Objective] = objective
+    def __init__(self, objective : Union[None,Task]):
+        self.root_objective : Union[None, Objective] = objective
 
-    def get_msg(self) -> str:
+    def is_empty(self):
+        return self.root_objective is None
+
+    def get_str(self) -> str:
         objective_msg = '## My current objectives ##\n'
-        if not self.current_objective is None:
+        if not self.root_objective is None:
             objective_msg += f'Your current objective is:\n' \
-                            f'{self.current_objective}\n'
+                            f'{self.root_objective}\n'
         else:
-            # objective_msg += f'You do not currently have any objective to fulfill. All done for now :)'
-            objective_msg += f'I have to obtain eggwhite!\n'
+            objective_msg += f'You do not currently have any objective to fulfill. All done for now :)'
 
-        task_msg = '## My current tasks ##\n'
-        if not self.current_task is None:
-            task_msg += f'In achieving this objective you are charged with the following task\n' \
-                       f'{self.current_task}\n'
-        else:
-            # task_msg += f'I do not currently have any task to work on :)'
-            task_msg += f'I must crack an egg!\n'
+        return objective_msg
 
-        return objective_msg+task_msg
+    # task_msg = '## My current tasks ##\n'
+    # if not self.current_task is None:
+    #     task_msg += f'In achieving this objective you are charged with the following task\n' \
+    #                f'{self.current_task}\n'
+    # else:
+    #     task_msg += f'I do not currently have any task to work on :)'
+    #
+    # return objective_msg+task_msg
+
 
 
 class Identity:
@@ -62,7 +65,7 @@ class Identity:
 
         return detail
 
-    def get_msg(self) -> str:
+    def get_str(self) -> str:
         core_msg = f'{self.core}\n'
         principles_msg = f'{self.principles}\n'
         os_msg = f'You operate on the OS: {self.os_information}'
@@ -93,8 +96,8 @@ class Priming:
         self._identity : Identity = identity
         self._directive : Directive = directive
 
-    def get_identity_msg(self) -> str:
-        return self._identity.get_msg()
+    def get_identity_str(self) -> str:
+        return self._identity.get_str()
 
 
 

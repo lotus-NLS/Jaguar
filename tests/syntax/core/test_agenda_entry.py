@@ -1,4 +1,4 @@
-from src.l2_lotus_core.m1_protocol.agenda_entry import Task,Objective
+from src.l2_lotus_core.m1_protocol.objectives import Task,Objective
 
 # Example usage:
 root_task = Task.make_root("Complete project", "Finish the software project by end of month.")

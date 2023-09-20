@@ -3,7 +3,7 @@ from src.l2_lotus_core.m0_agent.tool import Tool
 from src.l2_lotus_core.m1_models import ToolInstruction
 
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
-from src.l2_lotus_core.m1_protocol import Priming
+from src.l2_lotus_core.m1_protocol import Priming, Directive
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import Context
 from src.l2_lotus_core.m1_models import OpenAIModel
@@ -16,7 +16,8 @@ class Agent(ConversationParticipant):
         super().__init__(role=DialogueRole.agent())
 
         # Set identity and directive
-        self._priming = priming if not priming is None else Priming.make_goto_priming()
+        self.priming : Priming = priming if not priming is None else Priming.make_goto_priming()
+        self.directive : Directive = Directive.make_empty_directive()
 
         # Set model
         self.model : OpenAIModel = model
@@ -25,15 +26,6 @@ class Agent(ConversationParticipant):
         self.tool_list : list[Tool] = []
         self._tool_docs : Optional[list[dict]] = None
 
-    # ---------------------------------------------------
-    # Setup
-
-    def setup_tools(self, tool_types : list[Type[Tool]]) -> None:
-        self.tool_list += [tool() for tool in tool_types]
-        for tool in self.tool_list:
-            tool.external_log = self.get_tool_logger(tool_name=tool.name)
-
-        self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
     # ---------------------------------------------------
     # Other
@@ -111,7 +103,7 @@ class Agent(ConversationParticipant):
                         temperature : float = 0.3) -> Action:
 
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
-                                                        msg=self._priming.get_identity_msg())
+                                                        msg=self.priming.get_identity_str())
         messages = [core_entry] + self._personal_log
         this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
