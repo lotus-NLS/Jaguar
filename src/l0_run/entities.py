@@ -13,7 +13,7 @@ class DefaultAgent(Agent):
     # Setup
 
     def setup_tools(self) -> None:
-        file_io_tools = [READ(), WRITE()]
+        file_io_tools = [READ()]
         run_tools = [RUN()]
         search_tools = [SEARCH()]
         directive_tools = [UPDATE_DIRECTIVE(self.directive), INITIALIZE_DIRECTIVE(self.directive)]

@@ -71,7 +71,7 @@ class READ(Tool):
 class WRITE(Tool):
     def __init__(self):
         super().__init__()
-        self.description = 'The WRITE tool allows you to write content to a file on the user system'
+        self.description = 'The WRITE tool allows you to write content to a text file on your system'
 
         self.fpath_arg : ToolArg = self.create_arg(name='fpath', dtype=str,
                                                    desc='The path of the file that you will write')

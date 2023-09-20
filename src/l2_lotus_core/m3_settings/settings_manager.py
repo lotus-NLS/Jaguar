@@ -9,7 +9,7 @@ from src.l2_lotus_core.m3_settings.setting_class import all_settings, Setting
 # (08.09.23) DH:
 # Each Settings group has its own tests that are performed on setup which are used to validate the settings
 # It would be impossible to validate each setting on its own since some tests require multiple settings
-# At the end of the setup all Credentials must be validated if all tests run successfully
+# At the end of the setup all Credentials must be validated if all tests lotus_run successfully
 # If the value for the setting is validated it is saved on the file system in the settings file in the home directory
 
 # NOTE : Setting labels must be unique, CredentialGrouping names also must be unique
