@@ -47,11 +47,11 @@ class INITIALIZE_DIRECTIVE(Tool):
             indent_level, content = self.get_leading_dashes_count(line), line.lstrip('-')
 
             if indent_level == 0:
-                new_objective = Objective.make_root(name=f'{content}',instruction_text='')
+                new_objective = Objective.make_root(name=f'{content}')
                 self.directive.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
-                new_objective = stack[-1].make_subelement(name=f'{content}', instruction='')
+                new_objective = stack[-1].make_subelement(name=f'{content}')
 
             stack.append(new_objective)
 

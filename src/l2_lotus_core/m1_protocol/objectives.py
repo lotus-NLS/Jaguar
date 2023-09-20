@@ -7,14 +7,14 @@ import uuid
 
 class Objective:
     @classmethod
-    def make_root(cls, name : str, instruction_text : str):
-        return cls(name, instruction_text, is_root=True)
+    def make_root(cls, name : str):
+        return cls(name)
 
-    def __init__(self, name : str, instruction_text : str, is_root = False):
-        self.name: str = f'++++ {name} ++++'
+    def __init__(self, name : str ):
+        self.name: str = f'{name}'
         self.is_complete : bool = False
 
-        self._uuid = f'{uuid.uuid4()}'
+        self._uuid = f'{uuid.uuid4()}'[:5]
         self.children_objective_dict : dict[str, Objective] = {}
 
         # self.desc: str = f'Instructions: {instruction_text}'
@@ -39,8 +39,8 @@ class Objective:
                 self.is_complete = True
 
 
-    def make_subelement(self, name : str, instruction: str):
-        new_element = Objective(name=name, instruction_text=instruction)
+    def make_subelement(self, name : str):
+        new_element = Objective(name=name)
         self.children_objective_dict[new_element._uuid] = new_element
         return new_element
 

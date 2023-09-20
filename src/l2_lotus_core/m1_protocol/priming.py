@@ -31,9 +31,8 @@ class Directive:
 
 
 class Identity:
-    def __init__(self,core : str, principles : str):
+    def __init__(self,core : str):
         self.core : str = core
-        self.principles : str = principles
         self.os_information : str = self.get_detailed_os_info()
 
     @staticmethod
@@ -56,31 +55,30 @@ class Identity:
         return detail
 
     def get_str(self) -> str:
-        core_msg = f'{self.core}\n'
-        principles_msg = f'{self.principles}\n'
+        identity_msg = f'{self.core}\n'
         os_msg = f'You operate on the OS: {self.os_information}'
 
-        return core_msg+principles_msg+os_msg
+        return identity_msg+os_msg
 
 
 class Priming:
 
     @classmethod
     def make_goto_priming(cls) -> Priming:
-        identity = Identity(core=goto,principles='')
+        identity = Identity(core=goto)
         return cls(identity)
 
     @classmethod
     def make_website_summarization_priming(cls) -> Priming:
-        return cls(Identity(core=website_information_retriever, principles=''))
+        return cls(Identity(core=website_information_retriever))
     
     @classmethod
     def make_report_composition_priming(cls) -> Priming:
-        return cls(Identity(core=report_composer,principles=''))
+        return cls(Identity(core=report_composer))
 
     @classmethod
     def make_single_purpose_priming(cls, identity_desc : str) -> Priming:
-        return cls(identity=Identity(core=identity_desc,principles=''))
+        return cls(identity=Identity(core=identity_desc))
 
     def __init__(self,identity : Identity, directive : Directive = Directive.make_empty_directive()):
         self._identity : Identity = identity

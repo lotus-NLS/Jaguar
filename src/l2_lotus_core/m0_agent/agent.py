@@ -34,22 +34,14 @@ class Agent(ConversationParticipant):
         if dialogue_line['role'] == DialogueRole.user():
             self._perform_next_action()
 
-    def get_tool_logger(self,tool_name: str):
-        max_tokens_tool = 1000
 
-        def tool_log(msg: str):
-            num_tokens = self.model.get_token_count(the_str=msg)
+    def get_text_context(self):
+        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
+                                                        msg=self.priming.get_identity_str())
 
-            if num_tokens > max_tokens_tool:
-                msg = self.model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)
+        directive_entry = ConversationParticipant.make_entry(DialogueRole.agent(),msg=self.directive.get_str())
 
-            self.log_tool_msg(msg=msg, tool_name=tool_name)
-
-            if num_tokens > max_tokens_tool:
-                warning_msg = '[Progress]: The tool output exceeded the maximum number of tokens of 1000 and was shortened to that length ...'
-                self.log_tool_msg(msg=warning_msg)
-
-        return tool_log
+        return [core_entry] + self._personal_log + [directive_entry]
 
     # ---------------------------------------------------
     # Main routine
@@ -102,13 +94,7 @@ class Agent(ConversationParticipant):
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3) -> Action:
 
-        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
-                                                        msg=self.priming.get_identity_str())
-
-        directive_entry = ConversationParticipant.make_entry(DialogueRole.agent(),msg=self.directive.get_str())
-
-        messages = [core_entry] + self._personal_log + [directive_entry]
-        this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
+        this_context = Context(msg_history=self.get_text_context(), tool_docs=self._tool_docs)
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)
