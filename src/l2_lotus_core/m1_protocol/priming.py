@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Union
 import platform, distro
 
-from src.l2_lotus_core.m1_protocol.objectives import Objective,Task
+from src.l2_lotus_core.m1_protocol.objectives import Objective
 from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------
@@ -13,7 +13,7 @@ class Directive:
     def make_empty_directive(cls) -> Directive:
         return cls(objective=None)
 
-    def __init__(self, objective : Union[None,Task]):
+    def __init__(self, objective : Union[None,Objective]):
         self.root_objective : Union[None, Objective] = objective
 
     def is_empty(self):
@@ -22,22 +22,12 @@ class Directive:
     def get_str(self) -> str:
         objective_msg = '## My current objectives ##\n'
         if not self.root_objective is None:
-            objective_msg += f'Your current objective is:\n' \
+            objective_msg += f'My current objective is:\n' \
                             f'{self.root_objective}\n'
         else:
-            objective_msg += f'You do not currently have any objective to fulfill. All done for now :)'
+            objective_msg += f'I don\'t currently have any objectives to fulfill. All done for now :)'
 
         return objective_msg
-
-    # task_msg = '## My current tasks ##\n'
-    # if not self.current_task is None:
-    #     task_msg += f'In achieving this objective you are charged with the following task\n' \
-    #                f'{self.current_task}\n'
-    # else:
-    #     task_msg += f'I do not currently have any task to work on :)'
-    #
-    # return objective_msg+task_msg
-
 
 
 class Identity:

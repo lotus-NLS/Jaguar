@@ -44,26 +44,47 @@ class INITIALIZE_DIRECTIVE(Tool):
 
         stack : list[Objective] = []
         for line in objective_lines:
-            indent_level, content = line.count('-'), line.lstrip('-')
+            indent_level, content = self.get_leading_dashes_count(line), line.lstrip('-')
 
             if indent_level == 0:
                 new_objective = Objective.make_root(name=f'{content}',instruction_text='')
                 self.directive.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
-                new_objective = stack[-1].add_subelement(name=f'{content}',instruction='')
+                new_objective = stack[-1].make_subelement(name=f'{content}', instruction='')
 
             stack.append(new_objective)
 
-
-    @staticmethod
-    def is_valid_format(lines : list[str]) -> bool:
+    def is_valid_format(self,lines: list[str]) -> bool:
         format_correct = True
+
         if lines[0].startswith('-'):
             format_correct = False
 
+        prev_indent_level = 0
+
         for line in lines[1:]:
-            if not line.startswith('-'):
+            curr_indent_level = self.get_leading_dashes_count(line)
+
+            if curr_indent_level > prev_indent_level + 1:
                 format_correct = False
+                break
+
+            if not curr_indent_level > 0:
+                format_correct = False
+                break
+
+            prev_indent_level = curr_indent_level
 
         return format_correct
+
+
+    @staticmethod
+    def get_leading_dashes_count(line: str) -> int:
+        count = 0
+        for char in line:
+            if char == '-':
+                count += 1
+            else:
+                break
+        return count

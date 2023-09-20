@@ -15,9 +15,10 @@ class DefaultAgent(Agent):
     def setup_tools(self) -> None:
         file_io_tools = [READ(), WRITE()]
         run_tools = [RUN()]
+        search_tools = [SEARCH()]
         directive_tools = [UPDATE_DIRECTIVE(self.directive), INITIALIZE_DIRECTIVE(self.directive)]
 
-        self.tool_list = file_io_tools + run_tools + directive_tools
+        self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
         for tool in self.tool_list:
             tool.external_log = self.get_tool_logger(tool_name=tool.name)
 

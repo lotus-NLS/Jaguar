@@ -1,4 +1,4 @@
-from typing import Type, Optional
+from typing import Optional
 from src.l2_lotus_core.m0_agent.tool import Tool
 from src.l2_lotus_core.m1_models import ToolInstruction
 
@@ -104,7 +104,10 @@ class Agent(ConversationParticipant):
 
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self.priming.get_identity_str())
-        messages = [core_entry] + self._personal_log
+
+        directive_entry = ConversationParticipant.make_entry(DialogueRole.agent(),msg=self.directive.get_str())
+
+        messages = [core_entry] + self._personal_log + [directive_entry]
         this_context = Context(msg_history=messages, tool_docs=self._tool_docs)
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
