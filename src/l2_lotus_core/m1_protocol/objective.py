@@ -1,4 +1,4 @@
-# from typing import Optional
+from typing import Optional
 import uuid
 
 
@@ -15,7 +15,9 @@ class Objective:
         self.is_complete : bool = False
 
         self._uuid = f'{uuid.uuid4()}'[:5]
-        self.children_objective_dict : dict[str, Objective] = {}
+        self.child_objective_list : list[Objective] = []
+
+        self.root_objective : Optional[Objective] = None
 
         # self.desc: str = f'Instructions: {instruction_text}'
         # self.actions = [self.edit_name, self.mark_complete, self.add_subelement]
@@ -30,10 +32,10 @@ class Objective:
     #     self.desc = new_desc
 
     def mark_complete(self) -> None:
-        if len(self.children_objective_dict) == 0:
+        if len(self.child_objective_list) == 0:
             self.is_complete = True
         else:
-            all_children_status = [child.is_complete for child in self.children_objective_dict.values()]
+            all_children_status = [child.is_complete for child in self.child_objective_list]
             all_children_done = all(all_children_status)
             if all_children_done:
                 self.is_complete = True
@@ -41,7 +43,8 @@ class Objective:
 
     def make_subelement(self, name : str):
         new_element = Objective(name=name)
-        self.children_objective_dict[new_element._uuid] = new_element
+        self.child_objective_list.append(new_element)
+
         return new_element
 
 
@@ -54,7 +57,7 @@ class Objective:
                    f'{space}Is done?: {completion_str}\n' \
                    # f'{space}{self.desc}\n'
 
-        children_list = self.children_objective_dict.values()
+        children_list = self.child_objective_list
         if children_list:
             obj_string += f'{space}Subtasks: \n'
             for child_task in children_list:

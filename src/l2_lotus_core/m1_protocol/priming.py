@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Union
 import platform, distro
 
-from src.l2_lotus_core.m1_protocol.objectives import Objective
+from src.l2_lotus_core.m1_protocol.objective import Objective
 from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------

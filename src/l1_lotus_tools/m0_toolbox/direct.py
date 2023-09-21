@@ -8,7 +8,9 @@ class UPDATE_DIRECTIVE(Tool):
 
         self.directive = directive
 
-        self.description : str = 'Update directive tool allows you to mark down objectives along which you will carry out your actions'
+        self.description : str = 'This tools allows you to mark an objective as complete'
+
+        objective_id = self.create_arg(name='')
 
 
 class INITIALIZE_DIRECTIVE(Tool):
