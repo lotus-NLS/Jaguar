@@ -51,7 +51,7 @@ class INITIALIZE_DIRECTIVE(Tool):
             indent_level, content = self.get_leading_dashes_count(line), line.lstrip('-')
 
             if indent_level == 0:
-                new_objective = Objective.make_root(name=f'{content}')
+                new_objective = Objective.make_root(desc=f'{content}')
                 self.directive.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
