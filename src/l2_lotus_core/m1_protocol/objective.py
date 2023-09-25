@@ -2,6 +2,16 @@ from typing import Optional
 import uuid
 
 
+
+# The objectives should be navigable on their own, e.g. without any module to support them
+# That necessitates the following attributes in each objective:
+# -> List of child nodes
+# -> Parent node
+# -> root objective
+
+# Objective needs to implement
+# Add subobjective, Edit, mark complete, cancel
+
 # ----------------------------------------------------
 
 
@@ -11,7 +21,7 @@ class Objective:
         return cls(name)
 
     def __init__(self, name : str ):
-        self.name: str = f'{name}'
+        self.desc: str = f'{name}'
         self.is_complete : bool = False
 
         self._uuid = f'{uuid.uuid4()}'[:5]
@@ -25,8 +35,8 @@ class Objective:
     def is_done(self) -> bool:
         return self.is_complete
 
-    def edit_name(self, new_name : str) -> None:
-        self.name = new_name
+    def edit(self, new_name : str) -> None:
+        self.desc = new_name
 
     # def edit_description(self, new_desc : str) -> None:
     #     self.desc = new_desc
@@ -53,7 +63,7 @@ class Objective:
         completion_str = '[x]' if self.is_complete else '[ ]'
 
         obj_string = f'{space}ID: {self._uuid}\n' \
-                   f'{space}{self.name}\n' \
+                   f'{space}{self.desc}\n' \
                    f'{space}Is done?: {completion_str}\n' \
                    # f'{space}{self.desc}\n'
 

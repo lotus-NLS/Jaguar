@@ -10,7 +10,9 @@ class UPDATE_DIRECTIVE(Tool):
 
         self.description : str = 'This tools allows you to mark an objective as complete'
 
-        objective_id = self.create_arg(name='')
+        # objective_id = self.create_arg(name='')
+
+# ---------------------------------------------------------
 
 
 class INITIALIZE_DIRECTIVE(Tool):
@@ -56,6 +58,7 @@ class INITIALIZE_DIRECTIVE(Tool):
                 new_objective = stack[-1].make_subelement(name=f'{content}')
 
             stack.append(new_objective)
+
 
     def is_valid_format(self,lines: list[str]) -> bool:
         format_correct = True

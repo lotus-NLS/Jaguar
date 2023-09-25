@@ -7,6 +7,8 @@ import customtkinter as ctk
 from src.l2_lotus_core.m2_conversation.channel import Channel
 from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEntry
 
+# ---------------------------------------------------------
+
 
 class GUI_Element:
     def __init__(self,*args,**kwargs):
