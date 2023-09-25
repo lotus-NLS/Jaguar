@@ -13,7 +13,10 @@ class ObjectiveTester(unittest.TestCase):
 
     def setUp(self):
         self.root = Objective.make_root("root")
-        print("\n//  --------------------------------//")
+        self.sub = self.root.make_subelement(name='sub')
+
+
+        print("\n//--------------------------------//")
         print(f"TEST: {self._testMethodName}")
         print(f"Before test, root objective: \n"
               f"{self.root}")
@@ -28,27 +31,23 @@ class ObjectiveTester(unittest.TestCase):
         self.assertIsNotNone(self.root.descendant_dict)
 
     def test_get_objective(self):
-        sub = self.root.make_subelement("sub")
-        sub_uuid = sub.get_key()
-        retrieved_sub = self.root.get_objective(sub_uuid)
-        self.assertEqual(sub, retrieved_sub)
+        retrieved_sub = self.root.get_objective(objective_key=self.sub.get_key())
+        self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):
         self.root.edit("new_game")
         self.assertEqual(self.root.desc, "new_game")
 
     def test_mark_complete(self):
-        self.root.mark_complete()
-        self.assertTrue(self.root.get_is_done())
+        self.sub.mark_complete()
+        self.assertTrue(self.sub.get_is_done())
 
     def test_cancel(self):
-        sub = self.root.make_subelement("sub")
-        sub_uuid = sub.get_key()
-        sub.cancel()
-        self.assertIsNone(self.root.get_objective(sub_uuid))
+        self.sub.cancel()
+        self.assertIsNone(self.root.get_objective(self.sub))
 
     def test_make_subelement(self):
-        sub = self.root.make_subelement("sub")
+        sub = self.root.make_subelement("sub2")
         self.assertIsNotNone(sub)
         self.assertEqual(sub.parent, self.root)
 

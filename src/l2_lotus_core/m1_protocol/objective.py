@@ -37,12 +37,12 @@ class Objective:
     # ----------------------------------------------------
     # get
 
-    def get_objective(self, objective_uuid : str) -> Optional[Objective]:
+    def get_objective(self, objective_key : str) -> Optional[Objective]:
         if self.descendant_dict is None:
             return
 
         else:
-            return self.descendant_dict.get(objective_uuid)
+            return self.descendant_dict.get(objective_key)
 
     def get_key(self) -> str:
         return self._uuid
