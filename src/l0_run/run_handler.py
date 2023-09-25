@@ -49,7 +49,7 @@ def main():
     settings_controller = SettingsController()
     log_uptime(start_time=start_time)
 
-    settings_controller.setup(perform_validation = False)
+    settings_controller.setup(perform_validation = True)
     log_uptime(start_time=start_time)
 
     this_run_handler = Engine(enable_introduction=False)
