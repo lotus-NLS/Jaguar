@@ -16,6 +16,7 @@ import uuid
 
 
 class Objective:
+
     @classmethod
     def make_root(cls, desc : str):
         root_obj = cls(desc)
@@ -33,6 +34,9 @@ class Objective:
         self.root_objective : Optional[Objective] = None
 
         self.descendant_dict : Optional[dict[str,Objective]] = None
+
+        act_list = [self.edit, self.mark_complete, self.cancel, self.make_subelement]
+        self.action_dict = {funct.__name__ : funct for funct in act_list}
 
     # ----------------------------------------------------
     # get

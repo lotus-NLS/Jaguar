@@ -1,5 +1,6 @@
 from src.l2_lotus_core.m0_agent.tool import Tool, ToolArg
 from src.l2_lotus_core.m1_protocol import Directive, Objective
+import inspect
 
 
 class UPDATE_DIRECTIVE(Tool):
@@ -7,10 +8,43 @@ class UPDATE_DIRECTIVE(Tool):
         super().__init__()
 
         self.directive = directive
+        root_objective = self.directive.root_objective
 
         self.description : str = 'This tools allows you to mark an objective as complete'
 
-        # objective_id = self.create_arg(name='')
+        self.objective_uuid_arg : ToolArg = self.create_arg(name= 'objective_id',dtype=str,
+                                                        desc='The ID of the objective that you want to update')
+
+
+
+        self.action_arg : ToolArg = self.create_arg(name='action', dtype=str,
+                                                    available_options=[func_name for func_name in root_objective.action_dict.values()],
+                                                    desc='The type of action that you want to perform')
+
+
+        extra_arg_desc : str = 'Specify any additional arguments required by the type of action that you chose as a dict\n'
+        for func in root_objective.action_dict.values():
+            params = self.get_callable_args(func=func)
+            extra_arg_desc += f'{func.__name__} : {params} \n'
+
+
+        self.extra_args : ToolArg = self.create_arg(name='Additional args', dtype=dict,
+                                                    desc=extra_arg_desc)
+
+
+    def do(self):
+        root_objective = self.directive.root_objective
+        action = root_objective.action_dict[self.action_arg.val]
+
+        args = self.extra_args.val
+        action(*args)
+
+
+    @staticmethod
+    def get_callable_args(func : callable):
+        func_sig = inspect.signature(func)
+        params = list(func_sig.parameters.keys())
+        return params
 
 # ---------------------------------------------------------
 
