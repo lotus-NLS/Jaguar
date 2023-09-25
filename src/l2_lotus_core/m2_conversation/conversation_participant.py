@@ -77,9 +77,6 @@ class ConversationParticipant:
     def make_entry(role : DialogueRole, msg : str):
         return ConversationEntry(role,msg)
 
-    def get_memory(self):
-        return self._personal_log
-
     @staticmethod
     def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):
         for participant in participant_list:

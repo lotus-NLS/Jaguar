@@ -24,8 +24,6 @@ class Agent(ConversationParticipant):
 
         # Set up m0_toolbox
         self.tool_list : list[Tool] = []
-        self._tool_docs : Optional[list[dict]] = None
-
 
     # ---------------------------------------------------
     # Other
@@ -33,6 +31,10 @@ class Agent(ConversationParticipant):
     def _reaction_protocol(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
             self._perform_next_action()
+
+
+    def get_tool_docs(self) -> Optional[list[dict]]:
+        return [tool.get_tool_json_doc() for tool in self.tool_list if tool.is_enabled]
 
 
     def get_text_context(self):
@@ -57,6 +59,7 @@ class Agent(ConversationParticipant):
         try:
             text_content = action_content.get_text()
             tool_instructions = action_content.get_tool_instructions()
+
         except Exception as e:
             self.think(f'[Error]: An error occured while trying to parse tool call arguments: {e}')
             return
@@ -94,7 +97,7 @@ class Agent(ConversationParticipant):
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3) -> Action:
 
-        this_context = Context(msg_history=self.get_text_context(), tool_docs=self._tool_docs)
+        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_tool_docs())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)

@@ -56,8 +56,8 @@ class INITIALIZE_DIRECTIVE(Tool):
         super().__init__()
 
         self.directive : Directive = directive
-
-        self.desc : str = 'This tools allows you to initialize a directive by supplying a root objectives and a tree of subobjectives in a list'
+        self.desc : str = ('This tools allows you to initialize a directive by supplying a'
+                           ' root objectives and a tree of subobjectives in a list')
 
         self.directive_content : ToolArg =  self.create_arg(name='Objective specifications',dtype=str
                                                         ,desc="""Specify your objectives in this format; Note that there is only a single root objective: 

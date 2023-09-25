@@ -66,13 +66,18 @@ class Tool:
         self.desc : str = ''
         self.external_log : Callable = lambda *args, **kwargs: None
         self.arguments : list[ToolArg] = []
+        self.is_enabled : bool = True
 
+    def disable(self):
+        self.is_enabled = False
 
     def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None) -> ToolArg:
         this_arg = ToolArg(name, dtype, desc,available_options)
         self.arguments.append(this_arg)
         return this_arg
 
+    # ---------------------------------------------------
+    # Handle
 
     def get_tool_json_doc(self) -> dict[str,Any]:
         tool_doc = {

@@ -16,13 +16,14 @@ class DefaultAgent(Agent):
         file_io_tools = [READ()]
         run_tools = [RUN()]
         search_tools = [SEARCH()]
-        directive_tools = [UPDATE_DIRECTIVE(self.directive), INITIALIZE_DIRECTIVE(self.directive)]
+
+        update_directive = UPDATE_DIRECTIVE(self.directive)
+        update_directive.disable()
+        directive_tools = [update_directive, INITIALIZE_DIRECTIVE(self.directive)]
 
         self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
         for tool in self.tool_list:
             tool.external_log = self.get_tool_logger(tool_name=tool.name)
-
-        self._tool_docs = [tool.get_tool_json_doc() for tool in self.tool_list]
 
 
     def get_tool_logger(self,tool_name: str):
