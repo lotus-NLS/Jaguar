@@ -25,7 +25,7 @@ class READ(Tool):
 
 
     def do(self) -> None:
-        location = self.fpath_arg.val
+        location = os.path.expanduser(self.fpath_arg.val)
 
         if not os.path.isfile(location):
             self.semantic_error(f'There is no file located at given location {location}. Aborting ...')
@@ -80,7 +80,7 @@ class WRITE(Tool):
                                                      desc='The content that will be written to the file')
 
     def do(self):
-        location = self.fpath_arg.val
+        location = os.path.expanduser(self.fpath_arg.val)
 
         try:
             with open(location, 'w') as file:
