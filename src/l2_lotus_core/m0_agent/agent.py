@@ -12,8 +12,8 @@ from src.l2_lotus_core.m1_models import OpenAIModel
 # ---------------------------------------------------------
 
 # TODO : This together with the tool logging should be an extra logging package smth. like customlogging
-def get_log_txt(msg: str):
-    return (f'[Error]: {msg}\n'
+def get_err_msg(text: str):
+    return (f'[Error]: {text}\n'
             f'{traceback.format_exc()}')
 
 
@@ -63,7 +63,7 @@ class Agent(ConversationParticipant):
             action_content = self.get_next_action()
 
         except Exception:
-            print(get_log_txt(msg=f'Unable to obtain response from {self.model.name}'))
+            print(get_err_msg(text=f'Unable to obtain response from {self.model.name}'))
             return
 
         try:
@@ -71,7 +71,7 @@ class Agent(ConversationParticipant):
             tool_instructions = action_content.get_tool_instructions()
 
         except Exception:
-            self.think(get_log_txt(msg='An error occured while trying to parse tool call arguments:'))
+            self.think(get_err_msg(text='An error occured while trying to parse tool call arguments:'))
             return
 
         try:
@@ -82,7 +82,7 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception:
-            self.think(get_log_txt('The following error occured while trying to perform action:\n'
+            self.think(get_err_msg('The following error occured while trying to perform action:\n'
                                                  'Action: {action_content}'))
             self.continue_dialogue()
 
