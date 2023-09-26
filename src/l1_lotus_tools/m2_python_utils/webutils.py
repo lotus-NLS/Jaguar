@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 from src.l2_lotus_core import get_setting, Credentials
-from src.l1_lotus_tools.tool import Tool
+from src.l1_lotus_tools.m0_tool_class.tool import Tool
 
 
 # ---------------------------------------------------------

@@ -2,7 +2,7 @@ from __future__ import annotations
 import os
 from PyPDF2 import PdfReader
 
-from src.l1_lotus_tools.tool import ToolArg, Tool
+from src.l1_lotus_tools.m0_tool_class.tool import ToolArg, Tool
 
 # ---------------------------------------------------------
 

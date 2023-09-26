@@ -1,8 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from src.l1_lotus_tools.m1_python_utils.webutils import Webtools
+from src.l1_lotus_tools.m2_python_utils.webutils import Webtools
 from src.l2_lotus_core import SinglePurposeAgent
-from src.l1_lotus_tools.tool import ToolArg, Tool
+from src.l1_lotus_tools.m0_tool_class.tool import ToolArg, Tool
 
 
 # NOTE : If you should wait or for how long until page elements load is something to be contemplated
