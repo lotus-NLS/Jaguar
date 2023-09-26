@@ -42,7 +42,7 @@ class Agent(ConversationParticipant):
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self.priming.get_identity_str())
 
-        directive_entry = ConversationParticipant.make_entry(DialogueRole.agent(),msg=self.directive.get_str())
+        directive_entry = ConversationParticipant.make_entry(DialogueRole.system(),msg=self.directive.get_str())
 
         return [core_entry] + self._personal_log + [directive_entry]
 

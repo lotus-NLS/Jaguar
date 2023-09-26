@@ -16,8 +16,8 @@ class Directive:
     def __init__(self, objective : Union[None,Objective]):
         self.root_objective : Union[None, Objective] = objective
 
-    def is_empty(self):
-        return self.root_objective is None
+    def is_active(self):
+        return not self.root_objective is None
 
     def get_str(self) -> str:
         objective_msg = '## My current objectives ##\n'
@@ -26,6 +26,16 @@ class Directive:
                             f'{self.root_objective}\n'
         else:
             objective_msg += f'I don\'t currently have any objectives to fulfill. All done for now :)'
+
+        is_working = self.is_active()
+        objective_msg += 'Work' if is_working else 'Dialogue'
+        objective_msg += '\n'
+
+        if is_working:
+            objective_msg += 'You are in monologue mode until all your objectives are finished, you cannot converse with the user'
+
+        else:
+            objective_msg += 'You are in dialgoue mode and can converse with the user'
 
         return objective_msg
 

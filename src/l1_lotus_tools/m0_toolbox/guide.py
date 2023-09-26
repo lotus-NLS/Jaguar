@@ -72,7 +72,7 @@ class INITIALIZE_DIRECTIVE(Tool):
 
     def do(self) -> None:
         directive = self.acting_agent.directive
-        if not directive.is_empty():
+        if not directive.is_active():
             self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')
             return
 
