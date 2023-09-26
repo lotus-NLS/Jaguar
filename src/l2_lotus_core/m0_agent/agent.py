@@ -11,6 +11,11 @@ from src.l2_lotus_core.m1_models import OpenAIModel
 
 # ---------------------------------------------------------
 
+# TODO : This together with the tool logging should be an extra logging package smth. like customlogging
+def get_log_txt(msg: str):
+    return (f'[Error]: {msg}\n'
+            f'{traceback.format_exc()}')
+
 
 class Agent(ConversationParticipant):
     def __init__(self, model = OpenAIModel.make_gpt_40_8k(), priming : Priming = None):
@@ -46,30 +51,19 @@ class Agent(ConversationParticipant):
 
         return [core_entry] + self._personal_log + [directive_entry]
 
+
     def is_in_dialogue_mode(self):
         return not self.directive.is_active()
 
-
-    # def log_exception(self, msg : str, print_only : bool = False):
-    #     to_log = (f'[Error]: {msg}\n'
-    #               f'{traceback.format_exc()}')
-    #
-    #     if print_only:
-    #         print(to_log)
-    #
-    #     else:
-    #         self.think(to_log)
-
     # ---------------------------------------------------
-    # Main routine
 
+    # Main routine
     def _perform_next_action(self) -> None:
         try:
             action_content = self.get_next_action()
 
         except Exception:
-            print(f'[Error]: Unable to obtain response from {self.model.name}\n'
-                  f'{traceback.format_exc()}')
+            print(get_log_txt(msg=f'Unable to obtain response from {self.model.name}'))
             return
 
         try:
@@ -77,8 +71,7 @@ class Agent(ConversationParticipant):
             tool_instructions = action_content.get_tool_instructions()
 
         except Exception:
-            self.think(f'[Error]: An error occured while trying to parse tool call arguments:'
-                       f'{traceback.format_exc()}')
+            self.think(get_log_txt(msg='An error occured while trying to parse tool call arguments:'))
             return
 
         try:
@@ -89,9 +82,8 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception:
-            self.think(f'[Error]: The following error occured while trying to perform action:\n'
-                       f'Action: {action_content}'
-                       f'Traceback: {traceback.format_exc()}')
+            self.think(get_log_txt('The following error occured while trying to perform action:\n'
+                                                 'Action: {action_content}'))
             self.continue_dialogue()
 
 
@@ -109,7 +101,6 @@ class Agent(ConversationParticipant):
                               ,is_without_reaction=True)
 
             self.continue_dialogue()
-
 
 
     def get_next_action(self,
