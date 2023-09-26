@@ -18,7 +18,7 @@ from src.l2_lotus_core import Tool as ToolInterface
 # ---------------------------------------------------------
 
 
-verbose_mode_enabled = True
+verbose_mode_enabled = False
 
 class ToolArg:
     def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None,

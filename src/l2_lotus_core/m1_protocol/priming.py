@@ -37,7 +37,7 @@ class Identity:
 
     @staticmethod
     def get_detailed_os_info():
-        system = platform.system()
+        system = f'{platform.system()}'
         detail = system
 
         try:
@@ -47,7 +47,7 @@ class Identity:
                 mac_ver, _, _ = platform.mac_ver()
                 detail += f" version {mac_ver}"
             elif system == "Linux":
-                distro_name, distro_version, _ = distro.id()
+                distro_name, distro_version = distro.id(), distro.version()
                 detail += f" - {distro_name} version {distro_version}"
         except Exception as e:
             detail += f" (Error obtaining additional details: {e})"
