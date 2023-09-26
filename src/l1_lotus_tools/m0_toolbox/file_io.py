@@ -12,7 +12,7 @@ class READ(Tool):
 
     def __init__(self):
         super().__init__()
-        self.description = 'The READ tool allows you to read the contents of a plain text file or a pdf.'
+        self.desc = 'The READ tool allows you to read the contents of a plain text file or a pdf.'
 
         self.fpath_arg : ToolArg = self.create_arg(
             name='fpath', dtype=str,
