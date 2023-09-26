@@ -40,7 +40,7 @@ class ObjectiveTester(unittest.TestCase):
 
     def test_mark_complete(self):
         self.sub.mark_complete()
-        self.assertTrue(self.sub.get_is_done())
+        self.assertTrue(not self.sub.is_active)
 
     def test_cancel(self):
         self.sub.cancel()

@@ -46,7 +46,7 @@ class UPDATE_DIRECTIVE(Tool):
         args = self.extra_args.val
         action(*args)
 
-        if root_obj.is_complete or root_obj.is_canceled:
+        if not root_obj.is_active:
             self.acting_agent.directive.root_objective = None
 
             init_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]

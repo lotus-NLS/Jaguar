@@ -26,8 +26,7 @@ class Objective:
 
     def __init__(self, desc : str):
         self.desc: str = f'{desc}'
-        self.is_complete : bool = False
-        self.is_canceled : bool = False
+        self.is_active : bool = True
         self._uuid = f'{uuid.uuid4()}'[:5]
 
         self.child_objective_list : list[Objective] = []
@@ -52,17 +51,9 @@ class Objective:
     def get_key(self) -> str:
         return self._uuid
 
-
-    def get_is_done(self) -> bool:
-        return self.is_complete
-
-    def get_active_children(self) -> list[Objective]:
-        return [child for child in self.child_objective_list if not child.is_canceled]
-
-
     def __str__(self, indent: int = 0):
         space = '    ' * indent
-        completion_str = '[x]' if self.is_complete else '[ ]'
+        completion_str = '[ ]' if self.is_active else '[x]'
 
         obj_string = (f'{space}desc: {self.desc}\n'
                      f'{space}ID: {self._uuid}\n'
@@ -86,16 +77,16 @@ class Objective:
 
     def mark_complete(self) -> None:
         if len(self.child_objective_list) == 0:
-            self.is_complete = True
+            self.is_active = False
         else:
-            all_children_status = [child.is_complete for child in self.child_objective_list]
+            all_children_status = [child.is_active for child in self.child_objective_list]
             all_children_done = all(all_children_status)
             if all_children_done:
-                self.is_complete = True
+                self.is_active = False
 
-
+    # TODO : This doesn't suffice because all descendants would need to be deleted
     def cancel(self):
-        self.is_canceled = True
+        self.is_active = False
 
         if not self.parent is None:
             self.parent.child_objective_list.remove(self)
