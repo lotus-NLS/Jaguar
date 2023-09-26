@@ -3,7 +3,7 @@ from typing import Any
 import traceback
 
 from func_timeout import func_timeout, FunctionTimedOut
-
+from src.l2_lotus_core import Agent
 
 # Tool class logging
 # -> [START] : For tool launch
@@ -67,6 +67,7 @@ class Tool:
         self.external_log : Callable = lambda *args, **kwargs: None
         self.arguments : list[ToolArg] = []
         self.is_enabled : bool = True
+        self.agent : Optional[Agent] = None
 
     def disable(self):
         self.is_enabled = False

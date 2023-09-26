@@ -1,6 +1,7 @@
 from src.l2_lotus_core import Agent, ConversationParticipant, DialogueRole
 from src.l1_lotus_tools import RUN,READ,SEARCH
 from src.l1_lotus_tools import UPDATE_DIRECTIVE, INITIALIZE_DIRECTIVE
+from src.l2_lotus_core import Tool
 
 # ---------------------------------------------------------
 
@@ -23,7 +24,12 @@ class DefaultAgent(Agent):
 
         self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
         for tool in self.tool_list:
-            tool.external_log = self.get_tool_logger(tool_name=tool.name)
+            self.add_tool(tool)
+
+
+    def add_tool(self, tool : Tool):
+        tool.external_log = self.get_tool_logger(tool_name=tool.name)
+        tool.agent = self
 
 
     def get_tool_logger(self,tool_name: str):
