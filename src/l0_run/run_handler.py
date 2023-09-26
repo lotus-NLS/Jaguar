@@ -15,7 +15,7 @@ class Engine:
     def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()
         self.user : ConversationParticipant = User()
-        self.bots : list[ConversationParticipant] = [DefaultAgent()]
+        self.bots : list[DefaultAgent] = [DefaultAgent()]
 
         ConversationParticipant.enter_into_conversation(channel=self.user_channel, participant_list=[self.user] + self.bots)
         self.is_introduction_enabled : bool = enable_introduction
@@ -31,8 +31,7 @@ class Engine:
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
-                # TODO :Replace this with the entire context
-                # print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
+                print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_text_context()}')
 
         else:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)

@@ -1,4 +1,4 @@
-from src.l2_lotus_core.m0_agent.tool import Tool, ToolArg
+from src.l1_lotus_tools.tool import ToolArg, Tool
 from src.l2_lotus_core.m1_protocol import Directive, Objective
 import inspect
 from typing import Optional

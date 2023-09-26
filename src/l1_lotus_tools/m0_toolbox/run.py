@@ -7,7 +7,8 @@ from typing import Optional
 from subprocess import Popen
 import time
 
-from src.l2_lotus_core import Tool,ToolArg
+from src.l1_lotus_tools.tool import ToolArg, Tool
+
 
 # ---------------------------------------------------------
 

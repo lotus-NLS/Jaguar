@@ -1,6 +1,7 @@
 import os
 from PyPDF2 import PdfReader
-from src.l2_lotus_core.m0_agent.tool import Tool, ToolArg
+from src.l1_lotus_tools.tool import ToolArg, Tool
+
 
 # ---------------------------------------------------------
 

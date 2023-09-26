@@ -1,7 +1,8 @@
 from src.l2_lotus_core import Agent, ConversationParticipant, DialogueRole
 from src.l1_lotus_tools import RUN,READ,SEARCH
 from src.l1_lotus_tools import UPDATE_DIRECTIVE, INITIALIZE_DIRECTIVE
-from src.l2_lotus_core import Tool
+from src.l1_lotus_tools.tool import Tool
+
 
 # ---------------------------------------------------------
 
@@ -17,8 +18,7 @@ class DefaultAgent(Agent):
         file_io_tools = [READ()]
         run_tools = [RUN()]
         search_tools = [SEARCH()]
-
-        directive_tools = [DIRECTIVE(), INITIALIZE_DIRECTIVE()]
+        directive_tools = [UPDATE_DIRECTIVE(), INITIALIZE_DIRECTIVE()]
 
         self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
         for tool in self.tool_list:

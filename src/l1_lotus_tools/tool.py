@@ -1,19 +1,10 @@
-from typing import Callable, Union, Optional
-from typing import Any
 import traceback
-
+from typing import Optional, Union, Callable, Any
 from func_timeout import func_timeout, FunctionTimedOut
 from src.l2_lotus_core import Agent
+from src.l2_lotus_core import Tool as ToolInterface
 
-# Tool class logging
-# -> [START] : For tool launch
-# -> [FINISH]: Tool done
-
-# Specifc tool implementations (READ, WRITE etc.) logging:
-# -> [Update] : For updates on tool progress
-# -> [ERROR] : For reporting encountered errors if any
-
-# ---------------------------------------------------
+# ---------------------------------------------------------
 
 class ToolArg:
     def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None):
@@ -58,7 +49,7 @@ class ToolArg:
         return json_type
 
 
-class Tool:
+class Tool(ToolInterface):
     timout_in_sec = 60
 
     def __init__(self):
@@ -126,6 +117,14 @@ class Tool:
     # ---------------------------------------------------
     # Logging
 
+    # Generic tool class logging
+    # -> [START] : For tool launch
+    # -> [FINISH]: Tool done
+
+    # Specifc tool implementations (READ, WRITE etc.) logging:
+    # -> [Update] : For updates on tool progress
+    # -> [ERROR] : For reporting encountered errors if any
+
     def log(self, to_log : str) -> None:
         if not self.external_log is None:
             try:
@@ -151,5 +150,3 @@ class Tool:
 
     def finish_log(self, to_log: str) -> None:
         self.log(f'[Finish]: {to_log}')
-
-
