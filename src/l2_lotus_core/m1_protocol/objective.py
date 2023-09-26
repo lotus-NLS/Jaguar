@@ -36,7 +36,7 @@ class Objective:
         self.descendant_dict : Optional[dict[str,Objective]] = None
 
         act_list = [self.edit, self.mark_complete, self.cancel, self.make_subelement]
-        self.action_dict = {funct.__name__ : funct for funct in act_list}
+        self.available_actions = {funct.__name__ : funct for funct in act_list}
 
     # ----------------------------------------------------
     # get

@@ -57,7 +57,8 @@ class Agent(ConversationParticipant):
             action_content = self.get_next_action()
 
         except Exception as e:
-            print(f'[Error]: Unable to obtain response from {self.model.name}.\n{str(e)}\n')
+            print(f'[Error]: Unable to obtain response from {self.model.name}\n'
+                  f'Traceback: {traceback.format_exc()}')
             return
 
         try:
@@ -65,7 +66,8 @@ class Agent(ConversationParticipant):
             tool_instructions = action_content.get_tool_instructions()
 
         except Exception as e:
-            self.think(f'[Error]: An error occured while trying to parse tool call arguments: {e}')
+            self.think(f'[Error]: An error occured while trying to parse tool call arguments:'
+                       f'Traceback: {traceback.format_exc()}')
             return
 
         try:

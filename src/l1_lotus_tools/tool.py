@@ -21,14 +21,14 @@ from src.l2_lotus_core import Tool as AbstractTool
 verbose_mode_enabled = False
 
 class ToolArg:
-    def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None,
-                 is_required : bool = True):
+    def __init__(self, name: str, dtype : type, description: str,
+                 available_options : Optional[list[str]] = None, is_optional : bool = True):
         self.name : str = name
         self.dtype : type = dtype
         self.description : str = description
-        self.val : dtype = None
+        self.val : Optional[dtype] = None
         self.available_options: Optional[list[str]] = available_options
-        self.is_required = is_required
+        self.is_optional : Optional[bool] = is_optional
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
@@ -89,8 +89,8 @@ class Tool(AbstractTool):
     def enable(self):
         self.is_enabled = True
 
-    def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None) -> ToolArg:
-        this_arg = ToolArg(name, dtype, desc,available_options)
+    def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None, is_optional : bool = True) -> ToolArg:
+        this_arg = ToolArg(name, dtype, desc, available_options, is_optional=is_optional)
         self.arguments.append(this_arg)
         return this_arg
 
@@ -110,12 +110,24 @@ class Tool(AbstractTool):
         for arg in self.arguments:
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
-        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if arg.is_required]
+        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if arg.is_optional]
 
         if verbose_mode_enabled:
             print(f'Temp debug: {json.dumps(tool_doc,indent=4)}')
 
+        if not self.is_json_serializable(tool_doc):
+            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\n'
+                             f'Aborting ...')
+
         return tool_doc
+
+    @staticmethod
+    def is_json_serializable(json_obj : dict):
+        try:
+            json.dumps(json_obj)
+            return True
+        except:
+            return False
 
 
     def handle_call(self, args_dict : dict) -> None:

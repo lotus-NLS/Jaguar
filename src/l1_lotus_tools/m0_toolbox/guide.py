@@ -19,25 +19,28 @@ class UPDATE_DIRECTIVE(Tool):
         self.action_arg : Optional[ToolArg] = None
         self.extra_args : Optional[ToolArg] = None
 
-    def activate_tool(self):
+    def enable(self):
+        self.is_enabled = True
         self.root_objective = self.acting_agent.directive.root_objective
 
+        function_names = self.root_objective.available_actions.keys()
+        functions = self.root_objective.available_actions.values()
+
         self.action_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                   available_options=[func_name for func_name in
-                                                                      self.root_objective.action_dict.values()],
+                                                   available_options=[func_name for func_name in function_names],
                                                    desc='The type of action that you want to perform')
 
         extra_arg_desc: str = 'Specify any additional arguments required by the type of action that you chose as a dict\n'
-        for func in self.root_objective.action_dict.values():
+        for func in functions:
             params = self.get_callable_args(func=func)
             extra_arg_desc += f'{func.__name__} : {params} \n'
 
-        self.extra_args: ToolArg = self.create_arg(name='Additional args', dtype=dict,
+        self.extra_args: ToolArg = self.create_arg(name='Additional args', dtype=dict, is_optional=False,
                                                    desc=extra_arg_desc)
 
 
     def do(self):
-        action = self.root_objective.action_dict[self.action_arg.val]
+        action = self.root_objective.available_actions[self.action_arg.val]
 
         args = self.extra_args.val
         action(*args)
