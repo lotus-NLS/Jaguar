@@ -18,9 +18,7 @@ class DefaultAgent(Agent):
         run_tools = [RUN()]
         search_tools = [SEARCH()]
 
-        update_directive = UPDATE_DIRECTIVE(self.directive)
-        update_directive.disable()
-        directive_tools = [update_directive, INITIALIZE_DIRECTIVE(self.directive)]
+        directive_tools = [DIRECTIVE(), INITIALIZE_DIRECTIVE()]
 
         self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
         for tool in self.tool_list:
@@ -29,7 +27,7 @@ class DefaultAgent(Agent):
 
     def add_tool(self, tool : Tool):
         tool.external_log = self.get_tool_logger(tool_name=tool.name)
-        tool.agent = self
+        tool.acting_agent = self
 
 
     def get_tool_logger(self,tool_name: str):

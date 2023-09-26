@@ -31,7 +31,7 @@ class Engine:
             while True:
                 self.user.speak(input(''))
                 time.sleep(0.5)
-                # TODO: Replace this with the entire context
+                # TODO :Replace this with the entire context
                 # print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_memory()}')
 
         else:

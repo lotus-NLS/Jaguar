@@ -3,12 +3,13 @@ from src.l2_lotus_core.m1_protocol import Directive, Objective
 import inspect
 from typing import Optional
 
+# ---------------------------------------------------------
 
 class UPDATE_DIRECTIVE(Tool):
-    def __init__(self, directive : Directive):
+    def __init__(self):
         super().__init__()
 
-        self.directive = directive
+        self.directive = self.acting_agent.directive
 
         self.description : str = 'This tools allows you to mark an objective as complete'
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
@@ -52,10 +53,10 @@ class UPDATE_DIRECTIVE(Tool):
 
 
 class INITIALIZE_DIRECTIVE(Tool):
-    def __init__(self, directive : Directive):
+    def __init__(self):
         super().__init__()
 
-        self.directive : Directive = directive
+        self.directive : Directive = self.acting_agent.directive
         self.desc : str = ('This tools allows you to initialize a directive by supplying a'
                            ' root objectives and a tree of subobjectives in a list')
 

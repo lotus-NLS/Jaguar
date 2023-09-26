@@ -67,7 +67,7 @@ class Tool:
         self.external_log : Callable = lambda *args, **kwargs: None
         self.arguments : list[ToolArg] = []
         self.is_enabled : bool = True
-        self.agent : Optional[Agent] = None
+        self.acting_agent : Optional[Agent] = None
 
     def disable(self):
         self.is_enabled = False
