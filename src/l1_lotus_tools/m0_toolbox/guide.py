@@ -7,7 +7,6 @@ from typing import Optional
 # ---------------------------------------------------------
 
 # TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
-# TODO: Additionally optional arguments are currently not a thing
 class UPDATE_DIRECTIVE(Tool):
     def __init__(self):
         super().__init__()
@@ -42,6 +41,13 @@ class UPDATE_DIRECTIVE(Tool):
 
         args = self.extra_args.val
         action(*args)
+
+        if self.acting_agent.directive.root_objective.is_complete:
+            self.acting_agent.directive.root_objective = None
+
+            init_tool = self.acting_agent.tool_dict[UPDATE_DIRECTIVE.__name__]
+            init_tool.enable()
+            self.disable()
 
 
     @staticmethod
@@ -96,6 +102,10 @@ class INITIALIZE_DIRECTIVE(Tool):
                 new_objective = stack[-1].make_subelement(name=f'{content}')
 
             stack.append(new_objective)
+
+        update_tool = self.acting_agent.tool_dict[UPDATE_DIRECTIVE.__name__]
+        update_tool.enable()
+        self.disable()
 
 
     def is_valid_format(self,lines: list[str]) -> bool:

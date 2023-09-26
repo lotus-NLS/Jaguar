@@ -23,8 +23,8 @@ class Agent(ConversationParticipant):
         # Set model
         self.model : OpenAIModel = model
 
-        # Set up m0_toolbox
-        self.tool_list : list[Tool] = []
+        # Set up toolbox
+        self.tool_dict : dict[str,Tool] = {}
 
     # ---------------------------------------------------
     # Other
@@ -35,7 +35,7 @@ class Agent(ConversationParticipant):
 
 
     def get_tool_docs(self) -> Optional[list[dict]]:
-        return [tool.get_json_doc() for tool in self.tool_list if tool.is_enabled]
+        return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
 
 
     def get_text_context(self):
@@ -72,7 +72,7 @@ class Agent(ConversationParticipant):
             if not tool_instructions is None:
                 self._use_tool(instructions=tool_instructions)
 
-        except Exception as e:
+        except Exception:
             self.think(f'[Error]: The following error occured while trying to perform action:\n'
                        f'Action: {action_content}'
                        f'Traceback: {traceback.format_exc()}')
@@ -84,9 +84,8 @@ class Agent(ConversationParticipant):
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
 
-        tool_dict: dict[str, Tool] = {tool.name: tool for tool in self.tool_list}
-        if tool_name in tool_dict:
-            tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+        if tool_name in self.tool_dict:
+            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
         self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                           f'In your update it is not necessary to provide the user with the function output'

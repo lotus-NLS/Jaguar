@@ -4,7 +4,7 @@ import json
 from typing import Optional, Union, Callable, Any
 from func_timeout import func_timeout, FunctionTimedOut
 from src.l2_lotus_core import Agent
-from src.l2_lotus_core import Tool as ToolInterface
+from src.l2_lotus_core import Tool as AbstractTool
 
 
 # Generic tool class logging
@@ -71,10 +71,11 @@ class ToolArg:
 
 
 
-class Tool(ToolInterface):
+class Tool(AbstractTool):
     timout_in_sec = 60
 
     def __init__(self):
+        super().__init__()
         self.name : str = self.__class__.__name__
         self.desc : str = ''
         self.external_log : Callable = lambda *args, **kwargs: None
@@ -84,6 +85,9 @@ class Tool(ToolInterface):
 
     def disable(self):
         self.is_enabled = False
+
+    def enable(self):
+        self.is_enabled = True
 
     def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None) -> ToolArg:
         this_arg = ToolArg(name, dtype, desc,available_options)
