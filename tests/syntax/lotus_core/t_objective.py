@@ -31,7 +31,7 @@ class ObjectiveTester(unittest.TestCase):
         self.assertIsNotNone(self.root.descendant_dict)
 
     def test_get_objective(self):
-        retrieved_sub = self.root.get_objective(objective_key=self.sub.get_key())
+        retrieved_sub = self.root.get_objective(objective_key=self.sub._uuid)
         self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):

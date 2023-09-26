@@ -21,7 +21,6 @@ class Objective:
     def make_root(cls, desc : str):
         root_obj = cls(desc)
         root_obj.descendant_dict = {}
-        root_obj.root_objective = root_obj
         return root_obj
 
     def __init__(self, desc : str):
@@ -31,9 +30,6 @@ class Objective:
 
         self.child_objective_list : list[Objective] = []
         self.parent : Optional[Objective] = None
-        self.root_objective : Optional[Objective] = None
-
-        self.descendant_dict : Optional[dict[str,Objective]] = None
 
         act_list = [self.edit, self.mark_complete, self.cancel, self.make_subelement]
         self.available_actions = {funct.__name__ : funct for funct in act_list}
@@ -42,14 +38,23 @@ class Objective:
     # get
 
     def get_objective(self, objective_key : str) -> Optional[Objective]:
-        if self.descendant_dict is None:
+        descendant_dict = self.get_descendant_dict()
+        if len(descendant_dict) == 0:
             return
 
         else:
-            return self.descendant_dict.get(objective_key)
+            return descendant_dict.get(objective_key)
 
-    def get_key(self) -> str:
-        return self._uuid
+
+    def get_descendant_dict(self) -> dict[str, 'Objective']:
+        desc_dict = {}
+
+        for child in self.child_objective_list:
+            desc_dict[child._uuid] = child
+            child_desc_dict = child.get_descendant_dict()
+            desc_dict.update(child_desc_dict)
+
+        return desc_dict
 
     def __str__(self, indent: int = 0):
         space = '    ' * indent
@@ -84,21 +89,16 @@ class Objective:
             if all_children_done:
                 self.is_active = False
 
-    # TODO : This doesn't suffice because all descendants would need to be deleted
     def cancel(self):
         self.is_active = False
 
         if not self.parent is None:
             self.parent.child_objective_list.remove(self)
-            del self.root_objective.descendant_dict[self.get_key()]
 
 
     def make_subelement(self, name : str):
         new_element = Objective(desc=name)
         new_element.parent = self
-        new_element.root_objective = self.root_objective
-
-        self.root_objective.descendant_dict[new_element.get_key()] = new_element
         self.child_objective_list.append(new_element)
 
         return new_element
