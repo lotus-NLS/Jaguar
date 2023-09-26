@@ -1,4 +1,6 @@
 import traceback
+import json
+
 from typing import Optional, Union, Callable, Any
 from func_timeout import func_timeout, FunctionTimedOut
 from src.l2_lotus_core import Agent
@@ -15,13 +17,18 @@ from src.l2_lotus_core import Tool as ToolInterface
 
 # ---------------------------------------------------------
 
+
+verbose_mode_enabled = True
+
 class ToolArg:
-    def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None):
+    def __init__(self, name: str, dtype : type, description: str,available_options : Optional[list[str]] = None,
+                 is_required : bool = True):
         self.name : str = name
         self.dtype : type = dtype
         self.description : str = description
         self.val : dtype = None
         self.available_options: Optional[list[str]] = available_options
+        self.is_required = is_required
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
@@ -93,11 +100,17 @@ class Tool(ToolInterface):
             'parameters': {
                 'type': 'object',
                 'properties': {}
-            }
+            },
         }
 
         for arg in self.arguments:
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
+
+        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if arg.is_required]
+
+        if verbose_mode_enabled:
+            print(f'Temp debug: {json.dumps(tool_doc,indent=4)}')
+
         return tool_doc
 
 
@@ -128,6 +141,7 @@ class Tool(ToolInterface):
 
         except Exception as e:
             self.finish_log(f'The Tool {self.name} encountered the following error during execution: {e}. Aborting ...')
+
 
     def do(self):
         pass
