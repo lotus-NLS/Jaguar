@@ -1,5 +1,6 @@
 from src.l1_lotus_tools.tool import ToolArg, Tool
-from src.l2_lotus_core.m1_protocol import Directive, Objective
+from src.l2_lotus_core.m1_protocol import Objective
+# from src.l2_lotus_core.m1_protocol import Directive
 import inspect
 from typing import Optional
 
@@ -9,8 +10,7 @@ class UPDATE_DIRECTIVE(Tool):
     def __init__(self):
         super().__init__()
 
-        self.directive = self.acting_agent.directive
-
+        self.root_objective : Optional[Objective] = None
         self.description : str = 'This tools allows you to mark an objective as complete'
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
@@ -19,15 +19,15 @@ class UPDATE_DIRECTIVE(Tool):
         self.extra_args : Optional[ToolArg] = None
 
     def activate_tool(self):
-        root_objective = self.directive.root_objective
+        self.root_objective = self.acting_agent.directive.root_objective
 
         self.action_arg: ToolArg = self.create_arg(name='action', dtype=str,
                                                    available_options=[func_name for func_name in
-                                                                      root_objective.action_dict.values()],
+                                                                      self.root_objective.action_dict.values()],
                                                    desc='The type of action that you want to perform')
 
         extra_arg_desc: str = 'Specify any additional arguments required by the type of action that you chose as a dict\n'
-        for func in root_objective.action_dict.values():
+        for func in self.root_objective.action_dict.values():
             params = self.get_callable_args(func=func)
             extra_arg_desc += f'{func.__name__} : {params} \n'
 
@@ -36,8 +36,7 @@ class UPDATE_DIRECTIVE(Tool):
 
 
     def do(self):
-        root_objective = self.directive.root_objective
-        action = root_objective.action_dict[self.action_arg.val]
+        action = self.root_objective.action_dict[self.action_arg.val]
 
         args = self.extra_args.val
         action(*args)
@@ -56,22 +55,22 @@ class INITIALIZE_DIRECTIVE(Tool):
     def __init__(self):
         super().__init__()
 
-        self.directive : Directive = self.acting_agent.directive
         self.desc : str = ('This tools allows you to initialize a directive by supplying a'
                            ' root objectives and a tree of subobjectives in a list')
 
         self.directive_content : ToolArg =  self.create_arg(name='Objective specifications',dtype=str
-                                                        ,desc="""Specify your objectives in this format; Note that there is only a single root objective: 
-                                                              Root Objective
-                                                              - Sub-objective
-                                                              - Sub-objective
-                                                              -- Sub-sub objective
-                                                              - Sub-objective
-                                                              -- Sub-sub objective""")
+                                                           ,desc="""Specify your objectives in this format; Note that there is only a single root objective:
+                                                                    Root Objective
+                                                                    -Sub-objective
+                                                                    -Sub-objective
+                                                                    --Sub-sub objective
+                                                                    - Sub-objective
+                                                                    -- Sub-sub objective""")
 
 
     def do(self) -> None:
-        if not self.directive.is_empty():
+        directive = self.acting_agent.directive
+        if not directive.is_empty():
             self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')
             return
 
@@ -89,7 +88,7 @@ class INITIALIZE_DIRECTIVE(Tool):
 
             if indent_level == 0:
                 new_objective = Objective.make_root(desc=f'{content}')
-                self.directive.root_objective = new_objective
+                directive.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
                 new_objective = stack[-1].make_subelement(name=f'{content}')

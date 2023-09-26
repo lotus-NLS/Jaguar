@@ -4,6 +4,15 @@ from func_timeout import func_timeout, FunctionTimedOut
 from src.l2_lotus_core import Agent
 from src.l2_lotus_core import Tool as ToolInterface
 
+
+# Generic tool class logging
+# -> [START] : For tool launch
+# -> [FINISH]: Tool done
+
+# Specifc tool implementations (READ, WRITE etc.) logging:
+# -> [Update] : For updates on tool progress
+# -> [ERROR] : For reporting encountered errors if any
+
 # ---------------------------------------------------------
 
 class ToolArg:
@@ -71,7 +80,7 @@ class Tool(ToolInterface):
     # ---------------------------------------------------
     # Handle
 
-    def get_tool_json_doc(self) -> dict[str,Any]:
+    def get_json_doc(self) -> dict[str,Any]:
         tool_doc = {
             'name': f'{self.name}',
             'description': f'{self.desc}',
@@ -116,14 +125,6 @@ class Tool(ToolInterface):
 
     # ---------------------------------------------------
     # Logging
-
-    # Generic tool class logging
-    # -> [START] : For tool launch
-    # -> [FINISH]: Tool done
-
-    # Specifc tool implementations (READ, WRITE etc.) logging:
-    # -> [Update] : For updates on tool progress
-    # -> [ERROR] : For reporting encountered errors if any
 
     def log(self, to_log : str) -> None:
         if not self.external_log is None:

@@ -33,7 +33,7 @@ class Agent(ConversationParticipant):
 
 
     def get_tool_docs(self) -> Optional[list[dict]]:
-        return [tool.get_tool_json_doc() for tool in self.tool_list if tool.is_enabled]
+        return [tool.get_json_doc() for tool in self.tool_list if tool.is_enabled]
 
 
     def get_text_context(self):

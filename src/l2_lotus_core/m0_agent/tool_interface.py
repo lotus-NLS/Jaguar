@@ -6,5 +6,6 @@ class Tool:
     def handle_call(self, args_dict) -> None:
         pass
 
-    def get_tool_json_doc(self) -> dict:
+    def get_json_doc(self) -> dict:
         pass
+

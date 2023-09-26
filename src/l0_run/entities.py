@@ -6,6 +6,7 @@ from src.l1_lotus_tools.tool import Tool
 
 # ---------------------------------------------------------
 
+
 class DefaultAgent(Agent):
     def __init__(self):
         super().__init__()
@@ -15,14 +16,12 @@ class DefaultAgent(Agent):
     # Setup
 
     def setup_tools(self) -> None:
-        file_io_tools = [READ()]
-        run_tools = [RUN()]
-        search_tools = [SEARCH()]
-        directive_tools = [UPDATE_DIRECTIVE(), INITIALIZE_DIRECTIVE()]
-
-        self.tool_list = file_io_tools + run_tools + directive_tools + search_tools
+        self.tool_list = [RUN(),READ(),SEARCH(),UPDATE_DIRECTIVE(),INITIALIZE_DIRECTIVE()]
         for tool in self.tool_list:
             self.add_tool(tool)
+
+            if tool.name == UPDATE_DIRECTIVE.__name__:
+                tool.disable()
 
 
     def add_tool(self, tool : Tool):
