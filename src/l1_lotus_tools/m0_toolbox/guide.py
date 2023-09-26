@@ -6,6 +6,8 @@ from typing import Optional
 
 # ---------------------------------------------------------
 
+# TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
+# TODO: Additionally optional arguments are currently not a thing
 class UPDATE_DIRECTIVE(Tool):
     def __init__(self):
         super().__init__()

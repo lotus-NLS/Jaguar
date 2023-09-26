@@ -34,7 +34,6 @@ class ToolArg:
 
         return arg_doc
 
-
     @staticmethod
     def get_json_type(python_type) -> Union[str,None]:
         # The 'array' type corresponding to dict and list, seem to break something on OpenAI end,
@@ -56,6 +55,13 @@ class ToolArg:
             json_type = default_type
 
         return json_type
+
+    def value_is_valid(self) -> bool:
+        if self.available_options is None:
+            return True
+
+        return self.val in self.available_options
+
 
 
 class Tool(ToolInterface):
@@ -107,6 +113,10 @@ class Tool(ToolInterface):
 
         for arg in self.arguments:
             arg.val = args_dict[arg.name]
+            if not arg.value_is_valid():
+                self.finish_log(f'Call failed since value {arg.val} is not one of the available options {arg.available_options} for argument {arg.name}')
+                return
+
 
         try:
             self.update_log(f'Tool {self.name} has been launched')

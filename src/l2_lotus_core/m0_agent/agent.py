@@ -1,4 +1,6 @@
 from typing import Optional
+import traceback
+
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
@@ -71,7 +73,10 @@ class Agent(ConversationParticipant):
                 self._use_tool(instructions=tool_instructions)
 
         except Exception as e:
-            self.think(f'[Error]: The following error occured while trying to perform specified action {action_content}: {e}')
+            self.think(f'[Error]: The following error occured while trying to perform action:\n'
+                       f'Action: {action_content}'
+                       f'Traceback: {traceback.format_exc()}')
+            self.continue_dialogue()
 
 
     def _use_tool(self, instructions : ToolInstruction) -> None:
@@ -86,9 +91,8 @@ class Agent(ConversationParticipant):
         self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                           f'In your update it is not necessary to provide the user with the function output'
                           ,is_without_reaction=True)
-        text_content = self.get_next_action(is_allowed_functcall=False).get_text()
-        if not text_content is None:
-            self.speak(msg=text_content)
+        self.continue_dialogue()
+
 
 
     def get_next_action(self,
@@ -106,3 +110,9 @@ class Agent(ConversationParticipant):
         print(f"[Debug]: Received response from the model.")
 
         return action_content
+
+    def continue_dialogue(self) -> None:
+        text_content = self.get_next_action(is_allowed_functcall=False).get_text()
+        if not text_content is None:
+            self.speak(msg=text_content)
+
