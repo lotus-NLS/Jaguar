@@ -21,19 +21,20 @@ from src.l2_lotus_core import Tool as AbstractTool
 verbose_mode_enabled = False
 
 class ToolArg:
-    def __init__(self, name: str, dtype : type, description: str,
-                 available_options : Optional[list[str]] = None, is_optional : bool = True):
+    def __init__(self, name : str, dtype : type, desc : str):
         self.name : str = name
         self.dtype : type = dtype
-        self.description : str = description
-        self.val : Optional[dtype] = None
-        self.available_options: Optional[list[str]] = available_options
-        self.is_optional : Optional[bool] = is_optional
+        self.description : str = desc
+        self.available_options: Optional[list[str]] = None
+        self.is_optional : bool = False
+
+        self.val : Optional = None
+
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
-                'type': self.get_json_type(self.dtype),
-                'description': f'{self.description}',
+            'type': self.get_json_type(self.dtype),
+            'description': f'{self.description}',
         }
 
         if not self.available_options is None:
@@ -89,8 +90,11 @@ class Tool(AbstractTool):
     def enable(self):
         self.is_enabled = True
 
-    def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None, is_optional : bool = True) -> ToolArg:
-        this_arg = ToolArg(name, dtype, desc, available_options, is_optional=is_optional)
+    def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None, is_optional : bool = False) -> ToolArg:
+        this_arg = ToolArg(name=name, dtype=dtype,desc=desc)
+        this_arg.available_options = available_options
+        this_arg.is_optional = is_optional
+
         self.arguments.append(this_arg)
         return this_arg
 
@@ -110,7 +114,7 @@ class Tool(AbstractTool):
         for arg in self.arguments:
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
-        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if arg.is_optional]
+        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if not arg.is_optional]
 
         if verbose_mode_enabled:
             print(f'Temp debug: {json.dumps(tool_doc,indent=4)}')
@@ -133,7 +137,7 @@ class Tool(AbstractTool):
     def handle_call(self, args_dict : dict) -> None:
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
-        arg_names = [arg.name for arg in self.arguments]
+        arg_names = [arg.name for arg in self.arguments if not arg.is_optional]
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:
@@ -180,9 +184,9 @@ class Tool(AbstractTool):
         self.log(f'[Error]: {to_log}')
 
     def exception_log(self, to_log : str) -> None:
-        to_log = f'[Error]: {to_log}'
+        to_log = f'[Error]: {to_log}\n'
         if not traceback.format_exc() is None:
-            to_log += f'Traceback: {traceback.format_exc()}'
+            to_log += f'{traceback.format_exc()}'
 
         self.log(to_log)
 

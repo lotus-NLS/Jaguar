@@ -1,10 +1,9 @@
 # from typing import Optional
 
 from src.l2_lotus_core import Agent, ConversationParticipant, DialogueRole
-from src.l1_lotus_tools import RUN,READ,SEARCH
+from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
 from src.l1_lotus_tools import UPDATE_DIRECTIVE, INITIALIZE_DIRECTIVE
-from src.l1_lotus_tools.tool import Tool
-
+from src.l1_lotus_tools import Tool
 
 # ---------------------------------------------------------
 
@@ -18,7 +17,7 @@ class DefaultAgent(Agent):
     # Setup
 
     def setup_tools(self) -> None:
-        all_tools = [RUN(), READ(), SEARCH(), UPDATE_DIRECTIVE(), INITIALIZE_DIRECTIVE()]
+        all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_DIRECTIVE(), INITIALIZE_DIRECTIVE()]
 
         self.all_tool_dict = {tool.name : tool for tool in all_tools}
         for tool in self.all_tool_dict.values():

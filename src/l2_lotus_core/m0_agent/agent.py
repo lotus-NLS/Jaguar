@@ -49,6 +49,17 @@ class Agent(ConversationParticipant):
     def is_in_dialogue_mode(self):
         return not self.directive.is_active()
 
+
+    # def log_exception(self, msg : str, print_only : bool = False):
+    #     to_log = (f'[Error]: {msg}\n'
+    #               f'{traceback.format_exc()}')
+    #
+    #     if print_only:
+    #         print(to_log)
+    #
+    #     else:
+    #         self.think(to_log)
+
     # ---------------------------------------------------
     # Main routine
 
@@ -58,7 +69,7 @@ class Agent(ConversationParticipant):
 
         except Exception:
             print(f'[Error]: Unable to obtain response from {self.model.name}\n'
-                  f'Traceback: {traceback.format_exc()}')
+                  f'{traceback.format_exc()}')
             return
 
         try:
@@ -67,7 +78,7 @@ class Agent(ConversationParticipant):
 
         except Exception:
             self.think(f'[Error]: An error occured while trying to parse tool call arguments:'
-                       f'Traceback: {traceback.format_exc()}')
+                       f'{traceback.format_exc()}')
             return
 
         try:
