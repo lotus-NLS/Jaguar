@@ -24,7 +24,7 @@ class Agent(ConversationParticipant):
         self.model : OpenAIModel = model
 
         # Set up toolbox
-        self.tool_dict : dict[str,Tool] = {}
+        self.all_tool_dict : dict[str,Tool] = {}
 
     # ---------------------------------------------------
     # Other
@@ -34,8 +34,8 @@ class Agent(ConversationParticipant):
             self._perform_next_action()
 
 
-    def get_tool_docs(self) -> Optional[list[dict]]:
-        return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
+    def get_active_tool_docs(self) -> Optional[list[dict]]:
+        return [tool.get_json_doc() for tool in self.all_tool_dict.values() if tool.is_enabled]
 
 
     def get_text_context(self):
@@ -45,6 +45,9 @@ class Agent(ConversationParticipant):
         directive_entry = ConversationParticipant.make_entry(DialogueRole.system(),msg=self.directive.get_str())
 
         return [core_entry] + self._personal_log + [directive_entry]
+
+    def is_in_dialogue_mode(self):
+        return not self.directive.is_active()
 
     # ---------------------------------------------------
     # Main routine
@@ -84,13 +87,15 @@ class Agent(ConversationParticipant):
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
 
-        if tool_name in self.tool_dict:
-            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+        if tool_name in self.all_tool_dict:
+            self.all_tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                          f'In your update it is not necessary to provide the user with the function output'
-                          ,is_without_reaction=True)
-        self.continue_dialogue()
+        if self.is_in_dialogue_mode():
+            self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                              f'In your update it is not necessary to provide the user with the function output'
+                              ,is_without_reaction=True)
+
+            self.continue_dialogue()
 
 
 
@@ -99,7 +104,7 @@ class Agent(ConversationParticipant):
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3) -> Action:
 
-        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_tool_docs())
+        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_active_tool_docs())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)

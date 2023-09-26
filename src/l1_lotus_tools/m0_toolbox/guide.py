@@ -45,7 +45,7 @@ class UPDATE_DIRECTIVE(Tool):
         if self.acting_agent.directive.root_objective.is_complete:
             self.acting_agent.directive.root_objective = None
 
-            init_tool = self.acting_agent.tool_dict[UPDATE_DIRECTIVE.__name__]
+            init_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]
             init_tool.enable()
             self.disable()
 
@@ -103,7 +103,7 @@ class INITIALIZE_DIRECTIVE(Tool):
 
             stack.append(new_objective)
 
-        update_tool = self.acting_agent.tool_dict[UPDATE_DIRECTIVE.__name__]
+        update_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]
         update_tool.enable()
         self.disable()
 
