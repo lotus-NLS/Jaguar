@@ -39,7 +39,7 @@ class Directive:
 
         if is_working:
             mode_msg = ('You are in monologue mode until all your objectives are finished, you cannot converse with the user'
-                        'Fulfill or cancel all objectives including root to get back to dialogue mode')
+                        'Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.')
 
         else:
             mode_msg = 'You are in dialgoue mode and can converse with the user'

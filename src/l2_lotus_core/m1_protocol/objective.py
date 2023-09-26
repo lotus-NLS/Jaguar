@@ -56,6 +56,7 @@ class Objective:
 
         return desc_dict
 
+
     def __str__(self, indent: int = 0):
         space = '    ' * indent
         completion_str = '[ ]' if self.is_active else '[x]'
@@ -81,13 +82,8 @@ class Objective:
 
 
     def mark_complete(self) -> None:
-        if len(self.child_objective_list) == 0:
-            self.is_active = False
-        else:
-            all_children_status = [child.is_active for child in self.child_objective_list]
-            all_children_done = all(all_children_status)
-            if all_children_done:
-                self.is_active = False
+        self.is_active = False
+
 
     def cancel(self):
         self.is_active = False
