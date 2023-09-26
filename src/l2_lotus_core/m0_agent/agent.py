@@ -3,7 +3,7 @@ import traceback
 
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
-from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole
+from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
 from src.l2_lotus_core.m1_protocol import Priming, Directive
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import Context
@@ -34,11 +34,11 @@ class Agent(ConversationParticipant):
             self._perform_next_action()
 
 
-    def get_active_tool_docs(self) -> Optional[list[dict]]:
+    def get_function_context(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.all_tool_dict.values() if tool.is_enabled]
 
 
-    def get_text_context(self):
+    def get_text_context(self) -> Optional[list[ConversationEntry]]:
         core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
                                                         msg=self.priming.get_identity_str())
 
@@ -56,7 +56,7 @@ class Agent(ConversationParticipant):
         try:
             action_content = self.get_next_action()
 
-        except Exception as e:
+        except Exception:
             print(f'[Error]: Unable to obtain response from {self.model.name}\n'
                   f'Traceback: {traceback.format_exc()}')
             return
@@ -65,7 +65,7 @@ class Agent(ConversationParticipant):
             text_content = action_content.get_text()
             tool_instructions = action_content.get_tool_instructions()
 
-        except Exception as e:
+        except Exception:
             self.think(f'[Error]: An error occured while trying to parse tool call arguments:'
                        f'Traceback: {traceback.format_exc()}')
             return
@@ -106,7 +106,7 @@ class Agent(ConversationParticipant):
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3) -> Action:
 
-        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_active_tool_docs())
+        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_function_context())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)

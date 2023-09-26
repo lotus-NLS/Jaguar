@@ -27,6 +27,7 @@ class Objective:
     def __init__(self, desc : str):
         self.desc: str = f'{desc}'
         self.is_complete : bool = False
+        self.is_canceled : bool = False
         self._uuid = f'{uuid.uuid4()}'[:5]
 
         self.child_objective_list : list[Objective] = []
@@ -54,6 +55,9 @@ class Objective:
 
     def get_is_done(self) -> bool:
         return self.is_complete
+
+    def get_active_children(self) -> list[Objective]:
+        return [child for child in self.child_objective_list if not child.is_canceled]
 
 
     def __str__(self, indent: int = 0):
@@ -91,6 +95,8 @@ class Objective:
 
 
     def cancel(self):
+        self.is_canceled = True
+
         if not self.parent is None:
             self.parent.child_objective_list.remove(self)
             del self.root_objective.descendant_dict[self.get_key()]

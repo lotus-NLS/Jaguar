@@ -7,7 +7,6 @@ from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------
 
-# NOTE :This is currently in test mode because of disappointing performance with GPT 3.5
 class Directive:
     @classmethod
     def make_empty_directive(cls) -> Directive:
@@ -19,25 +18,34 @@ class Directive:
     def is_active(self):
         return not self.root_objective is None
 
+    # ----------------------------------------------------
+
     def get_str(self) -> str:
+        return self.get_objective_msg()+self.get_mode_message()
+
+
+    def get_objective_msg(self) -> str:
         objective_msg = '## My current objectives ##\n'
         if not self.root_objective is None:
             objective_msg += f'My current objective is:\n' \
-                            f'{self.root_objective}\n'
+                             f'{self.root_objective}\n'
         else:
             objective_msg += f'I don\'t currently have any objectives to fulfill. All done for now :)'
+        return objective_msg
 
+
+    def get_mode_message(self) -> str:
         is_working = self.is_active()
-        objective_msg += 'Work' if is_working else 'Dialogue'
-        objective_msg += '\n'
 
         if is_working:
-            objective_msg += 'You are in monologue mode until all your objectives are finished, you cannot converse with the user'
+            mode_msg = ('You are in monologue mode until all your objectives are finished, you cannot converse with the user'
+                        'Fulfill or cancel all objectives including root to get back to dialogue mode')
 
         else:
-            objective_msg += 'You are in dialgoue mode and can converse with the user'
+            mode_msg = 'You are in dialgoue mode and can converse with the user'
 
-        return objective_msg
+        return mode_msg
+
 
 
 class Identity:

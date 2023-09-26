@@ -41,11 +41,12 @@ class UPDATE_DIRECTIVE(Tool):
 
     def do(self):
         action = self.root_objective.available_actions[self.action_arg.val]
+        root_obj = self.acting_agent.directive.root_objective
 
         args = self.extra_args.val
         action(*args)
 
-        if self.acting_agent.directive.root_objective.is_complete:
+        if root_obj.is_complete or root_obj.is_canceled:
             self.acting_agent.directive.root_objective = None
 
             init_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]
