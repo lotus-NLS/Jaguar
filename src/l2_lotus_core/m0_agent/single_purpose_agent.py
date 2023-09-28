@@ -2,18 +2,18 @@ from typing import Optional
 
 from src.l2_lotus_core.m0_agent.agent import Agent
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM
-from src.l2_lotus_core.m1_protocol import Identity
+from src.l2_lotus_core.m1_protocol import Identity, Cores
 
 # ---------------------------------------------------------
 
 class SinglePurposeAgent(Agent):
     @classmethod
     def make_website_summarization_agent(cls):
-        return cls(identity=Identity.make_summarization_identity(), model=OpenAIModel.make_gpt_35_4k())
+        return cls(identity=Identity(core=Cores.website_information_retriever), model=OpenAIModel.make_gpt_35_4k())
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(identity=Identity.make_report_composition_identity(), model=OpenAIModel.make_gpt_35_4k())
+        return cls(identity=Cores.report_composer, model=OpenAIModel.make_gpt_35_4k())
 
     def __init__(self, identity: Identity, model : LLM):
         super().__init__(model=model, identity=identity)

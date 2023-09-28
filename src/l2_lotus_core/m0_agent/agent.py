@@ -4,7 +4,7 @@ import traceback
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
-from src.l2_lotus_core.m1_protocol import Guidance, Identity
+from src.l2_lotus_core.m1_protocol import Guidance, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import Context
 from src.l2_lotus_core.m1_models import OpenAIModel
@@ -22,7 +22,7 @@ class Agent(ConversationParticipant):
         super().__init__(role=DialogueRole.c_agent())
 
         # Set identity and directive
-        self.identity : Identity = identity if not identity is None else Identity.make_goto_identity()
+        self.identity : Identity = identity if not identity is None else Identity(core=Cores.goto)
         self.guidance : Guidance = Guidance.make_empty()
 
         # Set model
