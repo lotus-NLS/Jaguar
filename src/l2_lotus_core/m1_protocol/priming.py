@@ -7,9 +7,9 @@ from src.l2_lotus_core.m1_protocol.identity_definitions import *
 
 # ----------------------------------------------------
 
-class Directive:
+class Guidance:
     @classmethod
-    def make_empty_directive(cls) -> Directive:
+    def make_empty(cls) -> Guidance:
         return cls(objective=None)
 
     def __init__(self, objective : Union[None,Objective]):
@@ -97,9 +97,9 @@ class Priming:
     def make_single_purpose_priming(cls, identity_desc : str) -> Priming:
         return cls(identity=Identity(core=identity_desc))
 
-    def __init__(self,identity : Identity, directive : Directive = Directive.make_empty_directive()):
+    def __init__(self, identity : Identity, directive : Guidance = Guidance.make_empty()):
         self._identity : Identity = identity
-        self._directive : Directive = directive
+        self._guidance : Guidance = directive
 
     def get_identity_str(self) -> str:
         return self._identity.get_str()

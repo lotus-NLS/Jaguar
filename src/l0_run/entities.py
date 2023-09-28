@@ -2,7 +2,7 @@
 
 from src.l2_lotus_core import Agent, ConversationParticipant, DialogueRole
 from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
-from src.l1_lotus_tools import UPDATE_DIRECTIVE, INITIALIZE_DIRECTIVE
+from src.l1_lotus_tools import UPDATE_GUIDANCE, INITIALIZE_GUIDANCE
 from src.l1_lotus_tools import Tool
 
 # ---------------------------------------------------------
@@ -17,13 +17,13 @@ class DefaultAgent(Agent):
     # Setup
 
     def setup_tools(self) -> None:
-        all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_DIRECTIVE(), INITIALIZE_DIRECTIVE()]
+        all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_GUIDANCE(), INITIALIZE_GUIDANCE()]
 
         self.all_tool_dict = {tool.name : tool for tool in all_tools}
         for tool in self.all_tool_dict.values():
             self.add_tool(tool)
 
-            if tool.name == UPDATE_DIRECTIVE.__name__:
+            if tool.name == UPDATE_GUIDANCE.__name__:
                 tool.disable()
 
 

@@ -7,7 +7,7 @@ from typing import Optional
 # ---------------------------------------------------------
 
 # TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
-class UPDATE_DIRECTIVE(Tool):
+class UPDATE_GUIDANCE(Tool):
     def __init__(self):
         super().__init__()
 
@@ -21,7 +21,7 @@ class UPDATE_DIRECTIVE(Tool):
 
     def enable(self):
         self.is_enabled = True
-        self.root_objective = self.acting_agent.directive.root_objective
+        self.root_objective = self.acting_agent.guidance.root_objective
 
         function_names = self.root_objective.available_actions.keys()
         functions = self.root_objective.available_actions.values()
@@ -41,15 +41,15 @@ class UPDATE_DIRECTIVE(Tool):
 
     def do(self):
         action = self.root_objective.available_actions[self.action_arg.val]
-        root_obj = self.acting_agent.directive.root_objective
+        root_obj = self.acting_agent.guidance.root_objective
 
         args = self.extra_args.val
         action(*args)
 
         if not root_obj.is_active:
-            self.acting_agent.directive.root_objective = None
+            self.acting_agent.guidance.root_objective = None
 
-            init_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]
+            init_tool = self.acting_agent.all_tool_dict[UPDATE_GUIDANCE.__name__]
             init_tool.enable()
             self.disable()
 
@@ -63,15 +63,15 @@ class UPDATE_DIRECTIVE(Tool):
 # ---------------------------------------------------------
 
 
-class INITIALIZE_DIRECTIVE(Tool):
+class INITIALIZE_GUIDANCE(Tool):
     def __init__(self):
         super().__init__()
 
         self.desc : str = ('This tools allows you to initialize a directive by supplying a'
                            ' root objectives and a tree of subobjectives in a list')
 
-        self.directive_content : ToolArg =  self.create_arg(name='Objective specifications',dtype=str
-                                                           ,desc="""Specify your objectives in this format; Note that there is only a single root objective:
+        self.content_arg : ToolArg =  self.create_arg(name='Objective specifications', dtype=str
+                                                      , desc="""Specify your objectives in this format; Note that there is only a single root objective:
                                                                     Root Objective
                                                                     -Sub-objective
                                                                     -Sub-objective
@@ -81,12 +81,12 @@ class INITIALIZE_DIRECTIVE(Tool):
 
 
     def do(self) -> None:
-        directive = self.acting_agent.directive
+        directive = self.acting_agent.guidance
         if directive.is_active():
             self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')
             return
 
-        objective_str = self.directive_content.val
+        objective_str = self.content_arg.val
         objective_lines = objective_str.split('\n')
 
         format_valid = self.is_valid_format(lines=objective_lines)
@@ -107,7 +107,7 @@ class INITIALIZE_DIRECTIVE(Tool):
 
             stack.append(new_objective)
 
-        update_tool = self.acting_agent.all_tool_dict[UPDATE_DIRECTIVE.__name__]
+        update_tool = self.acting_agent.all_tool_dict[UPDATE_GUIDANCE.__name__]
         update_tool.enable()
         self.disable()
 

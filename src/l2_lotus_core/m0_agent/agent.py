@@ -4,7 +4,7 @@ import traceback
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
-from src.l2_lotus_core.m1_protocol import Priming, Directive
+from src.l2_lotus_core.m1_protocol import Priming, Guidance
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import Context
 from src.l2_lotus_core.m1_models import OpenAIModel
@@ -23,7 +23,7 @@ class Agent(ConversationParticipant):
 
         # Set identity and directive
         self.priming : Priming = priming if not priming is None else Priming.make_goto_priming()
-        self.directive : Directive = Directive.make_empty_directive()
+        self.guidance : Guidance = Guidance.make_empty()
 
         # Set model
         self.model : OpenAIModel = model
@@ -40,7 +40,7 @@ class Agent(ConversationParticipant):
 
     def get_text_context(self, ignore_objectives : bool = False) -> Optional[list[ConversationEntry]]:
         core_entry = ConversationEntry(role=DialogueRole.system(),msg=self.priming.get_identity_str())
-        directive_entry = ConversationEntry(DialogueRole.system(),msg=self.directive.get_str())
+        directive_entry = ConversationEntry(DialogueRole.system(), msg=self.guidance.get_str())
         text_context = [core_entry] + self._personal_log
 
         if not ignore_objectives:
@@ -50,7 +50,7 @@ class Agent(ConversationParticipant):
 
 
     def is_in_dialogue_mode(self):
-        return not self.directive.is_active()
+        return not self.guidance.is_active()
 
     # ---------------------------------------------------
 
