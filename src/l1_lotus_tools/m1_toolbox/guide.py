@@ -31,13 +31,16 @@ class UPDATE_GUIDANCE(Tool):
                                                    available_options=[func_name for func_name in function_names],
                                                    desc='The type of action that you want to perform')
 
-        extra_arg_desc: str = 'Specify any additional arguments required by the type of action that you chose as a dict\n'
-        for func in functions:
-            params = self.get_callable_args(func=func)
-            extra_arg_desc += f'{func.__name__} : {params} \n'
+        # TODO : This really currently doesnt work. Think about how 'flexible' arguments could be implemented
+        # extra_arg_desc: str = 'Specify any additional arguments required by the type of action that you chose as a dict like so\n'
+        # for func in functions:
+        #     params = self.get_callable_args(func=func)
+        #     extra_arg_desc += f"""{func.__name__} : {{'{params}': 'argument here'}}"""
+        #
+        # print(extra_arg_desc)
 
-        self.extra_args: ToolArg = self.create_arg(name='Additional args', dtype=dict, is_optional=True,
-                                                   desc=extra_arg_desc)
+        self.extra_args: ToolArg = self.create_arg(name='additonal_args', dtype=dict, is_optional=True,
+                                                   desc='')
 
 
     def do(self):
