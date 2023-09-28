@@ -54,13 +54,13 @@ class Agent(ConversationParticipant):
 
     # ---------------------------------------------------
 
-    def _reaction_protocol(self, dialogue_line) -> None:
+    def react(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
-            self.perform_next_action()
+            self.do()
 
 
     # Main routine
-    def perform_next_action(self) -> None:
+    def do(self, is_work_task : bool = False) -> None:
         try:
             action_content = self.get_next_action()
 
@@ -82,7 +82,8 @@ class Agent(ConversationParticipant):
                 self.speak(msg=text_content)
 
             if not tool_instructions is None:
-                self._use_tool(instructions=tool_instructions)
+                self.use_tool(instructions=tool_instructions)
+                self.provide_feedback() if not is_work_task else None
 
         except Exception:
             self.think(get_err_msg('The following error occured while trying to perform action:\n'
@@ -90,16 +91,13 @@ class Agent(ConversationParticipant):
             self.provide_feedback()
 
 
-    def _use_tool(self, instructions : ToolInstruction, is_with_feedback : bool = True) -> None:
+    def use_tool(self, instructions : ToolInstruction) -> None:
         print('[Debug]: Agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
 
         if tool_name in self.all_tool_dict:
             self.all_tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-
-        if is_with_feedback:
-            self.provide_feedback()
 
 
     def provide_feedback(self) -> None:

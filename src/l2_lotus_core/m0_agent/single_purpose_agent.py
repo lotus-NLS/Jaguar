@@ -18,7 +18,7 @@ class SinglePurposeAgent(Agent):
     def __init__(self, priming: Priming, model : LLM):
         super().__init__(model=model, priming=priming)
 
-    def _reaction_protocol(self, dialogue_line) -> None:
+    def react(self, dialogue_line) -> None:
         pass
 
     def get_text_response(self, prompt : str, max_token : Optional[int] = None, verbose = True) -> str:

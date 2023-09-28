@@ -37,7 +37,7 @@ class ConversationParticipant:
 
     def _log_entry(self, entry : ConversationEntry):
         self._personal_log.append(entry)
-        threading.Thread(target=self._reaction_protocol, kwargs=({'dialogue_line' : entry})).start()
+        threading.Thread(target=self.react, kwargs=({'dialogue_line' : entry})).start()
 
     def log_user_msg(self, msg : str, is_without_reaction = False):
         if is_without_reaction:
@@ -52,7 +52,7 @@ class ConversationParticipant:
     def log_system_msg(self,msg : str):
         self._log_entry(ConversationEntry(role=DialogueRole.system(), msg=msg))
 
-    def _reaction_protocol(self, dialogue_line : ConversationEntry):
+    def react(self, dialogue_line : ConversationEntry):
         pass
 
 
