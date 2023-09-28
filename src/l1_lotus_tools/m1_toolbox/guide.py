@@ -17,43 +17,36 @@ class UPDATE_GUIDANCE(Tool):
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
 
-        self.action_arg : Optional[ToolArg] = None
-        self.extra_args : Optional[ToolArg] = None
+        self.action_type_arg : Optional[ToolArg] = None
+        self.description_arg: ToolArg = self.create_arg(name='desc', dtype=str, is_optional=True,
+                                                        desc=f'Required for {Objective.edit_desc.__name__} and {Objective.make_subelement.__name__}'
+                                                             f'to specify the edited description or description of the new element')
 
     def enable(self):
         super().enable()
         self.root_objective = self.acting_agent.guidance.root_objective
 
         function_names = self.root_objective.available_actions.keys()
-        functions = self.root_objective.available_actions.values()
 
-        self.action_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                   available_options=[func_name for func_name in function_names],
-                                                   desc='The type of action that you want to perform')
 
-        # TODO : This really currently doesnt work. Think about how 'flexible' arguments could be implemented
-        # extra_arg_desc: str = 'Specify any additional arguments required by the type of action that you chose as a dict like so\n'
-        # for func in functions:
-        #     params = self.get_callable_args(func=func)
-        #     extra_arg_desc += f"""{func.__name__} : {{'{params}': 'argument here'}}"""
-        #
-        # print(extra_arg_desc)
-
-        self.extra_args: ToolArg = self.create_arg(name='additonal_args', dtype=dict, is_optional=True,
-                                                   desc='')
+        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
+                                                        available_options=[func_name for func_name in function_names],
+                                                        desc='The type of action that you want to perform')
 
 
     def do(self):
         objective_to_edit = self.root_objective.get_objective(objective_key=self.objective_uuid_arg.val)
-        action = objective_to_edit.available_actions[self.action_arg.val]
-        args = self.extra_args.val
+        action = objective_to_edit.available_actions[self.action_type_arg.val]
 
-        if args is None:
-            action()
+        action_args = self.get_callable_args(action)
+
+        if 'desc' in action_args:
+            action(desc=self.description_arg.val)
+
         else:
-            action(*args)
+            action()
 
-        if not self.acting_agent.guidance.root_objective:
+        if not self.acting_agent.guidance.root_objective.is_active:
             self.acting_agent.guidance.root_objective = None
 
             init_tool = self.acting_agent.all_tool_dict[INITIALIZE_GUIDANCE.__name__]
@@ -110,7 +103,7 @@ class INITIALIZE_GUIDANCE(Tool):
                 directive.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
-                new_objective = stack[-1].make_subelement(name=f'{content}')
+                new_objective = stack[-1].make_subelement(desc=f'{content}')
 
             stack.append(new_objective)
 

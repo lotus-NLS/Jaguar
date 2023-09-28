@@ -29,24 +29,23 @@ class Objective:
         self.child_objective_list : list[Objective] = []
         self.parent : Optional[Objective] = None
 
-        act_list = [self.edit, self.mark_complete, self.cancel, self.make_subelement]
+        act_list = [self.edit_desc, self.mark_complete, self.cancel, self.make_subelement]
         self.available_actions = {funct.__name__ : funct for funct in act_list}
 
     # ----------------------------------------------------
     # get
 
     def get_objective(self, objective_key : str) -> Optional[Objective]:
-        descendant_dict = self.get_descendant_dict()
-        if len(descendant_dict) == 0:
-            return
+        total_dict = self.get_descendant_dict()
+        total_dict[self._uuid] = self
 
-        if not objective_key in descendant_dict:
+        if not objective_key in total_dict:
             raise KeyError(f'There is no objective with ID {objective_key}')
 
-        return descendant_dict.get(objective_key)
+        return total_dict[objective_key]
 
 
-    def get_descendant_dict(self) -> dict[str, 'Objective']:
+    def get_descendant_dict(self) -> dict[str, Objective]:
         desc_dict = {}
 
         for child in self.child_objective_list:
@@ -76,10 +75,8 @@ class Objective:
     # ----------------------------------------------------
     # set
 
-
-    def edit(self, new_name : str) -> None:
-        self.desc = new_name
-
+    def edit_desc(self, desc : str) -> None:
+        self.desc = desc
 
     def mark_complete(self) -> None:
         self.is_active = False
@@ -92,8 +89,8 @@ class Objective:
             self.parent.child_objective_list.remove(self)
 
 
-    def make_subelement(self, name : str):
-        new_element = Objective(desc=name)
+    def make_subelement(self, desc : str):
+        new_element = Objective(desc=desc)
         new_element.parent = self
         self.child_objective_list.append(new_element)
 

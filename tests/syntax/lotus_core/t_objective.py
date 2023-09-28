@@ -13,7 +13,7 @@ class ObjectiveTester(unittest.TestCase):
 
     def setUp(self):
         self.root = Objective.make_root("root")
-        self.sub = self.root.make_subelement(name='sub')
+        self.sub = self.root.make_subelement(desc='sub')
 
 
         print("\n//--------------------------------//")
@@ -35,7 +35,7 @@ class ObjectiveTester(unittest.TestCase):
         self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):
-        self.root.edit("new_game")
+        self.root.edit_desc("new_game")
         self.assertEqual(self.root.desc, "new_game")
 
     def test_mark_complete(self):

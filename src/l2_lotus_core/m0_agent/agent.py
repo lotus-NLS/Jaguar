@@ -19,7 +19,7 @@ def get_err_msg(text: str):
 
 class Agent(ConversationParticipant):
     def __init__(self, model = OpenAIModel.make_gpt_40_8k(), priming : Priming = None):
-        super().__init__(role=DialogueRole.agent())
+        super().__init__(role=DialogueRole.c_agent())
 
         # Set identity and directive
         self.priming : Priming = priming if not priming is None else Priming.make_goto_priming()
@@ -46,7 +46,7 @@ class Agent(ConversationParticipant):
 
 
     def react(self, dialogue_line) -> None:
-        if dialogue_line['role'] == DialogueRole.user():
+        if dialogue_line['role'] == DialogueRole.c_user():
             self.do(objective_mode=not self.is_in_dialogue_mode())
 
 
@@ -122,8 +122,8 @@ class Agent(ConversationParticipant):
 
 
     def get_text_context(self, objective_mode : bool = False) -> Optional[list[ConversationEntry]]:
-        core_entry = ConversationEntry(role=DialogueRole.system(),msg=self.priming.get_identity_str())
-        directive_entry = ConversationEntry(DialogueRole.system(), msg=self.guidance.get_str())
+        core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.priming.get_identity_str())
+        directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.guidance.get_str())
         text_context = [core_entry] + self._personal_log
 
         if objective_mode:
