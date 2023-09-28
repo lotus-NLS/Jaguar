@@ -18,15 +18,13 @@ import uuid
 class Objective:
 
     @classmethod
-    def make_root(cls, desc : str):
-        root_obj = cls(desc)
-        root_obj.descendant_dict = {}
-        return root_obj
+    def make_root(cls, desc : str) -> Objective:
+        return cls(desc=desc)
 
     def __init__(self, desc : str):
         self.desc: str = f'{desc}'
+        self._uuid : str = f'{uuid.uuid4()}'[:5]
         self.is_active : bool = True
-        self._uuid = f'{uuid.uuid4()}'[:5]
 
         self.child_objective_list : list[Objective] = []
         self.parent : Optional[Objective] = None
@@ -42,8 +40,10 @@ class Objective:
         if len(descendant_dict) == 0:
             return
 
-        else:
-            return descendant_dict.get(objective_key)
+        if not objective_key in descendant_dict:
+            raise KeyError(f'There is no objective with ID {objective_key}')
+
+        return descendant_dict.get(objective_key)
 
 
     def get_descendant_dict(self) -> dict[str, 'Objective']:

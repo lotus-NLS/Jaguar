@@ -165,7 +165,8 @@ class Tool(AbstractTool):
             self.finish_log(f'The tool {self.name} timed out without completing after {Tool.timout_in_sec} seconds. Aborting ...')
 
         except Exception as e:
-            self.finish_log(f'The Tool {self.name} encountered the following error during execution: {e}. Aborting ...')
+            self.finish_log(f'The Tool {self.name} encountered the following error during execution:\n{traceback.format_exc()}\n'
+                            f'Aborting ...')
 
 
     def do(self):

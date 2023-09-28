@@ -6,6 +6,7 @@ from typing import Optional
 
 # ---------------------------------------------------------
 
+
 # TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
 class UPDATE_GUIDANCE(Tool):
     def __init__(self):
@@ -20,7 +21,7 @@ class UPDATE_GUIDANCE(Tool):
         self.extra_args : Optional[ToolArg] = None
 
     def enable(self):
-        self.is_enabled = True
+        super().enable()
         self.root_objective = self.acting_agent.guidance.root_objective
 
         function_names = self.root_objective.available_actions.keys()
@@ -40,16 +41,19 @@ class UPDATE_GUIDANCE(Tool):
 
 
     def do(self):
-        action = self.root_objective.available_actions[self.action_arg.val]
-        root_obj = self.acting_agent.guidance.root_objective
-
+        objective_to_edit = self.root_objective.get_objective(objective_key=self.objective_uuid_arg.val)
+        action = objective_to_edit.available_actions[self.action_arg.val]
         args = self.extra_args.val
-        action(*args)
 
-        if not root_obj.is_active:
+        if args is None:
+            action()
+        else:
+            action(*args)
+
+        if not self.acting_agent.guidance.root_objective:
             self.acting_agent.guidance.root_objective = None
 
-            init_tool = self.acting_agent.all_tool_dict[UPDATE_GUIDANCE.__name__]
+            init_tool = self.acting_agent.all_tool_dict[INITIALIZE_GUIDANCE.__name__]
             init_tool.enable()
             self.disable()
 
@@ -110,6 +114,9 @@ class INITIALIZE_GUIDANCE(Tool):
         update_tool = self.acting_agent.all_tool_dict[UPDATE_GUIDANCE.__name__]
         update_tool.enable()
         self.disable()
+
+        # TODO
+        print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.guidance.root_objective}')
 
 
     def is_valid_format(self,lines: list[str]) -> bool:

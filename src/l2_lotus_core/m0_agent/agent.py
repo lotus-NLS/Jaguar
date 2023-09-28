@@ -47,7 +47,7 @@ class Agent(ConversationParticipant):
 
     def react(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
-            self.do()
+            self.do(objective_mode=not self.is_in_dialogue_mode())
 
 
     def do(self, objective_mode : bool = False) -> None:
