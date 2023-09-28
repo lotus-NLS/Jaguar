@@ -142,6 +142,7 @@ class Tool(AbstractTool):
 
 
     def handle_call(self, args_dict : dict) -> None:
+        self.reset_args()
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
         required_arguments_included = all([arg.name for arg in self.get_required_args_list()])
@@ -167,6 +168,11 @@ class Tool(AbstractTool):
         except Exception:
             self.finish_log(f'The Tool {self.name} encountered the following error during execution:\n{traceback.format_exc()}\n'
                             f'Aborting ...')
+
+
+    def reset_args(self):
+        for arg in self.get_arg_list():
+            arg.val = None
 
 
     def do(self):
