@@ -38,31 +38,21 @@ class Agent(ConversationParticipant):
         return [tool.get_json_doc() for tool in self.all_tool_dict.values() if tool.is_enabled]
 
 
-    def get_text_context(self, ignore_objectives : bool = False) -> Optional[list[ConversationEntry]]:
-        core_entry = ConversationEntry(role=DialogueRole.system(),msg=self.priming.get_identity_str())
-        directive_entry = ConversationEntry(DialogueRole.system(), msg=self.guidance.get_str())
-        text_context = [core_entry] + self._personal_log
-
-        if not ignore_objectives:
-            text_context += [directive_entry]
-
-        return text_context
-
-
     def is_in_dialogue_mode(self):
         return not self.guidance.is_active()
 
     # ---------------------------------------------------
+    # Main routine
+
 
     def react(self, dialogue_line) -> None:
         if dialogue_line['role'] == DialogueRole.user():
             self.do()
 
 
-    # Main routine
-    def do(self, is_work_task : bool = False) -> None:
+    def do(self, objective_mode : bool = False) -> None:
         try:
-            action_content = self.get_next_action()
+            action_content = self.get_next_action(objective_mode=objective_mode)
 
         except Exception:
             print(get_err_msg(text=f'Unable to obtain response from {self.model.name}'))
@@ -83,7 +73,7 @@ class Agent(ConversationParticipant):
 
             if not tool_instructions is None:
                 self.use_tool(instructions=tool_instructions)
-                self.provide_feedback() if not is_work_task else None
+                self.provide_feedback() if not objective_mode else None
 
         except Exception:
             self.think(get_err_msg('The following error occured while trying to perform action:\n'
@@ -106,7 +96,7 @@ class Agent(ConversationParticipant):
             f'In your update it is not necessary to provide the user with the function output'
             , is_without_reaction=True)
 
-        text_content = self.get_next_action(is_allowed_functcall=False,ignore_objectives = True).get_text()
+        text_content = self.get_next_action(is_allowed_functcall=False).get_text()
         if not text_content is None:
             self.speak(msg=text_content)
 
@@ -115,20 +105,28 @@ class Agent(ConversationParticipant):
                         is_allowed_functcall : bool = True,
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3,
-                        ignore_objectives : bool = False) -> Action:
+                        objective_mode : bool = False) -> Action:
 
 
-        text_context = self.get_text_context(ignore_objectives=ignore_objectives)
+        text_context = self.get_text_context(objective_mode=objective_mode)
         this_context = Context(msg_history=text_context, tool_docs=self.get_function_context())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)
 
         print("[Debug]: Creating completion request.")
-        action_content = self.model.get_next_action(context=this_context, action_options=this_options)
+        action = self.model.get_next_action(context=this_context, action_options=this_options)
         print(f"[Debug]: Received response from the model.")
 
-        return action_content
+        return action
 
 
+    def get_text_context(self, objective_mode : bool = False) -> Optional[list[ConversationEntry]]:
+        core_entry = ConversationEntry(role=DialogueRole.system(),msg=self.priming.get_identity_str())
+        directive_entry = ConversationEntry(DialogueRole.system(), msg=self.guidance.get_str())
+        text_context = [core_entry] + self._personal_log
 
+        if objective_mode:
+            text_context += [directive_entry]
+
+        return text_context

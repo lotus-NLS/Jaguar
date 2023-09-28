@@ -35,7 +35,7 @@ class UPDATE_GUIDANCE(Tool):
             params = self.get_callable_args(func=func)
             extra_arg_desc += f'{func.__name__} : {params} \n'
 
-        self.extra_args: ToolArg = self.create_arg(name='Additional args', dtype=dict, is_optional=False,
+        self.extra_args: ToolArg = self.create_arg(name='Additional args', dtype=dict, is_optional=True,
                                                    desc=extra_arg_desc)
 
 

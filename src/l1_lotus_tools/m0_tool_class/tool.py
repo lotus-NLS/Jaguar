@@ -80,7 +80,7 @@ class Tool(AbstractTool):
         self.name : str = self.__class__.__name__
         self.desc : str = ''
         self.external_log : Callable = lambda *args, **kwargs: None
-        self.arguments : list[ToolArg] = []
+        self.arg_dict : dict[str, ToolArg] = {}
         self.is_enabled : bool = True
         self.acting_agent : Optional[Agent] = None
 
@@ -90,12 +90,19 @@ class Tool(AbstractTool):
     def enable(self):
         self.is_enabled = True
 
+    def get_arg_list(self):
+        return self.arg_dict.values()
+
+    def get_required_args_list(self):
+        return [arg for arg in self.get_arg_list() if not arg.is_optional]
+
     def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None, is_optional : bool = False) -> ToolArg:
         this_arg = ToolArg(name=name, dtype=dtype,desc=desc)
         this_arg.available_options = available_options
         this_arg.is_optional = is_optional
 
-        self.arguments.append(this_arg)
+        self.arg_dict[this_arg.name] = this_arg
+
         return this_arg
 
     # ---------------------------------------------------
@@ -111,10 +118,10 @@ class Tool(AbstractTool):
             },
         }
 
-        for arg in self.arguments:
+        for arg in self.get_arg_list():
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
-        tool_doc['parameters']['required'] = [arg.name for arg in self.arguments if not arg.is_optional]
+        tool_doc['parameters']['required'] = [arg.name for arg in self.get_arg_list() if not arg.is_optional]
 
         if verbose_mode_enabled:
             print(f'Temp debug: {json.dumps(tool_doc,indent=4)}')
@@ -137,20 +144,17 @@ class Tool(AbstractTool):
     def handle_call(self, args_dict : dict) -> None:
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
-        arg_names = [arg.name for arg in self.arguments if not arg.is_optional]
-        print(f'The required arg names are: {arg_names}')
-        arguments_included = all([arg in args_dict.keys() for arg in arg_names])
-
-        if not arguments_included:
+        required_arguments_included = all([arg.name for arg in self.get_required_args_list()])
+        if not required_arguments_included:
             self.finish_log(f'Call failed since provided dictionary {args_dict} did not cover all required tool arguments')
             return
 
-        for arg in self.arguments:
+        tool_args_specified = [arg for arg in self.get_arg_list() if arg.name in args_dict]
+        for arg in tool_args_specified:
             arg.val = args_dict[arg.name]
             if not arg.value_is_valid():
                 self.finish_log(f'Call failed since value {arg.val} is not one of the available options {arg.available_options} for argument {arg.name}')
                 return
-
 
         try:
             self.update_log(f'Tool {self.name} has been launched')
