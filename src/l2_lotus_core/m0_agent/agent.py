@@ -4,7 +4,7 @@ import traceback
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
-from src.l2_lotus_core.m1_protocol import Priming, Guidance
+from src.l2_lotus_core.m1_protocol import Guidance, Identity
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import Context
 from src.l2_lotus_core.m1_models import OpenAIModel
@@ -18,11 +18,11 @@ def get_err_msg(text: str):
 
 
 class Agent(ConversationParticipant):
-    def __init__(self, model = OpenAIModel.make_gpt_40_8k(), priming : Priming = None):
+    def __init__(self, model = OpenAIModel.make_gpt_40_8k(), identity : Identity = None):
         super().__init__(role=DialogueRole.c_agent())
 
         # Set identity and directive
-        self.priming : Priming = priming if not priming is None else Priming.make_goto_priming()
+        self.identity : Identity = identity if not identity is None else Identity.make_goto_identity()
         self.guidance : Guidance = Guidance.make_empty()
 
         # Set model
@@ -122,7 +122,7 @@ class Agent(ConversationParticipant):
 
 
     def get_text_context(self, objective_mode : bool = False) -> Optional[list[ConversationEntry]]:
-        core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.priming.get_identity_str())
+        core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.identity.get_str())
         directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.guidance.get_str())
         text_context = [core_entry] + self._personal_log
 

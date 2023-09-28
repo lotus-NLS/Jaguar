@@ -60,7 +60,7 @@ class FILE_IO(Tool):
                 file.write(content)
                 self.update_log(f'Suceeded in writing out file')
 
-        except Exception as e:
+        except Exception:
             self.exception_log(f'An error occured while trying to write file')
 
 

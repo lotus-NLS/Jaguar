@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union
 import uuid
 
 
@@ -96,3 +96,41 @@ class Objective:
 
         return new_element
 
+
+class Guidance:
+    @classmethod
+    def make_empty(cls) -> Guidance:
+        return cls(objective=None)
+
+    def __init__(self, objective : Union[None,Objective]):
+        self.root_objective : Union[None, Objective] = objective
+
+    def is_active(self):
+        return not self.root_objective is None
+
+    # ----------------------------------------------------
+
+    def get_str(self) -> str:
+        return self.get_objective_msg()+self.get_mode_message()
+
+
+    def get_objective_msg(self) -> str:
+        objective_msg = '## My current objectives ##\n'
+        if not self.root_objective is None:
+            objective_msg += f'My current objective is:\n' \
+                             f'{self.root_objective}\n'
+        else:
+            objective_msg += f'I don\'t currently have any objectives to fulfill. All done for now :)'
+        return objective_msg
+
+
+    def get_mode_message(self) -> str:
+        is_working = self.is_active()
+
+        if is_working:
+            mode_msg = 'Your are currently in work mode. Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.'
+
+        else:
+            mode_msg = 'You are in dialgoue mode and can converse with the user'
+
+        return mode_msg

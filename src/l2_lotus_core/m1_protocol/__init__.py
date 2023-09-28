@@ -1,4 +1,2 @@
-from .objective import Objective
-from .priming import Guidance
-from .priming import Identity
-from .priming import Priming
+from .objective import Objective, Guidance
+from .identity import Identity
