@@ -114,7 +114,7 @@ class Agent(ConversationParticipant):
                                      max_tokens=max_tokens,
                                      temperature=temperature)
 
-        print("[Debug]: Creating completion request.")
+        print(f"[Debug]: Creating completion request. Token count after last response: {self.model.tokens_at_last_response}")
         action = self.model.get_next_action(context=this_context, action_options=this_options)
         print(f"[Debug]: Received response from the model.")
 

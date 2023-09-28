@@ -1,5 +1,6 @@
 import openai
 import tiktoken
+from typing import Optional
 
 from src.l2_lotus_core.m3_settings import get_setting, Credentials
 
@@ -33,7 +34,7 @@ class OpenAIModel(LLM):
         self.encoder = encoder_type.encode
         self.decoder = encoder_type.decode
 
-
+        self.tokens_at_last_response : Optional[int] = None
 
     @classmethod
     def make_gpt_35_4k(cls):
@@ -76,10 +77,10 @@ class OpenAIModel(LLM):
         if not isinstance(openai_response, dict):
             raise TypeError(f'[Error]: OpenAI response is not of dictionary form')
 
-        total_tokens_openai = openai_response['usage']['prompt_tokens']
-
-        extra_text = 'w/o functions' if not action_options.is_allowed_functioncall else ''
-        print(f'[Debug]: Before generation {extra_text} at {total_tokens_openai} tokens used')
+        try:
+            self.tokens_at_last_response = openai_response['usage']['prompt_tokens']
+        except:
+            self.tokens_at_last_response = None
 
         return Action(openai_response)
 
