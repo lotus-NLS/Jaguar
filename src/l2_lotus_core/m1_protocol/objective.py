@@ -110,27 +110,16 @@ class Guidance:
 
     # ----------------------------------------------------
 
-    def get_str(self) -> str:
-        return self.get_objective_msg()+self.get_mode_message()
+    def get_str(self) -> Optional[str]:
+        if not self.is_active():
+            return None
 
-
-    def get_objective_msg(self) -> str:
         objective_msg = '## My current objectives ##\n'
         if not self.root_objective is None:
             objective_msg += f'My current objective is:\n' \
                              f'{self.root_objective}\n'
-        else:
-            objective_msg += f'I don\'t currently have any objectives to fulfill. All done for now :)'
-        return objective_msg
 
+        mode_msg = 'Your are currently in work mode. Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.'
 
-    def get_mode_message(self) -> str:
-        is_working = self.is_active()
+        return objective_msg + mode_msg
 
-        if is_working:
-            mode_msg = 'Your are currently in work mode. Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.'
-
-        else:
-            mode_msg = 'You are in dialgoue mode and can converse with the user'
-
-        return mode_msg
