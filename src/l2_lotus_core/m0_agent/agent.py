@@ -34,22 +34,19 @@ class Agent(ConversationParticipant):
     # ---------------------------------------------------
     # Other
 
-    def _reaction_protocol(self, dialogue_line) -> None:
-        if dialogue_line['role'] == DialogueRole.user():
-            self._perform_next_action()
-
-
     def get_function_context(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.all_tool_dict.values() if tool.is_enabled]
 
 
-    def get_text_context(self) -> Optional[list[ConversationEntry]]:
-        core_entry = ConversationParticipant.make_entry(role=DialogueRole.system(),
-                                                        msg=self.priming.get_identity_str())
+    def get_text_context(self, ignore_objectives : bool = False) -> Optional[list[ConversationEntry]]:
+        core_entry = ConversationEntry(role=DialogueRole.system(),msg=self.priming.get_identity_str())
+        directive_entry = ConversationEntry(DialogueRole.system(),msg=self.directive.get_str())
+        text_context = [core_entry] + self._personal_log
 
-        directive_entry = ConversationParticipant.make_entry(DialogueRole.system(),msg=self.directive.get_str())
+        if not ignore_objectives:
+            text_context += [directive_entry]
 
-        return [core_entry] + self._personal_log + [directive_entry]
+        return text_context
 
 
     def is_in_dialogue_mode(self):
@@ -57,8 +54,13 @@ class Agent(ConversationParticipant):
 
     # ---------------------------------------------------
 
+    def _reaction_protocol(self, dialogue_line) -> None:
+        if dialogue_line['role'] == DialogueRole.user():
+            self.perform_next_action()
+
+
     # Main routine
-    def _perform_next_action(self) -> None:
+    def perform_next_action(self) -> None:
         try:
             action_content = self.get_next_action()
 
@@ -72,6 +74,7 @@ class Agent(ConversationParticipant):
 
         except Exception:
             self.think(get_err_msg(text='An error occured while trying to parse tool call arguments:'))
+            self.provide_feedback()
             return
 
         try:
@@ -84,10 +87,10 @@ class Agent(ConversationParticipant):
         except Exception:
             self.think(get_err_msg('The following error occured while trying to perform action:\n'
                                                  'Action: {action_content}'))
-            self.continue_dialogue()
+            self.provide_feedback()
 
 
-    def _use_tool(self, instructions : ToolInstruction) -> None:
+    def _use_tool(self, instructions : ToolInstruction, is_with_feedback : bool = True) -> None:
         print('[Debug]: Agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
@@ -95,20 +98,30 @@ class Agent(ConversationParticipant):
         if tool_name in self.all_tool_dict:
             self.all_tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-        if self.is_in_dialogue_mode():
-            self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                              f'In your update it is not necessary to provide the user with the function output'
-                              ,is_without_reaction=True)
+        if is_with_feedback:
+            self.provide_feedback()
 
-            self.continue_dialogue()
+
+    def provide_feedback(self) -> None:
+        self.log_user_msg(
+            f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+            f'In your update it is not necessary to provide the user with the function output'
+            , is_without_reaction=True)
+
+        text_content = self.get_next_action(is_allowed_functcall=False,ignore_objectives = True).get_text()
+        if not text_content is None:
+            self.speak(msg=text_content)
 
 
     def get_next_action(self,
                         is_allowed_functcall : bool = True,
                         max_tokens : Optional[int] = None,
-                        temperature : float = 0.3) -> Action:
+                        temperature : float = 0.3,
+                        ignore_objectives : bool = False) -> Action:
 
-        this_context = Context(msg_history=self.get_text_context(), tool_docs=self.get_function_context())
+
+        text_context = self.get_text_context(ignore_objectives=ignore_objectives)
+        this_context = Context(msg_history=text_context, tool_docs=self.get_function_context())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)
@@ -119,8 +132,5 @@ class Agent(ConversationParticipant):
 
         return action_content
 
-    def continue_dialogue(self) -> None:
-        text_content = self.get_next_action(is_allowed_functcall=False).get_text()
-        if not text_content is None:
-            self.speak(msg=text_content)
+
 

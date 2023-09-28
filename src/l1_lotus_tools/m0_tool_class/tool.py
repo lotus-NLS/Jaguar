@@ -138,6 +138,7 @@ class Tool(AbstractTool):
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
         arg_names = [arg.name for arg in self.arguments if not arg.is_optional]
+        print(f'The required arg names are: {arg_names}')
         arguments_included = all([arg in args_dict.keys() for arg in arg_names])
 
         if not arguments_included:

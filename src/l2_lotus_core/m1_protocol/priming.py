@@ -38,8 +38,7 @@ class Directive:
         is_working = self.is_active()
 
         if is_working:
-            mode_msg = ('You are in monologue mode until all your objectives are finished, you cannot converse with the user'
-                        'Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.')
+            mode_msg = 'Your are currently in work mode. Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.'
 
         else:
             mode_msg = 'You are in dialgoue mode and can converse with the user'
