@@ -78,6 +78,6 @@ class ConversationParticipant:
         return ConversationEntry(role,msg)
 
     @staticmethod
-    def enter_into_conversation(channel : Channel, participant_list : list[ConversationParticipant]):
+    def enter_into_channel(channel : Channel, participant_list : list[ConversationParticipant]):
         for participant in participant_list:
             participant.join_channel(channel)
