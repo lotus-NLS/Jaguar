@@ -57,9 +57,7 @@ class Engine:
         if run_in_terminal:
             while True:
                 self.user.speak(input(''))
-
                 time.sleep(0.5)
-                print(f'[Debug]: Current conversation memory of the bot: {self.bots[0].get_text_context()}')
 
         else:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)

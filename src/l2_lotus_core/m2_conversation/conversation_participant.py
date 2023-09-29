@@ -1,5 +1,5 @@
 from __future__ import annotations
-import threading
+from threading import Thread
 from typing import Union, Optional
 
 
@@ -37,10 +37,10 @@ class ConversationParticipant:
 
     def _log_entry(self, entry : ConversationEntry):
         self._personal_log.append(entry)
-        threading.Thread(target=self.react, kwargs=({'dialogue_line' : entry})).start()
+        Thread(target=self.react, args=(entry,)).start()
 
-    def log_user_msg(self, msg : str, is_without_reaction = False):
-        if is_without_reaction:
+    def log_user_msg(self, msg : str, without_reaction = False):
+        if without_reaction:
             self._personal_log.append(ConversationEntry(role=DialogueRole.c_user(), msg=msg))
         else:
             self._log_entry(ConversationEntry(role=DialogueRole.c_user(), msg=msg))
@@ -52,7 +52,7 @@ class ConversationParticipant:
     def log_system_msg(self,msg : str):
         self._log_entry(ConversationEntry(role=DialogueRole.c_system(), msg=msg))
 
-    def react(self, dialogue_line : ConversationEntry):
+    def react(self, conv_entry : ConversationEntry):
         pass
 
 

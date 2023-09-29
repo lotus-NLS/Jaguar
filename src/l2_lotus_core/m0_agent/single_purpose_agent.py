@@ -18,7 +18,7 @@ class SinglePurposeAgent(Agent):
     def __init__(self, identity: Identity, model : LLM):
         super().__init__(model=model, identity=identity)
 
-    def react(self, dialogue_line) -> None:
+    def react(self, conv_entry) -> None:
         pass
 
     def get_text_response(self, prompt : str, max_token : Optional[int] = None, verbose = True) -> str:

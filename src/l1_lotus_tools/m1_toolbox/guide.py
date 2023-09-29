@@ -49,7 +49,7 @@ class UPDATE_GUIDANCE(Tool):
         if not self.acting_agent.guidance.root_objective.is_active:
             self.acting_agent.guidance.root_objective = None
 
-            init_tool = self.acting_agent.all_tool_dict[INITIALIZE_GUIDANCE.__name__]
+            init_tool = self.acting_agent.tool_dict[INITIALIZE_GUIDANCE.__name__]
             init_tool.enable()
             self.disable()
 
@@ -107,7 +107,7 @@ class INITIALIZE_GUIDANCE(Tool):
 
             stack.append(new_objective)
 
-        update_tool = self.acting_agent.all_tool_dict[UPDATE_GUIDANCE.__name__]
+        update_tool = self.acting_agent.tool_dict[UPDATE_GUIDANCE.__name__]
         update_tool.enable()
         self.disable()
 

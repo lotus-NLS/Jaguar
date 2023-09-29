@@ -19,8 +19,8 @@ class DefaultAgent(Agent):
     def setup_tools(self) -> None:
         all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_GUIDANCE(), INITIALIZE_GUIDANCE()]
 
-        self.all_tool_dict = {tool.name : tool for tool in all_tools}
-        for tool in self.all_tool_dict.values():
+        self.tool_dict = {tool.name : tool for tool in all_tools}
+        for tool in self.tool_dict.values():
             self.add_tool(tool)
 
             if tool.name == UPDATE_GUIDANCE.__name__:
