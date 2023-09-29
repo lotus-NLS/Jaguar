@@ -1,4 +1,3 @@
-from typing import Optional
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m2_conversation import ConversationEntry
 

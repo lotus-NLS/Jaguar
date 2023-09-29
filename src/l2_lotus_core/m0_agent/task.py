@@ -1,6 +1,25 @@
 from queue import Queue
 
 
+class Task:
+    def __init__(self, is_work_task = True):
+        self._is_work_task : bool = is_work_task
+
+    def get_is_dialogue_task(self) -> bool:
+        return not self._is_work_task
+
+    def get_is_work_task(self) -> bool:
+        return self._is_work_task
+
+    @classmethod
+    def make_work_task(cls):
+        return cls(is_work_task=True)
+
+    @classmethod
+    def make_dialogue_task(cls):
+        return cls(is_work_task=False)
+
+
 class TaskQueue(Queue):
     def __init__(self):
         super().__init__()
@@ -23,20 +42,3 @@ class TaskQueue(Queue):
         return any(task.get_is_dialogue_task() for task in self.queued_items)
 
 
-class Task:
-    def __init__(self, is_work_task = True):
-        self._is_work_task : bool = is_work_task
-
-    def get_is_dialogue_task(self) -> bool:
-        return not self._is_work_task
-
-    def get_is_work_task(self) -> bool:
-        return self._is_work_task
-
-    @classmethod
-    def make_work_task(cls):
-        return cls(is_work_task=True)
-
-    @classmethod
-    def make_dialogue_task(cls):
-        return cls(is_work_task=False)
