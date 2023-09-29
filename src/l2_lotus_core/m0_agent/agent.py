@@ -162,14 +162,15 @@ class Agent(ConversationParticipant):
                         objective_mode : bool = False) -> Action:
 
 
-        text_context = self.get_text_context(work_mode=objective_mode)
+        text_context = self.get_entries(work_mode=objective_mode)
         this_context = Context(msg_history=text_context, tool_docs=self.get_active_tool_context())
         this_options = ActionOptions(is_allowed_functioncall=is_allowed_functcall,
                                      max_tokens=max_tokens,
                                      temperature=temperature)
 
         print(f"[Debug]: Creating completion request. Token count after last response: {self.model.tokens_at_last_response}")
-        print(f'[Debug]: Current conversation memory of {self.name}: [...] {self.get_text_context()[-100:]}')
+
+        print(f'[Debug]: Current conversation memory of {self.name}: [...] {str(self.get_entries())[-200:]}')
         action = self.model.get_next_action(context=this_context, action_options=this_options)
         print(f"[Debug]: Received response from the model.")
 
@@ -185,12 +186,12 @@ class Agent(ConversationParticipant):
             self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
 
-    def get_text_context(self, work_mode : bool = False) -> Optional[list[ConversationEntry]]:
+    def get_entries(self, work_mode : bool = False) -> Optional[list[ConversationEntry]]:
         core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.identity.get_str())
         directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.guidance.get_str())
-        text_context = [core_entry] + self._personal_log
+        entries = [core_entry] + self._personal_log
 
         if work_mode:
-            text_context += [directive_entry]
+            entries += [directive_entry]
 
-        return text_context
+        return entries
