@@ -62,7 +62,7 @@ class OpenAIModel(LLM):
         }
 
         if not entries is None and action_options.is_allowed_functioncall:
-            args_dict['functions'] = entries
+            args_dict['functions'] = tool_docs
             args_dict['function_call'] = FunctionCallModes.auto
 
         if not action_options.max_tokens is None:
