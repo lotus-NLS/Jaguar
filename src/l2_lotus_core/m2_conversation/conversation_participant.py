@@ -39,11 +39,8 @@ class ConversationParticipant:
         self._personal_log.append(entry)
         Thread(target=self.react, args=(entry,)).start()
 
-    def log_user_msg(self, msg : str, without_reaction = False):
-        if without_reaction:
-            self._personal_log.append(ConversationEntry(role=DialogueRole.c_user(), msg=msg))
-        else:
-            self._log_entry(ConversationEntry(role=DialogueRole.c_user(), msg=msg))
+    def log_user_msg(self, msg : str):
+        self._log_entry(ConversationEntry(role=DialogueRole.c_user(), msg=msg))
 
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
@@ -54,7 +51,6 @@ class ConversationParticipant:
 
     def react(self, conv_entry : ConversationEntry):
         pass
-
 
     def think(self, msg : str, verbose = True):
         the_msg = f'## Internal monologue: {msg}'

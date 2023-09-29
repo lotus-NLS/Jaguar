@@ -1,3 +1,4 @@
+from typing import Optional
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m2_conversation import ConversationEntry
 
@@ -7,17 +8,12 @@ class FunctionCallModes:
     auto = 'auto'
     none = 'none'
 
-class Context:
-    def __init__(self, tool_docs : list[dict], msg_history : list[ConversationEntry]):
-        self.tool_docs : list[dict] = tool_docs
-        self.msg_history : list[ConversationEntry] = msg_history
-
 
 class LLM:
-    def __init__(self,name : str):
-        self.name = name
+    def __init__(self, model_type: str):
+        self._model_type : str = model_type
 
-    def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
+    def get_action(self, entries: list[ConversationEntry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
         pass
 
 

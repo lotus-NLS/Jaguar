@@ -9,14 +9,14 @@ from src.l2_lotus_core.m1_protocol import Identity, Cores
 class SinglePurposeAgent(Agent):
     @classmethod
     def make_website_summarization_agent(cls):
-        return cls(identity=Identity(core=Cores.website_information_retriever), model=OpenAIModel.make_gpt_35_4k())
+        return cls(identity=Identity(core=Cores.website_information_retriever), model_type=OpenAIModel.make_gpt_35_4k())
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(identity=Cores.report_composer, model=OpenAIModel.make_gpt_35_4k())
+        return cls(identity=Cores.report_composer, model_type=OpenAIModel.make_gpt_35_4k())
 
-    def __init__(self, identity: Identity, model : LLM):
-        super().__init__(model=model, identity=identity)
+    def __init__(self, identity: Identity, model_type : LLM):
+        super().__init__(model_type=model_type, identity=identity)
 
     def react(self, conv_entry) -> None:
         pass

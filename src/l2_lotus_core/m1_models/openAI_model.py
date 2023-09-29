@@ -4,10 +4,10 @@ from typing import Optional
 
 from src.l2_lotus_core.m3_settings import get_setting, Credentials
 
+from src.l2_lotus_core.m2_conversation import ConversationEntry
+
 from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
 from src.l2_lotus_core.m1_models.action import Action, ActionOptions
-from src.l2_lotus_core.m1_models.model_class import Context
-
 
 # ---------------------------------------------------------
 
@@ -25,11 +25,9 @@ class OpenAI_ModelTypes:
     def get_test_model():
         return OpenAI_ModelTypes.gpt_35_4k
 
-
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
-        super().__init__(name=model_type)
-        self._model_type = model_type
+        super().__init__(model_type=model_type)
         encoder_type = tiktoken.get_encoding('cl100k_base')
         self.encoder = encoder_type.encode
         self.decoder = encoder_type.decode
@@ -56,22 +54,26 @@ class OpenAIModel(LLM):
         return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
 
 
-    def get_next_action(self, context : Context, action_options : ActionOptions) -> Action:
+    def get_action(self, entries: list[ConversationEntry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
         args_dict = {
             'model': self._model_type,
-            'messages': context.msg_history,
+            'messages': entries,
             'temperature': action_options.temperature
         }
 
-        if not context.tool_docs is None and action_options.is_allowed_functioncall:
-            args_dict['functions'] = context.tool_docs
+        if not entries is None and action_options.is_allowed_functioncall:
+            args_dict['functions'] = entries
             args_dict['function_call'] = FunctionCallModes.auto
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
         openai.api_key = get_setting(label=Credentials.openai_apikey_label)
+
+        print(f"[Debug]: Creating completion request. Token count after last response: {self.tokens_at_last_response}")
+        print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-200:]}')
         openai_response = openai.ChatCompletion.create(**args_dict)
+        print(f"[Debug]: Received response from the model.")
 
         # Action is promised a dict, so a dict must be delivered in any case
         if not isinstance(openai_response, dict):
