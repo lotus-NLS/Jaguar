@@ -70,7 +70,7 @@ class INITIALIZE_MANDATE(Tool):
         self.desc : str = ('This tools allows you to initialize a directive by supplying a'
                            ' root objectives and a tree of subobjectives in a list')
 
-        self.content_arg : ToolArg =  self.create_arg(name='Objective specifications', dtype=str
+        self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str
                                                       , desc="""Specify your objectives in this format; Note that there is only a single root objective:
                                                                     Root Objective
                                                                     -Sub-objective
