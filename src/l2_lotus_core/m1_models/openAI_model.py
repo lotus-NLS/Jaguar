@@ -34,26 +34,6 @@ class OpenAIModel(LLM):
 
         self.tokens_at_last_response : Optional[int] = None
 
-    @classmethod
-    def make_gpt_35_4k(cls):
-        return cls(model_type=OpenAI_ModelTypes.gpt_35_4k)
-
-
-    @classmethod
-    def make_gpt_35_16k(cls):
-        return cls(model_type=OpenAI_ModelTypes.gpt_35_16k)
-
-
-    @classmethod
-    def make_gpt_40_8k(cls):
-        return cls(model_type=OpenAI_ModelTypes.gpt_40_8k)
-
-
-    @classmethod
-    def make_gpt_40_32k(cls):
-        return cls(model_type=OpenAI_ModelTypes.gpt_40_32k)
-
-
     def get_action(self, entries: list[ConversationEntry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
         args_dict = {
             'model': self._model_type,

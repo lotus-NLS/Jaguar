@@ -7,7 +7,7 @@ from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m1_protocol import Guidance, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
-from src.l2_lotus_core.m1_models import OpenAIModel, LLM
+from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
 
 # ---------------------------------------------------------
@@ -19,7 +19,7 @@ def get_err_msg(text: str):
 
 
 class Agent(ConversationParticipant):
-    def __init__(self, model_type : LLM = OpenAIModel.make_gpt_40_8k(), identity : Optional[Identity] = None):
+    def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Optional[Identity] = None):
         ConversationParticipant.__init__(self,role=DialogueRole.c_agent())
 
         # Set identity, guidance and task queue
