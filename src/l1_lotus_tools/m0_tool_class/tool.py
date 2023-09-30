@@ -1,11 +1,10 @@
 import traceback
 import json
-
-from typing import Optional, Union, Callable, Any
+from typing import Optional, Callable, Any
 from func_timeout import func_timeout, FunctionTimedOut
+from src.l1_lotus_tools.m0_tool_class.ToolArg import ToolArg
 from src.l2_lotus_core import Agent
 from src.l2_lotus_core import Tool as AbstractTool
-
 
 # Generic tool class logging
 # -> [START] : For tool launch
@@ -16,61 +15,7 @@ from src.l2_lotus_core import Tool as AbstractTool
 # -> [ERROR] : For reporting encountered errors if any
 
 # ---------------------------------------------------------
-
-
 verbose_mode_enabled = False
-
-class ToolArg:
-    def __init__(self, name : str, dtype : type, desc : str):
-        self.name : str = name
-        self.dtype : type = dtype
-        self.description : str = desc
-        self.available_options: Optional[list[str]] = None
-        self.is_optional : bool = False
-
-        self.val : Optional = None
-
-
-    def get_arg_json_doc(self) -> dict[str,str]:
-        arg_doc = {
-            'type': self.get_json_type(self.dtype),
-            'description': f'{self.description}',
-        }
-
-        if not self.available_options is None:
-            arg_doc['enum'] = self.available_options
-
-        return arg_doc
-
-    @staticmethod
-    def get_json_type(python_type) -> Union[str,None]:
-        # The 'array' type corresponding to dict and list, seem to break something on OpenAI end,
-        # hence why I didn't include them; See logs (@ https://www.notion.so/pyWrite0-3-a53c1b16ef3646df9c141a144f8197a2)
-
-        default_type = 'string'
-        type_mapping = {
-            int: "number",
-            float: "number",
-            str: "string",
-            bool: "boolean",
-            type(None): "null",
-            dict: "object"
-        }
-
-        if python_type in type_mapping:
-            json_type = type_mapping[python_type]
-        else:
-            json_type = default_type
-
-        return json_type
-
-    def value_is_valid(self) -> bool:
-        if self.available_options is None:
-            return True
-
-        return self.val in self.available_options
-
-
 
 class Tool(AbstractTool):
     timout_in_sec = 60
@@ -84,20 +29,14 @@ class Tool(AbstractTool):
         self.is_enabled : bool = True
         self.acting_agent : Optional[Agent] = None
 
-    def disable(self):
+    def disable(self) -> None:
         self.is_enabled = False
 
-    def enable(self):
+    def enable(self) -> None:
         self.is_enabled = True
 
-    def get_arg_list(self):
-        return self.arg_dict.values()
-
-    def get_required_args_list(self):
-        return [arg for arg in self.get_arg_list() if not arg.is_optional]
-
     def create_arg(self, name: str, dtype: type, desc: str, available_options : Optional[list[str]] = None, is_optional : bool = False) -> ToolArg:
-        this_arg = ToolArg(name=name, dtype=dtype,desc=desc)
+        this_arg = ToolArg(name=name, dtype=dtype, desc=desc)
         this_arg.available_options = available_options
         this_arg.is_optional = is_optional
 
@@ -133,7 +72,7 @@ class Tool(AbstractTool):
         return tool_doc
 
     @staticmethod
-    def is_json_serializable(json_obj : dict):
+    def is_json_serializable(json_obj : dict) -> bool:
         try:
             json.dumps(json_obj)
             return True
@@ -169,8 +108,15 @@ class Tool(AbstractTool):
             self.finish_log(f'The Tool {self.name} encountered the following error during execution:\n{traceback.format_exc()}\n'
                             f'Aborting ...')
 
+    def get_arg_list(self) -> list[ToolArg]:
+        return list(self.arg_dict.values())
 
-    def reset_args(self):
+
+    def get_required_args_list(self) -> list[ToolArg]:
+        return [arg for arg in self.get_arg_list() if not arg.is_optional]
+
+
+    def reset_args(self) -> None:
         for arg in self.get_arg_list():
             arg.val = None
 

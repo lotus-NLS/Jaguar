@@ -1,4 +1,5 @@
-from src.l1_lotus_tools.m0_tool_class.tool import ToolArg, Tool
+from src.l1_lotus_tools.m0_tool_class.tool import Tool
+from src.l1_lotus_tools.m0_tool_class.ToolArg import ToolArg
 from src.l2_lotus_core.m1_protocol import Objective
 # from src.l2_lotus_core.m1_protocol import Directive
 import inspect
@@ -7,7 +8,6 @@ from typing import Optional
 # ---------------------------------------------------------
 
 
-# TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
 class UPDATE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
