@@ -45,6 +45,7 @@ class Agent(ConversationParticipant):
     def is_in_work_mode(self):
         return self.mandate.is_active()
 
+
     def launch(self):
         threading.Thread(target=self.loop).start()
 
@@ -59,7 +60,7 @@ class Agent(ConversationParticipant):
             if self.is_in_work_mode() and not self.task_queue.work_task_present():
                 self.task_queue.put(Task.make_work_task())
 
-            self.do(work_mode=new_task.get_is_work_task())
+            self.do(is_work=new_task.get_is_work_task())
 
 
     def react(self, conv_entry : ConversationEntry) -> None:
@@ -67,9 +68,9 @@ class Agent(ConversationParticipant):
             self.task_queue.put(Task.make_dialogue_task())
 
 
-    def do(self, work_mode : bool = False) -> None:
+    def do(self, is_work : bool = False) -> None:
         try:
-            action_content = self.get_next_action(is_work_action=work_mode)
+            action_content = self.get_next_action(is_work_action=is_work)
 
         except Exception:
             print(get_err_msg(text=f'Unable to obtain response from {self.name}'))
@@ -80,8 +81,7 @@ class Agent(ConversationParticipant):
             tool_instructions = action_content.get_tool_instructions()
 
         except Exception:
-            self.think(get_err_msg(text='An error occured while trying to parse tool call arguments:'))
-            self.log_feedback_instructions()
+            self.handle_tool_response(err_text='An error occured while trying to parse tool call arguments:')
             return
 
         try:
@@ -90,17 +90,19 @@ class Agent(ConversationParticipant):
 
             if not tool_instructions is None:
                 self.use_tool(instructions=tool_instructions)
-                self.log_feedback_instructions() if not work_mode else None
+                self.handle_tool_response()
 
         except Exception:
-            self.think(get_err_msg('The following error occured while trying to perform action:\n'
-                                                 'Action: {action_content}'))
-            self.log_feedback_instructions()
+            self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action_content}')
 
 
-    def log_feedback_instructions(self) -> None:
-        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                          f'In your update it is not necessary to provide the user with the function output')
+    def handle_tool_response(self, err_text : Optional[str] = None) -> None:
+        if not err_text is None:
+            self.think(get_err_msg(text=err_text))
+
+        self.log_user_msg(
+            f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+            f'In your update it is not necessary to provide the user with the function output')
 
 
     def get_next_action(self,
