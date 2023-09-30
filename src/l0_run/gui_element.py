@@ -5,7 +5,7 @@ from typing import Callable, Optional
 import customtkinter as ctk
 
 from src.l2_lotus_core.m2_conversation.channel import Channel
-from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEntry
+from src.l2_lotus_core.m2_conversation.conversation_entry import Entry
 
 # ---------------------------------------------------------
 
@@ -64,7 +64,7 @@ class ChatGUI(GUI_Element):
         self.send_callback(msg)
         self.input_area.delete(0, 'end')
 
-    def display_conversation_entry(self, entry : ConversationEntry):
+    def display_conversation_entry(self, entry : Entry):
         role = entry.get_role()
         msg = entry.get_content()
         self.msg_area.configure(state='normal')

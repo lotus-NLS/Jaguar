@@ -3,13 +3,13 @@ import threading
 from queue import Queue
 from typing import Callable
 
-from src.l2_lotus_core.m2_conversation.conversation_entry import ConversationEntry
+from src.l2_lotus_core.m2_conversation.conversation_entry import Entry
 
 
 class Channel:
     def __init__(self):
-        self.listener_loggers: list[Callable[[ConversationEntry], None]] = []
-        self._message_queue : Queue[ConversationEntry] = queue.Queue()
+        self.listener_loggers: list[Callable[[Entry], None]] = []
+        self._message_queue : Queue[Entry] = queue.Queue()
         self._is_running = True
 
         threading.Thread(target=self._process_queue).start()
@@ -28,7 +28,7 @@ class Channel:
     # ------------------------------
     # Other
 
-    def broadcast_message(self, entry : ConversationEntry):
+    def broadcast_message(self, entry : Entry):
         self._message_queue.put(entry)
 
     def stop_after_next_timeout(self):

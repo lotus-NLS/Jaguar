@@ -42,7 +42,7 @@ class DialogueRole(str):
         return as_list
 
 
-class ConversationEntry(dict):
+class Entry(dict):
     def __init__(self, role : DialogueRole, msg : str, tool_name ='undefined_function'):
         super().__init__()
         self['role'] = role

@@ -1,5 +1,5 @@
 from src.l2_lotus_core.m1_models import Action, ActionOptions
-from src.l2_lotus_core.m2_conversation import ConversationEntry
+from src.l2_lotus_core.m2_conversation import Entry
 
 # ---------------------------------------------------------
 
@@ -12,7 +12,7 @@ class LLM:
     def __init__(self, model_type: str):
         self._model_type : str = model_type
 
-    def get_action(self, entries: list[ConversationEntry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
+    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
         pass
 
 

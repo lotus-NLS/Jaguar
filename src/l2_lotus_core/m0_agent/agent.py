@@ -8,7 +8,7 @@ from src.l2_lotus_core.m0_agent.tool_interface import Tool
 from src.l2_lotus_core.m1_protocol import Mandate, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
+from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, Entry
 
 # ---------------------------------------------------------
 
@@ -63,7 +63,7 @@ class Agent(ConversationParticipant):
             self.do(is_work=new_task.get_is_work_task())
 
 
-    def react(self, conv_entry : ConversationEntry) -> None:
+    def react(self, conv_entry : Entry) -> None:
         if conv_entry.get_role() == DialogueRole.c_user() and not self.task_queue.dialogue_task_present():
             self.task_queue.put(Task.make_dialogue_task())
 
@@ -100,9 +100,8 @@ class Agent(ConversationParticipant):
         if not err_text is None:
             self.think(get_err_msg(text=err_text))
 
-        self.log_user_msg(
-            f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-            f'In your update it is not necessary to provide the user with the function output')
+        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                          f'In your update it is not necessary to provide the user with the function output')
 
 
     def get_next_action(self,
@@ -129,9 +128,9 @@ class Agent(ConversationParticipant):
             self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
 
-    def get_entries(self, work_mode_enabled : bool = False) -> Optional[list[ConversationEntry]]:
-        core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.identity.get_str())
-        directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.mandate.get_str())
+    def get_entries(self, work_mode_enabled : bool = False) -> Optional[list[Entry]]:
+        core_entry = Entry(role=DialogueRole.c_system(), msg=self.identity.get_str())
+        directive_entry = Entry(DialogueRole.c_system(), msg=self.mandate.get_str())
         entries = [core_entry] + self._personal_log
 
         if work_mode_enabled:

@@ -4,7 +4,7 @@ from typing import Optional
 
 from src.l2_lotus_core.m3_settings import get_setting, Credentials
 
-from src.l2_lotus_core.m2_conversation import ConversationEntry
+from src.l2_lotus_core.m2_conversation import Entry
 
 from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
 from src.l2_lotus_core.m1_models.action import Action, ActionOptions
@@ -34,7 +34,7 @@ class OpenAIModel(LLM):
 
         self.tokens_at_last_response : Optional[int] = None
 
-    def get_action(self, entries: list[ConversationEntry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
+    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
         args_dict = {
             'model': self._model_type,
             'messages': entries,
