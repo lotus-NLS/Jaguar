@@ -97,9 +97,9 @@ class Objective:
         return new_element
 
 
-class Guidance:
+class Mandate:
     @classmethod
-    def make_empty(cls) -> Guidance:
+    def make_empty(cls) -> Mandate:
         return cls(objective=None)
 
     def __init__(self, objective : Union[None,Objective]):

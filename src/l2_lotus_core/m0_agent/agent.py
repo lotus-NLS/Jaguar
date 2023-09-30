@@ -5,7 +5,7 @@ import threading
 from src.l2_lotus_core.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_core.m1_models import ToolInstruction
 from src.l2_lotus_core.m0_agent.tool_interface import Tool
-from src.l2_lotus_core.m1_protocol import Guidance, Identity, Cores
+from src.l2_lotus_core.m1_protocol import Mandate, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, ConversationEntry
@@ -22,9 +22,9 @@ class Agent(ConversationParticipant):
     def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Optional[Identity] = None):
         ConversationParticipant.__init__(self,role=DialogueRole.c_agent())
 
-        # Set identity, guidance and task queue
+        # Set identity, mandate and task queue
         self.identity : Identity = identity if not identity is None else Identity(core=Cores.goto)
-        self.guidance : Guidance = Guidance.make_empty()
+        self.mandate : Mandate = Mandate.make_empty()
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # Set up toolbox
@@ -43,7 +43,7 @@ class Agent(ConversationParticipant):
 
 
     def is_in_work_mode(self):
-        return self.guidance.is_active()
+        return self.mandate.is_active()
 
     def launch(self):
         threading.Thread(target=self.loop).start()
@@ -129,7 +129,7 @@ class Agent(ConversationParticipant):
 
     def get_entries(self, work_mode_enabled : bool = False) -> Optional[list[ConversationEntry]]:
         core_entry = ConversationEntry(role=DialogueRole.c_system(), msg=self.identity.get_str())
-        directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.guidance.get_str())
+        directive_entry = ConversationEntry(DialogueRole.c_system(), msg=self.mandate.get_str())
         entries = [core_entry] + self._personal_log
 
         if work_mode_enabled:

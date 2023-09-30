@@ -8,7 +8,7 @@ from typing import Optional
 
 
 # TODO: Dynamic argument currently simply wont work; This will require adjusting self.arguments accordingly
-class UPDATE_GUIDANCE(Tool):
+class UPDATE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
@@ -24,7 +24,7 @@ class UPDATE_GUIDANCE(Tool):
 
     def enable(self):
         super().enable()
-        self.root_objective = self.acting_agent.guidance.root_objective
+        self.root_objective = self.acting_agent.mandate.root_objective
 
         function_names = self.root_objective.available_actions.keys()
 
@@ -46,10 +46,10 @@ class UPDATE_GUIDANCE(Tool):
         else:
             action()
 
-        if not self.acting_agent.guidance.root_objective.is_active:
-            self.acting_agent.guidance.root_objective = None
+        if not self.acting_agent.mandate.root_objective.is_active:
+            self.acting_agent.mandate.root_objective = None
 
-            init_tool = self.acting_agent.tool_dict[INITIALIZE_GUIDANCE.__name__]
+            init_tool = self.acting_agent.tool_dict[INITIALIZE_MANDATE.__name__]
             init_tool.enable()
             self.disable()
 
@@ -63,7 +63,7 @@ class UPDATE_GUIDANCE(Tool):
 # ---------------------------------------------------------
 
 
-class INITIALIZE_GUIDANCE(Tool):
+class INITIALIZE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
@@ -81,7 +81,7 @@ class INITIALIZE_GUIDANCE(Tool):
 
 
     def do(self) -> None:
-        directive = self.acting_agent.guidance
+        directive = self.acting_agent.mandate
         if directive.is_active():
             self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')
             return
@@ -107,12 +107,12 @@ class INITIALIZE_GUIDANCE(Tool):
 
             stack.append(new_objective)
 
-        update_tool = self.acting_agent.tool_dict[UPDATE_GUIDANCE.__name__]
+        update_tool = self.acting_agent.tool_dict[UPDATE_MANDATE.__name__]
         update_tool.enable()
         self.disable()
 
         # TODO
-        print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.guidance.root_objective}')
+        print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
 
 
     def is_valid_format(self,lines: list[str]) -> bool:
