@@ -1,4 +1,4 @@
-# Nucifera
+# Roseus
 <p align="center">
   <img src="documentation/logo.jpg" alt="Logo" width="200">
   <br>
@@ -6,13 +6,13 @@
 </p>
 
 ## Overview
-Nucifera aims to provide a natural language interface to your software and to formal computer languages through the usage of LLMs. \
+Roseus aims to provide a natural language interface to your software and to formal computer languages through the usage of LLMs. \
 Its aim is to write software modules by specification and integrate them with existing software, provide intuitive explanations and add comments
 for existing software, rewrite local source files and enable usage of auxiliary 
 tools like the Terminal on Windows or Linux, git, AutoDevOps or Docker through natrual language
 specifications.
 
-In particular, agents in the Nucifera framework can make use of the following tools:
+In particular, agents in the Roseus framework can make use of the following tools:
 
 -> READ: Read text files on the computer \
 -> WRITE: Write out text files locally \
