@@ -35,21 +35,27 @@ class ConversationParticipant:
     # ------------------------------
     # Speak and react
 
-    def _log_entry(self, entry : Entry):
+    def _log_entry(self, entry : Entry, with_reaction : bool = True):
         self._personal_log.append(entry)
-        Thread(target=self.react, args=(entry,)).start()
+        if with_reaction:
+            Thread(target=self.react, args=(entry,)).start()
 
-    def log_user_msg(self, msg : str):
-        self._log_entry(Entry(role=DialogueRole.c_user(), msg=msg))
+    def log_user_msg(self, msg : str, with_reaction : Optional[bool] = None):
+        entry = Entry(role=DialogueRole.user_role(), msg=msg)
+
+        if with_reaction is None:
+            self._log_entry(entry)
+        else:
+            self._log_entry(entry,with_reaction=with_reaction)
 
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
         self._log_entry(entry=Entry(role=DialogueRole.c_tool(), msg=msg, tool_name= tool_name))
 
     def log_system_msg(self,msg : str):
-        self._log_entry(Entry(role=DialogueRole.c_system(), msg=msg))
+        self._log_entry(Entry(role=DialogueRole.system_role(), msg=msg))
 
-    def react(self, conv_entry : Entry):
+    def react(self, entry : Entry):
         pass
 
     def think(self, msg : str, verbose = True):

@@ -22,7 +22,7 @@ class DialogueRole(str):
         return cls(DialogueRole._m_tool)
 
     @classmethod
-    def c_user(cls):
+    def user_role(cls):
         return cls(DialogueRole._m_user)
 
     @classmethod
@@ -30,7 +30,7 @@ class DialogueRole(str):
         return cls(DialogueRole._m_agent)
 
     @classmethod
-    def c_system(cls):
+    def system_role(cls):
         return cls(DialogueRole._m_system)
 
     @classmethod

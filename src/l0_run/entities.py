@@ -52,6 +52,6 @@ class DefaultAgent(Agent):
 
 class User(ConversationParticipant):
     def __init__(self):
-        super(User, self).__init__(role=DialogueRole.c_user())
+        super(User, self).__init__(role=DialogueRole.user_role())
 
 
