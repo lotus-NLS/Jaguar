@@ -3,6 +3,16 @@ from src.l2_lotus_core import Agent
 from src.l2_lotus_core import BaseTool
 
 
+# Generic tool class logging
+# -> [START] : For tool launch
+# -> [FINISH]: Tool done
+
+# Specifc tool implementations (READ, WRITE etc.) logging:
+# -> [Update] : For updates on tool progress
+# -> [ERROR] : For reporting encountered errors if any
+# ---------------------------------------------------------
+
+
 class Tool(BaseTool):
 
     def __init__(self):

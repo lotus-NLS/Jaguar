@@ -1,7 +1,6 @@
 from typing import Union, Optional
 import json
 
-
 # 08.09.23: (D.H.):
 # The agent has two options for an action: "Speak" or "Use a tool"
 # The content of an action is either the text which is to be spoken or the instructions for the tool usage

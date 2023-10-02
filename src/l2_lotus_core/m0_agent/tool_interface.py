@@ -1,17 +1,9 @@
-from func_timeout import func_timeout, FunctionTimedOut
-from src.l2_lotus_core.m0_agent.ToolArg import ToolArg
 import traceback
 import json
+from func_timeout import func_timeout, FunctionTimedOut
 from typing import Optional, Callable, Any
 
-
-# Generic tool class logging
-# -> [START] : For tool launch
-# -> [FINISH]: Tool done
-
-# Specifc tool implementations (READ, WRITE etc.) logging:
-# -> [Update] : For updates on tool progress
-# -> [ERROR] : For reporting encountered errors if any
+from src.l2_lotus_core.m0_agent.ToolArg import ToolArg
 
 # ---------------------------------------------------------
 verbose_mode_enabled = False
@@ -47,43 +39,8 @@ class BaseTool:
 
         return this_arg
 
-        # ---------------------------------------------------
-        # Handle
-
-
-    def get_json_doc(self) -> dict[str, Any]:
-        tool_doc = {
-            'name': f'{self.name}',
-            'description': f'{self.desc}',
-            'parameters': {
-                'type': 'object',
-                'properties': {}
-            },
-        }
-
-        for arg in self.get_arg_list():
-            tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
-
-        tool_doc['parameters']['required'] = [arg.name for arg in self.get_arg_list() if not arg.is_optional]
-
-        if verbose_mode_enabled:
-            print(f'Temp debug: {json.dumps(tool_doc, indent=4)}')
-
-        if not self.is_json_serializable(tool_doc):
-            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\n'
-                             f'Aborting ...')
-
-        return tool_doc
-
-
-    @staticmethod
-    def is_json_serializable(json_obj: dict) -> bool:
-        try:
-            json.dumps(json_obj)
-            return True
-        except:
-            return False
-
+    # ---------------------------------------------------
+    # Handle
 
     def handle_call(self, args_dict: dict) -> None:
         self.reset_args()
@@ -116,6 +73,48 @@ class BaseTool:
                 f'The Tool {self.name} encountered the following error during execution:\n{traceback.format_exc()}\n'
                 f'Aborting ...')
 
+    def do(self):
+        pass
+    # ---------------------------------------------------
+    # Get
+
+    def get_json_doc(self) -> dict[str, Any]:
+        tool_doc = {
+            'name': f'{self.name}',
+            'description': f'{self.desc}',
+            'parameters': {
+                'type': 'object',
+                'properties': {}
+            },
+        }
+
+        for arg in self.get_arg_list():
+            tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
+
+        tool_doc['parameters']['required'] = [arg.name for arg in self.get_arg_list() if not arg.is_optional]
+
+        if verbose_mode_enabled:
+            print(f'Temp debug: {json.dumps(tool_doc, indent=4)}')
+
+        if not self.get_is_json_serializable(tool_doc):
+            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\n'
+                             f'Aborting ...')
+
+        return tool_doc
+
+
+    @staticmethod
+    def get_is_json_serializable(json_obj: dict) -> bool:
+        try:
+            json.dumps(json_obj)
+            return True
+        except:
+            return False
+
+    def reset_args(self) -> None:
+        for arg in self.get_arg_list():
+            arg.val = None
+
 
     def get_arg_list(self) -> list[ToolArg]:
         return list(self.arg_dict.values())
@@ -123,15 +122,6 @@ class BaseTool:
 
     def get_required_args_list(self) -> list[ToolArg]:
         return [arg for arg in self.get_arg_list() if not arg.is_optional]
-
-
-    def reset_args(self) -> None:
-        for arg in self.get_arg_list():
-            arg.val = None
-
-
-    def do(self):
-        pass
 
 
     # ---------------------------------------------------
