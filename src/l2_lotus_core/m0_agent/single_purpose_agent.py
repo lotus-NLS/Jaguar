@@ -13,7 +13,7 @@ class SinglePurposeAgent(Agent):
 
     @classmethod
     def make_report_composition_agent(cls):
-        return cls(identity=Cores.report_composer, model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+        return cls(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
 
     def __init__(self, identity: Identity, model_type : LLM):
         super().__init__(model_type=model_type, identity=identity)

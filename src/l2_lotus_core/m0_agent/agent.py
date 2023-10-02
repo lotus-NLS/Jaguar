@@ -19,11 +19,11 @@ def get_err_msg(text: str):
 
 
 class Agent(ConversationParticipant):
-    def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Optional[Identity] = None):
+    def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Identity = Identity(core=Cores.goto)):
         ConversationParticipant.__init__(self, role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
-        self.identity : Identity = identity if not identity is None else Identity(core=Cores.goto)
+        self.identity : Identity = identity
         self.mandate : Mandate = Mandate.make_empty()
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
