@@ -51,6 +51,9 @@ class Entry(dict):
             self['name'] = tool_name
         self._is_read = False
 
+    def __str__(self):
+        return f'{self.get_role():{self.get_content()}}\n'
+
     def get_is_read(self):
         return self._is_read
 

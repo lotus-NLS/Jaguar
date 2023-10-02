@@ -36,10 +36,16 @@ class ConversationParticipant:
         for entry in self._personal_log:
             entry.mark_read()
 
+    def get_unread_entries(self) -> list[Entry]:
+        return [entry for entry in self._personal_log if not entry.get_is_read()]
+
     # ------------------------------
     # log
 
-    def _log_entry(self, entry : Entry, with_reaction : bool = True):
+    def _log_entry(self, entry : Entry, with_reaction : bool = True, mark_read : bool = True):
+        if mark_read:
+            entry.mark_read()
+
         self._personal_log.append(entry)
         if with_reaction:
             Thread(target=self.react, args=(entry,)).start()

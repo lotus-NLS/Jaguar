@@ -1,5 +1,6 @@
 from __future__ import annotations
 from queue import Queue
+from typing import Optional
 
 
 class Task:
@@ -26,6 +27,7 @@ class TaskQueue(Queue):
         super().__init__()
         self.queued_items : set = set()
         self.work_mode_enabled : bool = False
+        self._active_task : Optional[Task] = None
 
     def put(self, item : Task, block=True, timeout=None) -> None:
         super().put(item, block, timeout)
@@ -34,12 +36,19 @@ class TaskQueue(Queue):
     def get(self, block=True, timeout=None) -> Task:
         new_task = super().get(block, timeout)
         self.queued_items.remove(new_task)
+        self._active_task = new_task
         return new_task
 
-    def work_task_present(self):
+    def complete_active_task(self) -> None:
+        self._active_task = None
+
+    def get_active_task(self) -> Optional[Task]:
+        return self._active_task
+
+    def get_work_task_present(self) -> bool:
         return any(task.is_mandate_task() for task in self.queued_items)
 
-    def dialogue_task_present(self):
+    def get_dialogue_task_present(self) -> bool:
         return any(task.is_dialogue_task() for task in self.queued_items)
 
 

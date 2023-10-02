@@ -49,23 +49,21 @@ class Agent(ConversationParticipant):
             if new_task.is_dialogue_task():
                 self.mark_all_read()
 
-            # TODO: This needs to get moved below "do" but first test around 
-            if self.mandate.is_active() and not self.task_queue.work_task_present():
+            # TODO: This needs to get moved below "do" but first test around
+            if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(is_mandate_task=True))
 
-            self.do(is_mandate=new_task.is_mandate_task())
-
-
+            self.do()
 
 
     def react(self, entry : Entry) -> None:
-        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_present():
+        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
             self.task_queue.put(Task(is_mandate_task=False))
 
 
-    def do(self, is_mandate : bool = False) -> None:
+    def do(self) -> None:
         try:
-            action = self.get_next_action(is_mandate_action=is_mandate)
+            action = self.get_next_action()
 
         except Exception:
             print(get_err_msg(text=f'Unable to obtain response from {self.name}'))
@@ -114,11 +112,10 @@ class Agent(ConversationParticipant):
     def get_next_action(self,
                         is_allowed_functcall : bool = True,
                         max_tokens : Optional[int] = None,
-                        temperature : float = 0.3,
-                        is_mandate_action : bool = False) -> Action:
+                        temperature : float = 0.3) -> Action:
 
         action = self.model.get_action(
-            entries=self.get_entries(work_mode_enabled=is_mandate_action),
+            entries=self.get_entries(),
             tool_docs=self.get_active_tool_docs(),
             action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
         )
@@ -126,19 +123,32 @@ class Agent(ConversationParticipant):
         return action
 
 
-    def get_entries(self, work_mode_enabled : bool = False) -> Optional[list[Entry]]:
+    def get_entries(self) -> Optional[list[Entry]]:
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
-        mandate_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
         entries = [core_entry] + self._personal_log
 
-        if work_mode_enabled:
-            entries += [mandate_entry]
+        task_entry = self.get_task_entry(task= self.task_queue.get_active_task())
+        if not task_entry is None:
+            entries += task_entry
 
         return entries
 
-
     # ---------------------------------------------------
     # Other
+
+    def get_task_entry(self, task : Task) -> Optional[Task]:
+        if task is None:
+            task_entry = None
+
+        else:
+            if task.is_mandate_task():
+                task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
+            else:
+                task_entry = Entry(DialogueRole.system_role(),
+                                   msg= f'Respond to unread messages: {self.get_unread_entries()}')
+
+        return task_entry
+
 
     def get_active_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
