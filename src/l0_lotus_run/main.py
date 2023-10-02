@@ -1,7 +1,7 @@
 import time
 from typing import Optional
-from src.l0_run.entities import DefaultAgent, User
-from src.l0_run.gui_element import ChatGUI
+from src.l0_lotus_run.entities import DefaultAgent, User
+from src.l0_lotus_run.gui_element import ChatGUI
 from src.l2_lotus_core import Channel, ConversationParticipant,SettingsController
 
 # ---------------------------------------------------------
