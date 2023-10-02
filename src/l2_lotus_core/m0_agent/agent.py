@@ -45,12 +45,17 @@ class Agent(ConversationParticipant):
     def loop(self):
         while True:
             new_task = self.task_queue.get()
-            is_in_work_mode = self.mandate.is_active()
 
-            if is_in_work_mode and not self.task_queue.work_task_present():
+            if new_task.is_dialogue_task():
+                self.mark_all_read()
+
+            # TODO: This needs to get moved below "do" but first test around 
+            if self.mandate.is_active() and not self.task_queue.work_task_present():
                 self.task_queue.put(Task(is_mandate_task=True))
 
             self.do(is_mandate=new_task.is_mandate_task())
+
+
 
 
     def react(self, entry : Entry) -> None:

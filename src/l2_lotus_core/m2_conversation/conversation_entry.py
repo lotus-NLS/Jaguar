@@ -49,6 +49,13 @@ class Entry(dict):
         self['content'] = msg
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
+        self._is_read = False
+
+    def get_is_read(self):
+        return self._is_read
+
+    def mark_read(self):
+        self._is_read = True
 
     def get_role(self):
         return self['role']

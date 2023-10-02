@@ -32,13 +32,18 @@ class ConversationParticipant:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
 
+    def mark_all_read(self) -> None:
+        for entry in self._personal_log:
+            entry.mark_read()
+
     # ------------------------------
-    # Speak and react
+    # log
 
     def _log_entry(self, entry : Entry, with_reaction : bool = True):
         self._personal_log.append(entry)
         if with_reaction:
             Thread(target=self.react, args=(entry,)).start()
+
 
     def log_user_msg(self, msg : str, with_reaction : Optional[bool] = None):
         entry = Entry(role=DialogueRole.user_role(), msg=msg)
@@ -48,15 +53,21 @@ class ConversationParticipant:
         else:
             self._log_entry(entry,with_reaction=with_reaction)
 
+
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
         print(f'[Debug]: {self._role} read: {msg}')
         self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, tool_name= tool_name))
 
+
     def log_system_msg(self,msg : str):
         self._log_entry(Entry(role=DialogueRole.system_role(), msg=msg))
 
+    # ------------------------------
+    # Speak and react
+
     def react(self, entry : Entry):
         pass
+
 
     def think(self, msg : str, verbose = True):
         the_msg = f'## Internal monologue: {msg}'
@@ -65,11 +76,12 @@ class ConversationParticipant:
         self._log_entry(entry=Entry(role=self._role, msg=the_msg))
 
 
-    def speak(self, msg : str):
+    def speak(self, msg : str, verbose = True):
         if self._channel is None:
             return
 
-        print(f'[Debug]: {self._role} said: {msg}')
+        if verbose:
+            print(f'[Debug]: {self._role} said: {msg}')
         self._channel.broadcast_message(Entry(role=self._role, msg=msg))
 
     # ------------------------------
