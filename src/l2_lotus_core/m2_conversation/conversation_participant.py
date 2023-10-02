@@ -47,15 +47,8 @@ class ConversationParticipant:
             Thread(target=self.react, args=(entry,)).start()
 
 
-    def log_user_msg(self, msg : str, with_reaction : Optional[bool] = None, mark_read : bool = False):
-        entry = Entry(role=DialogueRole.user_role(), msg=msg)
-        if mark_read:
-            entry.mark_read()
-
-        if with_reaction is None:
-            self._log_entry(entry)
-        else:
-            self._log_entry(entry,with_reaction=with_reaction)
+    def log_user_msg(self, msg : str):
+        self._log_entry(Entry(role=DialogueRole.user_role(), msg=msg))
 
 
     def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
