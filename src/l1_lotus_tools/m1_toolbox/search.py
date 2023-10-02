@@ -14,16 +14,12 @@ class SEARCH(Tool):
     num_results = 4
     def __init__(self):
         super().__init__()
-        self.desc : str = """The SEARCH tool allows you to obtain a report on your query composed from the top search results from your
-        search_term. Provide both a "search_term" and specify the "requested_information" to use this tool."""
+        self.desc : str = """The SEARCH tool allows you to obtain a report on requested information you specify."""
 
-        self.query_arg : ToolArg = self.create_arg(
+        self.requested_info_arg : ToolArg = self.create_arg(
             name='requested_information', dtype=str,
-            desc='This is the information that you seek to obtain')
-
-        self.search_term_arg : ToolArg = self.create_arg(
-            name='search_term', dtype=str,
-            desc='The search_term is what will be used in the search engine to obtain relevant web pages')
+            desc='This is the information that you want to obtain.'
+                 'The report will be composed from the top results obtained a search on this information')
 
         self.webtools : Webtools = Webtools(initial_driver_count=4)
 
@@ -33,7 +29,7 @@ class SEARCH(Tool):
     def do(self):
         try:
             with ThreadPoolExecutor() as executor:
-                url_list = self.webtools.get_search_urls(search_term=self.query_arg.val, num_results=SEARCH.num_results)
+                url_list = self.webtools.get_search_urls(search_term=self.requested_info_arg.val, num_results=SEARCH.num_results)
                 self.update_log(f'The following URLs were found: {url_list}')
                 site_reports = list(executor.map(self.get_site_report, url_list))
 
@@ -54,7 +50,7 @@ class SEARCH(Tool):
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
 
             result = summary_agent.get_text_response(
-                prompt=f'Website text:\n {input_text}\n Query: {self.query_arg.val}',
+                prompt=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}',
                 max_token=300)
         except:
             result = f'An exception occured while trying to get report on site {site_url}. Aborting ...'
@@ -69,8 +65,8 @@ class SEARCH(Tool):
                              f'{info_text}\n'
 
         composition_agent = SinglePurposeAgent.make_report_composition_agent()
-        composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}\n Query: {self.query_arg.val}'
+        composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
                                                    f'First evaluate the sources for their usefulness for the query, and make an outline of what you learned',
                                             max_token=500)
-        return composition_agent.get_text_response(prompt=f'Now provide an answer to the initial query: {self.query_arg.val}',verbose=False)
+        return composition_agent.get_text_response(prompt=f'Now provide an answer to the initial query: {self.requested_info_arg.val}', verbose=False)
 
