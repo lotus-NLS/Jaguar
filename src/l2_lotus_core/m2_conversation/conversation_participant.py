@@ -38,13 +38,12 @@ class ConversationParticipant:
     # ------------------------------
     # log
 
-    def _log_entry(self, entry : Entry, with_reaction : bool = True):
+    def _log_entry(self, entry : Entry):
         if not entry.get_role() == DialogueRole.user_role():
             entry.mark_read()
 
         self._personal_log.append(entry)
-        if with_reaction:
-            Thread(target=self.react, args=(entry,)).start()
+        Thread(target=self.react, args=(entry,)).start()
 
 
     def log_user_msg(self, msg : str):
