@@ -71,10 +71,8 @@ class Agent(ConversationParticipant):
             tool_instructions = action.get_tool_instructions()
 
         except Exception:
-            self.think(get_err_msg(text=f'An error occured while trying to parse tool call arguments or text'))
-            self.continue_dialogue()
+            self.handle_tool_response(err_text=f'An error occured while trying to parse tool call arguments or text')
             return
-
 
         try:
             if not text_content is None:
@@ -82,11 +80,10 @@ class Agent(ConversationParticipant):
 
             if not tool_instructions is None:
                 self.use_tool(instructions=tool_instructions)
-                self.continue_dialogue()
+                self.handle_tool_response()
 
         except Exception:
-            self.think(get_err_msg(text=f'The following error occured while trying to perform action:\nAction: {action}'))
-            self.continue_dialogue()
+            self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}')
 
 
     def use_tool(self, instructions : ToolInstruction) -> None:
@@ -101,7 +98,11 @@ class Agent(ConversationParticipant):
                           f'In your update it is not necessary to provide the user with the function output'
                           ,with_reaction= False)
 
-    def continue_dialogue(self):
+
+    def handle_tool_response(self, err_text : Optional[str] = None):
+        if not err_text is None:
+            self.think(get_err_msg(text=err_text))
+
         self.speak(self.get_next_action(is_allowed_functcall=False).get_text())
 
 
