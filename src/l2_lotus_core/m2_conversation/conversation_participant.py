@@ -32,18 +32,14 @@ class ConversationParticipant:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
 
-    def mark_all_read(self) -> None:
-        for entry in self._personal_log:
-            entry.mark_read()
-
     def get_unread_entries(self) -> list[Entry]:
         return [entry for entry in self._personal_log if not entry.get_is_read()]
 
     # ------------------------------
     # log
 
-    def _log_entry(self, entry : Entry, with_reaction : bool = True, mark_read : bool = True):
-        if mark_read:
+    def _log_entry(self, entry : Entry, with_reaction : bool = True):
+        if not entry.get_role() == DialogueRole.user_role():
             entry.mark_read()
 
         self._personal_log.append(entry)
@@ -51,8 +47,10 @@ class ConversationParticipant:
             Thread(target=self.react, args=(entry,)).start()
 
 
-    def log_user_msg(self, msg : str, with_reaction : Optional[bool] = None):
+    def log_user_msg(self, msg : str, with_reaction : Optional[bool] = None, mark_read : bool = False):
         entry = Entry(role=DialogueRole.user_role(), msg=msg)
+        if mark_read:
+            entry.mark_read()
 
         if with_reaction is None:
             self._log_entry(entry)

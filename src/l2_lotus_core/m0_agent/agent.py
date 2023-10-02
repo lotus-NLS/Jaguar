@@ -44,16 +44,19 @@ class Agent(ConversationParticipant):
 
     def loop(self):
         while True:
-            new_task = self.task_queue.get()
+            self.task_queue.get()
 
-            if new_task.is_dialogue_task():
-                self.mark_all_read()
+            entries_to_process = self.get_unread_entries()
 
             # TODO: This needs to get moved below "do" but first test around
             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(is_mandate_task=True))
 
             self.do()
+
+            for entry in entries_to_process:
+                entry.mark_read()
+            self.task_queue.complete_active_task()
 
 
     def react(self, entry : Entry) -> None:
@@ -99,44 +102,47 @@ class Agent(ConversationParticipant):
 
         self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                           f'In your update it is not necessary to provide the user with the function output'
-                          ,with_reaction= False)
+                          ,with_reaction = False, mark_read = True)
 
 
     def handle_tool_response(self, err_text : Optional[str] = None):
         if not err_text is None:
             self.think(get_err_msg(text=err_text))
 
-        self.speak(self.get_next_action(is_allowed_functcall=False).get_text())
+        feedback_msg = self.get_next_action(is_allowed_functcall=False,ignore_active_task=True).get_text()
+        self.speak(feedback_msg)
 
 
     def get_next_action(self,
                         is_allowed_functcall : bool = True,
                         max_tokens : Optional[int] = None,
-                        temperature : float = 0.3) -> Action:
+                        temperature : float = 0.3,
+                        ignore_active_task : bool = False) -> Action:
 
         action = self.model.get_action(
-            entries=self.get_entries(),
+            entries=self.get_entries(ignore_active_task=ignore_active_task),
             tool_docs=self.get_active_tool_docs(),
             action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
         )
 
         return action
 
+    # ---------------------------------------------------
+    # Context
 
-    def get_entries(self) -> Optional[list[Entry]]:
+    def get_entries(self, ignore_active_task : bool = False) -> list[Entry]:
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
         entries = [core_entry] + self._personal_log
 
-        task_entry = self.get_task_entry(task= self.task_queue.get_active_task())
-        if not task_entry is None:
-            entries += task_entry
+        print(f'[Temp debug]: Currently active task is {self.task_queue.view_active_task()}')
+        task_entry = self.get_task_entry(task=self.task_queue.view_active_task())
+        if not task_entry is None and not ignore_active_task:
+            entries += [task_entry]
 
         return entries
 
-    # ---------------------------------------------------
-    # Other
 
-    def get_task_entry(self, task : Task) -> Optional[Task]:
+    def get_task_entry(self, task : Task) -> Optional[Entry]:
         if task is None:
             task_entry = None
 
@@ -144,8 +150,11 @@ class Agent(ConversationParticipant):
             if task.is_mandate_task():
                 task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
             else:
-                task_entry = Entry(DialogueRole.system_role(),
-                                   msg= f'Respond to unread messages: {self.get_unread_entries()}')
+                unread_entries_text = 'Respond to unread messages: '
+                for entry in self.get_unread_entries():
+                    unread_entries_text += str(entry)
+
+                task_entry = Entry(DialogueRole.user_role(), msg= f'{unread_entries_text}')
 
         return task_entry
 

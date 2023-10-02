@@ -42,7 +42,7 @@ class TaskQueue(Queue):
     def complete_active_task(self) -> None:
         self._active_task = None
 
-    def get_active_task(self) -> Optional[Task]:
+    def view_active_task(self) -> Optional[Task]:
         return self._active_task
 
     def get_work_task_present(self) -> bool:
