@@ -68,5 +68,5 @@ class SEARCH(Tool):
         composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
                                                    f'First evaluate the sources for their usefulness for the query, and make an outline of what you learned',
                                             max_token=500)
-        return composition_agent.get_text_response(prompt=f'Now provide an answer to the initial query: {self.requested_info_arg.val}', verbose=False)
+        return composition_agent.get_text_response(prompt=f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
 

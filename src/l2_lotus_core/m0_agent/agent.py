@@ -160,3 +160,4 @@ class Agent(ConversationParticipant):
 
     def get_active_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
+
