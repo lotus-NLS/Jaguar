@@ -79,6 +79,7 @@ class Agent(ConversationParticipant):
 
             if not tool_instructions is None:
                 self.use_tool(instructions=tool_instructions)
+                self.handle_tool_response()
 
         except Exception:
             self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}')
@@ -92,18 +93,16 @@ class Agent(ConversationParticipant):
         if tool_name in self.tool_dict:
             self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-        feedback_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                        'In your update it is not necessary to provide the user with the function output')
-        additional_entries = [Entry(role=DialogueRole.user_role(),msg=feedback_msg)]
-        feedback_msg = self.get_next_action(is_allowed_functcall=False,additional_entries= additional_entries).get_text()
-        self.speak(feedback_msg)
-
 
     def handle_tool_response(self, err_text : Optional[str] = None):
         if not err_text is None:
             self.think(get_exception_msg(text=err_text))
 
-        feedback_msg = self.get_next_action(is_allowed_functcall=False).get_text()
+        log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                   'In your update it is not necessary to provide the user with the function output')
+        feedback_msg = self.get_next_action(
+            is_allowed_functcall=False,
+            additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
         self.speak(feedback_msg)
 
 
@@ -113,12 +112,11 @@ class Agent(ConversationParticipant):
                         temperature : float = 0.3,
                         additional_entries : Optional[list[Entry]] = None) -> Action:
 
-        entries = self.get_basic_entries()
-        if not additional_entries is None:
-            entries += additional_entries
+        if additional_entries is None:
+            additional_entries = []
 
         action = self.model.get_action(
-            entries=entries,
+            entries=self.get_basic_entries()+additional_entries,
             tool_docs=self.get_active_tool_docs(),
             action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
         )
