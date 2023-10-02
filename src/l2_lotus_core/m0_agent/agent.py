@@ -71,19 +71,38 @@ class Agent(ConversationParticipant):
             tool_instructions = action.get_tool_instructions()
 
         except Exception:
-            self.log_tool_error(err_text='An error occured while trying to parse tool call arguments or text:')
+            self.think(get_err_msg(text=f'An error occured while trying to parse tool call arguments or text'))
+            self.continue_dialogue()
             return
 
-        try:
 
+        try:
             if not text_content is None:
                 self.speak(msg=text_content)
 
             if not tool_instructions is None:
                 self.use_tool(instructions=tool_instructions)
+                self.continue_dialogue()
 
         except Exception:
-            self.log_tool_error(err_text=f'The following error occured while trying to perform action:\nAction: {action}')
+            self.think(get_err_msg(text=f'The following error occured while trying to perform action:\nAction: {action}'))
+            self.continue_dialogue()
+
+
+    def use_tool(self, instructions : ToolInstruction) -> None:
+        print('[Debug]: Agent requested tool usage')
+        tool_name = instructions.name
+        tool_args_dict = instructions.arguments
+
+        if tool_name in self.tool_dict:
+            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+
+        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                          f'In your update it is not necessary to provide the user with the function output'
+                          ,with_reaction= False)
+
+    def continue_dialogue(self):
+        self.speak(self.get_next_action(is_allowed_functcall=False).get_text())
 
 
     def get_next_action(self,
@@ -101,26 +120,13 @@ class Agent(ConversationParticipant):
         return action
 
 
-    def use_tool(self, instructions : ToolInstruction) -> None:
-        print('[Debug]: Agent requested tool usage')
-        tool_name = instructions.name
-        tool_args_dict = instructions.arguments
-
-        if tool_name in self.tool_dict:
-            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-
-        self.log_user_msg(f'##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                          f'In your update it is not necessary to provide the user with the function output'
-                          ,with_reaction= False)
-
-
     def get_entries(self, work_mode_enabled : bool = False) -> Optional[list[Entry]]:
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
-        directive_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
+        mandate_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
         entries = [core_entry] + self._personal_log
 
         if work_mode_enabled:
-            entries += [directive_entry]
+            entries += [mandate_entry]
 
         return entries
 
@@ -130,6 +136,3 @@ class Agent(ConversationParticipant):
 
     def get_active_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
-
-    def log_tool_error(self, err_text : str) -> None:
-        self.think(get_err_msg(text=err_text))
