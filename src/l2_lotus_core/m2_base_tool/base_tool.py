@@ -4,6 +4,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from typing import Optional, Callable, Any
 
 from src.l2_lotus_core.m2_base_tool.tool_arg import ToolArg
+from src.l2_lotus_core.m3_logging.logger import get_exception_msg
 
 # ---------------------------------------------------------
 verbose_mode_enabled = False
@@ -144,11 +145,7 @@ class BaseTool:
 
 
     def exception_log(self, to_log: str) -> None:
-        to_log = f'[Error]: {to_log}\n'
-        if not traceback.format_exc() is None:
-            to_log += f'{traceback.format_exc()}'
-
-        self.log(to_log)
+        self.log(get_exception_msg(to_log))
 
 
     def update_log(self, to_log: str) -> None:

@@ -1,5 +1,4 @@
 from typing import Optional
-import traceback
 import threading
 
 from src.l2_lotus_core.m0_agent.task import TaskQueue, Task
@@ -9,14 +8,9 @@ from src.l2_lotus_core.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, Entry
+from src.l2_lotus_core.m3_logging.logger import *
 
 # ---------------------------------------------------------
-
-# TODO : This together with the tool logging should be an extra logging package smth. like customlogging
-def get_err_msg(text: str):
-    return (f'[Error]: {text}\n'
-            f'{traceback.format_exc()}')
-
 
 class Agent(ConversationParticipant):
     def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Identity = Identity(core=Cores.goto)):
@@ -68,7 +62,7 @@ class Agent(ConversationParticipant):
             action = self.get_next_action(additional_entries=[self.get_task_entry()])
 
         except Exception:
-            print(get_err_msg(text=f'Unable to obtain response from {self.name}'))
+            print(get_exception_msg(text=f'Unable to obtain response from {self.name}'))
             return
 
         try:
@@ -107,7 +101,7 @@ class Agent(ConversationParticipant):
 
     def handle_tool_response(self, err_text : Optional[str] = None):
         if not err_text is None:
-            self.think(get_err_msg(text=err_text))
+            self.think(get_exception_msg(text=err_text))
 
         feedback_msg = self.get_next_action(is_allowed_functcall=False).get_text()
         self.speak(feedback_msg)
