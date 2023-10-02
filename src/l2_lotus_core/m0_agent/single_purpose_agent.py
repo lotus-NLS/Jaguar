@@ -2,7 +2,7 @@ from typing import Optional
 
 from src.l2_lotus_core.m0_agent.agent import Agent
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l2_lotus_core.m1_protocol import Identity, Cores
+from src.l2_lotus_core.m2_protocol import Identity, Cores
 
 # ---------------------------------------------------------
 

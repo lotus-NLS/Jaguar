@@ -2,7 +2,7 @@ import openai
 import tiktoken
 from typing import Optional
 
-from src.l2_lotus_core.m3_settings import get_setting, Credentials
+from src.l2_lotus_core.m2_settings import get_setting, Credentials
 
 from src.l2_lotus_core.m2_conversation import Entry
 
