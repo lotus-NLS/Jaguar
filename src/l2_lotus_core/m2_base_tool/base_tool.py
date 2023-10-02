@@ -3,7 +3,7 @@ import json
 from func_timeout import func_timeout, FunctionTimedOut
 from typing import Optional, Callable, Any
 
-from src.l2_lotus_core.m0_agent.ToolArg import ToolArg
+from src.l2_lotus_core.m2_base_tool.tool_arg import ToolArg
 
 # ---------------------------------------------------------
 verbose_mode_enabled = False

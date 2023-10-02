@@ -4,7 +4,7 @@ import threading
 
 from src.l2_lotus_core.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_core.m1_models import ToolInstruction
-from src.l2_lotus_core.m0_agent.tool_interface import BaseTool
+from src.l2_lotus_core.m2_base_tool.base_tool import BaseTool
 from src.l2_lotus_core.m1_protocol import Mandate, Identity, Cores
 from src.l2_lotus_core.m1_models import Action, ActionOptions
 from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes

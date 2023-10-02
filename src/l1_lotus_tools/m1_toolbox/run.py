@@ -8,7 +8,7 @@ from subprocess import Popen
 import time
 
 from src.l1_lotus_tools.m0_tool_class.tool import Tool
-from src.l2_lotus_core.m0_agent.ToolArg import ToolArg
+from src.l2_lotus_core.m2_base_tool.tool_arg import ToolArg
 
 
 # ---------------------------------------------------------
