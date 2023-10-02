@@ -18,7 +18,7 @@ class DialogueRole(str):
 
 
     @classmethod
-    def c_tool(cls):
+    def tool_role(cls):
         return cls(DialogueRole._m_tool)
 
     @classmethod
@@ -26,7 +26,7 @@ class DialogueRole(str):
         return cls(DialogueRole._m_user)
 
     @classmethod
-    def c_agent(cls):
+    def agent_role(cls):
         return cls(DialogueRole._m_agent)
 
     @classmethod
@@ -47,7 +47,7 @@ class Entry(dict):
         super().__init__()
         self['role'] = role
         self['content'] = msg
-        if role == DialogueRole.c_tool():
+        if role == DialogueRole.tool_role():
             self['name'] = tool_name
 
     def get_role(self):

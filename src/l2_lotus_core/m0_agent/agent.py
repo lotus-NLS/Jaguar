@@ -20,7 +20,7 @@ def get_err_msg(text: str):
 
 class Agent(ConversationParticipant):
     def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Optional[Identity] = None):
-        ConversationParticipant.__init__(self,role=DialogueRole.c_agent())
+        ConversationParticipant.__init__(self, role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
         self.identity : Identity = identity if not identity is None else Identity(core=Cores.goto)
@@ -48,20 +48,19 @@ class Agent(ConversationParticipant):
             is_in_work_mode = self.mandate.is_active()
 
             if is_in_work_mode and not self.task_queue.work_task_present():
-                self.task_queue.put(Task(is_work_task=True))
+                self.task_queue.put(Task(is_mandate_task=True))
 
-            self.do(is_work=new_task.is_work_task(),
-                    tool_call_allowed=new_task.get_tool_call_allowed())
+            self.do(is_mandate=new_task.is_mandate_task())
 
 
     def react(self, entry : Entry) -> None:
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_present():
-            self.task_queue.put(Task(is_work_task=False))
+            self.task_queue.put(Task(is_mandate_task=False))
 
 
-    def do(self, is_work : bool = False, tool_call_allowed : bool = True) -> None:
+    def do(self, is_mandate : bool = False) -> None:
         try:
-            action = self.get_next_action(is_work_action=is_work, is_allowed_functcall=tool_call_allowed)
+            action = self.get_next_action(is_mandate_action=is_mandate)
 
         except Exception:
             print(get_err_msg(text=f'Unable to obtain response from {self.name}'))
@@ -88,13 +87,13 @@ class Agent(ConversationParticipant):
 
 
     def get_next_action(self,
-            is_allowed_functcall : bool = True,
-            max_tokens : Optional[int] = None,
-            temperature : float = 0.3,
-            is_work_action : bool = False) -> Action:
+                        is_allowed_functcall : bool = True,
+                        max_tokens : Optional[int] = None,
+                        temperature : float = 0.3,
+                        is_mandate_action : bool = False) -> Action:
 
         action = self.model.get_action(
-            entries=self.get_entries(work_mode_enabled=is_work_action),
+            entries=self.get_entries(work_mode_enabled=is_mandate_action),
             tool_docs=self.get_active_tool_docs(),
             action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
         )
@@ -103,8 +102,6 @@ class Agent(ConversationParticipant):
 
 
     def use_tool(self, instructions : ToolInstruction) -> None:
-        self.queue_feedback_task()
-
         print('[Debug]: Agent requested tool usage')
         tool_name = instructions.name
         tool_args_dict = instructions.arguments
@@ -133,9 +130,6 @@ class Agent(ConversationParticipant):
 
     def get_active_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
-
-    def queue_feedback_task(self):
-        self.task_queue.put(Task(is_work_task=False,tool_call_allowed=False))
 
     def log_tool_error(self, err_text : str) -> None:
         self.think(get_err_msg(text=err_text))
