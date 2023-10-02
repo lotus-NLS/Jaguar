@@ -1,5 +1,5 @@
 from src.l1_lotus_tools.m0_tool_class.tool import Tool
-from src.l1_lotus_tools.m0_tool_class.ToolArg import ToolArg
+from src.l2_lotus_core.m0_agent.ToolArg import ToolArg
 from src.l2_lotus_core.m1_protocol import Objective
 # from src.l2_lotus_core.m1_protocol import Directive
 import inspect

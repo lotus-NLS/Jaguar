@@ -1,6 +1,6 @@
 from .m0_agent.agent import Agent
 from .m0_agent import SinglePurposeAgent
-from .m0_agent import Tool
+from .m0_agent import BaseTool
 
 from .m2_conversation.conversation_participant import ConversationParticipant
 from .m2_conversation.conversation_entry import Entry, DialogueRole
