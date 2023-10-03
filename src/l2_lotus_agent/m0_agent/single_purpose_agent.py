@@ -5,7 +5,7 @@ from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l2_lotus_agent.m2_protocol import Identity, Cores
 
 # ---------------------------------------------------------
-
+#
 class SinglePurposeAgent(Agent):
     @classmethod
     def make_website_summarization_agent(cls):

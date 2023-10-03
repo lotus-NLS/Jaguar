@@ -1,2 +1,2 @@
-from .m0_settings import get_setting, Credentials
-from .m0_conversation import Entry
+from .m0_settings import get_setting, Credentials, SettingsController
+from .m0_conversation import DialogueRole, Entry, ConversationParticipant, Channel

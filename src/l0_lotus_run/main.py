@@ -2,7 +2,7 @@ import time
 from typing import Optional
 from src.l0_lotus_run.entities import DefaultAgent, User
 from src.l0_lotus_run.gui_element import ChatGUI
-from src.l2_lotus_agent import Channel, ConversationParticipant,SettingsController
+from src.l3_lotus_core import Channel, ConversationParticipant,SettingsController
 
 # ---------------------------------------------------------
 
@@ -23,7 +23,6 @@ def get_fully_qualified_name(func):
 
 
 class Engine:
-
     @log_time_after_done
     def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()

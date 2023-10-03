@@ -8,7 +8,7 @@ from func_timeout import func_timeout
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from src.l2_lotus_agent import get_setting, Credentials
+from src.l3_lotus_core import get_setting, Credentials
 from src.l1_lotus_tools.m0_tool_class.tool import Tool
 
 

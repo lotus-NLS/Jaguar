@@ -1,4 +1,5 @@
-from src.l2_lotus_agent import Agent, ConversationParticipant, DialogueRole
+from src.l2_lotus_agent import Agent
+from src.l3_lotus_core import ConversationParticipant, DialogueRole
 from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
 from src.l1_lotus_tools import UPDATE_MANDATE, INITIALIZE_MANDATE
 from src.l1_lotus_tools import Tool
