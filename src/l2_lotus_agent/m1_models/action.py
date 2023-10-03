@@ -54,17 +54,56 @@ class Action:
 
         try:
             tool_name = funct_call['name']
-            tool_args_dict = json.loads(funct_call['arguments'])
+            if not isinstance(tool_name, str):
+                raise TypeError
 
-            if not isinstance(tool_name,str):
-                raise TypeError
-            if not isinstance(tool_args_dict,dict):
-                raise TypeError
+            json_str = funct_call['arguments']
+
+            try:
+                tool_args_dict = json.loads(s=json_str)
+            except:
+                print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
+                tool_args_dict = json.loads(s=self.get_salvaged_json(broken_json=json_str))
+
         except:
             print(f'[Debug]: An error occured while trying to parse given function call {funct_call}. Raising exception ...')
             raise ValueError('Unable to parse tool instructions ')
 
         return ToolInstruction(name=tool_name, arguments=tool_args_dict)
+
+
+    @staticmethod
+    def get_salvaged_json(broken_json: str) -> str:
+        currently_inside_quotes = False
+        next_char_escaped = False
+        escaped = []
+
+        control_char_map = {
+            '\n': '\\n',
+            '\t': '\\t',
+            '\r': '\\r',
+            '\b': '\\b',
+            '\f': '\\f',
+            '\\': '\\\\'
+        }
+
+        for char in broken_json:
+            if char == '"' and not next_char_escaped:
+                currently_inside_quotes = not currently_inside_quotes
+
+            if currently_inside_quotes and not next_char_escaped:
+                if char in control_char_map:
+                    escaped.append(control_char_map[char])
+                    continue
+
+            if char == '\\':
+                next_char_escaped = True
+            else:
+                next_char_escaped = False
+
+            escaped.append(char)
+
+        return ''.join(escaped)
 
 
     def __str__(self):
