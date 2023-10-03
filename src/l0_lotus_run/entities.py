@@ -7,10 +7,11 @@ from src.l1_lotus_tools import Tool
 # ---------------------------------------------------------
 
 
-class DefaultAgent(Agent):
+class Alpha(Agent):
     def __init__(self):
         super().__init__()
         self.setup_tools()
+        self.launch()
 
     # ---------------------------------------------------
     # Setup

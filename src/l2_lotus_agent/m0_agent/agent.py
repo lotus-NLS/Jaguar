@@ -26,9 +26,6 @@ class Agent(ConversationParticipant):
 
         self.model : LLM = model_type
 
-        # Launch
-        self.launch()
-
     def launch(self):
         threading.Thread(target=self.loop).start()
 

@@ -1,6 +1,6 @@
 import time
 from typing import Optional
-from src.l0_lotus_run.entities import DefaultAgent, User
+from src.l0_lotus_run.entities import Alpha, User
 from src.l0_lotus_run.gui_element import ChatGUI
 from src.l3_lotus_core import Channel, ConversationParticipant,SettingsController
 
@@ -27,7 +27,7 @@ class Engine:
     def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()
         self.user : ConversationParticipant = User()
-        self.bots : list[DefaultAgent] = [DefaultAgent()]
+        self.bots : list[Alpha] = [Alpha()]
         self.settings_controller : Optional[SettingsController] = None
 
         # TODO: This should be a setting
