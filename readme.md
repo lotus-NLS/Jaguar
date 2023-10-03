@@ -34,10 +34,13 @@ After entering the credentials they will be saved in a config file in the home d
 
 ## Usage
 
-Navigate to the repo root and run the following commands:
+Navigate to the repo root
 ```
 cd ~/Roseus
+```
 
+then run the following commands:
+```
 export PYTHONPATH=/"/home/[username]/Roseus:$PYTHONPATH/"
 source venv/bin/activate
 python3 /home/[username]/Roseus/src/l0_lotus_run/main.py
