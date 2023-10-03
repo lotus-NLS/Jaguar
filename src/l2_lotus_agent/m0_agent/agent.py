@@ -29,7 +29,6 @@ class Agent(ConversationParticipant):
         # Launch
         self.launch()
 
-
     def launch(self):
         threading.Thread(target=self.loop).start()
 
