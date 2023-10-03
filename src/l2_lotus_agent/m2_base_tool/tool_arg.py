@@ -2,12 +2,14 @@ from typing import Optional, Union
 
 
 class ToolArg:
-    def __init__(self, name : str, dtype : type, desc : str):
+    def __init__(self, name : str, dtype : type, desc : str,
+                 available_options : Optional[list[str]] = None,
+                 is_optional : bool = False):
         self.name : str = name
         self.dtype : type = dtype
         self.description : str = desc
-        self.available_options: Optional[list[str]] = None
-        self.is_optional : bool = False
+        self.available_options: Optional[list[str]] = available_options
+        self.is_optional : bool = is_optional
 
         self.val : Optional = None
 

@@ -32,10 +32,7 @@ class BaseTool:
 
     def create_arg(self, name: str, dtype: type, desc: str, available_options: Optional[list[str]] = None,
                    is_optional: bool = False) -> ToolArg:
-        this_arg = ToolArg(name=name, dtype=dtype, desc=desc)
-        this_arg.available_options = available_options
-        this_arg.is_optional = is_optional
-
+        this_arg = ToolArg(name=name, dtype=dtype, desc=desc, available_options=available_options, is_optional=is_optional)
         self.arg_dict[this_arg.name] = this_arg
 
         return this_arg
