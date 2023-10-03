@@ -3,24 +3,9 @@ from typing import Optional
 from src.l0_lotus_run.entities import Alpha, User
 from src.l0_lotus_run.gui_element import ChatGUI
 from src.l3_lotus_core import Channel, ConversationParticipant,SettingsController
+from src.l3_lotus_core.m0_logging.logger import log_time_after_done
 
 # ---------------------------------------------------------
-
-start_time = time.time()
-def log_time_after_done(func):
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
-        elapsed_time = time.time() - start_time
-        print(f"""[Debug]: Completed "{get_fully_qualified_name(func)}"; Uptime: {elapsed_time:.2f} seconds""")
-
-    return wrapper
-
-def get_fully_qualified_name(func):
-    try:
-        return func.__qualname__
-    except:
-        return f"{func.__name__}"
-
 
 class Engine:
     @log_time_after_done
