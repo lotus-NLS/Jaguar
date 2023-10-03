@@ -8,7 +8,7 @@ from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import Action, ActionOptions
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l3_lotus_core.m0_conversation import ConversationParticipant, DialogueRole, Entry
-from src.l3_lotus_core.m0_logging.logger import *
+from src.l3_lotus_core.m0_logging.logger import get_exception_msg
 
 # ---------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Agent(ConversationParticipant):
 
         self.model : LLM = model_type
 
-    def launch(self):
+    def launch(self) -> None:
         threading.Thread(target=self.loop).start()
 
     # ---------------------------------------------------
@@ -105,6 +105,7 @@ class Agent(ConversationParticipant):
 
     def get_next_action(self,
                         is_allowed_functcall : bool = True,
+                        custom_tool_docs : Optional[list[dict]] = None,
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3,
                         additional_entries : Optional[list[Entry]] = None) -> Action:
@@ -114,7 +115,7 @@ class Agent(ConversationParticipant):
 
         action = self.model.get_action(
             entries=self.get_basic_entries()+additional_entries,
-            tool_docs=self.get_active_tool_docs(),
+            tool_docs=self.get_active_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
         )
 
