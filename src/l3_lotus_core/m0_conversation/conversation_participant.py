@@ -32,6 +32,13 @@ class ConversationParticipant:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
 
+    def get_unread_as_str(self) -> str:
+        unread_msg = ''
+        for entry in self.get_unread_entries():
+            unread_msg += str(entry)
+
+        return unread_msg
+
     def get_unread_entries(self) -> list[Entry]:
         return [entry for entry in self._personal_log if not entry.get_is_read()]
 

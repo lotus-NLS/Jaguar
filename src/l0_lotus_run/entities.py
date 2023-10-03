@@ -18,9 +18,9 @@ class Alpha(Agent):
 
     def setup_tools(self) -> None:
         all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_MANDATE(), INITIALIZE_MANDATE()]
+        self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 
-        self.tool_dict = {tool.name : tool for tool in all_tools}
-        for tool in self.tool_dict.values():
+        for tool in all_tools:
             self.add_tool(tool)
 
             if tool.name == UPDATE_MANDATE.__name__:
@@ -30,7 +30,6 @@ class Alpha(Agent):
     def add_tool(self, tool : Tool):
         tool.external_log = self.get_tool_logger(tool_name=tool.name)
         tool.acting_agent = self
-
 
     def get_tool_logger(self,tool_name: str):
         max_tokens_tool = 1000

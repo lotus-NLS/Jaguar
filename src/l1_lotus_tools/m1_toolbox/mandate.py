@@ -50,9 +50,7 @@ class UPDATE_MANDATE(Tool):
 
         if not self.acting_agent.mandate.root_objective.is_active:
             self.acting_agent.mandate.root_objective = None
-
-            init_tool = self.acting_agent.tool_dict[INITIALIZE_MANDATE.__name__]
-            init_tool.enable()
+            self.acting_agent.tool_handler.enable_tool(tool_name=INITIALIZE_MANDATE.__name__)
             self.disable()
 
 
@@ -110,8 +108,7 @@ class INITIALIZE_MANDATE(Tool):
 
             stack.append(new_objective)
 
-        update_tool = self.acting_agent.tool_dict[UPDATE_MANDATE.__name__]
-        update_tool.enable()
+        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
         self.disable()
 
         if verbose_mode:

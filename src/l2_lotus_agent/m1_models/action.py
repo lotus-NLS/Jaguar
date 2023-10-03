@@ -7,10 +7,16 @@ import json
 
 # ---------------------------------------------------------
 
-class ToolInstruction:
+class ToolAction:
     def __init__(self,name : str, arguments : dict):
-        self.name : str = name
-        self.arguments : dict = arguments
+        self._name : str = name
+        self._arguments : dict = arguments
+
+    def get_tool_name(self) -> str:
+        return self._name
+
+    def get_arguments_(self) -> dict:
+        return self._arguments
 
 
 class ActionOptions:
@@ -34,7 +40,7 @@ class Action:
         return content if isinstance(content,str) else None
 
 
-    def get_tool_instructions(self) -> Union[ToolInstruction, None]:
+    def get_tool_action(self) -> Union[ToolAction, None]:
         funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
 
         if funct_call is None:
@@ -69,7 +75,7 @@ class Action:
             print(f'[Debug]: An error occured while trying to parse given function call {funct_call}. Raising exception ...')
             raise ValueError('Unable to parse tool instructions ')
 
-        return ToolInstruction(name=tool_name, arguments=tool_args_dict)
+        return ToolAction(name=tool_name, arguments=tool_args_dict)
 
 
     @staticmethod

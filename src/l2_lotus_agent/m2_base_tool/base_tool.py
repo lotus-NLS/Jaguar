@@ -14,7 +14,6 @@ class BaseTool:
     timout_in_sec = 60
 
     def __init__(self):
-        self.name = None
         self.name: str = self.__class__.__name__
         self.desc: str = ''
         self.external_log: Callable = lambda *args, **kwargs: None
