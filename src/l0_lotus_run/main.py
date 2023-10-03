@@ -27,7 +27,7 @@ class Engine:
             self.settings_controller.setup(perform_validation=perform_validation)
 
     @log_time_after_done
-    def start(self, run_in_terminal : bool = True):
+    def run(self, run_in_terminal : bool = True):
         print(f'[Debug]: Lotus started')
 
         if self.introduction_enabled:
@@ -51,7 +51,7 @@ def main():
     the_engine.initialize_settings(perform_validation=True)
 
     # Start the routine
-    the_engine.start(run_in_terminal=True)
+    the_engine.run(run_in_terminal=True)
 
 if __name__ == "__main__":
     main()

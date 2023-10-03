@@ -7,13 +7,14 @@ from typing import Optional
 
 # ---------------------------------------------------------
 
+verbose_mode = True
 
 class UPDATE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
         self.root_objective : Optional[Objective] = None
-        self.description : str = 'This tools allows you to mark an objective as complete'
+        self.description : str = 'This tool allows you to update objectives'
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
 
@@ -27,8 +28,6 @@ class UPDATE_MANDATE(Tool):
         self.root_objective = self.acting_agent.mandate.root_objective
 
         function_names = self.root_objective.available_actions.keys()
-
-
         self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
                                                         available_options=[func_name for func_name in function_names],
                                                         desc='The type of action that you want to perform')
@@ -46,12 +45,16 @@ class UPDATE_MANDATE(Tool):
         else:
             action()
 
+        if verbose_mode:
+            print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
+
         if not self.acting_agent.mandate.root_objective.is_active:
             self.acting_agent.mandate.root_objective = None
 
             init_tool = self.acting_agent.tool_dict[INITIALIZE_MANDATE.__name__]
             init_tool.enable()
             self.disable()
+
 
 
     @staticmethod
@@ -67,7 +70,7 @@ class INITIALIZE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
-        self.desc : str = ('This tools allows you to initialize a directive by supplying a'
+        self.desc : str = ('This tools allows you to initialize a mandate by supplying a'
                            ' root objectives and a tree of subobjectives in a list')
 
         self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str
@@ -111,8 +114,8 @@ class INITIALIZE_MANDATE(Tool):
         update_tool.enable()
         self.disable()
 
-        # TODO
-        print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
+        if verbose_mode:
+            print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
 
 
     def is_valid_format(self,lines: list[str]) -> bool:

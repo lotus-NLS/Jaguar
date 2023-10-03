@@ -94,12 +94,13 @@ class Agent(ConversationParticipant):
         if not err_text is None:
             self.think(get_exception_msg(text=err_text))
 
-        log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                   'In your update it is not necessary to provide the user with the function output')
-        feedback_msg = self.get_next_action(
-            is_allowed_functcall=False,
-            additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
-        self.speak(feedback_msg)
+        if self.task_queue.view_active_task().is_dialogue_task():
+            log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
+                       'In your update it is not necessary to provide the user with the function output')
+            feedback_msg = self.get_next_action(
+                is_allowed_functcall=False,
+                additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
+            self.speak(feedback_msg)
 
 
     def get_next_action(self,

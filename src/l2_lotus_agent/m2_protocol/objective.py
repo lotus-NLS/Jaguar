@@ -114,12 +114,12 @@ class Mandate:
         if not self.is_active():
             return None
 
-        objective_msg = '## My current objectives ##\n'
-        if not self.root_objective is None:
-            objective_msg += f'My current objective is:\n' \
-                             f'{self.root_objective}\n'
+        if self.root_objective is None:
+            return None
 
-        mode_msg = 'Your are currently in work mode. Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.'
+        objective_msg = f'My current objective is:\n{self.root_objective}\n'
+        mode_msg = ('Your are currently in work mode and cannot converse with the user.'
+                    'Fulfill all objectives including root or cancel the root objective to get back to dialogue mode.')
 
         return objective_msg + mode_msg
 

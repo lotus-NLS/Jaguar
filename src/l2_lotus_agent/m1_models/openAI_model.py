@@ -50,7 +50,7 @@ class OpenAIModel(LLM):
         openai.api_key = get_setting(label=Credentials.openai_apikey_label)
 
         print(f"[Debug]: Creating completion request. Token count after last response: {self.tokens_at_last_response}")
-        print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
+        # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
         openai_response = openai.ChatCompletion.create(**args_dict)
         print(f"[Debug]: Received response from the model.")
 

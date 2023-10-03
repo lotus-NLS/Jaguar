@@ -17,7 +17,5 @@ class Cores:
     
     You have two modes:
     -> A dialogue mode: This is a back and forth between the user. The user says something, you say something back or call a tool then the user again says something etc. 
-    -> A work mode: Should the user make a request which you need several steps to take care of, you can initiate work mode by creating a Guidance handler.
-    In work mode you work for yourself and can only log your thoughts, not talk to the user. Work mode ends automatically once the root objective of the guidance handler is 
-    completed or cancelled.  
+    -> A work mode: If a task cannot be performed in a single step, you can ask the user for a mandate, which is a list of objectives you propose and can carry out if approved.
     """
