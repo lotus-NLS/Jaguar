@@ -9,38 +9,38 @@
 Roseus aims to provide a natural language interface to your software and to formal computer languages through the usage of LLMs. \
 Its aim is to write software modules by specification and integrate them with existing software, provide intuitive explanations and add comments
 for existing software, rewrite local source files and enable usage of auxiliary 
-tools like the Terminal on Windows or Linux, git, AutoDevOps or Docker through natrual language
-specifications.
+tools like the Terminal on Windows or Linux, git, AutoDevOps or Docker through natrual language specifications.
 
-In particular, agents in the Roseus framework can make use of the following tools:
+## Setup for Ubuntu 22.04
 
--> READ: Read text files on the computer \
--> WRITE: Write out text files locally \
--> RUN: Execute python or Terminal code \
--> BROWSE: Search for information on the web in text form 
+Clone repo into the home directory:
+```
+git clone https://github.com/Somerandomguy10111/Roseus
+```
 
-
-## Setup 
-
-Setup venv
+Setup venv:
 ```
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-Install required packages
+Install required packages:
 ```
 pip install -r requirements.txt
 ```
 
-If the program is run for the first time you will be prompted for your OpenAI API key. After entering the key it will be
-saved in a config file in the home directory in plain text form. In subsequent runs the API key will be read from that location.
+If the program is run for the first time you will be prompted for your OpenAI API key and other credentials.
+After entering the credentials they will be saved in a config file in the home directory as plain text. In subsequent runs the credentials will be read from that location.
 
 ## Usage
 
-Navigate to src/l0_run and run the following command:
+Navigate to the repo root and run the following commands:
 ```
-python3 run_handler.py
+cd ~/Roseus
+
+export PYTHONPATH=/"/home/[username]/Roseus:$PYTHONPATH/"
+source venv/bin/activate
+python3 /home/[username]/Roseus/src/l0_lotus_run/main.py
 ```
 
 For further information simply ask the agent: "Who are you and what you can do?"
