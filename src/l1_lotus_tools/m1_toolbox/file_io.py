@@ -3,7 +3,7 @@ import os
 from PyPDF2 import PdfReader
 
 from src.l1_lotus_tools.m0_tool_class.tool import Tool
-from src.l2_lotus_core.m2_base_tool.tool_arg import ToolArg
+from src.l2_lotus_agent.m2_base_tool.tool_arg import ToolArg
 
 
 # ---------------------------------------------------------

@@ -1,14 +1,14 @@
 from typing import Optional
 import threading
 
-from src.l2_lotus_core.m0_agent.task import TaskQueue, Task
-from src.l2_lotus_core.m1_models import ToolInstruction
-from src.l2_lotus_core.m2_base_tool.base_tool import BaseTool
-from src.l2_lotus_core.m2_protocol import Mandate, Identity, Cores
-from src.l2_lotus_core.m1_models import Action, ActionOptions
-from src.l2_lotus_core.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l2_lotus_core.m2_conversation import ConversationParticipant, DialogueRole, Entry
-from src.l2_lotus_core.m3_logging.logger import *
+from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
+from src.l2_lotus_agent.m1_models import ToolInstruction
+from src.l2_lotus_agent.m2_base_tool.base_tool import BaseTool
+from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
+from src.l2_lotus_agent.m1_models import Action, ActionOptions
+from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
+from src.l3_lotus_core.m0_conversation import ConversationParticipant, DialogueRole, Entry
+from src.l3_lotus_core.m0_logging.logger import *
 
 # ---------------------------------------------------------
 

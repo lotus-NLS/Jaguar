@@ -3,8 +3,8 @@ from threading import Thread
 from typing import Union, Optional
 
 
-from src.l2_lotus_core.m2_conversation.channel import Channel
-from src.l2_lotus_core.m2_conversation.conversation_entry import Entry, DialogueRole
+from src.l3_lotus_core.m0_conversation.channel import Channel
+from src.l3_lotus_core.m0_conversation.conversation_entry import Entry, DialogueRole
 
 # ----------------------------------------------------
 

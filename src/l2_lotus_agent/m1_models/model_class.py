@@ -1,5 +1,5 @@
-from src.l2_lotus_core.m1_models import Action, ActionOptions
-from src.l2_lotus_core.m2_conversation import Entry
+from src.l2_lotus_agent.m1_models import Action, ActionOptions
+from src.l3_lotus_core.m0_conversation import Entry
 
 # ---------------------------------------------------------
 

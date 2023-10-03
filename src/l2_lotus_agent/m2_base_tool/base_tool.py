@@ -3,8 +3,8 @@ import json
 from func_timeout import func_timeout, FunctionTimedOut
 from typing import Optional, Callable, Any
 
-from src.l2_lotus_core.m2_base_tool.tool_arg import ToolArg
-from src.l2_lotus_core.m3_logging.logger import get_exception_msg
+from src.l2_lotus_agent.m2_base_tool.tool_arg import ToolArg
+from src.l3_lotus_core.m0_logging.logger import get_exception_msg
 
 # ---------------------------------------------------------
 verbose_mode_enabled = False

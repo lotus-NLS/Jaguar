@@ -2,12 +2,11 @@ import openai
 import tiktoken
 from typing import Optional
 
-from src.l2_lotus_core.m2_settings import get_setting, Credentials
+from src.l3_lotus_core import get_setting, Credentials
+from src.l3_lotus_core import Entry
 
-from src.l2_lotus_core.m2_conversation import Entry
-
-from src.l2_lotus_core.m1_models.model_class import LLM, FunctionCallModes
-from src.l2_lotus_core.m1_models.action import Action, ActionOptions
+from src.l2_lotus_agent.m1_models.model_class import LLM, FunctionCallModes
+from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
 
 # ---------------------------------------------------------
 
