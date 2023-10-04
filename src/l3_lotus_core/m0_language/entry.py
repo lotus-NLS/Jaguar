@@ -54,7 +54,7 @@ class Flag(str):
     def enforce_mandate_flag(cls):
         return cls(flag=Flag._m_enforce_mandate)
 
-class Flags(list(Flag)):
+class Flags(list[Flag]):
     pass
 
 class Entry(dict):
