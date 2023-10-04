@@ -5,14 +5,14 @@ from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import Action, ActionOptions
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l3_lotus_core.m0_conversation import ConversationParticipant, DialogueRole, Entry
+from src.l3_lotus_core.m0_conversation import LingualEntity, DialogueRole, Entry
 from src.l3_lotus_core.m0_logging.logger import get_exception_msg
 
 # ---------------------------------------------------------
 
-class Agent(ConversationParticipant):
+class Agent(LingualEntity):
     def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Identity = Identity(core=Cores.goto)):
-        ConversationParticipant.__init__(self, role=DialogueRole.agent_role())
+        LingualEntity.__init__(self, role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
         self.identity : Identity = identity

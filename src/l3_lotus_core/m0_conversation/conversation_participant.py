@@ -8,7 +8,11 @@ from src.l3_lotus_core.m0_conversation.conversation_entry import Entry, Dialogue
 
 # ----------------------------------------------------
 
-class ConversationParticipant:
+class Flags:
+    def __init__(self):
+
+
+class LingualEntity:
     def __init__(self, role : DialogueRole, name : Optional[str] = None):
         super().__init__()
         self._role : DialogueRole = role
@@ -79,22 +83,18 @@ class ConversationParticipant:
         self._log_entry(entry=Entry(role=self._role, msg=the_msg))
 
 
-    def speak(self, msg : str, verbose = True):
+    def speak(self, msg : str):
         if self._channel is None:
             return
 
-        if verbose:
-            print(f'[Debug]: {self._role} said: {msg}')
+        print(f'[Debug]: {self._role} said: {msg}')
         self._channel.broadcast_message(Entry(role=self._role, msg=msg))
 
     # ------------------------------
     # Other
 
     @staticmethod
-    def make_entry(role : DialogueRole, msg : str):
-        return Entry(role, msg)
-
-    @staticmethod
-    def enter_into_channel(channel : Channel, participant_list : list[ConversationParticipant]):
+    def enter_into_channel(channel : Channel, participant_list : list[LingualEntity]):
         for participant in participant_list:
             participant.join_channel(channel)
+

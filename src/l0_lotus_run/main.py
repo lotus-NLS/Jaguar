@@ -2,7 +2,7 @@ import time
 from typing import Optional
 from src.l0_lotus_run.entities import Alpha, User
 from src.l0_lotus_run.gui_element import ChatGUI
-from src.l3_lotus_core import Channel, ConversationParticipant,SettingsController
+from src.l3_lotus_core import Channel, LingualEntity,SettingsController
 from src.l3_lotus_core.m0_logging.logger import log_time_after_done
 
 # ---------------------------------------------------------
@@ -11,14 +11,14 @@ class Engine:
     @log_time_after_done
     def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()
-        self.user : ConversationParticipant = User()
+        self.user : LingualEntity = User()
         self.bots : list[Alpha] = [Alpha()]
         self.settings_controller : Optional[SettingsController] = None
 
         # TODO: This should be a setting
         self.introduction_enabled: bool = enable_introduction
 
-        ConversationParticipant.enter_into_channel(channel=self.user_channel, participant_list=[self.user] + self.bots)
+        LingualEntity.enter_into_channel(channel=self.user_channel, participant_list=[self.user] + self.bots)
 
     @log_time_after_done
     def initialize_settings(self, perform_validation : bool = True) -> None:

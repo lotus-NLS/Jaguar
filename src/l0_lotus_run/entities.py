@@ -4,7 +4,7 @@ from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
 from src.l1_lotus_tools import UPDATE_MANDATE, INITIALIZE_MANDATE
 from src.l1_lotus_tools import Tool
 from src.l2_lotus_agent import Agent, Task
-from src.l3_lotus_core import ConversationParticipant, DialogueRole, Entry
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 # ---------------------------------------------------------
 
@@ -78,7 +78,7 @@ class Alpha(Agent):
             self.task_queue.put(Task.make_dialogue_task(enforce_init_mandate=entry_requires_mandate))
 
 
-class User(ConversationParticipant):
+class User(LingualEntity):
     def __init__(self):
         super(User, self).__init__(role=DialogueRole.user_role())
 
