@@ -20,7 +20,7 @@ class Engine:
         # TODO: This should be a setting
         self.introduction_enabled: bool = enable_introduction
 
-        LingualEntity.enter_into_channel(channel=self.user_channel, participant_list=[self.user] + self.bots)
+        LingualEntity.enter_into_channel(channel=self.user_channel, channel_members=[self.user] + self.bots)
 
     @log_time_after_done
     def initialize_settings(self, perform_validation : bool = True):

@@ -90,7 +90,7 @@ class LingualEntity:
     # Other
 
     @staticmethod
-    def enter_into_channel(channel : Channel, participant_list : list[LingualEntity]):
-        for participant in participant_list:
+    def enter_into_channel(channel : Channel, channel_members : list[LingualEntity]):
+        for participant in channel_members:
             participant.join_channel(channel)
 

@@ -4,7 +4,7 @@ from typing import Optional, Callable
 import openai
 import requests
 
-from src.l3_lotus_core.m0_settings.setting_class import all_settings, Setting
+from src.l3_lotus_core.m0_settings.setting import all_settings, Setting
 from src.l3_lotus_core.m1_OperatorIO import user_io
 
 # (08.09.23) DH:

@@ -1,3 +1,4 @@
+
 class UserIO:
     @staticmethod
     def get_confirmation(msg : str) -> bool:
@@ -17,4 +18,6 @@ class UserIO:
 # Note that since there is only a single user_io object , which is not threaded, calls from anywhere
 # in the project will block other calls.
 # However, considering that there is only a single user, that should make sense.
+# It will probably need to be an object sooner or later since the IO will be facilitates
+# through objects that cannot be defined here. So they will need to get set in the engine
 user_io = UserIO()
