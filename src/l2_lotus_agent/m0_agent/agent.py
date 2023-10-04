@@ -40,7 +40,7 @@ class Agent(LingualEntity):
         pass
 
 
-    def do(self):
+    def do(self, enforce_mandate_init : bool):
         try:
             action = self.get_next_action(additional_entries=[self.get_active_task_entry()])
 

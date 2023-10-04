@@ -61,7 +61,7 @@ class Alpha(Agent):
             active_task = self.task_queue.get()
             entries_to_process = self.get_unread_entries()
 
-            self.do()
+            self.do(enforce_mandate_init=active_task.requires_init_mandate())
 
             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(is_mandate_task=True))
