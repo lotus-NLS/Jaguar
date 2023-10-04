@@ -3,13 +3,14 @@ from threading import Thread
 from typing import Union, Optional
 from abc import abstractmethod
 
-from src.l3_lotus_core.m0_conversation.channel import Channel
-from src.l3_lotus_core.m0_conversation.conversation_entry import Entry, DialogueRole
+from src.l3_lotus_core.m0_language.channel import Channel
+from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole
 
 # ----------------------------------------------------
 
 class Flags:
     def __init__(self):
+        pass
 
 
 class LingualEntity:

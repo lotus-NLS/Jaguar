@@ -1,7 +1,7 @@
 from typing import Optional
 from src.l2_lotus_agent.m2_base_tool.base_tool import BaseTool
 from src.l2_lotus_agent.m1_models.action import ToolAction
-# from src.l3_lotus_core.m0_conversation import ConversationParticipant, DialogueRole, Entry
+# from src.l3_lotus_core.m0_language import ConversationParticipant, DialogueRole, Entry
 
 
 class ToolHandler:

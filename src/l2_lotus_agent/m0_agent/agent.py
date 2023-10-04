@@ -5,7 +5,7 @@ from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import Action, ActionOptions
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l3_lotus_core.m0_conversation import LingualEntity, DialogueRole, Entry
+from src.l3_lotus_core.m0_language import LingualEntity, DialogueRole, Entry
 from src.l3_lotus_core.m0_logging.logger import get_exception_msg
 
 # ---------------------------------------------------------

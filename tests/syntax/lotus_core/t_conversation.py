@@ -3,7 +3,7 @@
 
 # import time
 # from tests.test_module import TestModule
-# from src.l2_lotus_agent.m0_conversation.conversation_participant import ConversationParticipant, DialogueRole, Channel
+# from src.l2_lotus_agent.m0_language.conversation_participant import ConversationParticipant, DialogueRole, Channel
 #
 #
 # class ConversationTestModule(TestModule):

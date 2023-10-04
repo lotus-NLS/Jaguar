@@ -4,8 +4,8 @@ from typing import Callable, Optional
 
 import customtkinter as ctk
 
-from src.l3_lotus_core.m0_conversation.channel import Channel
-from src.l3_lotus_core.m0_conversation import Entry
+from src.l3_lotus_core.m0_language.channel import Channel
+from src.l3_lotus_core.m0_language import Entry
 
 # ---------------------------------------------------------
 
