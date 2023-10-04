@@ -81,7 +81,7 @@ class INITIALIZE_MANDATE(Tool):
                                                                     -- Sub-sub objective""")
 
 
-    def do(self) -> None:
+    def do(self):
         directive = self.acting_agent.mandate
         if directive.is_active():
             self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')

@@ -56,7 +56,7 @@ class Setting:
     def get_is_validated(self) -> bool:
         return self._is_validated
 
-    def set_value(self, is_from_file : bool) -> None:
+    def set_value(self, is_from_file : bool):
         if is_from_file:
             config_parser.read(config_path)
             self.value = config_parser.get(self.section, self.label)

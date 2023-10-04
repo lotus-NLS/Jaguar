@@ -19,13 +19,13 @@ class SinglePurposeAgent(Agent):
     def __init__(self, identity: Identity, model_type : LLM):
         super().__init__(model_type=model_type, identity=identity)
 
-    def loop(self) -> None:
+    def loop(self):
         pass
 
-    def launch(self) -> None:
+    def launch(self):
         pass
 
-    def react(self, entry) -> None:
+    def react(self, entry):
         pass
 
     def think(self,msg : str, verbose = False):

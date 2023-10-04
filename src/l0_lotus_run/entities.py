@@ -18,7 +18,7 @@ class Alpha(Agent):
     # ---------------------------------------------------
     # Setup
 
-    def setup_tools(self) -> None:
+    def setup_tools(self):
         all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_MANDATE(), INITIALIZE_MANDATE()]
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 
@@ -33,7 +33,7 @@ class Alpha(Agent):
         tool.external_log = self.get_tool_logger(tool_name=tool.name)
         tool.acting_agent = self
 
-    def get_tool_logger(self,tool_name: str):
+    def get_tool_logger(self,tool_name: str) -> callable:
         max_tokens_tool = 1000
 
         def tool_log(msg: str):
@@ -53,7 +53,7 @@ class Alpha(Agent):
     # ---------------------------------------------------
     # Loop
 
-    def launch(self) -> None:
+    def launch(self):
         threading.Thread(target=self.loop).start()
 
     def loop(self):
@@ -71,7 +71,7 @@ class Alpha(Agent):
             self.task_queue.complete_active_task()
 
 
-    def react(self, entry: Entry) -> None:
+    def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
             entry_requires_mandate = entry.get_is_enforce_mandate()
             print(f'[Temp Debug]: Enforcing mandate init: {entry_requires_mandate}')

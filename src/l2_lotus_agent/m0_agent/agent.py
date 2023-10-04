@@ -28,19 +28,19 @@ class Agent(LingualEntity):
     # Main routine
 
     @abstractmethod
-    def launch(self) -> None:
+    def launch(self):
         pass
 
     @abstractmethod
-    def loop(self) -> None:
+    def loop(self):
         pass
 
     @abstractmethod
-    def react(self, entry : Entry) -> None:
+    def react(self, entry : Entry):
         pass
 
 
-    def do(self) -> None:
+    def do(self):
         try:
             action = self.get_next_action(additional_entries=[self.get_active_task_entry()])
 

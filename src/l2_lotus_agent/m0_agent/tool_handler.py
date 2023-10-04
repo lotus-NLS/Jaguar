@@ -8,7 +8,7 @@ class ToolHandler:
     def __init__(self):
         self.tool_dict : dict[str,BaseTool] = {}
 
-    def use_tool(self, tool_action : ToolAction) -> None:
+    def use_tool(self, tool_action : ToolAction):
         print('[Debug]: Agent requested tool usage')
         tool_name = tool_action.get_tool_name()
         tool_args_dict = tool_action.get_arguments_()
@@ -16,10 +16,10 @@ class ToolHandler:
         if tool_name in self.tool_dict:
             self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
 
-    def enable_tool(self, tool_name : str) -> None:
+    def enable_tool(self, tool_name : str):
         self.tool_dict[tool_name].enable()
 
-    def disable_tool(self, tool_name : str) -> None:
+    def disable_tool(self, tool_name : str):
         self.tool_dict[tool_name].enable()
 
 

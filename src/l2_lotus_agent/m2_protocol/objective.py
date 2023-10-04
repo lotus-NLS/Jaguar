@@ -75,10 +75,10 @@ class Objective:
     # ----------------------------------------------------
     # set
 
-    def edit_desc(self, desc : str) -> None:
+    def edit_desc(self, desc : str):
         self.desc = desc
 
-    def mark_complete(self) -> None:
+    def mark_complete(self):
         self.is_active = False
 
 

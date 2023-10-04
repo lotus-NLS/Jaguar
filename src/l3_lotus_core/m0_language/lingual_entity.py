@@ -62,7 +62,7 @@ class LingualEntity:
         self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, tool_name= tool_name))
 
 
-    def log_system_msg(self,msg : str) -> None:
+    def log_system_msg(self,msg : str):
         self._log_entry(Entry(role=DialogueRole.system_role(), msg=msg))
 
     # ------------------------------

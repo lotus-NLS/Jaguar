@@ -36,7 +36,7 @@ class TaskQueue(Queue):
         self.work_mode_enabled : bool = False
         self._active_task : Optional[Task] = None
 
-    def put(self, item : Task, block=True, timeout=None) -> None:
+    def put(self, item : Task, block=True, timeout=None):
         super().put(item, block, timeout)
         self.queued_items.add(item)
 
@@ -46,7 +46,7 @@ class TaskQueue(Queue):
         self._active_task = new_task
         return new_task
 
-    def complete_active_task(self) -> None:
+    def complete_active_task(self):
         self._active_task = None
 
     def view_active_task(self) -> Optional[Task]:

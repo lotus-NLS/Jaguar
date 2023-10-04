@@ -70,7 +70,7 @@ class Credentials(SettingGrouping):
         self.search_engineID_setting : Setting = self.make_credential_setting(label=Credentials.search_engineID_label)
 
 
-    def setup(self, is_first_run = True, is_perform_validation = True) -> None:
+    def setup(self, is_first_run = True, is_perform_validation = True):
         for the_setting in self.get_non_validated_settings():
             the_setting.try_setup_from_file() if is_first_run else the_setting.setup_from_user_input()
 
@@ -97,7 +97,7 @@ class Credentials(SettingGrouping):
         return new_setting
 
 
-    def openai_apikey_test(self) -> None:
+    def openai_apikey_test(self):
         temp = openai.api_key
 
         try:

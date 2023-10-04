@@ -41,7 +41,7 @@ class RUN(Tool):
         threading.Thread(target=self.read_std_out).start()
         threading.Thread(target=self.read_std_err).start()
 
-    def log_when_idle(self) -> None:
+    def log_when_idle(self):
         while True:
             current_time = time.time()
             if self.is_error_state:
@@ -59,14 +59,14 @@ class RUN(Tool):
 
             time.sleep(0.05)
 
-    def read_std_out(self) -> None:
+    def read_std_out(self):
         for line in iter(self.shell_session.stdout.readline, ''):
             cleaned_line = line.strip()
             if cleaned_line != '':
                 self.logging_backlog += f'{cleaned_line}\n'
 
 
-    def read_std_err(self) -> None:
+    def read_std_err(self):
         for line in iter(self.shell_session.stderr.readline, ''):
             cleaned_line = line.strip()
             if cleaned_line != '':
@@ -88,7 +88,7 @@ class RUN(Tool):
     # --------------------------------------------
     #
 
-    def do(self) -> None:
+    def do(self):
         mode = self.mode_arg.val
 
         if not mode in [self.python_script_mode, self.cmd_mode]:
@@ -108,7 +108,7 @@ class RUN(Tool):
             self.exception_log(f'An exception occured during program execution: {e}')
 
 
-    def execute_py(self) -> None:
+    def execute_py(self):
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.py') as temp:
             temp.write(self.program_content_arg.val)
             temp_file_path = temp.name
@@ -122,7 +122,7 @@ class RUN(Tool):
             self.exception_log(f'Standard Error:\n{result.stderr}')
 
 
-    def execute_cmd(self)  -> None:
+    def execute_cmd(self) :
         if self.shell_session is None:
             self.update_log(f'No shell executable set. Aborting RUN ...')
             return

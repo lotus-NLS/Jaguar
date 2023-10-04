@@ -21,11 +21,11 @@ class BaseTool:
         self.is_enabled: bool = True
 
 
-    def disable(self) -> None:
+    def disable(self):
         self.is_enabled = False
 
 
-    def enable(self) -> None:
+    def enable(self):
         self.is_enabled = True
 
 
@@ -39,7 +39,7 @@ class BaseTool:
     # ---------------------------------------------------
     # Handle
 
-    def handle_call(self, args_dict: dict) -> None:
+    def handle_call(self, args_dict: dict):
         self.reset_args()
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
@@ -108,7 +108,7 @@ class BaseTool:
         except:
             return False
 
-    def reset_args(self) -> None:
+    def reset_args(self):
         for arg in self.get_arg_list():
             arg.val = None
 
@@ -124,7 +124,7 @@ class BaseTool:
     # ---------------------------------------------------
     # Logging
 
-    def log(self, to_log: str) -> None:
+    def log(self, to_log: str):
         if not self.external_log is None:
             try:
                 self.external_log(to_log)
@@ -132,7 +132,7 @@ class BaseTool:
                 print(f'[Error]: Failed to log tool message: {to_log}')
 
 
-    def start_log(self, to_log: str) -> None:
+    def start_log(self, to_log: str):
         self.log(f'[Start]: {to_log}')
 
 
@@ -140,13 +140,13 @@ class BaseTool:
         self.log(f'[Error]: {to_log}')
 
 
-    def exception_log(self, to_log: str) -> None:
+    def exception_log(self, to_log: str):
         self.log(get_exception_msg(to_log))
 
 
-    def update_log(self, to_log: str) -> None:
+    def update_log(self, to_log: str):
         self.log(f'[Update]: {to_log}')
 
 
-    def finish_log(self, to_log: str) -> None:
+    def finish_log(self, to_log: str):
         self.log(f'[Finish]: {to_log}')

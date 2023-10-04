@@ -1,6 +1,7 @@
 ### I: Type Hinting
 - All function arguments must be type hinted.
-- All functions returns must be type labeled. If they return nothing, they must be labeled with `None`.
+- All functions returns must be type labeled if they return anything but None, if they do return None they
+must not be type hinted and are understood as implicitly hinted as returning None
 - Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
 - All class attributes must be type hinted, except for inherited attributes which are already type hinted.
 

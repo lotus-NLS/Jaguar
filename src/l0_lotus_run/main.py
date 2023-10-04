@@ -21,7 +21,7 @@ class Engine:
         LingualEntity.enter_into_channel(channel=self.user_channel, participant_list=[self.user] + self.bots)
 
     @log_time_after_done
-    def initialize_settings(self, perform_validation : bool = True) -> None:
+    def initialize_settings(self, perform_validation : bool = True):
         if self.settings_controller is None:
             self.settings_controller = SettingsController()
             self.settings_controller.setup(perform_validation=perform_validation)

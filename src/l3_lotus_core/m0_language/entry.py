@@ -70,7 +70,7 @@ class Entry(dict):
         self._is_read : bool = False
         self.flags : Optional[Flags] = flags
 
-    def mark_read(self) -> None:
+    def mark_read(self):
         self._is_read = True
 
     # ----------------------------------------------------
