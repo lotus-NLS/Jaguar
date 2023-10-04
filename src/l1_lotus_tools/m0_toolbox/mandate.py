@@ -1,12 +1,9 @@
 import inspect
 from typing import Optional
+from src.l2_lotus_agent import ToolArg, Objective
 
 
-from src.l1_lotus_tools.m0_tool_class.tool import Tool
-from src.l2_lotus_agent.m2_base_tool.tool_arg import ToolArg
-from src.l2_lotus_agent.m2_protocol import Objective
-from src.l3_lotus_core import user_io
-
+from src.l1_lotus_tools.tool import Tool
 # ---------------------------------------------------------
 
 verbose_mode = True
@@ -84,16 +81,17 @@ class INITIALIZE_MANDATE(Tool):
 
 
     def do(self):
-        directive = self.acting_agent.mandate
-        if directive.is_active():
-            self.semantic_error(f'There is still an active directive so directive cannot be initialized. Aborting ...')
+        mandate = self.acting_agent.mandate
+        if mandate.is_active():
+            self.semantic_error(f'There is still an active mandate so new mandate cannot be initialized. Aborting ...')
             return
 
         objective_str = self.content_arg.val
         objective_lines = objective_str.split('\n')
 
         # TODO: Currently asking for permission is bugged because the main loop steals the input stream
-        init_request_msg = (f'Here is my plan of action for your request: {self.content_arg.val}'
+        init_request_msg = (f'Here is my plan of action for your request: '
+                            f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
         if not self.acting_agent.get_user_permission(request_msg=init_request_msg):
             return
@@ -109,7 +107,7 @@ class INITIALIZE_MANDATE(Tool):
 
             if indent_level == 0:
                 new_objective = Objective.make_root(desc=f'{content}')
-                directive.root_objective = new_objective
+                mandate.root_objective = new_objective
             else:
                 stack = stack[:indent_level]
                 new_objective = stack[-1].make_subelement(desc=f'{content}')

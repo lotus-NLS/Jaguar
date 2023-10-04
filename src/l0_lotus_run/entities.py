@@ -1,13 +1,9 @@
 import threading
-
-from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
-from src.l1_lotus_tools import UPDATE_MANDATE, INITIALIZE_MANDATE
-from src.l1_lotus_tools import Tool
-from src.l2_lotus_agent import Agent, Task
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
+from src.l2_lotus_agent import Agent, Task
+from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
 # ---------------------------------------------------------
-
 
 class Alpha(Agent):
     def __init__(self):

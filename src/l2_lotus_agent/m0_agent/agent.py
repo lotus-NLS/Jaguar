@@ -1,13 +1,12 @@
 from typing import Optional
 from abc import abstractmethod
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg, user_io
+
 
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
-from src.l2_lotus_agent.m1_models import Action, ActionOptions, FunctCallOption
-from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-
-from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg, user_io
+from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes, Action, ActionOptions, FunctCallOption
 
 # ---------------------------------------------------------
 
@@ -134,7 +133,7 @@ class Agent(LingualEntity):
     # Other
 
     def get_user_permission(self, request_msg : str) -> bool:
-        self.speak(msg=request_msg)
+        self.speak(msg=f'{request_msg} (y/n)')
         user_approves = user_io.get_confirmation(msg=request_msg)
 
         if user_approves:

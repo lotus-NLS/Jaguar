@@ -1,6 +1,5 @@
 from typing import Optional
-from src.l2_lotus_agent import Agent
-from src.l2_lotus_agent import BaseTool
+from src.l2_lotus_agent import Agent, BaseTool
 
 # Generic tool class logging
 # -> [START] : For tool launch
@@ -13,7 +12,6 @@ from src.l2_lotus_agent import BaseTool
 
 
 class Tool(BaseTool):
-
     def __init__(self):
         super().__init__()
         self.acting_agent: Optional[Agent] = None

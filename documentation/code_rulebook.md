@@ -49,15 +49,16 @@ of the cards on the lower level the whole thing might collapse. Software works i
   
 
 ### V: Other
-- Pass arguments only by keyword
-- Minimal exposure/Maximal encapsulation: Keep the API between modules as minimal as possible
-- Nesting: Max indentation level === 3
-- Source file length: Max ~200 loc, Multiple dependent classes within single file discouraged
-- Classmethods always return class instances
-- Logging: \[Debug\] for control flow information; \[Error\] for Exceptions or unintended output, error message includes Exception
 
-- Imports within directory: Full path, outside directory: Use init files 
-- No relative imports. Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
+- **kwargs only**: Pass arguments only by keyword
+- **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
+- **Minimal nesting**: Max indentation level === 3
+- **Short Source file length**: Max ~200 loc, Ideally < 120 loc
+- **Name log type**: \[Debug\] for control flow information; \[Error\] for Exceptions or unintended output, error message is either semantic error or exception and exception comes with trace print 
+- **Init files for source dirs**: Imports within directory: Full path, outside directory: Use init files for most adjecent directory and put imports
+from other modules first
+- **Import consolidation**: Consolidate imports from a level in a single line
+- **No relative imports**: Give the full path; otherwise, it will crash when importing the module from somewhere else. For example, don't do:
   ```
   python from Directive import Directive
   ```

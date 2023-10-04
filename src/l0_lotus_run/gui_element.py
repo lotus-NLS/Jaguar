@@ -1,14 +1,10 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 from typing import Callable, Optional
-
 import customtkinter as ctk
-
-from src.l3_lotus_core.m0_language.channel import Channel
-from src.l3_lotus_core.m0_language import Entry
+from src.l3_lotus_core import Channel, Entry
 
 # ---------------------------------------------------------
-
 
 class GUI_Element:
     def __init__(self,*args,**kwargs):
