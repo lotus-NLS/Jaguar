@@ -5,7 +5,7 @@ from typing import Optional
 from src.l3_lotus_core import get_setting, Credentials
 from src.l3_lotus_core import Entry
 
-from src.l2_lotus_agent.m1_models.model_class import LLM, FunctionCallModes
+from src.l2_lotus_agent.m1_models.model_class import LLM
 from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
 
 # ---------------------------------------------------------
@@ -42,7 +42,7 @@ class OpenAIModel(LLM):
 
         if not entries is None and action_options.is_allowed_functioncall:
             args_dict['functions'] = tool_docs
-            args_dict['function_call'] = FunctionCallModes.auto
+            args_dict['function_call'] = 'auto'
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
