@@ -4,8 +4,9 @@ from typing import Optional
 
 
 class Task:
-    def __init__(self, is_mandate_task : bool = True):
+    def __init__(self, is_mandate_task : bool = True, enforce_init_mandate : bool = False):
         self._is_work_task : bool = is_mandate_task
+        self.requires_init_mandate : bool = enforce_init_mandate
 
     def is_dialogue_task(self) -> bool:
         return not self._is_work_task
@@ -13,13 +14,19 @@ class Task:
     def is_mandate_task(self) -> bool:
         return self._is_work_task
 
+    def requires_init_mandate(self) -> bool:
+        return self.requires_init_mandate
+
     @classmethod
     def make_work_task(cls) -> Task:
         return cls(is_mandate_task=True)
 
     @classmethod
-    def make_dialogue_task(cls) -> Task:
-        return cls(is_mandate_task=False)
+    def make_dialogue_task(cls, enforce_init_mandate : Optional[bool] = None) -> Task:
+        if enforce_init_mandate is None:
+            return cls(is_mandate_task=False)
+        else:
+            return cls(is_mandate_task=False,enforce_init_mandate=enforce_init_mandate)
 
 
 class TaskQueue(Queue):

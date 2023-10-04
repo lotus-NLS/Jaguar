@@ -7,6 +7,24 @@ import json
 
 # ---------------------------------------------------------
 
+# OpenAI function_call syntax: (See docs @ https://platform.openai.com/docs/guides/gpt/function-calling)
+# 'auto' : Agent decides autonomously
+# 'none' : No function will be called
+# {"name": "<insert-function-name>"} : Enforce call of a specific function
+class FunctCallOption:
+    def __init__(self, call_allowed : bool = True, required_funct_name : Optional[str] = None):
+        self.call_allowed : bool = call_allowed
+        self.required_funct_name : Optional[str] = required_funct_name
+
+    def get_openai_syntax(self) -> object:
+        if not self.call_allowed:
+            return 'none'
+        if self.required_funct_name is None:
+            return 'auto'
+        else:
+            return {'name' : f'{self.required_funct_name}'}
+
+
 class ToolAction:
     def __init__(self,name : str, arguments : dict):
         self._name : str = name
@@ -114,3 +132,4 @@ class Action:
 
     def __str__(self):
         return str(self._best_response)
+

@@ -58,7 +58,7 @@ class Alpha(Agent):
 
     def loop(self):
         while True:
-            self.task_queue.get()
+            active_task = self.task_queue.get()
             entries_to_process = self.get_unread_entries()
 
             self.do()
@@ -73,7 +73,9 @@ class Alpha(Agent):
 
     def react(self, entry: Entry) -> None:
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
-            self.task_queue.put(Task(is_mandate_task=False))
+            entry_requires_mandate = entry.get_is_enforce_mandate()
+            print(f'[Temp Debug]: Enforcing mandate init: {entry_requires_mandate}')
+            self.task_queue.put(Task.make_dialogue_task(enforce_init_mandate=entry_requires_mandate))
 
 
 class User(ConversationParticipant):

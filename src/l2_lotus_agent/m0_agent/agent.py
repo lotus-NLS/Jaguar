@@ -24,7 +24,6 @@ class Agent(ConversationParticipant):
         self.model : LLM = model_type
 
 
-
     # ---------------------------------------------------
     # Main routine
 
