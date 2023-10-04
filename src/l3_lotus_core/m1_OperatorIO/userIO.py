@@ -1,5 +1,10 @@
-
 class UserIO:
+
+    @staticmethod
+    def get_user_msg(prompt_msg : str = '') -> str:
+        return input(prompt_msg)
+
+
     @staticmethod
     def get_confirmation(msg : str) -> bool:
         while True:
@@ -15,9 +20,7 @@ class UserIO:
         else:
             return False
 
-# Note that since there is only a single user_io object , which is not threaded, calls from anywhere
-# in the project will block other calls.
-# However, considering that there is only a single user, that should make sense.
-# It will probably need to be an object sooner or later since the IO will be facilitates
-# through objects that cannot be defined here. So they will need to get set in the engine
+# TODO: This object could be accessed from multiple threads so it should be made thread secure
+# TODO: For example currently if get_user_msg is called from a side thread while it it is called and hasnt return in the main thread
+# TODO: The main thread will still hold the IO stream and the second call will have to wait until that is done to get it
 user_io = UserIO()

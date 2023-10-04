@@ -1,6 +1,6 @@
 import time
 from typing import Optional
-from src.l3_lotus_core import Channel, LingualEntity,SettingsController, log_time_after_done
+from src.l3_lotus_core import Channel, LingualEntity,SettingsController, log_time_after_done, user_io
 
 
 from src.l0_lotus_run.entities import Alpha, User
@@ -36,7 +36,7 @@ class Engine:
 
         if run_in_terminal:
             while True:
-                user_input = input('')
+                user_input = user_io.get_user_msg()
                 msg, flags = get_parsed_input(user_input)
                 print(f'[Temp debug]: Flags are {flags}')
                 self.user.speak(msg=msg, flags=flags)
