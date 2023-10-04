@@ -8,11 +8,6 @@ from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole
 
 # ----------------------------------------------------
 
-class Flags:
-    def __init__(self):
-        pass
-
-
 class LingualEntity:
     def __init__(self, role : DialogueRole, name : Optional[str] = None):
         super().__init__()

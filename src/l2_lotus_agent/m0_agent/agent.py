@@ -39,6 +39,7 @@ class Agent(LingualEntity):
     def react(self, entry : Entry) -> None:
         pass
 
+
     def do(self) -> None:
         try:
             action = self.get_next_action(additional_entries=[self.get_active_task_entry()])

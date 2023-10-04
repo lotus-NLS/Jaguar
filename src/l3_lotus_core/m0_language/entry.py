@@ -1,5 +1,7 @@
 from __future__ import annotations
+from typing import Optional
 
+# ----------------------------------------------------
 
 class DialogueRole(str):
     _m_user = 'user'
@@ -42,26 +44,43 @@ class DialogueRole(str):
         return as_list
 
 
+class Flag(str):
+    _m_enforce_mandate  = 'm'
+
+    def __new__(cls, flag : str):
+        return str.__new__(cls, flag)
+
+    @classmethod
+    def enforce_mandate_flag(cls):
+        return cls(flag=Flag._m_enforce_mandate)
+
+
 class Entry(dict):
-    def __init__(self, role : DialogueRole, msg : str, tool_name ='undefined_function'):
+    def __init__(self, role : DialogueRole,
+                 msg : str,
+                 flags : Optional[list[Flag]] = None,
+                 tool_name = 'undefined_function'):
         super().__init__()
         self['role'] = role
         self['content'] = msg
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
         self._is_read : bool = False
+        self.flags : Optional[list[Flag]] = flags
+
+    def mark_read(self) -> None:
+        self._is_read = True
+
+    # ----------------------------------------------------
 
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
     def get_is_enforce_mandate(self):
-        return self.get_content().endswith('-m')
+        return Flag.enforce_mandate_flag() in self.flags
 
     def get_is_read(self) -> bool:
         return self._is_read
-
-    def mark_read(self) -> None:
-        self._is_read = True
 
     def get_role(self) -> str:
         return self['role']
