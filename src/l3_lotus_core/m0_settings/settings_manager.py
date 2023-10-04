@@ -5,6 +5,7 @@ import openai
 import requests
 
 from src.l3_lotus_core.m0_settings.setting_class import all_settings, Setting
+from src.l3_lotus_core.m1_OperatorIO import user_io
 
 # (08.09.23) DH:
 # Each Settings group has its own tests that are performed on setup which are used to validate the settings
@@ -37,17 +38,6 @@ class SettingGrouping:
     def pass_all(cls):
         for setting in cls.all_settings_in_group:
             setting.validate()
-
-    @staticmethod
-    def get_y_or_n(msg : str):
-        while True:
-            user_input = input(msg)
-            if user_input.lower() in ['y', 'n']:
-                break
-            else:
-                print("Invalid input. Please enter (y/n)")
-
-        return user_input
 
     def test_all(self):
         for test in self.tests:
@@ -86,7 +76,7 @@ class Credentials(SettingGrouping):
         count_non_validated_settings = len(non_validated_settings)
         if not count_non_validated_settings == 0:
             msg = f'[Error]: {count_non_validated_settings} setting(s) failed to validate. Retry setup for those settings? (y/n) \n'
-            if self.get_y_or_n(msg) == 'y':
+            if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
 
 

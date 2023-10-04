@@ -6,7 +6,7 @@ from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import Action, ActionOptions, FunctCallOption
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l3_lotus_core.m0_language import LingualEntity, DialogueRole, Entry
-from src.l3_lotus_core.m0_OperatorIO.dev_logger import get_exception_msg
+from src.l3_lotus_core.m1_OperatorIO.dev_logger import get_exception_msg
 
 # ---------------------------------------------------------
 
