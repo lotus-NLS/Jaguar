@@ -31,8 +31,6 @@ class FILE_IO(Tool):
             name='fpath', dtype=str,
             desc='Filepath of file to be read or written')
 
-        # TODO 0.4: It should not be the task of the agent to decide the format.
-        # TODO 0.4: The tool itself should pick the appropriate read function
         self.format_arg : ToolArg = self.create_arg(
             name='file_format', dtype=str,
             available_options=[FILE_IO.text_format, FILE_IO.pdf_format],

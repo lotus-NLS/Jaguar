@@ -130,8 +130,6 @@ class SettingsController:
     def __init__(self):
         self.credential_settings = Credentials()
 
-    # TODO 0.4: Instead of listing each of the settings group can introduce some mechanism to
-    # introduce every instance of SettingsGroup to some list and then iterate through that, could also save the init listings
     def setup(self, perform_validation = True):
         self.credential_settings.setup(is_perform_validation=perform_validation)
         print(f'[Debug]: Completed setup for all Settings')

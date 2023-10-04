@@ -21,6 +21,6 @@ class UserIO:
             return False
 
 # TODO: This object could be accessed from multiple threads so it should be made thread secure
-# TODO: For example currently if get_user_msg is called from a side thread while it it is called and hasnt return in the main thread
-# TODO: The main thread will still hold the IO stream and the second call will have to wait until that is done to get it
+# For example currently if get_user_msg is called from a side thread while it it is called and hasnt return in the main thread
+# The main thread will still hold the IO stream and the second call will have to wait until that is done to get it
 user_io = UserIO()
