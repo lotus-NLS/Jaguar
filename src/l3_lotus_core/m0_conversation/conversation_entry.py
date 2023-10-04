@@ -54,14 +54,17 @@ class Entry(dict):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def get_is_read(self):
+    def get_is_enforce_mandate(self):
+        return self.get_content().endswith('-m')
+
+    def get_is_read(self) -> bool:
         return self._is_read
 
-    def mark_read(self):
+    def mark_read(self) -> None:
         self._is_read = True
 
-    def get_role(self):
+    def get_role(self) -> str:
         return self['role']
 
-    def get_content(self):
+    def get_content(self) -> str:
         return self['content']

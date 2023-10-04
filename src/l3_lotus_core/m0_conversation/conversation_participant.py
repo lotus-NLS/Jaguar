@@ -1,7 +1,7 @@
 from __future__ import annotations
 from threading import Thread
 from typing import Union, Optional
-
+from abc import abstractmethod
 
 from src.l3_lotus_core.m0_conversation.channel import Channel
 from src.l3_lotus_core.m0_conversation.conversation_entry import Entry, DialogueRole
@@ -68,9 +68,9 @@ class ConversationParticipant:
     # ------------------------------
     # Speak and react
 
+    @abstractmethod
     def react(self, entry : Entry):
         pass
-
 
     def think(self, msg : str, verbose = True):
         the_msg = f'## Internal monologue: {msg}'

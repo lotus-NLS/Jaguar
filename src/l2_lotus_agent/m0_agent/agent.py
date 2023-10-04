@@ -1,6 +1,5 @@
 from typing import Optional
-import threading
-
+from abc import abstractmethod
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
@@ -24,31 +23,22 @@ class Agent(ConversationParticipant):
 
         self.model : LLM = model_type
 
-    def launch(self) -> None:
-        threading.Thread(target=self.loop).start()
+
 
     # ---------------------------------------------------
     # Main routine
 
-    def loop(self):
-        while True:
-            self.task_queue.get()
-            entries_to_process = self.get_unread_entries()
+    @abstractmethod
+    def launch(self) -> None:
+        pass
 
-            self.do()
+    @abstractmethod
+    def loop(self) -> None:
+        pass
 
-            if self.mandate.is_active() and not self.task_queue.get_work_task_present():
-                self.task_queue.put(Task(is_mandate_task=True))
-
-            for entry in entries_to_process:
-                entry.mark_read()
-            self.task_queue.complete_active_task()
-
-
+    @abstractmethod
     def react(self, entry : Entry) -> None:
-        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
-            self.task_queue.put(Task(is_mandate_task=False))
-
+        pass
 
     def do(self) -> None:
         try:

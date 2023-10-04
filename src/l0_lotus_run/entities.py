@@ -1,8 +1,10 @@
-from src.l2_lotus_agent import Agent
-from src.l3_lotus_core import ConversationParticipant, DialogueRole
+import threading
+
 from src.l1_lotus_tools import RUN,FILE_IO,SEARCH
 from src.l1_lotus_tools import UPDATE_MANDATE, INITIALIZE_MANDATE
 from src.l1_lotus_tools import Tool
+from src.l2_lotus_agent import Agent, Task
+from src.l3_lotus_core import ConversationParticipant, DialogueRole, Entry
 
 # ---------------------------------------------------------
 
@@ -48,9 +50,35 @@ class Alpha(Agent):
 
         return tool_log
 
+    # ---------------------------------------------------
+    # Loop
+
+    def launch(self) -> None:
+        threading.Thread(target=self.loop).start()
+
+    def loop(self):
+        while True:
+            self.task_queue.get()
+            entries_to_process = self.get_unread_entries()
+
+            self.do()
+
+            if self.mandate.is_active() and not self.task_queue.get_work_task_present():
+                self.task_queue.put(Task(is_mandate_task=True))
+
+            for entry in entries_to_process:
+                entry.mark_read()
+            self.task_queue.complete_active_task()
+
+
+    def react(self, entry: Entry) -> None:
+        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
+            self.task_queue.put(Task(is_mandate_task=False))
+
 
 class User(ConversationParticipant):
     def __init__(self):
         super(User, self).__init__(role=DialogueRole.user_role())
 
-
+    def react(self, entry : Entry):
+        pass

@@ -6,6 +6,7 @@ from src.l2_lotus_agent.m2_protocol import Identity, Cores
 
 # ---------------------------------------------------------
 #
+# TODO: Remove this class. Agent is entirely sufficient for what it attempts to do
 class SinglePurposeAgent(Agent):
     @classmethod
     def make_website_summarization_agent(cls):
@@ -17,6 +18,12 @@ class SinglePurposeAgent(Agent):
 
     def __init__(self, identity: Identity, model_type : LLM):
         super().__init__(model_type=model_type, identity=identity)
+
+    def loop(self) -> None:
+        pass
+
+    def launch(self) -> None:
+        pass
 
     def react(self, entry) -> None:
         pass
