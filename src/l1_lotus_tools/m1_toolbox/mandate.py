@@ -92,14 +92,10 @@ class INITIALIZE_MANDATE(Tool):
         objective_str = self.content_arg.val
         objective_lines = objective_str.split('\n')
 
-        request_msg = (f'Here is my plan of action for your request: {self.content_arg.val}'
-                       f'Do you approve?')
-        user_approves = user_io.get_confirmation(msg=request_msg)
-
-        if user_approves:
-            self.update_log(f'User confirmed permission for suggested mandate')
-        else:
-            self.update_log(f'User denied permission for suggested mandate')
+        # TODO: Currently asking for permission is bugged because the main loop steals the input stream
+        init_request_msg = (f'Here is my plan of action for your request: {self.content_arg.val}'
+                            f'Do you approve?')
+        if not self.acting_agent.get_user_permission(request_msg=init_request_msg):
             return
 
         format_valid = self.is_valid_format(lines=objective_lines)

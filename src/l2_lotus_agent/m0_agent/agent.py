@@ -1,12 +1,13 @@
 from typing import Optional
 from abc import abstractmethod
+
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import Action, ActionOptions, FunctCallOption
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
-from src.l3_lotus_core.m0_language import LingualEntity, DialogueRole, Entry
-from src.l3_lotus_core.m1_OperatorIO.dev_logger import get_exception_msg
+
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg, user_io
 
 # ---------------------------------------------------------
 
@@ -19,10 +20,11 @@ class Agent(LingualEntity):
         self.mandate : Mandate = Mandate.make_empty()
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
+        # Set tool handler
         self.tool_handler : ToolHandler = ToolHandler()
 
+        # Set llm
         self.model : LLM = model_type
-
 
     # ---------------------------------------------------
     # Main routine
@@ -128,4 +130,15 @@ class Agent(LingualEntity):
 
         return task_entry
 
+    # ---------------------------------------------------
+    # Other
 
+    def get_user_permission(self, request_msg : str) -> bool:
+        self.speak(msg=request_msg)
+        user_approves = user_io.get_confirmation(msg=request_msg)
+
+        if user_approves:
+            self.think(f'User confirmed permission')
+        else:
+            self.think(f'User denied permission')
+        return user_approves
