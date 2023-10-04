@@ -3,7 +3,7 @@ class UserIO:
     @staticmethod
     def get_confirmation(msg : str) -> bool:
         while True:
-            user_input = input(msg)
+            user_input = input(f'{msg}(y/n)')
             if user_input.lower() in ['y', 'n']:
                 break
             else:
