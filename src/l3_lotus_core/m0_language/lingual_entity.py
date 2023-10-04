@@ -4,7 +4,7 @@ from typing import Union, Optional
 from abc import abstractmethod
 
 from src.l3_lotus_core.m0_language.channel import Channel
-from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole
+from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole, Flag, Flags
 
 # ----------------------------------------------------
 
@@ -24,7 +24,7 @@ class LingualEntity:
         self._channel  = channel
         self._channel.listener_loggers.append(self._log_entry)
 
-    def leave_channel(self) -> None:
+    def leave_channel(self):
         if not self._channel is None:
             try:
                 self._channel.listener_loggers.remove(self._log_entry)
@@ -62,7 +62,7 @@ class LingualEntity:
         self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, tool_name= tool_name))
 
 
-    def log_system_msg(self,msg : str):
+    def log_system_msg(self,msg : str) -> None:
         self._log_entry(Entry(role=DialogueRole.system_role(), msg=msg))
 
     # ------------------------------
@@ -79,12 +79,12 @@ class LingualEntity:
         self._log_entry(entry=Entry(role=self._role, msg=the_msg))
 
 
-    def speak(self, msg : str):
+    def speak(self, msg : str, flags : Optional[Flags] = None):
         if self._channel is None:
             return
 
         print(f'[Debug]: {self._role} said: {msg}')
-        self._channel.broadcast_message(Entry(role=self._role, msg=msg))
+        self._channel.broadcast_message(Entry(role=self._role, msg=msg,flags=flags))
 
     # ------------------------------
     # Other

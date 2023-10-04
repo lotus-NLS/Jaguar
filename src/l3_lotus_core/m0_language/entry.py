@@ -54,11 +54,13 @@ class Flag(str):
     def enforce_mandate_flag(cls):
         return cls(flag=Flag._m_enforce_mandate)
 
+class Flags(list(Flag)):
+    pass
 
 class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
-                 flags : Optional[list[Flag]] = None,
+                 flags : Optional[Flags] = None,
                  tool_name = 'undefined_function'):
         super().__init__()
         self['role'] = role
@@ -66,7 +68,7 @@ class Entry(dict):
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
         self._is_read : bool = False
-        self.flags : Optional[list[Flag]] = flags
+        self.flags : Optional[Flags] = flags
 
     def mark_read(self) -> None:
         self._is_read = True
@@ -76,8 +78,11 @@ class Entry(dict):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def get_is_enforce_mandate(self):
-        return Flag.enforce_mandate_flag() in self.flags
+    def get_is_enforce_mandate(self) -> bool:
+        if self.flags is None:
+            return False
+        else:
+            return Flag.enforce_mandate_flag() in self.flags
 
     def get_is_read(self) -> bool:
         return self._is_read
