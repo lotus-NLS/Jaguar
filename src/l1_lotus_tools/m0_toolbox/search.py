@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from src.l2_lotus_agent import SinglePurposeAgent, ToolArg
+from src.l2_lotus_agent import Agent, ToolArg, FunctCallOption
 
 
 from src.l1_lotus_tools.tool import Tool
@@ -43,13 +43,11 @@ class SEARCH(Tool):
     def get_site_report(self, site_url : str):
         try:
             raw_site_text = self.webtools.get_url_text(site_url=site_url)
-
-            summary_agent = SinglePurposeAgent.make_website_summarization_agent()
+            summary_agent = Agent.make_website_summarization_agent()
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
-
-            result = summary_agent.get_text_response(
-                prompt=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}',
-                max_token=300)
+            summary_agent.think(msg=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}')
+            result = summary_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(),
+                                                   max_tokens=300).get_text()
         except:
             result = f'An exception occured while trying to get report on site {site_url}. Aborting ...'
 
@@ -62,9 +60,14 @@ class SEARCH(Tool):
             all_summaries += f'## Report {index} ##' \
                              f'{info_text}\n'
 
-        composition_agent = SinglePurposeAgent.make_report_composition_agent()
-        composition_agent.get_text_response(prompt=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
-                                                   f'First evaluate the sources for their usefulness for the query, and make an outline of what you learned',
-                                            max_token=500)
-        return composition_agent.get_text_response(prompt=f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
+        composition_agent = Agent.make_report_composition_agent()
+        composition_agent.log_system_msg(msg=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
+                                    f'First evaluate the sources for their usefulness for the query'
+                                    f', and make an outline of what you learned')
+        evaluation = composition_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(), max_tokens=300).get_text()
+        composition_agent.think(evaluation)
+        composition_agent.log_system_msg(f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
+
+        return composition_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(), max_tokens=300).get_text()
+
 

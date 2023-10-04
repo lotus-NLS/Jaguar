@@ -108,6 +108,7 @@ class Agent(LingualEntity):
 
         return action
 
+
     # ---------------------------------------------------
     # Context
 
@@ -131,6 +132,16 @@ class Agent(LingualEntity):
 
     # ---------------------------------------------------
     # Other
+
+    @classmethod
+    def make_website_summarization_agent(cls):
+        return Agent(identity=Identity(core=Cores.website_information_retriever),
+                     model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+
+    @classmethod
+    def make_report_composition_agent(cls):
+        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+
 
     def get_user_permission(self, request_msg : str) -> bool:
         self.speak(msg=f'{request_msg} (y/n)')
