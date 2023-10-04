@@ -54,6 +54,15 @@ class Flag(str):
     def enforce_mandate_flag(cls):
         return cls(flag=Flag._m_enforce_mandate)
 
+    @classmethod
+    def get_all_flags(cls):
+        as_list = []
+        for name, value in cls.__dict__.items():
+            if name.startswith("_m_"):
+                as_list.append(value)
+        return as_list
+
+
 class Flags(list[Flag]):
     pass
 

@@ -2,6 +2,8 @@ import time
 from typing import Optional
 from src.l0_lotus_run.entities import Alpha, User
 from src.l0_lotus_run.gui_element import ChatGUI
+from src.l0_lotus_run.parse_input import get_parsed_input
+
 from src.l3_lotus_core import Channel, LingualEntity,SettingsController
 from src.l3_lotus_core.m0_logging.logger import log_time_after_done
 
@@ -35,12 +37,16 @@ class Engine:
 
         if run_in_terminal:
             while True:
-                self.user.speak(input(''))
+                user_input = input('')
+                msg, flags = get_parsed_input(user_input)
+                print(f'[Temp debug]: Flags are {flags}')
+                self.user.speak(msg=msg, flags=flags)
                 time.sleep(0.5)
 
         else:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
             gui.run()
+
 
 
 def main():
