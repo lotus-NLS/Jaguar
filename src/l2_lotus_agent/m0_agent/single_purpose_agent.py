@@ -7,7 +7,7 @@ from src.l2_lotus_agent.m2_protocol import Identity, Cores
 # ---------------------------------------------------------
 #
 # TODO: Remove this class. Agent is entirely sufficient for what it attempts to do
-# class SinglePurposeAgent(Agent):
+class SinglePurposeAgent(Agent):
 #     @classmethod
 #     def make_website_summarization_agent(cls):
 #         return cls(identity=Identity(core=Cores.website_information_retriever), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
@@ -19,14 +19,14 @@ from src.l2_lotus_agent.m2_protocol import Identity, Cores
 #     def __init__(self, identity: Identity, model_type : LLM):
 #         super().__init__(model_type=model_type, identity=identity)
 #
-#     def loop(self):
-#         pass
-#
-#     def launch(self):
-#         pass
-#
-#     def react(self, entry):
-#         pass
+    def loop(self):
+        pass
+
+    def launch(self):
+        pass
+
+    def react(self, entry):
+        pass
 #
 #     def think(self,msg : str, verbose = False):
 #         super().think(msg,verbose=verbose)

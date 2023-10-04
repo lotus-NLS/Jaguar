@@ -3,7 +3,7 @@ from abc import abstractmethod
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
-from src.l2_lotus_agent.m1_models import Action, ActionOptions
+from src.l2_lotus_agent.m1_models import Action, ActionOptions, FunctCallOption
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
 from src.l3_lotus_core.m0_language import LingualEntity, DialogueRole, Entry
 from src.l3_lotus_core.m0_logging.logger import get_exception_msg
@@ -40,9 +40,17 @@ class Agent(LingualEntity):
         pass
 
 
-    def do(self, enforce_mandate_init : bool):
+    def do(self, required_funct_name : Optional[str] = None):
         try:
-            action = self.get_next_action(additional_entries=[self.get_active_task_entry()])
+            arg_dict = {
+                'call_allowed' : True,
+                'required_funct_name' : required_funct_name
+            }
+
+            action = self.get_next_action(
+                funct_call_options=FunctCallOption(**arg_dict),
+                additional_entries=[self.get_active_task_entry()]
+            )
 
         except Exception:
             print(get_exception_msg(text=f'Unable to obtain response from {self.name}'))
@@ -76,13 +84,13 @@ class Agent(LingualEntity):
             log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                        'In your update it is not necessary to provide the user with the function output')
             feedback_msg = self.get_next_action(
-                is_allowed_functcall=False,
+                funct_call_options=FunctCallOption.make_none_option(),
                 additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
             self.speak(feedback_msg)
 
 
     def get_next_action(self,
-                        is_allowed_functcall : bool = True,
+                        funct_call_options : FunctCallOption = FunctCallOption.make_auto_option(),
                         custom_tool_docs : Optional[list[dict]] = None,
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3,
@@ -94,7 +102,7 @@ class Agent(LingualEntity):
         action = self.model.get_action(
             entries=self.get_basic_entries()+additional_entries,
             tool_docs=self.tool_handler.get_active_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            action_options=ActionOptions(is_allowed_functioncall=is_allowed_functcall,max_tokens=max_tokens,temperature=temperature)
+            action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
         )
 
         return action

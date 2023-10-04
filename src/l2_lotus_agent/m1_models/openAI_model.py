@@ -39,10 +39,10 @@ class OpenAIModel(LLM):
             'messages': entries,
             'temperature': action_options.temperature
         }
-
-        if not entries is None and action_options.is_allowed_functioncall:
+        funct_call_options = action_options.funct_call_options
+        if funct_call_options.call_allowed:
             args_dict['functions'] = tool_docs
-            args_dict['function_call'] = 'auto'
+            args_dict['function_call'] = funct_call_options.get_openai_syntax()
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
