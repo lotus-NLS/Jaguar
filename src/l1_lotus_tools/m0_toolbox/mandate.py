@@ -53,11 +53,7 @@ class UPDATE_MANDATE(Tool):
 
 
     def get_objective_by_id(self, objective_id : str):
-        return self.get_root_objective().get_objective_by_id(objective_id=objective_id)
-
-
-    def get_root_objective(self) -> Optional[Objective]:
-        return self.acting_agent.mandate.root_objective
+        return self.acting_agent.mandate.root_objective.get_objective_by_id(objective_id=objective_id)
 
 
 # ---------------------------------------------------------
@@ -66,56 +62,52 @@ class UPDATE_MANDATE(Tool):
 class INITIALIZE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
+        self.desc : str ='This tools allows you to initialize a mandate by supplying a root objectives and a tree of subobjectives in a list'
 
-        self.desc : str = ('This tools allows you to initialize a mandate by supplying a'
-                           ' root objectives and a tree of subobjectives in a list')
-
-        self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str
-                                                      , desc="""Specify your objectives in this format; Note that there is only a single root objective:
-                                                                    Root Objective
-                                                                    -Sub-objective
-                                                                    -Sub-objective
-                                                                    --Sub-sub objective
-                                                                    - Sub-objective
-                                                                    -- Sub-sub objective""")
+        self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str,
+              desc="""Specify your objectives in this format; Note that there is only a single root objective:
+                      Root Objective
+                      -Sub-objective
+                      -Sub-objective
+                      --Sub-sub objective
+                      -Sub-objective
+                      --Sub-sub objective""")
 
 
     def do(self):
-        mandate = self.acting_agent.mandate
-        if mandate.is_active():
-            self.semantic_error(f'There is still an active mandate so new mandate cannot be initialized. Aborting ...')
+        objective_lines = self.content_arg.val.split('\n')
+        if not is_valid_hierarchy_format(lines=objective_lines):
+            self.semantic_error(f'The given objective specifcations do not fit the required format')
             return
 
-        objective_str = self.content_arg.val
-        objective_lines = objective_str.split('\n')
-
-        init_request_msg = (f'Here is my plan of action for your request: '
+        init_request_msg = (f'Here is my plan of action for your request:'
                             f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
         if not self.acting_agent.get_user_permission(request_msg=init_request_msg):
             return
 
-        format_valid = is_valid_hierarchy_format(lines=objective_lines)
-        if not format_valid:
-            self.semantic_error(f'The given objective specifcations do not fit the required format')
-            return
-
-        stack : list[Objective] = []
-        for line in objective_lines:
-            indent_level, content = get_leading_dashes_count(line), line.lstrip('-')
-
-            if indent_level == 0:
-                new_objective = Objective.make_root(desc=f'{content}')
-                mandate.root_objective = new_objective
-            else:
-                stack = stack[:indent_level]
-                new_objective = stack[-1].make_subelement(desc=f'{content}')
-
-            stack.append(new_objective)
-
-        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
+        self.parse_objectives_lines(lines=objective_lines)
         self.disable()
 
         if verbose_mode:
             print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
 
+
+    def disable(self):
+        super().disable()
+        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
+
+
+    def parse_objectives_lines(self, lines : list[str]):
+        stack: list[Objective] = []
+        for line in lines:
+            indent_level, content = get_leading_dashes_count(line), line.lstrip('-')
+
+            if indent_level == 0:
+                new_objective = Objective.make_root(desc=f'{content}')
+                self.acting_agent.mandate.root_objective = new_objective
+            else:
+                stack = stack[:indent_level]
+                new_objective = stack[-1].make_subelement(desc=f'{content}')
+
+            stack.append(new_objective)
