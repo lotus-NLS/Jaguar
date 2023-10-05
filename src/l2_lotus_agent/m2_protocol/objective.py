@@ -30,19 +30,23 @@ class Objective:
         self.parent : Optional[Objective] = None
 
         act_list = [self.edit_desc, self.mark_complete, self.cancel, self.make_subelement]
-        self.available_actions = {funct.__name__ : funct for funct in act_list}
+        self.action_dict = {funct.__name__ : funct for funct in act_list}
 
     # ----------------------------------------------------
     # get
 
-    def get_objective(self, objective_key : str) -> Optional[Objective]:
+    def get_available_actions(self) -> list[callable]:
+        return list(self.action_dict.values())
+
+
+    def get_objective_by_id(self, objective_id : str) -> Optional[Objective]:
         total_dict = self.get_descendant_dict()
         total_dict[self._uuid] = self
 
-        if not objective_key in total_dict:
-            raise KeyError(f'There is no objective with ID {objective_key}')
+        if not objective_id in total_dict:
+            raise KeyError(f'There is no objective with ID {objective_id}')
 
-        return total_dict[objective_key]
+        return total_dict[objective_id]
 
 
     def get_descendant_dict(self) -> dict[str, Objective]:

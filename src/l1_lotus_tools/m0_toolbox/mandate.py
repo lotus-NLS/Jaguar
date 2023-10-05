@@ -1,9 +1,9 @@
-import inspect
 from typing import Optional
 from src.l2_lotus_agent import ToolArg, Objective
 
 
 from src.l1_lotus_tools.tool import Tool
+from src.l1_lotus_tools.m1_python_utils.inspection import get_function_args
 # ---------------------------------------------------------
 
 verbose_mode = True
@@ -12,7 +12,6 @@ class UPDATE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
-        self.root_objective : Optional[Objective] = None
         self.description : str = 'This tool allows you to update objectives'
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
@@ -22,44 +21,43 @@ class UPDATE_MANDATE(Tool):
                                                         desc=f'Required for {Objective.edit_desc.__name__} and {Objective.make_subelement.__name__}'
                                                              f'to specify the edited description or description of the new element')
 
-    def enable(self):
-        super().enable()
-        self.root_objective = self.acting_agent.mandate.root_objective
-
-        function_names = self.root_objective.available_actions.keys()
-        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                        available_options=[func_name for func_name in function_names],
-                                                        desc='The type of action that you want to perform')
-
-
     def do(self):
-        objective_to_edit = self.root_objective.get_objective(objective_key=self.objective_uuid_arg.val)
-        action = objective_to_edit.available_actions[self.action_type_arg.val]
+        objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
+        action = objective_to_edit.action_dict[self.action_type_arg.val]
+        action_args = get_function_args(func=action)
 
-        action_args = self.get_callable_args(action)
-
+        arg_dict = {}
         if 'desc' in action_args:
-            action(desc=self.description_arg.val)
-
-        else:
-            action()
+            arg_dict['desc'] = self.description_arg.val
+        action(**arg_dict)
 
         if verbose_mode:
-            print(f'[Debug]: Currently acting agent root objective:\n'
-                  f'{self.acting_agent.mandate.root_objective}')
+            print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
         if not self.acting_agent.mandate.root_objective.is_active:
-            self.acting_agent.mandate.root_objective = None
-            self.acting_agent.tool_handler.enable_tool(tool_name=INITIALIZE_MANDATE.__name__)
             self.disable()
 
 
+    def enable(self):
+        super().enable()
+        functions = self.acting_agent.mandate.root_objective.get_available_actions()
+        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
+                                                        available_options=[function.__name__ for function in functions],
+                                                        desc='The type of action that you want to perform')
 
-    @staticmethod
-    def get_callable_args(func : callable):
-        func_sig = inspect.signature(func)
-        params = list(func_sig.parameters.keys())
-        return params
+    def disable(self):
+        super().disable()
+        self.acting_agent.mandate.root_objective = None
+        self.acting_agent.tool_handler.enable_tool(tool_name=INITIALIZE_MANDATE.__name__)
+
+
+    def get_objective_by_id(self, objective_id : str):
+        return self.get_root_objective().get_objective_by_id(objective_id=objective_id)
+
+
+    def get_root_objective(self) -> Optional[Objective]:
+        return self.acting_agent.mandate.root_objective
+
 
 # ---------------------------------------------------------
 

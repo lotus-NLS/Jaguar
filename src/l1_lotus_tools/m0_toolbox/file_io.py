@@ -40,6 +40,7 @@ class FILE_IO(Tool):
         self.content_arg: ToolArg = self.create_arg(name='content', dtype=str,
                                                     desc='The content that will be written to the file')
 
+
     def do(self):
         location = os.path.expanduser(self.fpath_arg.val)
         mode = self.mode_arg.val

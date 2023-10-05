@@ -31,7 +31,7 @@ class ObjectiveTester(unittest.TestCase):
         self.assertIsNotNone(self.root.get_descendant_dict())
 
     def test_get_objective(self):
-        retrieved_sub = self.root.get_objective(objective_key=self.sub._uuid)
+        retrieved_sub = self.root.get_objective_by_id(objective_id=self.sub._uuid)
         self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):
@@ -44,7 +44,7 @@ class ObjectiveTester(unittest.TestCase):
 
     def test_cancel(self):
         self.sub.cancel()
-        self.assertIsNone(self.root.get_objective(self.sub))
+        self.assertIsNone(self.root.get_objective_by_id(self.sub))
 
     def test_make_subelement(self):
         sub = self.root.make_subelement("sub2")
