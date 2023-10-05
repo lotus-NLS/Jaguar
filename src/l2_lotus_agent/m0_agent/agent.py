@@ -124,7 +124,7 @@ class Agent(LingualEntity):
             return None
 
         if task.is_mandate_task():
-            task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_str())
+            task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_msg())
         else:
             task_entry = Entry(DialogueRole.user_role(), msg=f'Respond to unread messages:\n{self.get_unread_as_str()}')
 
