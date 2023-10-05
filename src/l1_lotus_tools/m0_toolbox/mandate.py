@@ -88,7 +88,6 @@ class INITIALIZE_MANDATE(Tool):
         objective_str = self.content_arg.val
         objective_lines = objective_str.split('\n')
 
-        # TODO: Currently asking for permission is bugged because the main loop steals the input stream
         init_request_msg = (f'Here is my plan of action for your request: '
                             f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
