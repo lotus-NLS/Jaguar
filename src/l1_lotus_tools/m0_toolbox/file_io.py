@@ -1,9 +1,9 @@
 from __future__ import annotations
 import os
-from PyPDF2 import PdfReader
 from src.l2_lotus_agent import ToolArg
 
 from src.l1_lotus_tools.tool import Tool
+from src.l1_lotus_tools.m1_python_utils.file_io_utils import get_pdf_file_content, get_txt_file_content
 
 # ---------------------------------------------------------
 
@@ -72,7 +72,7 @@ class FILE_IO(Tool):
         if not self.format_arg.val in [FILE_IO.text_format, FILE_IO.pdf_format]:
             self.semantic_error(f'Given format {chosen_format} is not an allowed format. Please choose a format from {self.allowed_formats}')
 
-        retrieval_function = self.get_txt_file_content if chosen_format == self.text_format else self.get_pdf_file_content
+        retrieval_function = get_txt_file_content if chosen_format == self.text_format else get_pdf_file_content
 
         try:
             self.update_log(f'Attempting to read file located at {location}')
@@ -81,25 +81,3 @@ class FILE_IO(Tool):
 
         except Exception:
             self.exception_log(f'An exception occured while trying to read the file located at {location}\n')
-
-
-    @staticmethod
-    def get_txt_file_content(location : str) -> str:
-        with open(location, 'r') as file:
-            file_content = file.read()
-        return file_content
-
-
-    @staticmethod
-    def get_pdf_file_content(location : str) -> str:
-        pdf_file = open(location, 'rb')
-        pdf_reader = PdfReader(pdf_file)
-
-        pdf_content = ''
-        for page_num in range(len(pdf_reader.pages)):
-            pdf_content += pdf_reader.pages[page_num].extract_text()
-
-        # Close the PDF file
-        pdf_file.close()
-
-        return pdf_content
