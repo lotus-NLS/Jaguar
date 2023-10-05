@@ -121,10 +121,11 @@ class Mandate:
         if self.root_objective is None:
             return None
 
-        objective_msg = (f'## Internal monologue: My current mandate I am working to finish is:'
+        objective_msg = (f'## Internal monologue: My current mandate, which I am working to finish is:'
                          f'\n{self.root_objective}\n')
-        mode_msg = ('I am currently in work mode and cannot converse with the user.'
-                    'The root objective must be completed or canceled via UPDATE_MANDATE to get back to dialogue mode.')
+        mode_msg = ('I am currently in work mode and cannot speak to the user.'
+                    'The root objective must be completed or canceled via UPDATE_MANDATE to get back to dialogue mode and converse with the user.'
+                    'Once an objective is completed, I will mark it as complete using UPDATE_MANDATE')
 
         return objective_msg + mode_msg
 
