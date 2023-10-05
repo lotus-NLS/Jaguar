@@ -34,9 +34,9 @@ class UserIO:
         return input_retriever.read()
 
 
-    def get_confirmation(self,msg : str) -> bool:
+    def get_confirmation(self) -> bool:
         while True:
-            user_input = self.get_user_msg(f'{msg}')
+            user_input = self.get_user_msg(f'')
             if user_input.lower() in ['y', 'n']:
                 break
             else:

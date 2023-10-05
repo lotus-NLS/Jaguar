@@ -145,7 +145,7 @@ class Agent(LingualEntity):
 
     def get_user_permission(self, request_msg : str) -> bool:
         self.speak(msg=f'{request_msg} (y/n)')
-        user_approves = user_io.get_confirmation(msg=request_msg)
+        user_approves = user_io.get_confirmation()
 
         if user_approves:
             self.think(f'User confirmed permission')

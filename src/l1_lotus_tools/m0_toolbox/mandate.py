@@ -45,7 +45,8 @@ class UPDATE_MANDATE(Tool):
             action()
 
         if verbose_mode:
-            print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
+            print(f'[Debug]: Currently acting agent root objective:\n'
+                  f'{self.acting_agent.mandate.root_objective}')
 
         if not self.acting_agent.mandate.root_objective.is_active:
             self.acting_agent.mandate.root_objective = None
@@ -119,7 +120,6 @@ class INITIALIZE_MANDATE(Tool):
 
         if verbose_mode:
             print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
-
 
 
     def is_valid_format(self,lines: list[str]) -> bool:
