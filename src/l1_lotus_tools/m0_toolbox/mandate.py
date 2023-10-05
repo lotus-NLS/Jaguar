@@ -4,6 +4,7 @@ from src.l2_lotus_agent import ToolArg, Objective
 
 from src.l1_lotus_tools.tool import Tool
 from src.l1_lotus_tools.m1_python_utils.inspection import get_function_args
+from src.l1_lotus_tools.m1_python_utils.string_formatting import get_leading_dashes_count,is_valid_hierarchy_format
 # ---------------------------------------------------------
 
 verbose_mode = True
@@ -94,14 +95,14 @@ class INITIALIZE_MANDATE(Tool):
         if not self.acting_agent.get_user_permission(request_msg=init_request_msg):
             return
 
-        format_valid = self.is_valid_format(lines=objective_lines)
+        format_valid = is_valid_hierarchy_format(lines=objective_lines)
         if not format_valid:
             self.semantic_error(f'The given objective specifcations do not fit the required format')
             return
 
         stack : list[Objective] = []
         for line in objective_lines:
-            indent_level, content = self.get_leading_dashes_count(line), line.lstrip('-')
+            indent_level, content = get_leading_dashes_count(line), line.lstrip('-')
 
             if indent_level == 0:
                 new_objective = Objective.make_root(desc=f'{content}')
@@ -118,37 +119,3 @@ class INITIALIZE_MANDATE(Tool):
         if verbose_mode:
             print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
 
-
-    def is_valid_format(self,lines: list[str]) -> bool:
-        format_correct = True
-
-        if lines[0].startswith('-'):
-            format_correct = False
-
-        prev_indent_level = 0
-
-        for line in lines[1:]:
-            curr_indent_level = self.get_leading_dashes_count(line)
-
-            if curr_indent_level > prev_indent_level + 1:
-                format_correct = False
-                break
-
-            if not curr_indent_level > 0:
-                format_correct = False
-                break
-
-            prev_indent_level = curr_indent_level
-
-        return format_correct
-
-
-    @staticmethod
-    def get_leading_dashes_count(line: str) -> int:
-        count = 0
-        for char in line:
-            if char == '-':
-                count += 1
-            else:
-                break
-        return count
