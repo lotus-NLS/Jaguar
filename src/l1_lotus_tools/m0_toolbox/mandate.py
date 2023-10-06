@@ -83,7 +83,7 @@ class INITIALIZE_MANDATE(Tool):
         init_request_msg = (f'Here is my plan of action for your request:'
                             f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
-        if not self.acting_agent.get_user_permission(request_msg=init_request_msg):
+        if not self.acting_agent.retrieve_user_permission(request_msg=init_request_msg):
             return
 
         self.parse_objectives_lines(lines=objective_lines)

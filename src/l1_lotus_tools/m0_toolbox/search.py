@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from src.l2_lotus_agent import Agent, ToolArg, FunctCallOption
+from src.l2_lotus_agent import Agent, ToolArg
 
 
 from src.l1_lotus_tools.tool import Tool
@@ -34,7 +34,7 @@ class SEARCH(Tool):
 
             print(f'[Debug]: Requesting summarization')
             self.update_log(f'The following information was obtained from web search:'
-                              f'{self.make_composition_report(site_report_list=site_reports)}')
+                            f'{self.make_composition_report(site_report_list=site_reports)}')
 
         except Exception as e:
             self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
@@ -44,12 +44,13 @@ class SEARCH(Tool):
 
     def get_site_report(self, site_url : str):
         try:
-            raw_site_text = self.webtools.get_url_text(site_url=site_url)
             summary_agent = Agent.make_website_summarization_agent()
+
+            raw_site_text = self.webtools.get_url_text(site_url=site_url)
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
             summary_agent.think(msg=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}',verbose=False)
-            result = summary_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(),
-                                                   max_tokens=300).get_text()
+
+            result = summary_agent.get_response(max_tokens=300)
         except:
             result = f'An exception occured while trying to get report on site {site_url}. Aborting ...'
 
@@ -61,15 +62,19 @@ class SEARCH(Tool):
         for index, info_text in enumerate(site_report_list):
             all_summaries += f'## Report {index} ##' \
                              f'{info_text}\n'
-
         composition_agent = Agent.make_report_composition_agent()
+
+        # Evaluate sources
         composition_agent.log_system_msg(msg=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
                                     f'First evaluate the sources for their usefulness for the query'
                                     f', and make an outline of what you learned')
-        evaluation = composition_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(), max_tokens=300).get_text()
+        evaluation = composition_agent.get_response(max_tokens=300)
         composition_agent.think(evaluation, verbose=False)
-        composition_agent.log_system_msg(f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
 
-        return composition_agent.get_next_action(funct_call_options=FunctCallOption.make_none_option(), max_tokens=300).get_text()
+        # Make report
+        composition_agent.log_system_msg(f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
+        summary = composition_agent.get_response(max_tokens=300)
+
+        return summary
 
 

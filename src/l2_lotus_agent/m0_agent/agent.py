@@ -76,6 +76,8 @@ class Agent(LingualEntity):
         except Exception:
             self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}')
 
+    # ---------------------------------------------------
+    # Actions
 
     def handle_tool_response(self, err_text : Optional[str] = None):
         if not err_text is None:
@@ -85,9 +87,14 @@ class Agent(LingualEntity):
             log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                        'In your update it is not necessary to provide the user with the function output')
             feedback_msg = self.get_next_action(
-                funct_call_options=FunctCallOption.make_none_option(),
+                funct_call_options=FunctCallOption.make_no_call_option(),
                 additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
             self.speak(feedback_msg)
+
+
+    def get_response(self, max_tokens : int, entries : Optional[list[Entry]] = None) -> str:
+        return self.get_next_action(funct_call_options=FunctCallOption.make_no_call_option(),
+                                    max_tokens=max_tokens).get_text()
 
 
     def get_next_action(self,
@@ -107,7 +114,6 @@ class Agent(LingualEntity):
         )
 
         return action
-
 
     # ---------------------------------------------------
     # Context
@@ -143,7 +149,7 @@ class Agent(LingualEntity):
         return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
 
 
-    def get_user_permission(self, request_msg : str) -> bool:
+    def retrieve_user_permission(self, request_msg : str) -> bool:
         self.speak(msg=f'{request_msg} (y/n)')
         user_approves = user_io.get_confirmation()
 

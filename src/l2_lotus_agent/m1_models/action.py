@@ -14,7 +14,7 @@ import json
 class FunctCallOption:
 
     @classmethod
-    def make_none_option(cls):
+    def make_no_call_option(cls):
         return cls(call_allowed=False)
 
     @classmethod
