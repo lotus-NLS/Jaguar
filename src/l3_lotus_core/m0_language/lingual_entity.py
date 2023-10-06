@@ -2,9 +2,11 @@ from __future__ import annotations
 from threading import Thread
 from typing import Union, Optional
 from abc import abstractmethod
+from src.l3_lotus_core.m1_OperatorIO import user_io
 
 from src.l3_lotus_core.m0_language.channel import Channel
-from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole, Flag, Flags
+from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole, Flags
+
 
 # ----------------------------------------------------
 
@@ -88,6 +90,16 @@ class LingualEntity:
 
     # ------------------------------
     # Other
+
+    def retrieve_user_permission(self, request_msg : str) -> bool:
+        self.speak(msg=f'{request_msg} (y/n)')
+        user_approves = user_io.get_confirmation()
+
+        if user_approves:
+            self.think(f'User confirmed permission')
+        else:
+            self.think(f'User denied permission')
+        return user_approves
 
     @staticmethod
     def enter_into_channel(channel : Channel, channel_members : list[LingualEntity]):

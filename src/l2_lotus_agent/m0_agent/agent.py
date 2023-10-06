@@ -1,6 +1,6 @@
 from typing import Optional
 from abc import abstractmethod
-from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg, user_io
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg
 
 
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
@@ -11,6 +11,16 @@ from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes, Ac
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
+    @classmethod
+    def make_website_summarization_agent(cls):
+        return Agent(identity=Identity(core=Cores.website_information_retriever),
+                     model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+
+    @classmethod
+    def make_report_composition_agent(cls):
+        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+
+
     def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Identity = Identity(core=Cores.goto)):
         LingualEntity.__init__(self, role=DialogueRole.agent_role())
 
@@ -136,25 +146,3 @@ class Agent(LingualEntity):
 
         return task_entry
 
-    # ---------------------------------------------------
-    # Other
-
-    @classmethod
-    def make_website_summarization_agent(cls):
-        return Agent(identity=Identity(core=Cores.website_information_retriever),
-                     model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
-
-    @classmethod
-    def make_report_composition_agent(cls):
-        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
-
-
-    def retrieve_user_permission(self, request_msg : str) -> bool:
-        self.speak(msg=f'{request_msg} (y/n)')
-        user_approves = user_io.get_confirmation()
-
-        if user_approves:
-            self.think(f'User confirmed permission')
-        else:
-            self.think(f'User denied permission')
-        return user_approves
