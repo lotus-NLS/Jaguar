@@ -1,5 +1,6 @@
 from typing import Optional
 from abc import abstractmethod
+from functools import partial
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg
 
 
@@ -60,7 +61,7 @@ class Agent(LingualEntity):
 
             action = self.get_next_action(
                 funct_call_options=FunctCallOption(**arg_dict),
-                additional_entries=[self.get_active_task_entry()]
+                entries=self.get_basic_entries()+[self.get_active_task_entry()]
             )
 
         except Exception:
@@ -98,27 +99,32 @@ class Agent(LingualEntity):
                        'In your update it is not necessary to provide the user with the function output')
             feedback_msg = self.get_next_action(
                 funct_call_options=FunctCallOption.make_no_call_option(),
-                additional_entries=[Entry(role=DialogueRole.user_role(),msg=log_msg)]).get_text()
+                entries=self.get_basic_entries()+[Entry(role=DialogueRole.user_role(), msg=log_msg)]).get_text()
             self.speak(feedback_msg)
 
 
-    def get_response(self, max_tokens : int, entries : Optional[list[Entry]] = None) -> str:
-        return self.get_next_action(funct_call_options=FunctCallOption.make_no_call_option(),
-                                    max_tokens=max_tokens).get_text()
+    def get_text_response(self, max_tokens : int, entries : Optional[list[Entry]] = None) -> str:
+        arg_dict = {
+            'funct_call_options' : FunctCallOption.make_no_call_option(),
+            'max_tokens' : max_tokens,
+            'entries' : self.get_basic_entries() if entries is None else entries
+        }
+
+        return self.get_next_action(**arg_dict).get_text()
 
 
     def get_next_action(self,
                         funct_call_options : FunctCallOption = FunctCallOption.make_auto_option(),
                         custom_tool_docs : Optional[list[dict]] = None,
+                        entries: Optional[list[Entry]] = None,
                         max_tokens : Optional[int] = None,
-                        temperature : float = 0.3,
-                        additional_entries : Optional[list[Entry]] = None) -> Action:
+                        temperature : float = 0.3) -> Action:
 
-        if additional_entries is None:
-            additional_entries = []
+        if entries is None:
+            entries = self.get_basic_entries()
 
         action = self.model.get_action(
-            entries=self.get_basic_entries()+additional_entries,
+            entries=self.get_basic_entries() + entries,
             tool_docs=self.tool_handler.get_active_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
         )

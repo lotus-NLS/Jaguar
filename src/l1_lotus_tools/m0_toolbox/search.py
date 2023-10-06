@@ -29,6 +29,7 @@ class SEARCH(Tool):
             with ThreadPoolExecutor() as executor:
                 url_list = self.webtools.get_search_urls(search_term=self.requested_info_arg.val, num_results=SEARCH.num_results)
                 self.update_log(f'The following URLs were found: {url_list}')
+
                 site_reports = list(executor.map(self.get_site_report, url_list))
                 print(f'[Debug]: Site reports done')
 
@@ -50,7 +51,7 @@ class SEARCH(Tool):
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
             summary_agent.think(msg=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}',verbose=False)
 
-            result = summary_agent.get_response(max_tokens=300)
+            result = summary_agent.get_text_response(max_tokens=300)
         except:
             result = f'An exception occured while trying to get report on site {site_url}. Aborting ...'
 
@@ -68,12 +69,12 @@ class SEARCH(Tool):
         composition_agent.log_system_msg(msg=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'
                                     f'First evaluate the sources for their usefulness for the query'
                                     f', and make an outline of what you learned')
-        evaluation = composition_agent.get_response(max_tokens=300)
+        evaluation = composition_agent.get_text_response(max_tokens=300)
         composition_agent.think(evaluation, verbose=False)
 
         # Make report
         composition_agent.log_system_msg(f'Now provide an answer to the initial query: {self.requested_info_arg.val}')
-        summary = composition_agent.get_response(max_tokens=300)
+        summary = composition_agent.get_text_response(max_tokens=300)
 
         return summary
 
