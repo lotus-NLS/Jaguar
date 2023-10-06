@@ -28,6 +28,7 @@ class FunctCallOption:
     def get_openai_syntax(self) -> object:
         if not self.call_allowed:
             return 'none'
+
         if self.required_funct_name is None:
             return 'auto'
         else:

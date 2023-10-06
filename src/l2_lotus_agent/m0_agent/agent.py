@@ -1,6 +1,5 @@
 from typing import Optional
 from abc import abstractmethod
-from functools import partial
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg
 
 
@@ -54,13 +53,8 @@ class Agent(LingualEntity):
 
     def do(self, required_funct_name : Optional[str] = None):
         try:
-            arg_dict = {
-                'call_allowed' : True,
-                'required_funct_name' : required_funct_name
-            }
-
             action = self.get_next_action(
-                funct_call_options=FunctCallOption(**arg_dict),
+                funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=required_funct_name),
                 entries=self.get_basic_entries()+[self.get_active_task_entry()]
             )
 
@@ -97,17 +91,16 @@ class Agent(LingualEntity):
         if self.task_queue.view_active_task().is_dialogue_task():
             log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                        'In your update it is not necessary to provide the user with the function output')
-            feedback_msg = self.get_next_action(
-                funct_call_options=FunctCallOption.make_no_call_option(),
-                entries=self.get_basic_entries()+[Entry(role=DialogueRole.user_role(), msg=log_msg)]).get_text()
+
+            feedback_msg = self.get_text_response(entries=self.get_basic_entries()+[Entry(role=DialogueRole.user_role(), msg=log_msg)])
             self.speak(feedback_msg)
 
 
-    def get_text_response(self, max_tokens : int, entries : Optional[list[Entry]] = None) -> str:
+    def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:
         arg_dict = {
             'funct_call_options' : FunctCallOption.make_no_call_option(),
             'max_tokens' : max_tokens,
-            'entries' : self.get_basic_entries() if entries is None else entries
+            'entries' : entries
         }
 
         return self.get_next_action(**arg_dict).get_text()
