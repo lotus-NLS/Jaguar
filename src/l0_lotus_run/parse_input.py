@@ -13,7 +13,7 @@ def get_parsed_input(the_input : str) -> (str, Optional[Flags]):
     else:
         msg, flag_str = the_input.split(seperator)
         flags = Flags()
-        for flag in Flag.get_all_flags():
+        for flag in Flag.get_all_flagtypes():
             if flag in flag_str:
                 flags.append(flag)
 

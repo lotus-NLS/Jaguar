@@ -55,7 +55,7 @@ class Flag(str):
         return cls(flag=Flag._m_enforce_mandate)
 
     @classmethod
-    def get_all_flags(cls):
+    def get_all_flagtypes(cls):
         as_list = []
         for name, value in cls.__dict__.items():
             if name.startswith("_m_"):
@@ -77,7 +77,7 @@ class Entry(dict):
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
         self._is_processed : bool = False
-        self.flags : Optional[Flags] = flags
+        self.flags : Flags = flags if not flags is None else []
 
     def mark_processed(self):
         self._is_processed = True
