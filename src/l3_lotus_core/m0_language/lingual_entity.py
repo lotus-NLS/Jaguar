@@ -49,7 +49,7 @@ class LingualEntity:
 
     def _log_entry(self, entry : Entry):
         if not entry.get_role() == DialogueRole.user_role():
-            entry.mark_read()
+            entry.mark_processed()
 
         self._personal_log.append(entry)
         Thread(target=self.react, args=(entry,)).start()

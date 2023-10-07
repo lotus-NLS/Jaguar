@@ -12,7 +12,39 @@ class Alpha(Agent):
         self.launch()
 
     # ---------------------------------------------------
-    # Setup
+    # Loop
+
+    def launch(self):
+        threading.Thread(target=self.loop).start()
+
+
+    def loop(self):
+        while True:
+            active_task : Task = self.task_queue.get()
+
+
+            if active_task.requires_init_mandate:
+                self.do(required_funct_name=INITIALIZE_MANDATE.__name__)
+            else:
+                self.do()
+
+            if self.mandate.is_active() and not self.task_queue.get_work_task_present():
+                self.task_queue.put(Task(is_mandate_task=True))
+
+            self.task_queue.complete_active_task()
+
+
+    def react(self, entry: Entry):
+        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
+
+            entries_to_process = self.get_unread_entries()
+            self.task_queue.put(Task.make_dialogue_task(enforce_init_mandate=entry.get_enforce_mandate_flag()))
+
+            for entry in entries_to_process:
+                entry.mark_processed()
+
+    # ---------------------------------------------------
+    # Tool setup
 
     def setup_tools(self):
         all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_MANDATE(), INITIALIZE_MANDATE()]
@@ -28,6 +60,7 @@ class Alpha(Agent):
     def add_tool(self, tool : Tool):
         tool.external_log = self.get_tool_logger(tool_name=tool.name)
         tool.acting_agent = self
+
 
     def get_tool_logger(self,tool_name: str) -> callable:
         max_tokens_tool = 1000
@@ -46,35 +79,6 @@ class Alpha(Agent):
 
         return tool_log
 
-    # ---------------------------------------------------
-    # Loop
-
-    def launch(self):
-        threading.Thread(target=self.loop).start()
-
-    def loop(self):
-        while True:
-            active_task = self.task_queue.get()
-            entries_to_process = self.get_unread_entries()
-
-            if active_task.requires_init_mandate:
-                self.do(required_funct_name=INITIALIZE_MANDATE.__name__)
-            else:
-                self.do()
-
-            if self.mandate.is_active() and not self.task_queue.get_work_task_present():
-                self.task_queue.put(Task(is_mandate_task=True))
-
-            for entry in entries_to_process:
-                entry.mark_read()
-            self.task_queue.complete_active_task()
-
-
-    def react(self, entry: Entry):
-        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
-            entry_requires_mandate = entry.get_is_enforce_mandate()
-            print(f'[Temp Debug]: Enforcing mandate init: {entry_requires_mandate}')
-            self.task_queue.put(Task.make_dialogue_task(enforce_init_mandate=entry_requires_mandate))
 
 
 class User(LingualEntity):

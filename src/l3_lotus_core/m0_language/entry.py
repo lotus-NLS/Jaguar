@@ -76,25 +76,28 @@ class Entry(dict):
         self['content'] = msg
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
-        self._is_read : bool = False
+        self._is_processed : bool = False
         self.flags : Optional[Flags] = flags
 
-    def mark_read(self):
-        self._is_read = True
+    def mark_processed(self):
+        self._is_processed = True
 
     # ----------------------------------------------------
 
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def get_is_enforce_mandate(self) -> bool:
-        if self.flags is None:
-            return False
-        else:
-            return Flag.enforce_mandate_flag() in self.flags
+    def get_enforce_mandate_flag(self) -> bool:
+        enforce_mandate : bool = False
+
+        if Flag.enforce_mandate_flag() in self.flags:
+            enforce_mandate = True
+
+        print(f'[Temp Debug]: Enforcing mandate init: {enforce_mandate}')
+        return enforce_mandate
 
     def get_is_read(self) -> bool:
-        return self._is_read
+        return self._is_processed
 
     def get_role(self) -> str:
         return self['role']
