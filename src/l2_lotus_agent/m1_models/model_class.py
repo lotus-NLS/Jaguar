@@ -18,10 +18,9 @@ class LLM:
         pass
 
 
-    def get_token_count(self,the_str: str) -> int:
+    def get_string_tokens(self, the_str: str) -> int:
         return self.tokenizer.get_string_tokens(the_str=the_str)
 
 
     def get_limited_string(self, the_str : str, max_tokens : int) -> str:
-        encoded_str = self.tokenizer.encode(the_str)
-        return self.tokenizer.decode(encoded_str[:max_tokens])
+        return self.tokenizer.get_limited_string(the_str=the_str,max_tokens=max_tokens)
