@@ -23,13 +23,10 @@ class OpenAI_ModelTypes:
     def get_test_model():
         return OpenAI_ModelTypes.gpt_35_4k
 
+# The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
-        super().__init__(model_type=model_type)
-        encoder_type = tiktoken.get_encoding('cl100k_base')
-        self.encoder = encoder_type.encode
-        self.decoder = encoder_type.decode
-
+        super().__init__(model_type=model_type, encoding = tiktoken.get_encoding('cl100k_base'))
         self.tokens_at_last_response : Optional[int] = None
 
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
@@ -53,23 +50,9 @@ class OpenAIModel(LLM):
         openai_response = openai.ChatCompletion.create(**args_dict)
         print(f"[Debug]: Received response from the model.")
 
-        # Action is promised a dict, so a dict must be delivered in any case
-        if not isinstance(openai_response, dict):
-            raise TypeError(f'[Error]: OpenAI response is not of dictionary form')
-
         try:
             self.tokens_at_last_response = openai_response['usage']['prompt_tokens']
         except:
             self.tokens_at_last_response = None
 
         return Action(openai_response)
-
-
-    # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
-    def get_token_count(self,the_str: str):
-        return len(self.encoder(the_str))
-
-
-    def get_limited_string(self, the_str : str, max_tokens : int):
-        encoded_str = self.encoder(the_str)
-        return self.decoder(encoded_str[:max_tokens])
