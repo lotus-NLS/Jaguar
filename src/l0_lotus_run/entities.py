@@ -36,9 +36,10 @@ class Alpha(Agent):
 
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
-
             entries_to_process = self.get_unread_entries()
-            self.task_queue.put(Task.make_dialogue_task(enforce_init_mandate=entry.get_enforce_mandate_flag()))
+            new_dialogue_task = Task.make_dialogue_task(enforce_init_mandate=entry.get_enforce_mandate_flag(),
+                                                        entries_to_process=entries_to_process)
+            self.task_queue.put(new_dialogue_task)
 
             for entry in entries_to_process:
                 entry.mark_processed()

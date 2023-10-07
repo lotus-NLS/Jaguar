@@ -2,11 +2,15 @@ from __future__ import annotations
 from queue import Queue
 from typing import Optional
 
+from src.l3_lotus_core import Entry
+
+# ---------------------------------------------------------
 
 class Task:
-    def __init__(self, is_mandate_task : bool = True, enforce_init_mandate : bool = False):
+    def __init__(self, is_mandate_task : bool = True, enforce_init_mandate : bool = False, entries_to_respond_to : Optional[list[Entry]] = None):
         self._is_work_task : bool = is_mandate_task
         self.requires_init_mandate : bool = enforce_init_mandate
+        self._entries_to_process : list[Entry] = entries_to_respond_to if not entries_to_respond_to is None else []
 
     def is_dialogue_task(self) -> bool:
         return not self._is_work_task
@@ -22,12 +26,17 @@ class Task:
         return cls(is_mandate_task=True)
 
     @classmethod
-    def make_dialogue_task(cls, enforce_init_mandate : Optional[bool] = None) -> Task:
-        if enforce_init_mandate is None:
-            return cls(is_mandate_task=False)
-        else:
-            return cls(is_mandate_task=False,enforce_init_mandate=enforce_init_mandate)
+    def make_dialogue_task(cls, enforce_init_mandate : bool = False, entries_to_process : Optional[list[Entry]] = None) -> Task:
+        return cls(is_mandate_task=False,
+                   enforce_init_mandate=enforce_init_mandate,
+                   entries_to_respond_to=entries_to_process)
 
+    def get_unread_as_str(self) -> str:
+        unread_msg = ''
+        for entry in self._entries_to_process:
+            unread_msg += str(entry)
+
+        return unread_msg
 
 class TaskQueue(Queue):
     def __init__(self):
