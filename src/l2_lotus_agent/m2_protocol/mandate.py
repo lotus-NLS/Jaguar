@@ -1,9 +1,10 @@
 from __future__ import annotations
-
 from typing import Union, Optional
 
-from src.l2_lotus_agent import Objective
 
+from src.l2_lotus_agent.m2_protocol.objective import Objective
+
+# ---------------------------------------------------------
 
 class Mandate:
     @classmethod

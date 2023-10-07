@@ -75,7 +75,7 @@ class Tokenizer:
 
 
     def _get_arg_tokens(self, arg_name : str, arg_json_doc: dict) -> int:
-        arg_tokens = len(self.encode(text=f'{arg_name}'))
+        arg_tokens = self.get_string_tokens(the_str=f'{arg_name}')
         for field, value in arg_json_doc.items():
             if field == 'type':
                 arg_tokens += 2

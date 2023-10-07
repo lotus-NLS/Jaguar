@@ -48,22 +48,22 @@ class OpenAIModel(LLM):
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
-
-        self.log_request()
+        self.log_request(entries=entries, tool_docs=tool_docs)
         openai_response = openai.ChatCompletion.create(**args_dict)
-        self.log_response(openai_response=openai_response)
+        self.log_response()
+
 
         return Action(openai_response)
 
 
-    def log_request(self):
-        print(f"[Debug]: Creating completion request. Token count after last response: {self.tokens_at_last_response}")
+    def log_request(self, entries : list[Entry], tool_docs : list[dict]):
+        input_tokens_used = self.tokenizer.get_context_tokens(entries=entries, funct_docs=tool_docs)
+        print(f'[Debug]: Creating completion request; Currently at {input_tokens_used} input tokens used')
+        # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
 
 
-    def log_response(self, openai_response):
+    @staticmethod
+    def log_response():
         print(f"[Debug]: Received response from the model.")
-        try:
-            self.tokens_at_last_response = openai_response['usage']['prompt_tokens']
-        except:
-            self.tokens_at_last_response = None
+
+
