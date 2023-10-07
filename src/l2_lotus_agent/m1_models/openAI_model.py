@@ -29,7 +29,6 @@ class OpenAI_ModelTypes:
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type, encoding = tiktoken.get_encoding('cl100k_base'))
-        self.tokens_at_last_response : Optional[int] = None
 
 
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
@@ -52,14 +51,13 @@ class OpenAIModel(LLM):
         openai_response = openai.ChatCompletion.create(**args_dict)
         self.log_response()
 
-
         return Action(openai_response)
 
 
     def log_request(self, entries : list[Entry], tool_docs : list[dict]):
         # Alternatively exact tokens used up to and including response can be obtained via the response object
         # openai_response['usage']['prompt_tokens']
-        
+
         input_tokens_used = self.tokenizer.get_context_tokens(entries=entries, funct_docs=tool_docs)
         print(f'[Debug]: Creating completion request; Currently at {input_tokens_used} input tokens used')
         # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
