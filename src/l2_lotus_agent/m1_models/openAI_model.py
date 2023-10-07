@@ -57,6 +57,9 @@ class OpenAIModel(LLM):
 
 
     def log_request(self, entries : list[Entry], tool_docs : list[dict]):
+        # Alternatively exact tokens used up to and including response can be obtained via the response object
+        # openai_response['usage']['prompt_tokens']
+        
         input_tokens_used = self.tokenizer.get_context_tokens(entries=entries, funct_docs=tool_docs)
         print(f'[Debug]: Creating completion request; Currently at {input_tokens_used} input tokens used')
         # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
