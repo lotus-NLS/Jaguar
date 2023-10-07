@@ -54,6 +54,10 @@ class ActionOptions:
         self.temperature : float = temperature
 
 
+    def get_funct_call_allowed(self):
+        return self.funct_call_options.call_allowed
+
+
 class Action:
     def __init__(self, openAI_response : dict):
         try:

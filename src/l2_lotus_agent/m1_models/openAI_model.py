@@ -1,6 +1,6 @@
 import openai
 import tiktoken
-from typing import Optional
+# from typing import Optional
 from src.l3_lotus_core import get_setting, Credentials, Entry
 
 from src.l2_lotus_agent.m1_models.model_class import LLM
@@ -40,23 +40,24 @@ class OpenAIModel(LLM):
             'temperature': action_options.temperature
         }
 
-        if action_options.funct_call_options.call_allowed:
+        if action_options.get_funct_call_allowed():
             args_dict['functions'] = tool_docs
             args_dict['function_call'] = action_options.funct_call_options.get_openai_syntax()
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        self.log_request(entries=entries, tool_docs=tool_docs)
+        self.log_request(entries=entries, tool_docs=tool_docs if action_options.get_funct_call_allowed() else None)
         openai_response = openai.ChatCompletion.create(**args_dict)
-        self.log_response()
+        self.log_response(openai_response)
 
         return Action(openai_response)
 
 
     def log_request(self, entries : list[Entry], tool_docs : list[dict]):
         # Alternatively exact tokens used up to and including response can be obtained via the response object
-        # openai_response['usage']['prompt_tokens']
+
+
 
         input_tokens_used = self.tokenizer.get_context_tokens(entries=entries, funct_docs=tool_docs)
         print(f'[Debug]: Creating completion request; Currently at {input_tokens_used} input tokens used')
@@ -64,7 +65,10 @@ class OpenAIModel(LLM):
 
 
     @staticmethod
-    def log_response():
+    def log_response(openai_response):
+        # The Prompt tokens are the input_tokens that went into the request
+        # input_tokens_used = openai_response['usage']['prompt_tokens']
+        # print(f'Tokens in response: {input_tokens_used}')
         print(f"[Debug]: Received response from the model.")
 
 
