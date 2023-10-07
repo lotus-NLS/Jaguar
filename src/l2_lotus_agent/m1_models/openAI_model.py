@@ -10,9 +10,9 @@ from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
 # ---------------------------------------------------------
 
 class OpenAI_ModelTypes:
-    # The 0613 m1_models (06.13.23, the date of the API updates (https://openai.com/blog/function-calling-and-other-api-updates)
-    # support function calling
-    # But gpt-4 or gpt-3.5-turbo will always point to the newest version anyway
+    # The 0613 models support function calling. Earlier models do not.
+    # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
+    # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API
 
     gpt_35_4k = 'gpt-3.5-turbo-0613'
     gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
@@ -25,6 +25,7 @@ class OpenAI_ModelTypes:
 
 
 # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
+# (https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb)
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type, encoding = tiktoken.get_encoding('cl100k_base'))
@@ -43,7 +44,7 @@ class OpenAIModel(LLM):
         if action_options.funct_call_options.call_allowed:
             args_dict['functions'] = tool_docs
             args_dict['function_call'] = action_options.funct_call_options.get_openai_syntax()
-            
+
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
