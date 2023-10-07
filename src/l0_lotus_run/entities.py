@@ -22,7 +22,6 @@ class Alpha(Agent):
         while True:
             active_task : Task = self.task_queue.get()
 
-
             if active_task.requires_mandate_init:
                 self.do(required_funct_name=INITIALIZE_MANDATE.__name__)
             else:

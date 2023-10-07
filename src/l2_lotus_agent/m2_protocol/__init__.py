@@ -1,3 +1,4 @@
-from .objective import Objective, Mandate
+from .objective import Objective
+from .mandate import Mandate
 from .identity import Identity
 from .cores import Cores
