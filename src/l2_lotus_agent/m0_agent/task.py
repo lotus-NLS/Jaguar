@@ -1,35 +1,51 @@
 from __future__ import annotations
 from queue import Queue
 from typing import Optional
+from src.l3_lotus_core import Entry, DialogueRole
 
-from src.l3_lotus_core import Entry
+from src.l2_lotus_agent.m2_protocol.objective import Mandate
 
 # ---------------------------------------------------------
 
 class Task:
-    def __init__(self, is_mandate_task : bool = True, enforce_init_mandate : bool = False, entries_to_respond_to : Optional[list[Entry]] = None):
-        self._is_work_task : bool = is_mandate_task
-        self.requires_init_mandate : bool = enforce_init_mandate
+    def __init__(self,
+                 mandate : Optional[Mandate] = None,
+                 enforce_init_mandate : bool = False,
+                 entries_to_respond_to : Optional[list[Entry]] = None):
+
+        self.mandate : Optional[Mandate] = mandate
+        self.requires_mandate_init : bool = enforce_init_mandate
         self._entries_to_process : list[Entry] = entries_to_respond_to if not entries_to_respond_to is None else []
 
-    def is_dialogue_task(self) -> bool:
-        return not self._is_work_task
-
-    def is_mandate_task(self) -> bool:
-        return self._is_work_task
-
-    def requires_init_mandate(self) -> bool:
-        return self.requires_init_mandate
 
     @classmethod
-    def make_work_task(cls) -> Task:
-        return cls(is_mandate_task=True)
+    def make_work_task(cls, mandate : Mandate) -> Task:
+        return cls(mandate)
 
     @classmethod
     def make_dialogue_task(cls, enforce_init_mandate : bool = False, entries_to_process : Optional[list[Entry]] = None) -> Task:
-        return cls(is_mandate_task=False,
-                   enforce_init_mandate=enforce_init_mandate,
+        return cls(enforce_init_mandate=enforce_init_mandate,
                    entries_to_respond_to=entries_to_process)
+
+    # ---------------------------------------------------------
+    # get
+
+    def get_entry(self) -> Entry:
+        if self.is_mandate_task():
+            task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_msg())
+        else:
+            task_entry = Entry(DialogueRole.user_role(), msg=f'Respond to unread messages:\n{self.get_unread_as_str()}')
+
+        return task_entry
+
+    def is_dialogue_task(self) -> bool:
+        return self.mandate is None
+
+    def is_mandate_task(self) -> bool:
+        return not self.is_dialogue_task()
+
+    def requires_init_mandate(self) -> bool:
+        return self.requires_mandate_init
 
     def get_unread_as_str(self) -> str:
         unread_msg = ''
@@ -37,6 +53,7 @@ class Task:
             unread_msg += str(entry)
 
         return unread_msg
+
 
 class TaskQueue(Queue):
     def __init__(self):
