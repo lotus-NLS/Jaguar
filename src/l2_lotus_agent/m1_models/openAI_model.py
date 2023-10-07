@@ -6,6 +6,7 @@ from src.l3_lotus_core import get_setting, Credentials, Entry
 from src.l2_lotus_agent.m1_models.model_class import LLM
 from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
 
+
 # ---------------------------------------------------------
 
 class OpenAI_ModelTypes:
