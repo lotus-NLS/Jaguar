@@ -23,36 +23,46 @@ class OpenAI_ModelTypes:
     def get_test_model():
         return OpenAI_ModelTypes.gpt_35_4k
 
+
 # The cl100k_base encoder is the encoder used for 0314 and 0613 versions of 3.5 and 4
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type, encoding = tiktoken.get_encoding('cl100k_base'))
         self.tokens_at_last_response : Optional[int] = None
 
+
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
+        openai.api_key = get_setting(label=Credentials.openai_apikey_label)
+
         args_dict = {
             'model': self._model_type,
             'messages': entries,
             'temperature': action_options.temperature
         }
-        funct_call_options = action_options.funct_call_options
-        if funct_call_options.call_allowed:
-            args_dict['functions'] = tool_docs
-            args_dict['function_call'] = funct_call_options.get_openai_syntax()
 
+        if action_options.funct_call_options.call_allowed:
+            args_dict['functions'] = tool_docs
+            args_dict['function_call'] = action_options.funct_call_options.get_openai_syntax()
+            
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        openai.api_key = get_setting(label=Credentials.openai_apikey_label)
-
-        print(f"[Debug]: Creating completion request. Token count after last response: {self.tokens_at_last_response}")
         # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
-        openai_response = openai.ChatCompletion.create(**args_dict)
-        print(f"[Debug]: Received response from the model.")
 
+        self.log_request()
+        openai_response = openai.ChatCompletion.create(**args_dict)
+        self.log_response(openai_response=openai_response)
+
+        return Action(openai_response)
+
+
+    def log_request(self):
+        print(f"[Debug]: Creating completion request. Token count after last response: {self.tokens_at_last_response}")
+
+
+    def log_response(self, openai_response):
+        print(f"[Debug]: Received response from the model.")
         try:
             self.tokens_at_last_response = openai_response['usage']['prompt_tokens']
         except:
             self.tokens_at_last_response = None
-
-        return Action(openai_response)
