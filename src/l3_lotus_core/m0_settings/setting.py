@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import configparser
 import os
-from typing import Union
+from typing import Union, Callable
+
+from src.l3_lotus_core.m0_settings import Credentials
+
 # ----------------------------------------------------
 
 
@@ -64,3 +67,34 @@ class Setting:
 
         else:
             self.value = input(f'Enter value for setting {self.label}\n')
+
+
+class SettingGrouping:
+    all_settings_in_group = []
+
+    def __init__(self, tests : list[Callable[[],None]]):
+        self.tests = tests
+
+    def setup(self):
+        pass
+
+    @staticmethod
+    def get_validated_settings() -> list[Setting]:
+        return [setting for setting in Credentials.all_settings_in_group if setting.get_is_validated()]
+
+    @staticmethod
+    def get_non_validated_settings() -> list[Setting]:
+        return [setting for setting in Credentials.all_settings_in_group if not setting.get_is_validated()]
+
+    @classmethod
+    def pass_all(cls):
+        for setting in cls.all_settings_in_group:
+            setting.validate()
+
+    def test_all(self):
+        for test in self.tests:
+            try:
+                test()
+                print(f'[Debug]: Test {test.__name__} completed successfully')
+            except Exception as e:
+                print(f'[Error]: An error occured while performing test {test.__name__}: {e}')

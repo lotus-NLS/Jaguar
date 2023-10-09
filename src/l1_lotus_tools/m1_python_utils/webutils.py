@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 from func_timeout import func_timeout
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from src.l3_lotus_core import get_setting, Credentials
+from src.l3_lotus_core import get_setting
+from src.l3_lotus_core.m0_settings import Credentials
 
 from src.l1_lotus_tools.tool import Tool
 

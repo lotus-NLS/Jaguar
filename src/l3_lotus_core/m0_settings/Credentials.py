@@ -1,51 +1,10 @@
 from __future__ import annotations
 
-from typing import Optional, Callable
 import openai
 import requests
 
-from src.l3_lotus_core.m0_settings.setting import all_settings, Setting
-from src.l3_lotus_core.m1_OperatorIO import user_io
-
-# (08.09.23) DH:
-# Each Settings group has its own tests that are performed on setup which are used to validate the settings
-# It would be impossible to validate each setting on its own since some tests require multiple settings
-# At the end of the setup all Credentials must be validated if all tests lotus_run successfully
-# If the value for the setting is validated it is saved on the file system in the settings file in the home directory
-
-# NOTE : Setting labels must be unique, CredentialGrouping names also must be unique
-# ---------------------------------------------------------
-
-
-class SettingGrouping:
-    all_settings_in_group = []
-
-    def __init__(self, tests : list[Callable[[],None]]):
-        self.tests = tests
-
-    def setup(self):
-        pass
-
-    @staticmethod
-    def get_validated_settings() -> list[Setting]:
-        return [setting for setting in Credentials.all_settings_in_group if setting.get_is_validated()]
-
-    @staticmethod
-    def get_non_validated_settings() -> list[Setting]:
-        return [setting for setting in Credentials.all_settings_in_group if not setting.get_is_validated()]
-
-    @classmethod
-    def pass_all(cls):
-        for setting in cls.all_settings_in_group:
-            setting.validate()
-
-    def test_all(self):
-        for test in self.tests:
-            try:
-                test()
-                print(f'[Debug]: Test {test.__name__} completed successfully')
-            except Exception as e:
-                print(f'[Error]: An error occured while performing test {test.__name__}: {e}')
+from src.l3_lotus_core import user_io
+from src.l3_lotus_core.m0_settings import SettingGrouping, Setting
 
 
 class Credentials(SettingGrouping):
@@ -124,16 +83,3 @@ class Credentials(SettingGrouping):
         except Exception as err:
             print(f'[Error]: Error after test run of search engine \n {err}')
             raise ValueError(f'Invalid {self.search_engineID_setting.label} or {self.google_apikey_setting} or no internet connection')
-
-
-class SettingsController:
-    def __init__(self):
-        self.credential_settings = Credentials()
-
-    def setup(self, perform_validation = True):
-        self.credential_settings.setup(is_perform_validation=perform_validation)
-        print(f'[Debug]: Completed setup for all Settings')
-
-
-def get_setting(label : str) -> Optional[str]:
-    return all_settings.get(label).value
