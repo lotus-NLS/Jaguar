@@ -7,15 +7,21 @@ from src.l3_lotus_core.m0_settings._setting import all_settings
 from src.l3_lotus_core.m0_settings.DialogueSettings import DialogueSettings
 
 
-# (08.09.23) DH:
+# (10.10.23) D.H. : Settings Terminology
+# -> There is a settings resource either locally on the computer or in the cloud
+# -> The setup method of the Settings Controller completes only when valid values are obtained for every setting listed
+# -> Values are validated by the tests defined in each SettingsGrouping
+
+# (10.10.23) D.H. : Settings Workflow
+# -> If valid values can be retrieved from the settings resource they are loaded up and the setup terminates
+# -> If not, the user will be informed for which settings valid values could not be obtained and be asked if he wants to retry
+#  via a y/n prompt
+# -> If the user does choose to retry he will be asked to enter new values for the settings that failed to validate
+# -> When all settings are valid or the user declines to enter new values on the y/n prompt the setup process terminates
 
 
-# Each Settings group has its own tests that are performed on setup which are used to validate the settings
-# It would be impossible to validate each setting on its own since some tests require multiple settings
-# At the end of the setup all Credentials must be validated if all tests lotus_run successfully
-# If the value for the setting is validated it is saved on the file system in the settings file in the home directory
-
-# NOTE : Setting labels must be unique, CredentialGrouping names also must be unique
+# NOTE : Because everything is saved in a single file, setting labels must be unique
+# and so must the name of SettingGroupings  also must be unique
 # ---------------------------------------------------------
 
 
