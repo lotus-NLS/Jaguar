@@ -1,4 +1,5 @@
-from src.l3_lotus_core.m0_settings.setting import SettingGrouping, Setting
+from src.l3_lotus_core.m0_settings._setting import Setting
+from src.l3_lotus_core.m0_settings import SettingGrouping
 
 
 class DialogueSettings(SettingGrouping):

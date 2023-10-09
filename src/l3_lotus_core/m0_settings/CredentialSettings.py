@@ -4,7 +4,8 @@ import openai
 import requests
 
 from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
-from src.l3_lotus_core.m0_settings.setting import SettingGrouping, Setting
+from src.l3_lotus_core.m0_settings._setting import Setting
+from src.l3_lotus_core.m0_settings import SettingGrouping
 
 
 class CredentialSettings(SettingGrouping):
