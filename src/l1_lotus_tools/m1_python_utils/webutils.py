@@ -7,7 +7,7 @@ from func_timeout import func_timeout
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from src.l3_lotus_core import get_setting
-from src.l3_lotus_core.m0_settings import Credentials
+from src.l3_lotus_core.m0_settings import CredentialSettings
 
 from src.l1_lotus_tools.tool import Tool
 
@@ -86,8 +86,8 @@ class Webtools:
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             'q': f'{search_term}',
-            'key': get_setting(Credentials.google_apikey_label),
-            'cx': get_setting(Credentials.search_engineID_label),
+            'key': get_setting(CredentialSettings.google_apikey_label),
+            'cx': get_setting(CredentialSettings.search_engineID_label),
             'num' : num_results
         }
         search_results = requests.get(url, params=params).json()['items']

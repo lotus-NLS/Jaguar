@@ -7,16 +7,16 @@ from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
 from src.l3_lotus_core.m0_settings.setting import SettingGrouping, Setting
 
 
-class Credentials(SettingGrouping):
+class CredentialSettings(SettingGrouping):
     openai_apikey_label = 'openai_api_key'
     google_apikey_label = 'google_api_key'
     search_engineID_label = 'search_engine_id'
 
     def __init__(self):
-        super(Credentials, self).__init__(tests=[self.openai_apikey_test, self.search_engine_test])
-        self.openai_apikey_setting : Setting = self.make_credential_setting(label=Credentials.openai_apikey_label)
-        self.google_apikey_setting : Setting = self.make_credential_setting(label=Credentials.google_apikey_label)
-        self.search_engineID_setting : Setting = self.make_credential_setting(label=Credentials.search_engineID_label)
+        super(CredentialSettings, self).__init__(tests=[self.openai_apikey_test, self.search_engine_test])
+        self.openai_apikey_setting : Setting = self.make_credential_setting(label=CredentialSettings.openai_apikey_label)
+        self.google_apikey_setting : Setting = self.make_credential_setting(label=CredentialSettings.google_apikey_label)
+        self.search_engineID_setting : Setting = self.make_credential_setting(label=CredentialSettings.search_engineID_label)
 
 
     def setup(self, is_first_run = True, is_perform_validation = True):
@@ -41,8 +41,8 @@ class Credentials(SettingGrouping):
 
     @staticmethod
     def make_credential_setting(label : str) -> Setting:
-        new_setting = Setting(label=label, section=Credentials.__name__)
-        Credentials.all_settings_in_group.append(new_setting)
+        new_setting = Setting(label=label, section=CredentialSettings.__name__)
+        CredentialSettings.all_settings_in_group.append(new_setting)
         return new_setting
 
 

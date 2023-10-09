@@ -5,7 +5,7 @@ import os
 from typing import Union, Callable
 from abc import abstractmethod
 
-from src.l3_lotus_core.m0_settings import Credentials
+from src.l3_lotus_core.m0_settings import CredentialSettings
 
 # ----------------------------------------------------
 
@@ -82,11 +82,11 @@ class SettingGrouping:
 
     @staticmethod
     def get_validated_settings() -> list[Setting]:
-        return [setting for setting in Credentials.all_settings_in_group if setting.get_is_validated()]
+        return [setting for setting in CredentialSettings.all_settings_in_group if setting.get_is_validated()]
 
     @staticmethod
     def get_non_validated_settings() -> list[Setting]:
-        return [setting for setting in Credentials.all_settings_in_group if not setting.get_is_validated()]
+        return [setting for setting in CredentialSettings.all_settings_in_group if not setting.get_is_validated()]
 
     @classmethod
     def pass_all(cls):

@@ -2,7 +2,7 @@ import openai
 import tiktoken
 # from typing import Optional
 from src.l3_lotus_core import get_setting, Entry
-from src.l3_lotus_core.m0_settings import Credentials
+from src.l3_lotus_core.m0_settings import CredentialSettings
 
 from src.l2_lotus_agent.m1_models.model_class import LLM
 from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
@@ -33,7 +33,7 @@ class OpenAIModel(LLM):
 
 
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
-        openai.api_key = get_setting(label=Credentials.openai_apikey_label)
+        openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {
             'model': self._model_type,
