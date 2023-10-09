@@ -3,8 +3,8 @@ from __future__ import annotations
 import openai
 import requests
 
-from src.l3_lotus_core import user_io
-from src.l3_lotus_core.m0_settings import SettingGrouping, Setting
+from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
+from src.l3_lotus_core.m0_settings.setting import SettingGrouping, Setting
 
 
 class Credentials(SettingGrouping):

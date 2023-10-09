@@ -3,6 +3,7 @@ from __future__ import annotations
 import configparser
 import os
 from typing import Union, Callable
+from abc import abstractmethod
 
 from src.l3_lotus_core.m0_settings import Credentials
 
@@ -75,6 +76,7 @@ class SettingGrouping:
     def __init__(self, tests : list[Callable[[],None]]):
         self.tests = tests
 
+    @abstractmethod
     def setup(self):
         pass
 
