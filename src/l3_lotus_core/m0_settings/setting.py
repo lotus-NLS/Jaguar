@@ -9,7 +9,6 @@ from src.l3_lotus_core.m0_settings import CredentialSettings
 
 # ----------------------------------------------------
 
-
 home = os.path.expanduser("~")
 config_path = os.path.join(home, 'settings_[uuid_4d9498a7-2f46-4372-9c49-c96e3c41d4f7].ini')
 config_parser = configparser.ConfigParser()
@@ -92,6 +91,13 @@ class SettingGrouping:
     def pass_all(cls):
         for setting in cls.all_settings_in_group:
             setting.validate()
+
+    @classmethod
+    def make_setting(cls, label : str) -> Setting:
+        new_setting = Setting(label=label, section=cls.__name__)
+        cls.all_settings_in_group.append(new_setting)
+        return new_setting
+
 
     def test_all(self):
         for test in self.tests:

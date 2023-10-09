@@ -14,9 +14,9 @@ class CredentialSettings(SettingGrouping):
 
     def __init__(self):
         super(CredentialSettings, self).__init__(tests=[self.openai_apikey_test, self.search_engine_test])
-        self.openai_apikey_setting : Setting = self.make_credential_setting(label=CredentialSettings.openai_apikey_label)
-        self.google_apikey_setting : Setting = self.make_credential_setting(label=CredentialSettings.google_apikey_label)
-        self.search_engineID_setting : Setting = self.make_credential_setting(label=CredentialSettings.search_engineID_label)
+        self.openai_apikey_setting : Setting = self.make_setting(label=CredentialSettings.openai_apikey_label)
+        self.google_apikey_setting : Setting = self.make_setting(label=CredentialSettings.google_apikey_label)
+        self.search_engineID_setting : Setting = self.make_setting(label=CredentialSettings.search_engineID_label)
 
 
     def setup(self, is_first_run = True, is_perform_validation = True):
@@ -37,13 +37,6 @@ class CredentialSettings(SettingGrouping):
             msg = f'[Error]: {count_non_validated_settings} setting(s) failed to validate. Retry setup for those settings? (y/n) \n'
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
-
-
-    @staticmethod
-    def make_credential_setting(label : str) -> Setting:
-        new_setting = Setting(label=label, section=CredentialSettings.__name__)
-        CredentialSettings.all_settings_in_group.append(new_setting)
-        return new_setting
 
 
     def openai_apikey_test(self):
