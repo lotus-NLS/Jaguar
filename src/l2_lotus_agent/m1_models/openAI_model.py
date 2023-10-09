@@ -49,7 +49,7 @@ class OpenAIModel(LLM):
 
         self.log_request(entries=entries, tool_docs=tool_docs if action_options.get_funct_call_allowed() else None)
         openai_response = openai.ChatCompletion.create(**args_dict)
-        self.log_response(openai_response)
+        self.log_response()
 
         return Action(openai_response)
 
@@ -65,7 +65,7 @@ class OpenAIModel(LLM):
 
 
     @staticmethod
-    def log_response(openai_response):
+    def log_response():
         # The Prompt tokens are the input_tokens that went into the request
         # input_tokens_used = openai_response['usage']['prompt_tokens']
         # print(f'Tokens in response: {input_tokens_used}')

@@ -21,11 +21,7 @@ class Alpha(Agent):
     def loop(self):
         while True:
             active_task : Task = self.task_queue.get()
-
-            if active_task.requires_mandate_init:
-                self.do(required_funct_name=INITIALIZE_MANDATE.__name__)
-            else:
-                self.do()
+            self.do(task=active_task)
 
             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(mandate=self.mandate))
@@ -35,9 +31,11 @@ class Alpha(Agent):
 
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
+            required_funct_name = INITIALIZE_MANDATE.__name__ if entry.get_enforce_mandate_flag() else None
             entries_to_process = self.get_unread_entries()
-            new_dialogue_task = Task.make_dialogue_task(enforce_init_mandate=entry.get_enforce_mandate_flag(),
-                                                        entries_to_process=entries_to_process)
+            new_dialogue_task = Task(mandate = None,
+                                     entries_to_respond_to=entries_to_process,
+                                     required_funct_name=required_funct_name)
             self.task_queue.put(new_dialogue_task)
 
             for entry in entries_to_process:

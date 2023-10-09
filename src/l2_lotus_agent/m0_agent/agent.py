@@ -51,11 +51,11 @@ class Agent(LingualEntity):
         pass
 
 
-    def do(self, required_funct_name : Optional[str] = None):
+    def do(self, task : Task):
         try:
             action = self.get_next_action(
-                funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=required_funct_name),
-                entries=self.get_basic_entries()+[self.get_active_task_entry()]
+                funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
+                entries=self.get_basic_entries()+[task.get_entry()]
             )
 
         except Exception:
@@ -130,13 +130,3 @@ class Agent(LingualEntity):
     def get_basic_entries(self) -> list[Entry]:
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
         return [core_entry] + self._personal_log
-
-
-    def get_active_task_entry(self) -> Optional[Entry]:
-        task = self.task_queue.view_active_task()
-
-        if task is None:
-            return None
-        else:
-            return task.get_entry()
-

@@ -10,23 +10,14 @@ from src.l2_lotus_agent.m2_protocol import Mandate
 
 class Task:
     def __init__(self,
-                 mandate : Optional[Mandate] = None,
-                 enforce_init_mandate : bool = False,
-                 entries_to_respond_to : Optional[list[Entry]] = None):
+                 mandate : Optional[Mandate],
+                 entries_to_respond_to : Optional[list[Entry]] = None,
+                 required_funct_name : Optional[str] = None):
 
         self.mandate : Optional[Mandate] = mandate
-        self.requires_mandate_init : bool = enforce_init_mandate
+        self.required_funct_name : Optional[str] = required_funct_name
         self._entries_to_process : list[Entry] = entries_to_respond_to if not entries_to_respond_to is None else []
 
-
-    @classmethod
-    def make_work_task(cls, mandate : Mandate) -> Task:
-        return cls(mandate)
-
-    @classmethod
-    def make_dialogue_task(cls, enforce_init_mandate : bool = False, entries_to_process : Optional[list[Entry]] = None) -> Task:
-        return cls(enforce_init_mandate=enforce_init_mandate,
-                   entries_to_respond_to=entries_to_process)
 
     # ---------------------------------------------------------
     # get
@@ -44,9 +35,6 @@ class Task:
 
     def is_mandate_task(self) -> bool:
         return not self.is_dialogue_task()
-
-    def requires_init_mandate(self) -> bool:
-        return self.requires_mandate_init
 
     def get_unread_as_str(self) -> str:
         unread_msg = ''
