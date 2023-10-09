@@ -1,4 +1,5 @@
 import threading
+from typing import Optional
 from queue import Queue
 
 class ReadBlocker:
@@ -34,14 +35,13 @@ class UserIO:
         return input_retriever.read()
 
 
-    def get_confirmation(self) -> bool:
+    def get_confirmation(self, msg : Optional[str] = None) -> bool:
         while True:
-            user_input = self.get_user_msg(f'')
+            user_input = self.get_user_msg(f'{msg}')
             if user_input.lower() in ['y', 'n']:
                 break
             else:
                 print("Invalid input. Please enter (y/n)")
-
 
         if user_input == 'y':
             return True
