@@ -2,7 +2,7 @@ import threading
 from typing import Optional
 from queue import Queue
 
-class ReadBlocker:
+class InputWaiter:
     def __init__(self):
         self.q = Queue()
 
@@ -12,9 +12,10 @@ class ReadBlocker:
     def read(self):
         return self.q.get()
 
+
 class UserIO:
     def __init__(self):
-        self.blockingObjects : list[ReadBlocker] = []
+        self.input_waiter_list : list[InputWaiter] = []
 
     def launch(self):
         thread = threading.Thread(target=self.loop)
@@ -23,15 +24,15 @@ class UserIO:
     def loop(self):
         while True:
             user_input = input('')
-            self.blockingObjects[-1].write(user_input)
-            del self.blockingObjects[-1]
+            self.input_waiter_list[-1].write(user_input)
+            del self.input_waiter_list[-1]
 
     def get_user_msg(self, prompt_msg : str = ''):
         if not prompt_msg == '':
             print(prompt_msg)
 
-        input_retriever = ReadBlocker()
-        self.blockingObjects.append(input_retriever)
+        input_retriever = InputWaiter()
+        self.input_waiter_list.append(input_retriever)
         return input_retriever.read()
 
 

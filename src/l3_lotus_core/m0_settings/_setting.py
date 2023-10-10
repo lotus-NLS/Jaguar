@@ -4,6 +4,9 @@ import configparser
 import os
 from typing import Union
 
+
+from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
+
 # ----------------------------------------------------
 
 home = os.path.expanduser("~")
@@ -63,6 +66,6 @@ class Setting:
             self.value = config_parser.get(self.section, self.label)
 
         else:
-            self.value = input(f'Enter value for setting {self.label}\n')
+            self.value = user_io.get_user_msg(f'Enter value for setting {self.label}\n')
 
 
