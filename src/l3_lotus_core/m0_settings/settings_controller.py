@@ -31,8 +31,14 @@ class SettingsController:
         self.dialogue_settings : DialogueSettings = DialogueSettings()
 
     def setup(self, perform_validation = True):
-        self.credential_settings.setup(is_perform_validation=perform_validation)
-        self.dialogue_settings.setup()
+        if perform_validation:
+            self.credential_settings.setup()
+            self.dialogue_settings.setup()
+
+        else:
+            self.credential_settings.pass_all()
+            self.dialogue_settings.pass_all()
+
         print(f'[Debug]: Completed setup for all Settings')
 
 
