@@ -28,7 +28,7 @@ class SettingGrouping:
         non_validated_settings = self.get_non_validated_settings()
         count_non_validated_settings = len(non_validated_settings)
         if not count_non_validated_settings == 0:
-            msg = f'[Error]: {count_non_validated_settings} setting(s) failed to validate. Retry setup for those settings? (y/n) \n'
+            msg = f'[Error]: {count_non_validated_settings} setting(s) failed to validate. Retry setup for those settings? (y/n)'
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
 

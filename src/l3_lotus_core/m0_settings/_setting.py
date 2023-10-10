@@ -66,6 +66,6 @@ class Setting:
             self.value = config_parser.get(self.section, self.label)
 
         else:
-            self.value = user_io.get_user_msg(f'Enter value for setting {self.label}\n')
+            self.value = user_io.get_user_msg(f'Enter value for setting {self.label}')
 
 
