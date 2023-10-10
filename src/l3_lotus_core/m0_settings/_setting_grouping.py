@@ -1,24 +1,51 @@
 from __future__ import annotations
 from typing import Callable
+from abc import abstractmethod
 
 from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
 from src.l3_lotus_core.m0_settings._setting import Setting
 # ---------------------------------------------------------
 
+class SettingTest:
+    @classmethod
+    def make_empty_test(cls):
+        def empty_test() -> bool:
+            return True
+
+        return cls(test_body=empty_test)
+
+    def __init__(self, test_body : Callable[[],bool]):
+        self.test_body : Callable[[],bool] = test_body
+        self.checked_settings : list[Setting] = []
+
+    def add_checked_setting(self, the_setting : Setting):
+        self.checked_settings.append(the_setting)
+
+    def check_setting_validity(self):
+        is_successful = self.test_body()
+        if is_successful:
+            for setting in self.checked_settings:
+                setting.validate()
+
+
 
 class SettingGrouping:
-
-    def __init__(self, tests : list[Callable[[],None]]):
-        self.tests : list[callable] = tests
+    def __init__(self,):
+        self.tests : set[SettingTest] = set()
         self.all_settings_in_group : list[Setting] = []
 
-    def make_setting(self, label : str) -> Setting:
+
+    def make_setting(self, label : str, test : SettingTest) -> Setting:
         new_setting = Setting(label=label, section=self.__class__.__name__)
+
         self.all_settings_in_group.append(new_setting)
+        test.add_checked_setting(the_setting=new_setting)
+        self.tests.add(test)
+
         return new_setting
 
     # ---------------------------------------------------------
-    # Setup
+    # Value setup
 
     def setup(self, is_first_run = True):
         for the_setting in self.get_non_validated_settings():
@@ -48,8 +75,9 @@ class SettingGrouping:
     def test_all(self):
         for test in self.tests:
             try:
-                test()
-                print(f'[Debug]: Test {test.__name__} completed successfully')
+                test.check_setting_validity()
+                tested_labels_settings = [setting.label for setting in test.checked_settings]
+                print(f'[Debug]: Test {test.test_body.__name__} for settings {tested_labels_settings} completed successfully')
             except Exception as e:
                 print(f'[Error]: An error occured while performing test {test.__name__}: {e}')
 
