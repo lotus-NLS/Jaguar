@@ -7,11 +7,17 @@ from src.l3_lotus_core.m0_settings._setting import Setting
 
 
 class SettingGrouping:
-    all_settings_in_group = []
 
     def __init__(self, tests : list[Callable[[],None]]):
-        self.tests = tests
+        self.tests : list[callable] = tests
+        self.all_settings_in_group : list[Setting] = []
 
+    def make_setting(self, label : str) -> Setting:
+        new_setting = Setting(label=label, section=self.__class__.__name__)
+        self.all_settings_in_group.append(new_setting)
+        return new_setting
+
+    # ---------------------------------------------------------
 
     def setup(self, is_first_run = True, is_perform_validation = True):
         for the_setting in self.get_non_validated_settings():
@@ -26,40 +32,34 @@ class SettingGrouping:
             setting.save_state_to_file()
 
         non_validated_settings = self.get_non_validated_settings()
+        names_non_validated = [setting.label for setting in non_validated_settings]
         count_non_validated_settings = len(non_validated_settings)
         if not count_non_validated_settings == 0:
-            msg = f'[Error]: {count_non_validated_settings} setting(s) failed to validate. Retry setup for those settings? (y/n)'
+            msg = (f'[Error]: {count_non_validated_settings} setting(s) in {self.__class__.__name__}'
+                   f' failed to validate: {names_non_validated} Retry setup for those settings? (y/n)')
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
 
 
-    @classmethod
-    def get_validated_settings(cls) -> list[Setting]:
-        return [setting for setting in cls.all_settings_in_group if setting.get_is_validated()]
-
-
-    @classmethod
-    def get_non_validated_settings(cls) -> list[Setting]:
-        return [setting for setting in cls.all_settings_in_group if not setting.get_is_validated()]
-
-
-    @classmethod
-    def pass_all(cls):
-        for setting in cls.all_settings_in_group:
-            setting.validate()
-
-
-    @classmethod
-    def make_setting(cls, label : str) -> Setting:
-        new_setting = Setting(label=label, section=cls.__name__)
-        cls.all_settings_in_group.append(new_setting)
-        return new_setting
-
-
     def test_all(self):
+        if len(self.tests) == 0:
+            self.pass_all()
+
         for test in self.tests:
             try:
                 test()
                 print(f'[Debug]: Test {test.__name__} completed successfully')
             except Exception as e:
                 print(f'[Error]: An error occured while performing test {test.__name__}: {e}')
+
+
+    def pass_all(self):
+        for setting in self.all_settings_in_group:
+            setting.validate()
+
+    def get_validated_settings(self) -> list[Setting]:
+        return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
+
+
+    def get_non_validated_settings(self) -> list[Setting]:
+        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
