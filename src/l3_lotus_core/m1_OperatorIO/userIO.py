@@ -24,8 +24,9 @@ class UserIO:
     def loop(self):
         while True:
             user_input = input('')
-            self.input_waiter_list[-1].write(user_input)
-            del self.input_waiter_list[-1]
+            if len(self.input_waiter_list) > 0:
+                self.input_waiter_list[-1].write(user_input)
+                del self.input_waiter_list[-1]
 
     def get_user_msg(self, prompt_msg : str = ''):
         if not prompt_msg == '':
