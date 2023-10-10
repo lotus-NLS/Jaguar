@@ -20,6 +20,7 @@ class Setting:
         self.label : str = label
         self.section : str = section
         self.value : Union[None, str] = None
+        self._type_validation : bool = False
         self._is_validated : bool = False
 
         all_settings[self.label] = self
@@ -67,5 +68,3 @@ class Setting:
 
         else:
             self.value = user_io.get_user_msg(f'Enter value for setting {self.label}')
-
-

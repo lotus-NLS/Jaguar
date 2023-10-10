@@ -18,6 +18,7 @@ class SettingGrouping:
         return new_setting
 
     # ---------------------------------------------------------
+    # Setup
 
     def setup(self, is_first_run = True, is_perform_validation = True):
         for the_setting in self.get_non_validated_settings():
@@ -31,15 +32,21 @@ class SettingGrouping:
         for setting in self.get_validated_settings():
             setting.save_state_to_file()
 
-        non_validated_settings = self.get_non_validated_settings()
-        names_non_validated = [setting.label for setting in non_validated_settings]
-        count_non_validated_settings = len(non_validated_settings)
-        if not count_non_validated_settings == 0:
-            msg = (f'[Error]: {count_non_validated_settings} setting(s) in {self.__class__.__name__}'
-                   f' failed to validate: {names_non_validated} Retry setup for those settings? (y/n)')
+        non_valid = self.get_non_validated_settings()
+        names_non_valid = [setting.label for setting in non_valid]
+        count_nonvalid = len(non_valid)
+        if not count_nonvalid == 0:
+            msg = (f'[Error]: {count_nonvalid} setting(s) in {self.__class__.__name__}'
+                   f' failed to validate: {names_non_valid} Retry setup for those settings? (y/n)')
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
 
+
+    def get_validated_settings(self) -> list[Setting]:
+        return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
+
+    def get_non_validated_settings(self) -> list[Setting]:
+        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
 
     def test_all(self):
         if len(self.tests) == 0:
@@ -57,9 +64,3 @@ class SettingGrouping:
         for setting in self.all_settings_in_group:
             setting.validate()
 
-    def get_validated_settings(self) -> list[Setting]:
-        return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
-
-
-    def get_non_validated_settings(self) -> list[Setting]:
-        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
