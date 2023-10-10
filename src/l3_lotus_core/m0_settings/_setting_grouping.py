@@ -24,34 +24,34 @@ class SettingGrouping:
         for the_setting in self.get_non_validated_settings():
             the_setting.try_setup_from_file() if is_first_run else the_setting.setup_from_user_input()
 
-        if is_perform_validation:
+        self.test_all()
+
+        if is_perform_validation or len(self.tests) == 0:
             self.test_all()
         else:
             self.pass_all()
 
-        for setting in self.get_validated_settings():
+        valid, non_valid = self.get_validated_settings(), self.get_non_validated_settings()
+
+        for setting in valid:
             setting.save_state_to_file()
 
-        non_valid = self.get_non_validated_settings()
-        names_non_valid = [setting.label for setting in non_valid]
-        count_nonvalid = len(non_valid)
-        if not count_nonvalid == 0:
-            msg = (f'[Error]: {count_nonvalid} setting(s) in {self.__class__.__name__}'
-                   f' failed to validate: {names_non_valid} Retry setup for those settings? (y/n)')
+        if not len(non_valid) == 0:
+            msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
+                   f' failed to validate: {[setting.label for setting in non_valid]} Retry setup for those settings? (y/n)')
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
+
+
+    def get_non_validated_settings(self) -> list[Setting]:
+        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
 
 
     def get_validated_settings(self) -> list[Setting]:
         return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
 
-    def get_non_validated_settings(self) -> list[Setting]:
-        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
 
     def test_all(self):
-        if len(self.tests) == 0:
-            self.pass_all()
-
         for test in self.tests:
             try:
                 test()
