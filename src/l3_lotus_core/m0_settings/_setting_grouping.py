@@ -48,7 +48,7 @@ class SettingGrouping:
 
     def setup(self, is_first_run = True):
         for the_setting in self.get_non_validated_settings():
-            the_setting.try_setup_from_file() if is_first_run else the_setting.setup_from_user_input()
+            the_setting.setup_from_file() if is_first_run else the_setting.setup_from_user_input()
 
         self.test_all()
         valid, non_valid = self.get_validated_settings(), self.get_non_validated_settings()
