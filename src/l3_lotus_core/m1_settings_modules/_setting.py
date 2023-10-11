@@ -47,7 +47,9 @@ class Setting:
                 return
 
         else:
-            value_str = user_io.get_user_msg(f'Enter value for setting {self.label}')
+            msg = f'Enter value for setting {self.label} (Type: {self.dtype.__name__}'
+            msg += ', Options: True/False)' if self.dtype is bool else ')'
+            value_str = user_io.get_user_msg(msg)
 
         self.value = self.get_typecast_value(value_str=value_str)
 
@@ -59,7 +61,6 @@ class Setting:
         value = None
         try:
             value = ast.literal_eval(value_str)
-            # print(f'[Temp Debug]: Typecasted to {value}')
             if not isinstance(value, self.dtype):
                 raise ValueError(f'Invalid value. Expected {self.dtype}')
 
