@@ -14,17 +14,18 @@ class SettingTest:
         return cls(test_body=empty_test)
 
     def __init__(self, test_body : Callable[[],bool]):
-        self.test_body : Callable[[],bool] = test_body
+        self.do_check : Callable[[],bool] = test_body
         self.checked_settings : list[Setting] = []
 
     def add_checked_setting(self, the_setting : Setting):
         self.checked_settings.append(the_setting)
 
-    def check_setting_validity(self):
-        is_successful = self.test_body()
+    def check_setting_validity(self) -> bool:
+        is_successful = self.do_check()
         if is_successful:
             for setting in self.checked_settings:
                 setting.validate_functionality()
+        return is_successful
 
 
 
@@ -58,7 +59,7 @@ class SettingGrouping:
 
         if not len(non_valid) == 0:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
-                   f' failed to validate: {[setting.label for setting in non_valid]} Retry setup for those settings? (y/n)')
+                   f' failed to validate: {[setting.label for setting in non_valid]}\nRetry setup for those settings? (y/n)')
             if user_io.get_confirmation(msg=msg):
                 self.setup(is_first_run=False)
 
@@ -79,11 +80,10 @@ class SettingGrouping:
         # Validity checks
         for test in self.tests:
             tested_labels_settings = [setting.label for setting in test.checked_settings]
-            try:
-                test.check_setting_validity()
-                print(f'[Debug]: Functionality test {test.test_body.__name__} for settings {tested_labels_settings} completed successfully')
-            except Exception:
-                print(f'[Error]: An error occured while performing test {test.__name__} or settings {tested_labels_settings}')
+            if test.check_setting_validity():
+                print(f'[Debug]: Functionality test {test.do_check.__name__} for settings {tested_labels_settings} completed successfully')
+            else:
+                print(f'[Error]: An error occured while performing test {test.do_check.__name__} or settings {tested_labels_settings}')
 
 
     def pass_all(self):

@@ -45,7 +45,7 @@ class CredentialSettings(SettingGrouping):
             is_successful = True
 
         except Exception as err:
-            print(f'[Debug]: Error after test run:\n{err}')
+            print(f'[Debug]: Error after test openai_apikey:\n{err}')
             raise ValueError('Invalid API key or no internet connection')
 
         finally:
@@ -64,12 +64,12 @@ class CredentialSettings(SettingGrouping):
             }
             response = requests.get(url, params=params)
             _ = response.json()
-
-            is_successful = True
+            is_successful = response.status_code == 200
 
         except Exception as err:
             print(f'[Error]: Error after test run of search engine \n {err}')
-            raise ValueError(f'Invalid {self.search_engineID_setting.label} or {self.google_apikey_setting} or no internet connection')
+            raise ValueError(f'Google services could not be reached. Is internet connection available?')
 
         finally:
+
             return is_successful

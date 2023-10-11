@@ -30,6 +30,8 @@ class SettingsController:
         self.dialogue_settings : DialogueSettings = DialogueSettings()
 
     def setup(self, perform_validation = True):
+
+
         if perform_validation:
             self.credential_settings.setup()
             self.dialogue_settings.setup()
