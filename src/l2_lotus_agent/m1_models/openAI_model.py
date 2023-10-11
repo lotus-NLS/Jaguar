@@ -1,8 +1,7 @@
 import openai
 import tiktoken
 # from typing import Optional
-from src.l3_lotus_core import get_setting, Entry
-from src.l3_lotus_core.m0_settings import CredentialSettings
+from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
 from src.l2_lotus_agent.m1_models.model_class import LLM
 from src.l2_lotus_agent.m1_models.action import Action, ActionOptions

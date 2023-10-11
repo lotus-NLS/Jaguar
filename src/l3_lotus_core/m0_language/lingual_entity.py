@@ -2,7 +2,7 @@ from __future__ import annotations
 from threading import Thread
 from typing import Union, Optional
 from abc import abstractmethod
-from src.l3_lotus_core.m1_OperatorIO import user_io
+from src.l3_lotus_core.m2_OperatorIO import user_io
 
 from src.l3_lotus_core.m0_language.channel import Channel
 from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole, Flags

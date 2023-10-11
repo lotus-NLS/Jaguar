@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import Callable
 
-from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
-from src.l3_lotus_core.m0_settings._setting import Setting
+from src.l3_lotus_core.m2_OperatorIO.userIO import user_io
+from src.l3_lotus_core.m1_settings_modules._setting import Setting
 # ---------------------------------------------------------
 
 class SettingTest:

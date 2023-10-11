@@ -2,8 +2,8 @@ from __future__ import annotations
 import openai
 import requests
 
-from src.l3_lotus_core.m0_settings._setting import Setting
-from src.l3_lotus_core.m0_settings._setting_grouping import SettingGrouping, SettingTest
+from src.l3_lotus_core.m1_settings_modules import Setting
+from src.l3_lotus_core.m1_settings_modules import SettingGrouping, SettingTest
 
 # ---------------------------------------------------------
 
@@ -29,9 +29,6 @@ class CredentialSettings(SettingGrouping):
 
     # ---------------------------------------------------------
     # Tests
-
-    def set_tests(self):
-        self.tests = [self.openai_apikey_test,self.search_engine_test]
 
 
     def test_openai_apikey(self) -> bool:
