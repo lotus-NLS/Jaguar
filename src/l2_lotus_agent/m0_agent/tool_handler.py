@@ -1,13 +1,15 @@
 from typing import Optional
 
 
-from src.l2_lotus_agent.m2_tool_interface import ToolInterface
+from src.l2_lotus_agent.m2_tool_interface import ToolInterface as Tool
 from src.l2_lotus_agent.m1_models import ToolAction
 
 
 class ToolHandler:
     def __init__(self):
-        self.tool_dict : dict[str,ToolInterface] = {}
+        self.tool_dict : dict[str,Tool] = {}
+
+
 
     def use_tool(self, tool_action : ToolAction):
         print('[Debug]: Agent requested tool usage')
@@ -23,8 +25,11 @@ class ToolHandler:
     def disable_tool(self, tool_name : str):
         self.tool_dict[tool_name].disable()
 
-    def get_all_tools(self) -> list[ToolInterface]:
+    def get_all_tools(self) -> list[Tool]:
         return list(self.tool_dict.values())
+
+    def get_tool_doc(self, tool_name : str) -> dict:
+        return self.tool_dict[tool_name].get_json_doc()
 
     def get_active_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_enabled]
