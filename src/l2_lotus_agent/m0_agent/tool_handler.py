@@ -21,8 +21,7 @@ class ToolHandler:
         self.tool_dict[tool_name].enable()
 
     def disable_tool(self, tool_name : str):
-        self.tool_dict[tool_name].enable()
-
+        self.tool_dict[tool_name].disable()
 
     def get_all_tools(self) -> list[BaseTool]:
         return list(self.tool_dict.values())
