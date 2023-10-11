@@ -48,9 +48,8 @@ class Engine:
             while True:
                 user_input = user_io.get_user_msg()
                 msg, flags = get_parsed_input(user_input)
-                print(f'[Temp debug]: Flags are {flags}')
+                print(f'[Debug]: Flags are {flags}')
                 self.user.speak(msg=msg, flags=flags)
-                time.sleep(0.5)
 
         else:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)

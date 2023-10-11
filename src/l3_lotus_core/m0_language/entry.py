@@ -92,8 +92,6 @@ class Entry(dict):
 
         if Flag.enforce_mandate_flag() in self.flags:
             enforce_mandate = True
-
-        print(f'[Temp Debug]: Enforcing mandate init: {enforce_mandate}')
         return enforce_mandate
 
     def get_is_read(self) -> bool:

@@ -28,8 +28,8 @@ class UserIO:
                 self.input_waiter_list[-1].write(user_input)
                 del self.input_waiter_list[-1]
 
-    def get_user_msg(self, prompt_msg : str = ''):
-        if not prompt_msg == '':
+    def get_user_msg(self, prompt_msg : Optional[str] = None):
+        if not prompt_msg is None:
             print(prompt_msg)
 
         input_retriever = InputWaiter()
@@ -39,7 +39,7 @@ class UserIO:
 
     def get_confirmation(self, msg : Optional[str] = None) -> bool:
         while True:
-            user_input = self.get_user_msg(f'{msg}')
+            user_input = self.get_user_msg(prompt_msg=msg)
             if user_input.lower() in ['y', 'n']:
                 break
             else:
