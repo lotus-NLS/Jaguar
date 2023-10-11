@@ -25,8 +25,8 @@ class Alpha(Agent):
 
             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(mandate=self.mandate))
-
-            self.task_queue.complete_active_task()
+                self.task_queue.put(Task(mandate=self.mandate,
+                                         required_funct_name=UPDATE_MANDATE.__name__))
 
 
     def react(self, entry: Entry):

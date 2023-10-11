@@ -5,7 +5,6 @@ import os
 from typing import Union, Optional
 
 from src.l3_lotus_core.m2_OperatorIO.userIO import user_io
-from src.l3_lotus_core.m2_OperatorIO.dev_logger import get_exception_msg
 
 # ----------------------------------------------------
 

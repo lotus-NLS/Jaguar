@@ -67,7 +67,7 @@ class Agent(LingualEntity):
             tool_action = action.get_tool_action()
 
         except Exception:
-            self.handle_tool_response(err_text=f'An error occured while trying to parse tool call arguments or text')
+            self.handle_tool_response(err_text=f'An error occured while trying to parse tool call arguments or text', task = task)
             return
 
         try:
@@ -76,19 +76,19 @@ class Agent(LingualEntity):
 
             if not tool_action is None:
                 self.tool_handler.use_tool(tool_action=tool_action)
-                self.handle_tool_response()
+                self.handle_tool_response(task=task)
 
         except Exception:
-            self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}')
+            self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}', task=task)
 
     # ---------------------------------------------------
     # Actions
 
-    def handle_tool_response(self, err_text : Optional[str] = None):
+    def handle_tool_response(self, task : Task,  err_text : Optional[str] = None):
         if not err_text is None:
             self.think(get_exception_msg(text=err_text))
 
-        if self.task_queue.view_active_task().is_dialogue_task():
+        if task.is_dialogue_task():
             log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                        'In your update it is not necessary to provide the user with the function output')
 
