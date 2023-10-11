@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import configparser
 import os
-from typing import Union
+from typing import Union, Optional
 
 
 from src.l3_lotus_core.m2_OperatorIO.userIO import user_io
+from src.l3_lotus_core.m2_OperatorIO.dev_logger import get_exception_msg
 
 # ----------------------------------------------------
 
@@ -19,8 +20,8 @@ class Setting:
     def __init__(self, label : str, section : str, dtype : type):
         self.label : str = label
         self.section : str = section
-        self.value : Union[None, str] = None
         self.dtype : type = dtype
+        self.value: Union[None,dtype] = None
 
         self._is_type_conform : bool = False
         self._is_functional : bool = False
@@ -33,13 +34,39 @@ class Setting:
     # --------------------------------------------
     # Setup value
 
-    def setup_from_file(self):
-        config_parser.read(config_path)
-        self.value = config_parser.get(self.section, self.label)
+    def set_value(self,from_file : bool):
+        value_str = ''
+        _ = value_str
+
+        if from_file:
+            try:
+                config_parser.read(config_path)
+                value_str = config_parser.get(self.section, self.label)
+            except:
+                print(get_exception_msg(text='An error occured while trying to read value from file'))
+                return
+
+        else:
+            value_str = user_io.get_user_msg(f'Enter value for setting {self.label}')
+
+        self.value = self.get_typecast_value(value_str=value_str)
 
 
-    def setup_from_user_input(self):
-        self.value = user_io.get_user_msg(f'Enter value for setting {self.label}')
+    def get_typecast_value(self, value_str : str) -> Optional[object]:
+        value = None
+
+        try:
+            if self.dtype is int:
+                value = int(value_str)
+            elif self.dtype is float:
+                value = float(value_str)
+            elif self.dtype is bool:
+                value = bool(int(value_str))
+            else:
+                value = value_str
+
+        finally:
+            return value
 
 
     def test_type_conformity(self):
