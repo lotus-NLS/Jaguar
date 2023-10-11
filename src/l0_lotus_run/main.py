@@ -1,6 +1,7 @@
 import time
 from typing import Optional
-from src.l3_lotus_core import log_engine_step, Channel, LingualEntity,SettingsController, user_io
+from src.l3_lotus_core import log_engine_step, Channel, LingualEntity,SettingsController, user_io, get_setting
+from src.l3_lotus_core import DialogueSettings
 from src.l2_lotus_agent import Agent
 
 
@@ -11,14 +12,11 @@ from src.l0_lotus_run.parse_input import get_parsed_input
 
 class Engine:
     @log_engine_step
-    def __init__(self, enable_introduction = True):
+    def __init__(self):
         self.user_channel : Optional[Channel] = None
         self.user : Optional[LingualEntity] = None
         self.bots : Optional[list[Agent]] = None
         self.settings_controller : Optional[SettingsController] = None
-
-        # TODO: This should be a setting
-        self.introduction_enabled: bool = enable_introduction
 
 
     @log_engine_step
@@ -41,7 +39,7 @@ class Engine:
     def run(self, run_in_terminal : bool = True):
         print(f'[Debug]: Lotus started')
 
-        if self.introduction_enabled:
+        if get_setting(DialogueSettings.enable_introduction_label):
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
         if run_in_terminal:
@@ -60,7 +58,7 @@ class Engine:
 
 def main():
     # Initialize the engine as empty vessel
-    the_engine : Engine = Engine(enable_introduction=False)
+    the_engine : Engine = Engine()
 
     # Initialize user and agents
     the_engine.initialize_entities()
