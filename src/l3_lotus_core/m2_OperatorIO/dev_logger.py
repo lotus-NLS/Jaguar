@@ -15,7 +15,7 @@ def log_func_call(func):
         print_heading(message=f'Started {get_fully_qualified_name(func)}')
         func(*args, **kwargs)
         elapsed_time = time.time() - start_time
-        print(f"""[Debug]: Completed "{get_fully_qualified_name(func)}"; Uptime: {elapsed_time:.2f} seconds""")
+        print(f"""[Debug]: Completed "{get_fully_qualified_name(func)}"; Uptime: {elapsed_time:.2f} seconds\n""")
 
     return wrapper
 

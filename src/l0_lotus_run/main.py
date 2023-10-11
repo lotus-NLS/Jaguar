@@ -1,7 +1,7 @@
 import time
-from src.l3_lotus_core.m2_OperatorIO.dev_logger import log_func_call
 from typing import Optional
-from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io
+from src.l3_lotus_core import log_func_call, Channel, LingualEntity,SettingsController, user_io
+from src.l2_lotus_agent import Agent
 
 
 from src.l0_lotus_run.entities import Alpha, User
@@ -12,14 +12,23 @@ from src.l0_lotus_run.parse_input import get_parsed_input
 class Engine:
     @log_func_call
     def __init__(self, enable_introduction = True):
-        self.user_channel : Channel = Channel()
-        self.user : LingualEntity = User()
-        self.bots : list[Alpha] = [Alpha()]
+        self.user_channel : Optional[Channel] = None
+        self.user : Optional[LingualEntity] = None
+        self.bots : Optional[list[Agent]] = None
         self.settings_controller : Optional[SettingsController] = None
 
         # TODO: This should be a setting
         self.introduction_enabled: bool = enable_introduction
 
+
+    @log_func_call
+    def initialize_entities(self):
+        self.user = User()
+        self.bots = [Alpha()]
+
+    @log_func_call
+    def initialize_communications(self):
+        self.user_channel = Channel()
         LingualEntity.enter_into_channel(channel=self.user_channel, channel_members=[self.user] + self.bots)
 
     @log_func_call
@@ -51,8 +60,14 @@ class Engine:
 
 
 def main():
-    # Initialize user, agents and conversation hub
+    # Initialize the engine as empty vessel
     the_engine : Engine = Engine(enable_introduction=False)
+
+    # Initialize user and agents
+    the_engine.initialize_entities()
+
+    # Initialize communication hub
+    the_engine.initialize_communications()
 
     # Read or write settings if no settings available
     the_engine.initialize_settings(perform_validation=True)
