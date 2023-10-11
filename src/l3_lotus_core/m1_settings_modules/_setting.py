@@ -71,6 +71,8 @@ class Setting:
 
     def test_type_conformity(self):
         self._is_type_conform = isinstance(self.value, self.dtype)
+        if not self._is_type_conform:
+            print(f'[Debug]: Setting {self.label} is not type conform. Please look up settings resource')
 
 
     def validate_functionality(self):

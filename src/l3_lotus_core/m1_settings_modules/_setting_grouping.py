@@ -78,12 +78,12 @@ class SettingGrouping:
 
         # Validity checks
         for test in self.tests:
+            tested_labels_settings = [setting.label for setting in test.checked_settings]
             try:
                 test.check_setting_validity()
-                tested_labels_settings = [setting.label for setting in test.checked_settings]
                 print(f'[Debug]: Functionality test {test.test_body.__name__} for settings {tested_labels_settings} completed successfully')
-            except Exception as e:
-                print(f'[Error]: An error occured while performing test {test.__name__}: {e}')
+            except Exception:
+                print(f'[Error]: An error occured while performing test {test.__name__} or settings {tested_labels_settings}')
 
 
     def pass_all(self):
