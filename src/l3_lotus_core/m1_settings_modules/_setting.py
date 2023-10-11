@@ -23,13 +23,13 @@ class Setting:
         self.dtype : type = dtype
         self.value: Union[None,dtype] = None
 
-        self._is_type_conform : bool = False
         self._is_functional : bool = False
 
         all_settings[self.label] = self
 
+
     def get_is_validated(self) -> bool:
-        return self._is_functional and self._is_type_conform
+        return self._is_functional and not self.value is None
 
     # --------------------------------------------
     # Setup value
@@ -68,13 +68,6 @@ class Setting:
 
         finally:
             return value
-
-
-    def test_type_conformity(self):
-        # print(f'[Temp debug]: Current value is: {self.value}')
-        self._is_type_conform = isinstance(self.value, self.dtype)
-        if not self._is_type_conform:
-            print(f'[Debug]: Setting {self.label} is not type conform. Please look up settings resource')
 
 
     def validate_functionality(self):

@@ -11,6 +11,7 @@ from src.l0_lotus_run.parse_input import get_parsed_input
 class Engine:
     @log_time_after_done
     def __init__(self, enable_introduction = True):
+        self.print_heading(f'Initializing Engine')
         self.user_channel : Channel = Channel()
         self.user : LingualEntity = User()
         self.bots : list[Alpha] = [Alpha()]
@@ -23,12 +24,14 @@ class Engine:
 
     @log_time_after_done
     def initialize_settings(self, perform_validation : bool = True):
+        self.print_heading(message='Initializing settings')
         if self.settings_controller is None:
             self.settings_controller = SettingsController()
             self.settings_controller.setup(perform_validation=perform_validation)
 
     @log_time_after_done
     def run(self, run_in_terminal : bool = True):
+        self.print_heading(message='Run')
         print(f'[Debug]: Lotus started')
 
         if self.introduction_enabled:
@@ -46,6 +49,10 @@ class Engine:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
             gui.run()
 
+    @staticmethod
+    def print_heading(message):
+        num_stars = 10  # Number of stars on each side
+        print('*' * num_stars + ' ' + message + ' ' + '*' * num_stars)
 
 
 def main():

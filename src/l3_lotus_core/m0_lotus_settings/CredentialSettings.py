@@ -34,6 +34,7 @@ class CredentialSettings(SettingGrouping):
     def test_openai_apikey(self) -> bool:
         temp = openai.api_key
         is_successful = False
+        err_details = ''
 
         try:
             openai.api_key = self.openai_apikey_setting.value
@@ -45,16 +46,19 @@ class CredentialSettings(SettingGrouping):
             is_successful = True
 
         except Exception as err:
-            print(f'[Debug]: Error after test openai_apikey:\n{err}')
-            raise ValueError('Invalid API key or no internet connection')
+            err_details = f'Invalid API key or no internet connection\n{err} '
 
         finally:
+            if not is_successful:
+                print(f'[Error]: Error after test run of openai_api_key: {err_details}')
+
             openai.api_key = temp
             return is_successful
 
 
     def test_search_engine(self) -> bool:
         is_successful = False
+        err_details = ''
         try:
             url = "https://www.googleapis.com/customsearch/v1"
             params = {
@@ -63,13 +67,19 @@ class CredentialSettings(SettingGrouping):
                 'cx': self.search_engineID_setting
             }
             response = requests.get(url, params=params)
-            _ = response.json()
+            response_json = response.json()
             is_successful = response.status_code == 200
 
+            if 'error' in response_json:
+                error_info = response_json['error']
+                err_details = f"Google API Error: {error_info.get('message', 'Unknown error')}"
+            else:
+                err_details = f"Received unexpected status code {response.status_code}"
+
         except Exception as err:
-            print(f'[Error]: Error after test run of search engine \n {err}')
-            raise ValueError(f'Google services could not be reached. Is internet connection available?')
+            err_details = f'Google services could not be reached. Is internet connection available? {err}'
 
         finally:
-
+            if not is_successful:
+                print(f'[Error]: Error after test run of search engine: {err_details}')
             return is_successful

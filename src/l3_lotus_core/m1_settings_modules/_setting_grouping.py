@@ -51,7 +51,7 @@ class SettingGrouping:
         for the_setting in self.get_non_validated_settings():
             the_setting.set_value(from_file = is_first_run)
 
-        self.test_all()
+        self.perform_tests()
         valid, non_valid = self.get_validated_settings(), self.get_non_validated_settings()
 
         for setting in valid:
@@ -72,18 +72,13 @@ class SettingGrouping:
         return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
 
 
-    def test_all(self):
-        # Type checks
-        for setting in self.all_settings_in_group:
-            setting.test_type_conformity()
-
-        # Validity checks
+    def perform_tests(self):
         for test in self.tests:
             tested_labels_settings = [setting.label for setting in test.checked_settings]
             if test.check_setting_validity():
                 print(f'[Debug]: Functionality test {test.do_check.__name__} for settings {tested_labels_settings} completed successfully')
             else:
-                print(f'[Error]: An error occured while performing test {test.do_check.__name__} or settings {tested_labels_settings}')
+                print(f'[Error]: Functionality test {test.do_check.__name__} failed. Check settings {tested_labels_settings}')
 
 
     def pass_all(self):
