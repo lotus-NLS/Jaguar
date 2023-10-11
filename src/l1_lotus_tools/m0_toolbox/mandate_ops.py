@@ -90,12 +90,11 @@ class INITIALIZE_MANDATE(Tool):
         self.disable()
 
         if verbose_mode:
-            print(f'Temp debug: Currently acting agent root objective: {self.acting_agent.mandate.root_objective}')
-
+            print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
     def disable(self):
         super().disable()
-        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
+        # self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
 
 
     def parse_objectives_lines(self, lines : list[str]):

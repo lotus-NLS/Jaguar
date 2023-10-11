@@ -88,13 +88,20 @@ class Agent(LingualEntity):
         if not err_text is None:
             self.think(get_exception_msg(text=err_text))
 
+        if task.skip_feedback:
+            return
+
         if task.is_dialogue_task():
+            role = DialogueRole.user_role()
             log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
                        'In your update it is not necessary to provide the user with the function output')
 
-            feedback_msg = self.get_text_response(entries=self.get_basic_entries()+[Entry(role=DialogueRole.user_role(), msg=log_msg)])
-            self.speak(feedback_msg)
+        else:
+            role = DialogueRole.system_role()
+            log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
+        feedback_msg = self.get_text_response(entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+        self.speak(feedback_msg)
 
     def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:
         arg_dict = {

@@ -17,6 +17,7 @@ class Task:
         self.mandate : Optional[Mandate] = mandate
         self.required_funct_name : Optional[str] = required_funct_name
         self._entries_to_process : list[Entry] = entries_to_respond_to if not entries_to_respond_to is None else []
+        self.skip_feedback : bool = False if self.required_funct_name is None else True
 
 
     # ---------------------------------------------------------
