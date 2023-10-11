@@ -94,7 +94,7 @@ class INITIALIZE_MANDATE(Tool):
 
     def disable(self):
         super().disable()
-        # self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
+        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
 
 
     def parse_objectives_lines(self, lines : list[str]):
