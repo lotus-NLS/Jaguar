@@ -60,16 +60,17 @@ class CredentialSettings(SettingGrouping):
         is_successful = False
         err_details = ''
         try:
+
             url = "https://www.googleapis.com/customsearch/v1"
             params = {
                 'q': 'snails',
-                'key': self.google_apikey_setting,
-                'cx': self.search_engineID_setting
+                'key': self.google_apikey_setting.value,
+                'cx': self.search_engineID_setting.value
             }
             response = requests.get(url, params=params)
             response_json = response.json()
-            is_successful = response.status_code == 200
 
+            is_successful = response.status_code == 200
             if 'error' in response_json:
                 error_info = response_json['error']
                 err_details = f"Google API Error: {error_info.get('message', 'Unknown error')}"
