@@ -1,7 +1,7 @@
 import traceback
 import json
 from func_timeout import func_timeout, FunctionTimedOut
-from typing import Callable, Any
+from typing import Any
 from src.l3_lotus_core import get_exception_msg
 
 from typing import Optional
@@ -24,19 +24,12 @@ class Tool(ToolInterface):
     def __init__(self):
         super().__init__()
         self.acting_agent: Optional[Agent] = None
-        self.name: str = self.__class__.__name__
-        self.desc: str = ''
-        self.external_log: Callable = lambda *args, **kwargs: None
-        self.arg_dict: dict[str, ToolArg] = {}
-        self.is_enabled: bool = True
 
     def disable(self):
         self.is_enabled = False
 
-
     def enable(self):
         self.is_enabled = True
-
 
     def create_arg(self, name: str, dtype: type, desc: str, available_options: Optional[list[str]] = None,
                    is_optional: bool = False) -> ToolArg:
@@ -52,12 +45,12 @@ class Tool(ToolInterface):
         self.reset_args()
         self.start_log(f'Attempting to launch tool {self.name} with args: {args_dict}')
 
-        required_arguments_included = all([arg.name for arg in self.get_required_args_list()])
+        required_arguments_included = all([arg.name for arg in self._get_required_args_list()])
         if not required_arguments_included:
             self.finish_log(f'Call failed since provided dictionary {args_dict} did not cover all required tool arguments')
             return
 
-        tool_args_specified = [arg for arg in self.get_arg_list() if arg.name in args_dict]
+        tool_args_specified = [arg for arg in self._get_arg_list() if arg.name in args_dict]
         for arg in tool_args_specified:
             arg.val = args_dict[arg.name]
             if not arg.value_is_valid():
@@ -94,10 +87,10 @@ class Tool(ToolInterface):
             },
         }
 
-        for arg in self.get_arg_list():
+        for arg in self._get_arg_list():
             tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
-        tool_doc['parameters']['required'] = [arg.name for arg in self.get_arg_list() if not arg.is_optional]
+        tool_doc['parameters']['required'] = [arg.name for arg in self._get_arg_list() if not arg.is_optional]
 
         if verbose_mode_enabled:
             print(f'Temp debug: {json.dumps(tool_doc, indent=4)}')
@@ -117,23 +110,24 @@ class Tool(ToolInterface):
         except:
             return False
 
+
     def reset_args(self):
-        for arg in self.get_arg_list():
+        for arg in self._get_arg_list():
             arg.val = None
 
 
-    def get_arg_list(self) -> list[ToolArg]:
+    def _get_arg_list(self) -> list[ToolArg]:
         return list(self.arg_dict.values())
 
 
-    def get_required_args_list(self) -> list[ToolArg]:
-        return [arg for arg in self.get_arg_list() if not arg.is_optional]
+    def _get_required_args_list(self) -> list[ToolArg]:
+        return [arg for arg in self._get_arg_list() if not arg.is_optional]
 
 
     # ---------------------------------------------------
     # Logging
 
-    def log(self, to_log: str):
+    def _log(self, to_log: str):
         if not self.external_log is None:
             try:
                 self.external_log(to_log)
@@ -142,22 +136,22 @@ class Tool(ToolInterface):
 
 
     def start_log(self, to_log: str):
-        self.log(f'[Start]: {to_log}')
+        self._log(f'[Start]: {to_log}')
 
 
     def semantic_error(self, to_log: str):
-        self.log(f'[Error]: {to_log}')
+        self._log(f'[Error]: {to_log}')
 
 
     def exception_log(self, to_log: str):
-        self.log(get_exception_msg(to_log))
+        self._log(get_exception_msg(to_log))
 
 
     def update_log(self, to_log: str):
-        self.log(f'[Update]: {to_log}')
+        self._log(f'[Update]: {to_log}')
 
 
     def finish_log(self, to_log: str):
-        self.log(f'[Finish]: {to_log}')
+        self._log(f'[Finish]: {to_log}')
 
 
