@@ -12,16 +12,17 @@ def get_exception_msg(text: str):
 
 def log_func_call(func):
     def wrapper(*args, **kwargs):
-        print_heading(message=f'Started {get_fully_qualified_name(func)}')
+        print_heading(message=f'[Engine update]: Started {get_fully_qualified_name(func)}')
         func(*args, **kwargs)
         elapsed_time = time.time() - start_time
-        print(f"""[Debug]: Completed "{get_fully_qualified_name(func)}"; Uptime: {elapsed_time:.2f} seconds\n""")
+        print(f"""[Debug]: Completed "{get_fully_qualified_name(func)}"; Uptime: {elapsed_time:.2f} seconds""")
+        print()
 
     return wrapper
 
 
 def print_heading(message):
-    num_stars = 10  # Number of stars on each side
+    num_stars = 3  # Number of stars on each side
     print('*' * num_stars + ' ' + message + ' ' + '*' * num_stars)
 
 
