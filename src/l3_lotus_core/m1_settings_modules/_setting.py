@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import ast
 import configparser
 import os
 from typing import Union, Optional
@@ -53,17 +53,15 @@ class Setting:
 
 
     def get_typecast_value(self, value_str : str) -> Optional[object]:
-        value = None
+        if self.dtype is str:
+            return value_str
 
+        value = None
         try:
-            if self.dtype is int:
-                value = int(value_str)
-            elif self.dtype is float:
-                value = float(value_str)
-            elif self.dtype is bool:
-                value = bool(int(value_str))
-            else:
-                value = value_str
+            value = ast.literal_eval(value_str)
+            # print(f'[Temp Debug]: Typecasted to {value}')
+            if not isinstance(value, self.dtype):
+                raise ValueError(f'Invalid value. Expected {self.dtype}')
 
         finally:
             return value
