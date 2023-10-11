@@ -61,7 +61,7 @@ class Setting:
         value = None
         try:
             eval_value = ast.literal_eval(value_str)
-            cast_value = self.dtype(value)
+            cast_value = self.dtype(eval_value)
 
             if eval_value == cast_value:
                 value = cast_value
@@ -71,6 +71,7 @@ class Setting:
 
 
     def test_type_conformity(self):
+        # print(f'[Temp debug]: Current value is: {self.value}')
         self._is_type_conform = isinstance(self.value, self.dtype)
         if not self._is_type_conform:
             print(f'[Debug]: Setting {self.label} is not type conform. Please look up settings resource')
