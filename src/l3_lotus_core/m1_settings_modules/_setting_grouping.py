@@ -50,7 +50,6 @@ class SettingGrouping:
         for the_setting in self.get_non_validated_settings():
             the_setting.set_value(from_file = is_first_run)
 
-
         self.test_all()
         valid, non_valid = self.get_validated_settings(), self.get_non_validated_settings()
 

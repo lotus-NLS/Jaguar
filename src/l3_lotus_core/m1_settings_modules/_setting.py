@@ -81,7 +81,7 @@ class Setting:
         try:
             if self.section not in config_parser.sections():
                 config_parser.add_section(self.section)
-            config_parser.set(section=self.section, option=self.label, value=self.value)
+            config_parser.set(section=self.section, option=self.label, value=str(self.value))
             with open(config_path, 'w') as f:
                 config_parser.write(f)
             print(f'[Debug]: Saved value for setting {self.label} to settings file')
