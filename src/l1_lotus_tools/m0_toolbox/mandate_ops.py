@@ -13,7 +13,7 @@ class UPDATE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
 
-        self.description : str = 'This tool allows you to update objectives'
+        self.description : str = 'Allows for updating objectives'
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
 
@@ -62,16 +62,16 @@ class UPDATE_MANDATE(Tool):
 class INITIALIZE_MANDATE(Tool):
     def __init__(self):
         super().__init__()
-        self.desc : str ='This tools allows you to initialize a mandate by supplying a root objectives and a tree of subobjectives in a list'
+        self.desc : str ='Submits a request to the user to sign off on a plan of action'
 
         self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str,
-              desc="""Specify your objectives in this format; Note that there is only a single root objective:
-                      Root Objective
-                      -Sub-objective
-                      -Sub-objective
-                      --Sub-sub objective
-                      -Sub-objective
-                      --Sub-sub objective""")
+              desc="""Specify your objectives (obj) in this format:
+                      Root objective
+                      -Sub obj
+                      -Sub obj
+                      --Sub-sub obj
+                      -Sub obj
+                      --Sub-sub obj""")
 
 
     def do(self):

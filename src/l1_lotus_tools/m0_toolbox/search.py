@@ -12,12 +12,11 @@ class SEARCH(Tool):
     num_results = 4
     def __init__(self):
         super().__init__()
-        self.desc : str = """The SEARCH tool allows you to obtain a report on requested information you specify."""
+        self.desc : str = """Obtains a text report from the web"""
 
         self.requested_info_arg : ToolArg = self.create_arg(
             name='requested_information', dtype=str,
-            desc='This is the information that you want to obtain.'
-                 'The report will be composed from the top results obtained a search on this information')
+            desc='')
 
         self.webtools : Webtools = Webtools(initial_driver_count=4)
 

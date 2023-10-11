@@ -20,7 +20,7 @@ class FILE_IO(Tool):
 
     def __init__(self):
         super().__init__()
-        self.desc = f'The {self.name} has two modes, allows you to read the contents of a plain text file or a pdf.'
+        self.desc = f'Read or write files based on mode'
 
         self.mode_arg : ToolArg = self.create_arg(
             name='mode', dtype=str,
@@ -29,16 +29,15 @@ class FILE_IO(Tool):
 
         self.fpath_arg : ToolArg = self.create_arg(
             name='fpath', dtype=str,
-            desc='Filepath of file to be read or written')
+            desc='Filepath to be read or written to')
 
         self.format_arg : ToolArg = self.create_arg(
             name='file_format', dtype=str,
             available_options=[FILE_IO.text_format, FILE_IO.pdf_format],
-            is_optional=False,
-            desc=f'READ mode only: This is the format of the file you want to read')
+            desc=f'read mode only')
 
         self.content_arg: ToolArg = self.create_arg(name='content', dtype=str,
-                                                    desc='The content that will be written to the file')
+                                                    desc='write mode only')
 
 
     def do(self):

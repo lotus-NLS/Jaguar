@@ -20,7 +20,7 @@ class RUN(Tool):
 
     def __init__(self):
         super().__init__()
-        self.desc = f'The RUN tool allows you to either run a Python script or execute a command line command as input string.'
+        self.desc = f'Run code in chosen mode'
 
         self.mode_arg: ToolArg = self.create_arg(
             name='mode', dtype=str,
@@ -29,7 +29,7 @@ class RUN(Tool):
 
         self.program_content_arg: ToolArg = self.create_arg(
             name='program_content', dtype=str,
-            desc='The content of the Python script or shell command to execute')
+            desc='The code to execute')
 
         self.logging_backlog = ''
         self.shell_session = self.get_shell_session()
