@@ -10,7 +10,7 @@ def get_exception_msg(text: str):
     return (f'[Error]: {text}\n'
             f'{traceback.format_exc()}')
 
-def log_func_call(func):
+def log_engine_step(func):
     def wrapper(*args, **kwargs):
         print_heading(message=f'[Engine update]: Started {get_fully_qualified_name(func)}')
         func(*args, **kwargs)
