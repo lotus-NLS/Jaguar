@@ -6,7 +6,8 @@ class DialogueSettings(SettingGrouping):
     def __init__(self):
         super().__init__()
         self.enable_introduction : Setting = self.make_setting(label='enable_introduction',
-                                                               test=SettingTest.make_empty_test())
+                                                               test=SettingTest.make_empty_test(),
+                                                               dtype=bool)
 
     def check(self):
         pass

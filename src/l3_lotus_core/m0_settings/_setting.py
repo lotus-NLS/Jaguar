@@ -16,20 +16,27 @@ all_settings = {}
 
 
 class Setting:
-    def __init__(self,label : str, section : str):
+    def __init__(self, label : str, section : str, dtype : type):
         self.label : str = label
         self.section : str = section
         self.value : Union[None, str] = None
-        self._type_validation : bool = False
-        self._is_validated : bool = False
+        self.dtype : type = dtype
+
+        self._is_type_conform : bool = False
+        self._is_functional : bool = False
 
         all_settings[self.label] = self
 
     # --------------------------------------------
     # Setup
 
-    def validate(self):
-        self._is_validated = True
+    def test_type_conformity(self):
+        self._is_type_conform = isinstance(self.value, self.dtype)
+
+
+    def validate_functionality(self):
+        self._is_functional = True
+
 
     def save_state_to_file(self):
         try:
@@ -59,7 +66,7 @@ class Setting:
     # get
 
     def get_is_validated(self) -> bool:
-        return self._is_validated
+        return self._is_functional and self._is_type_conform
 
     def set_value(self, is_from_file : bool):
         if is_from_file:

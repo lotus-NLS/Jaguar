@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Callable
-from abc import abstractmethod
 
 from src.l3_lotus_core.m1_OperatorIO.userIO import user_io
 from src.l3_lotus_core.m0_settings._setting import Setting
@@ -25,7 +24,7 @@ class SettingTest:
         is_successful = self.test_body()
         if is_successful:
             for setting in self.checked_settings:
-                setting.validate()
+                setting.validate_functionality()
 
 
 
@@ -35,8 +34,8 @@ class SettingGrouping:
         self.all_settings_in_group : list[Setting] = []
 
 
-    def make_setting(self, label : str, test : SettingTest) -> Setting:
-        new_setting = Setting(label=label, section=self.__class__.__name__)
+    def make_setting(self, label : str, test : SettingTest, dtype : type = str) -> Setting:
+        new_setting = Setting(label=label, section=self.__class__.__name__, dtype = dtype)
 
         self.all_settings_in_group.append(new_setting)
         test.add_checked_setting(the_setting=new_setting)
@@ -73,16 +72,21 @@ class SettingGrouping:
 
 
     def test_all(self):
+        # Type checks
+        for setting in self.all_settings_in_group:
+            setting.test_type_conformity()
+
+        # Validity checks
         for test in self.tests:
             try:
                 test.check_setting_validity()
                 tested_labels_settings = [setting.label for setting in test.checked_settings]
-                print(f'[Debug]: Test {test.test_body.__name__} for settings {tested_labels_settings} completed successfully')
+                print(f'[Debug]: Functionality test {test.test_body.__name__} for settings {tested_labels_settings} completed successfully')
             except Exception as e:
                 print(f'[Error]: An error occured while performing test {test.__name__}: {e}')
 
 
     def pass_all(self):
         for setting in self.all_settings_in_group:
-            setting.validate()
+            setting.validate_functionality()
 
