@@ -1,5 +1,5 @@
 import time
-from src.l3_lotus_core.m2_OperatorIO.dev_logger import log_time_after_done
+from src.l3_lotus_core.m2_OperatorIO.dev_logger import log_func_call
 from typing import Optional
 from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io
 
@@ -10,7 +10,7 @@ from src.l0_lotus_run.parse_input import get_parsed_input
 # ---------------------------------------------------------
 
 class Engine:
-    @log_time_after_done
+    @log_func_call
     def __init__(self, enable_introduction = True):
         self.user_channel : Channel = Channel()
         self.user : LingualEntity = User()
@@ -22,13 +22,13 @@ class Engine:
 
         LingualEntity.enter_into_channel(channel=self.user_channel, channel_members=[self.user] + self.bots)
 
-    @log_time_after_done
+    @log_func_call
     def initialize_settings(self, perform_validation : bool = True):
         if self.settings_controller is None:
             self.settings_controller = SettingsController()
             self.settings_controller.setup(perform_validation=perform_validation)
 
-    @log_time_after_done
+    @log_func_call
     def run(self, run_in_terminal : bool = True):
         print(f'[Debug]: Lotus started')
 
