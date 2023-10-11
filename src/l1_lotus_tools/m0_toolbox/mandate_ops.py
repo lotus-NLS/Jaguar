@@ -22,6 +22,10 @@ class UPDATE_MANDATE(Tool):
                                                         desc=f'Required for {Objective.edit_desc.__name__} and {Objective.make_subelement.__name__}'
                                                              f'to specify the edited description or description of the new element')
 
+        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
+                                                        available_options=Objective.get_action_names(),
+                                                        desc='The type of action that you want to perform')
+
     def do(self):
         objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
         action = objective_to_edit.action_dict[self.action_type_arg.val]
@@ -36,20 +40,7 @@ class UPDATE_MANDATE(Tool):
             print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
         if not self.acting_agent.mandate.root_objective.is_active:
-            self.disable()
-
-
-    def enable(self):
-        super().enable()
-        functions = self.acting_agent.mandate.root_objective.get_available_actions()
-        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                        available_options=[function.__name__ for function in functions],
-                                                        desc='The type of action that you want to perform')
-
-    def disable(self):
-        super().disable()
-        self.acting_agent.mandate.root_objective = None
-        self.acting_agent.tool_handler.enable_tool(tool_name=INITIALIZE_MANDATE.__name__)
+            self.acting_agent.mandate.root_objective = None
 
 
     def get_objective_by_id(self, objective_id : str):
@@ -87,14 +78,9 @@ class INITIALIZE_MANDATE(Tool):
             return
 
         self.parse_objectives_lines(lines=objective_lines)
-        self.disable()
 
         if verbose_mode:
             print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
-
-    def disable(self):
-        super().disable()
-        self.acting_agent.tool_handler.enable_tool(tool_name=UPDATE_MANDATE.__name__)
 
 
     def parse_objectives_lines(self, lines : list[str]):

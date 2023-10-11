@@ -17,6 +17,7 @@ import uuid
 
 class Objective:
 
+
     @classmethod
     def make_root(cls, desc : str) -> Objective:
         return cls(desc=desc)
@@ -35,8 +36,10 @@ class Objective:
     # ----------------------------------------------------
     # get
 
-    def get_available_actions(self) -> list[callable]:
-        return list(self.action_dict.values())
+    @classmethod
+    def get_action_names(cls) -> list[str]:
+        temp_obj = cls(desc='')
+        return [action.__name__ for action in temp_obj.action_dict.values()]
 
 
     def get_objective_by_id(self, objective_id : str) -> Optional[Objective]:
