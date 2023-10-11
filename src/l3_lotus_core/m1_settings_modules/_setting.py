@@ -4,7 +4,6 @@ import configparser
 import os
 from typing import Union, Optional
 
-
 from src.l3_lotus_core.m2_OperatorIO.userIO import user_io
 from src.l3_lotus_core.m2_OperatorIO.dev_logger import get_exception_msg
 
@@ -42,8 +41,9 @@ class Setting:
             try:
                 config_parser.read(config_path)
                 value_str = config_parser.get(self.section, self.label)
-            except:
-                print(get_exception_msg(text='An error occured while trying to read value from file'))
+
+            except Exception as e:
+                print(f'An error occured while trying to read value from file : {e}')
                 return
 
         else:
