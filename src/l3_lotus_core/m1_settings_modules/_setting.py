@@ -60,9 +60,11 @@ class Setting:
 
         value = None
         try:
-            value = ast.literal_eval(value_str)
-            if not isinstance(value, self.dtype):
-                raise ValueError(f'Invalid value. Expected {self.dtype}')
+            eval_value = ast.literal_eval(value_str)
+            cast_value = self.dtype(value)
+
+            if eval_value == cast_value:
+                value = cast_value
 
         finally:
             return value
