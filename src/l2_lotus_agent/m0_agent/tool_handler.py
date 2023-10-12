@@ -1,6 +1,4 @@
 from typing import Optional
-
-
 from src.l2_lotus_agent.m2_tool_interface import ToolInterface as Tool
 from src.l2_lotus_agent.m1_models import ToolAction
 

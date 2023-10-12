@@ -4,8 +4,6 @@ from typing import Optional
 from src.l3_lotus_core import Entry, DialogueRole
 
 from src.l2_lotus_agent.m2_protocol import Mandate
-
-
 # ---------------------------------------------------------
 
 class Task:

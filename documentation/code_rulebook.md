@@ -51,11 +51,11 @@ be upheld at any point after.
 - Apply this both for text within a file and files within a directory
 
 ### IV: Imports
-- **Intra-dir imports**: Like this
+- **Intra-source dir imports**: Like this
 ```
 from .this_file import that_class
 ```
-- **Inter-dir imports**: Like this
+- **Inter-source dir imports**: Like this
 ```
 from [fullpath].that_module import that_class
 ```

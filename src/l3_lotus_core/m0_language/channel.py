@@ -3,7 +3,7 @@ import threading
 from queue import Queue
 from typing import Callable
 
-from src.l3_lotus_core.m0_language.entry import Entry
+from .entry import Entry
 
 
 class Channel:

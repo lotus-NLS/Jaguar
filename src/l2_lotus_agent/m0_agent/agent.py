@@ -3,11 +3,10 @@ from abc import abstractmethod
 from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
-
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
-from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes, Action, ActionOptions, FunctCallOption
+from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 
 # ---------------------------------------------------------
 

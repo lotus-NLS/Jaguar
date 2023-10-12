@@ -2,8 +2,7 @@ from __future__ import annotations
 import openai
 import requests
 
-from src.l3_lotus_core.m1_settings_modules import Setting
-from src.l3_lotus_core.m1_settings_modules import SettingGrouping, SettingTest
+from src.l3_lotus_core.m1_settings_modules import Setting,SettingGrouping, SettingTest
 
 # ---------------------------------------------------------
 

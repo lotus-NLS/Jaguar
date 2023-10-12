@@ -1,7 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from src.l2_lotus_agent import Agent, ToolArg
 
-
 from src.l1_lotus_tools.tool import Tool
 from src.l1_lotus_tools.m1_tool_utils.webutils import Webtools
 

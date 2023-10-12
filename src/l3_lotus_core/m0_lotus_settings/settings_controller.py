@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Optional
-
-from src.l3_lotus_core.m0_lotus_settings.CredentialSettings import CredentialSettings
-from src.l3_lotus_core.m0_lotus_settings.DialogueSettings import DialogueSettings
 from src.l3_lotus_core.m1_settings_modules import all_settings
+
+from .CredentialSettings import CredentialSettings
+from .DialogueSettings import DialogueSettings
 
 
 # (10.10.23) D.H. : Settings Terminology

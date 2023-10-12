@@ -3,10 +3,8 @@ import tiktoken
 # from typing import Optional
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
-from src.l2_lotus_agent.m1_models.model_class import LLM
-from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
-
-
+from .model_class import LLM
+from .action import Action, ActionOptions
 # ---------------------------------------------------------
 
 class OpenAI_ModelTypes:

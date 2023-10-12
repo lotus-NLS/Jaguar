@@ -4,7 +4,6 @@ from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io
 from src.l3_lotus_core import DialogueSettings, Flag
 from src.l2_lotus_agent import Agent
 
-
 from src.l0_lotus_run.entities import Alpha, User
 from src.l0_lotus_run.gui_element import ChatGUI
 from src.l0_lotus_run.parse_input import get_parsed_input

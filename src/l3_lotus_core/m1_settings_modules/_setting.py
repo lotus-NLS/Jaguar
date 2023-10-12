@@ -4,7 +4,7 @@ import configparser
 import os
 from typing import Union, Optional
 
-from src.l3_lotus_core.m2_OperatorIO.userIO import user_io
+from src.l3_lotus_core.m2_OperatorIO import user_io
 
 # ----------------------------------------------------
 

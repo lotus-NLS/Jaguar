@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 
-from src.l2_lotus_agent.m2_tool_interface.tool_arg import ToolArg
+from .tool_arg import ToolArg
 # ---------------------------------------------------------
 
 
