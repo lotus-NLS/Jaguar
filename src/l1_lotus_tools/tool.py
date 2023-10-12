@@ -21,15 +21,16 @@ verbose_mode_enabled = False
 
 class Tool(ToolInterface):
     timout_in_sec = 60
-    def __init__(self):
+
+    @classmethod
+    def make(cls, is_public_tool : bool = True):
+        return cls(is_public_tool=is_public_tool)
+
+    def __init__(self, is_public_tool : bool = True):
         super().__init__()
         self.acting_agent: Optional[Agent] = None
+        self.is_public_tool : bool = is_public_tool
 
-    def disable(self):
-        self.is_enabled = False
-
-    def enable(self):
-        self.is_enabled = True
 
     def create_arg(self, name: str, dtype: type, desc: str, available_options: Optional[list[str]] = None,
                    is_optional: bool = False) -> ToolArg:

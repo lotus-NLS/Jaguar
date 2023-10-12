@@ -45,14 +45,13 @@ class Alpha(Agent):
     # Tool setup
 
     def setup_tools(self):
-        all_tools = [RUN(), FILE_IO(), SEARCH(), UPDATE_MANDATE(), INITIALIZE_MANDATE()]
+        public_tools = [RUN.make(), FILE_IO.make(), SEARCH.make()]
+        private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
+        all_tools = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 
         for tool in all_tools:
             self.add_tool(tool)
-
-            if tool.name == UPDATE_MANDATE.__name__:
-                tool.disable()
 
 
     def add_tool(self, tool : Tool):

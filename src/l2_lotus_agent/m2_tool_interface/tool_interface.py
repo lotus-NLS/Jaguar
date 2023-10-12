@@ -14,15 +14,8 @@ class ToolInterface(ABC):
         self.desc: str = ''
         self.external_log: Callable = lambda *args, **kwargs: None
         self.arg_dict: dict[str, ToolArg] = {}
-        self.is_enabled: bool = True
+        self.is_public_tool: bool = True
 
-    @abstractmethod
-    def disable(self):
-        pass
-
-    @abstractmethod
-    def enable(self):
-        pass
 
     @abstractmethod
     def handle_call(self, args_dict: Dict[str, Any]):
