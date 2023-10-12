@@ -4,7 +4,7 @@ from src.l2_lotus_agent import ToolArg, Objective
 
 
 from src.l1_lotus_tools.tool import Tool
-from src.l1_lotus_tools.m1_python_utils.string_formatting import get_leading_dashes_count,is_valid_hierarchy_format
+from src.l1_lotus_tools.m1_tool_utils.itemtree_formatting import get_leading_dashes_count,is_valid_hierarchy_format
 # ---------------------------------------------------------
 
 verbose_mode = True
