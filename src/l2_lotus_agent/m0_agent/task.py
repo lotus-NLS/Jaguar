@@ -19,7 +19,6 @@ class Task:
         self._entries_to_process : list[Entry] = entries_to_respond_to if not entries_to_respond_to is None else []
         self.skip_feedback : bool = False if self.required_funct_name is None else True
 
-
     # ---------------------------------------------------------
     # get
 
@@ -27,7 +26,7 @@ class Task:
         if self.is_mandate_task():
             task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_msg())
         else:
-            task_entry = Entry(DialogueRole.user_role(), msg=f'Respond to unread messages:\n{self.get_unread_as_str()}')
+            task_entry = Entry(DialogueRole.system_role(), msg=f'New user messages to respond to:\n{self.get_unread_as_str()}')
 
         return task_entry
 
