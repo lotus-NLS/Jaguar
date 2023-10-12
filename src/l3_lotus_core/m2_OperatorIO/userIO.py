@@ -19,6 +19,7 @@ class UserIO:
 
     def launch(self):
         thread = threading.Thread(target=self.loop)
+        thread.daemon = True
         thread.start()
 
     def loop(self):

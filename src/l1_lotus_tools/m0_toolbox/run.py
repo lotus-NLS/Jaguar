@@ -36,9 +36,13 @@ class RUN(Tool):
         self.is_error_state = False
         self.last_msg_time = time.time()
 
-        threading.Thread(target=self.read_terminal_stdout).start()
-        threading.Thread(target=self.read_terminal_stderr).start()
-        threading.Thread(target=self.log_terminal_when_idle).start()
+        thread_list = [threading.Thread(target=self.read_terminal_stderr)
+                  ,threading.Thread(target=self.read_terminal_stdout)
+                  ,threading.Thread(target=self.log_terminal_when_idle)]
+
+        for thread in thread_list:
+            thread.daemon = True
+            thread.start()
 
 
     def do(self):
