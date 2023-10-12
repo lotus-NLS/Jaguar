@@ -24,7 +24,9 @@ class Tool(ToolInterface):
 
     @classmethod
     def make(cls, is_public_tool : bool = True):
-        return cls(is_public_tool=is_public_tool)
+        the_tool = cls()
+        the_tool.is_public_tool = is_public_tool
+        return the_tool
 
     def __init__(self, is_public_tool : bool = True):
         super().__init__()
