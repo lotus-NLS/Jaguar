@@ -46,12 +46,17 @@ class DialogueRole(str):
 
 class Flag(str):
     _m_enforce_mandate  = 'm'
+    _m_quit  = 'q'
 
     def __new__(cls, flag : str):
         return str.__new__(cls, flag)
 
     @classmethod
-    def enforce_mandate_flag(cls):
+    def get_quit_flag(cls):
+        return cls(flag=Flag._m_quit)
+
+    @classmethod
+    def get_mandate_flag(cls):
         return cls(flag=Flag._m_enforce_mandate)
 
     @classmethod
@@ -63,13 +68,13 @@ class Flag(str):
         return as_list
 
 
-class Flags(list[Flag]):
+class FlagList(list[Flag]):
     pass
 
 class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
-                 flags : Optional[Flags] = None,
+                 flags : Optional[FlagList] = None,
                  tool_name = 'undefined_function'):
         super().__init__()
         self['role'] = role
@@ -77,7 +82,7 @@ class Entry(dict):
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
         self._is_processed : bool = False
-        self.flags : Flags = flags if not flags is None else []
+        self.flags : FlagList = flags if not flags is None else []
 
     def mark_processed(self):
         self._is_processed = True
@@ -90,7 +95,7 @@ class Entry(dict):
     def get_enforce_mandate_flag(self) -> bool:
         enforce_mandate : bool = False
 
-        if Flag.enforce_mandate_flag() in self.flags:
+        if Flag.get_mandate_flag() in self.flags:
             enforce_mandate = True
         return enforce_mandate
 

@@ -1,6 +1,6 @@
 from typing import Optional
 from src.l3_lotus_core import log_engine_step, Channel, LingualEntity,SettingsController, user_io, get_setting
-from src.l3_lotus_core import DialogueSettings
+from src.l3_lotus_core import DialogueSettings, Flag
 from src.l2_lotus_agent import Agent
 
 
@@ -45,13 +45,14 @@ class Engine:
             while True:
                 user_input = user_io.get_user_msg()
                 msg, flags = get_parsed_input(user_input)
+                if Flag.get_quit_flag() in flags:
+                    break
                 print(f'[Debug]: Flags are {flags}')
                 self.user.speak(msg=msg, flags=flags)
 
         else:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
             gui.run()
-
 
 
 
