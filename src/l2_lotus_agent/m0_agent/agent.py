@@ -121,11 +121,8 @@ class Agent(LingualEntity):
                         max_tokens : Optional[int] = None,
                         temperature : float = 0.3) -> Action:
 
-        if entries is None:
-            entries = self.get_basic_entries()
-
         action = self.model.get_action(
-            entries=self.get_basic_entries() + entries,
+            entries= self.get_basic_entries() if entries is None else entries,
             tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
         )
