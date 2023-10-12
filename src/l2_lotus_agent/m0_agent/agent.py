@@ -50,7 +50,6 @@ class Agent(LingualEntity):
     def react(self, entry : Entry):
         pass
 
-
     def do(self, task : Task):
         try:
             action = self.get_next_action(
@@ -103,6 +102,7 @@ class Agent(LingualEntity):
 
         feedback_msg = self.get_text_response(entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
         self.speak(feedback_msg)
+
 
     def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:
         arg_dict = {

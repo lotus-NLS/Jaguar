@@ -7,7 +7,7 @@ from typing import Optional
 from subprocess import Popen
 import time
 from src.l2_lotus_agent import ToolArg
-
+from pyutils import InputWaiter
 
 from src.l1_lotus_tools.tool import Tool
 # ---------------------------------------------------------
@@ -34,6 +34,7 @@ class RUN(Tool):
         self.logging_backlog = ''
         self.shell_session = self.get_shell_session()
         self.is_error_state = False
+        self.output_collector = InputWaiter()
         self.last_msg_time = time.time()
 
         thread_list = [threading.Thread(target=self.read_terminal_stderr)
@@ -54,6 +55,7 @@ class RUN(Tool):
 
         try:
             self.execute_py() if mode == self.python_script_mode else self.execute_terminal()
+            self.output_collector.read()
 
         except Exception as e:
             self.exception_log(f'An exception occured during program execution: {e}')
@@ -106,7 +108,9 @@ class RUN(Tool):
                 flag_str = 'Standard Output'
 
             if current_time - self.last_msg_time >= 0.25 and self.logging_backlog != '':
-                logger(f'{flag_str}\n{self.logging_backlog}')
+                out_str = f'{flag_str}\n{self.logging_backlog}'
+                logger(out_str)
+                self.output_collector.write(out_str)
                 self.logging_backlog = ''
                 self.is_error_state = False
                 self.last_msg_time = time.time()
