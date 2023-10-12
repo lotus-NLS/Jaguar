@@ -40,16 +40,13 @@ class UserIO:
 
     def get_confirmation(self, msg : Optional[str] = None) -> bool:
         while True:
-            user_input = self.get_user_msg(prompt_msg=msg)
-            if user_input.lower() in ['y', 'n']:
+            lowercase_user_input = self.get_user_msg(prompt_msg=msg).lower()
+            if lowercase_user_input in ['y', 'n']:
                 break
             else:
                 print("Invalid input. Please enter (y/n)")
 
-        if user_input == 'y':
-            return True
-        else:
-            return False
+        return lowercase_user_input == 'y'
 
 user_io = UserIO()
 user_io.launch()
