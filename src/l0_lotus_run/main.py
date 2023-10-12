@@ -1,5 +1,6 @@
 from typing import Optional
-from src.l3_lotus_core import log_engine_step, Channel, LingualEntity,SettingsController, user_io, get_setting
+from pyutils import log_engine_step
+from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io, get_setting
 from src.l3_lotus_core import DialogueSettings, Flag
 from src.l2_lotus_agent import Agent
 

@@ -1,16 +1,6 @@
 import threading
 from typing import Optional
-from queue import Queue
-
-class InputWaiter:
-    def __init__(self):
-        self.q = Queue()
-
-    def write(self, value):
-        self.q.put(value)
-
-    def read(self):
-        return self.q.get()
+from pyutils import InputWaiter
 
 
 class UserIO:

@@ -1,6 +1,7 @@
 from typing import Optional
 from abc import abstractmethod
-from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, get_exception_msg
+from pyutils import get_exception_msg
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task

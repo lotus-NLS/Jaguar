@@ -10,7 +10,17 @@ def get_exception_msg(text: str):
     return (f'[Error]: {text}\n'
             f'{traceback.format_exc()}')
 
-def log_engine_step(func):
+def log_engine_step(func : callable):
+    def get_fully_qualified_name(inner_func):
+        try:
+            return inner_func.__qualname__
+        except:
+            return f"{inner_func.__name__}"
+
+    def print_heading(message):
+        num_stars = 3  # Number of stars on each side
+        print('*' * num_stars + ' ' + message + ' ' + '*' * num_stars)
+
     def wrapper(*args, **kwargs):
         print_heading(message=f'[Engine update]: Started {get_fully_qualified_name(func)}')
         func(*args, **kwargs)
@@ -21,13 +31,3 @@ def log_engine_step(func):
     return wrapper
 
 
-def print_heading(message):
-    num_stars = 3  # Number of stars on each side
-    print('*' * num_stars + ' ' + message + ' ' + '*' * num_stars)
-
-
-def get_fully_qualified_name(func):
-    try:
-        return func.__qualname__
-    except:
-        return f"{func.__name__}"

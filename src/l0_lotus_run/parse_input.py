@@ -1,5 +1,3 @@
-from typing import Optional
-
 from src.l3_lotus_core import FlagList,Flag
 # ----------------------------------------------------
 

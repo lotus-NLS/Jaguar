@@ -1,9 +1,9 @@
 from typing import Optional
+from pyutils import get_function_args
 from src.l2_lotus_agent import ToolArg, Objective
 
 
 from src.l1_lotus_tools.tool import Tool
-from src.l1_lotus_tools.m1_python_utils.inspection import get_function_args
 from src.l1_lotus_tools.m1_python_utils.string_formatting import get_leading_dashes_count,is_valid_hierarchy_format
 # ---------------------------------------------------------
 
