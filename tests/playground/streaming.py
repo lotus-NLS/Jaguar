@@ -2,7 +2,8 @@ import openai
 import tiktoken
 
 from src.l3_lotus_core.m0_language.entry import Entry, DialogueRole
-from src.l2_lotus_agent.m1_models.action import Action, ActionOptions, FunctCallOption
+from src.l2_lotus_agent.m2_action.action import Action
+from src.l2_lotus_agent.m2_action import ActionOptions, FunctCallOption
 from src.l2_lotus_agent.m1_models.llm import LLM
 
 
@@ -79,4 +80,5 @@ this_instance = OpenAIModel(model_type=OpenAI_ModelTypes.gpt_35_4k)
 
 action = this_instance.get_action(entries=[basic_entry],
            tool_docs=[],
-           action_options=ActionOptions(funct_call_options=FunctCallOption.make_no_call_option()))
+           action_options=ActionOptions(funct_call_options=FunctCallOption.make_no_call_option())
+          )

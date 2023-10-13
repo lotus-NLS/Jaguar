@@ -2,7 +2,8 @@ from tiktoken import Encoding
 from abc import abstractmethod
 from src.l3_lotus_core import Entry
 
-from .action import Action, ActionOptions
+from src.l2_lotus_agent.m2_action.action import Action
+from src.l2_lotus_agent.m2_action.action_options import ActionOptions
 from .tokenizer import Tokenizer
 # ---------------------------------------------------------
 
