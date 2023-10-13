@@ -17,24 +17,23 @@ class UPDATE_MANDATE(Tool):
         self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
                                                            desc='The ID of the objective that you want to update')
 
-        self.action_type_arg : Optional[ToolArg] = None
         self.description_arg: ToolArg = self.create_arg(name='desc', dtype=str, is_optional=True,
                                                         desc=f'Required for {Objective.edit_desc.__name__} and {Objective.make_subelement.__name__}'
                                                              f'to specify the edited description or description of the new element')
 
-        self.action_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                        available_options=Objective.get_action_names(),
-                                                        desc='The type of action that you want to perform')
+        self.operation_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
+                                                           available_options=Objective.get_action_names(),
+                                                           desc='The type of operation that you want to perform')
 
     def do(self):
         objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
-        action = objective_to_edit.action_dict[self.action_type_arg.val]
-        action_args = get_function_args(func=action)
+        operation = objective_to_edit.action_dict[self.operation_type_arg.val]
+        operation_args = get_function_args(func=operation)
 
         arg_dict = {}
-        if 'desc' in action_args:
+        if 'desc' in operation_args:
             arg_dict['desc'] = self.description_arg.val
-        action(**arg_dict)
+        operation(**arg_dict)
 
         if verbose_mode:
             print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
