@@ -55,13 +55,13 @@ class INITIALIZE_MANDATE(Tool):
         self.desc : str ='Submits a request to the user to sign off on a plan of action'
 
         self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str,
-              desc="""Specify your objectives (obj) in this format:
-                      Root objective
-                      -Sub obj
-                      -Sub obj
-                      --Sub-sub obj
-                      -Sub obj
-                      --Sub-sub obj""")
+              desc="""Specify your objectives in this format. Use '-' for every item after the overall objective: 
+                      Overall objective
+                      - Sub objective
+                      - Sub objective
+                      -- Sub-sub objective
+                      - Sub objective
+                      -- Sub-sub objective""")
 
 
     def do(self):
