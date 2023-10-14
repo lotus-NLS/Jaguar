@@ -21,7 +21,7 @@ class FILE_IO(Tool):
 
     def __init__(self):
         super().__init__()
-        self.desc = f'Read or write files based on mode'
+        self.desc = f'Read or write text files based on mode'
 
         self.mode_arg : ToolArg = self.create_arg(
             name='mode', dtype=str,
@@ -38,7 +38,7 @@ class FILE_IO(Tool):
             desc=f'read mode only')
 
         self.content_arg: ToolArg = self.create_arg(name='content', dtype=str,
-                                                    desc='write mode only')
+                                                    desc='text to write for write mode only')
 
 
     def do(self):
