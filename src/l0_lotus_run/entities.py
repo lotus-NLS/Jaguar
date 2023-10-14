@@ -1,7 +1,7 @@
 import threading
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 from src.l2_lotus_agent import Agent, Task
-from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
+from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, TYPE, Tool
 
 # ---------------------------------------------------------
 
@@ -34,7 +34,14 @@ class Alpha(Agent):
 
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
-            required_funct_name = INITIALIZE_MANDATE.__name__ if entry.get_enforce_mandate_flag() else None
+
+            # if entry.contains_enforce_mandate_flag():
+            #     required_funct_name = INITIALIZE_MANDATE.__name__
+
+            # if entry.():
+            #     required_funct_name = INITIALIZE_MANDATE.__name__
+
+            required_funct_name = INITIALIZE_MANDATE.__name__ if entry.contains_enforce_mandate_flag() else None
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
                                      entries_to_respond_to=entries_to_process,
@@ -49,7 +56,8 @@ class Alpha(Agent):
 
     def setup_tools(self):
         public_tools = [RUN.make(), FILE_IO.make(), SEARCH.make()]
-        private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
+        private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False),
+                         TYPE.make(is_public_tool=False)]
         all_tools = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 

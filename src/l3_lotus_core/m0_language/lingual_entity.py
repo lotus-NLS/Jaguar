@@ -5,7 +5,7 @@ from abc import abstractmethod
 from src.l3_lotus_core.m2_OperatorIO import user_io
 
 from .channel import Channel
-from .entry import Entry, DialogueRole, FlagList
+from .entry import Entry, DialogueRole, Flag
 
 
 # ----------------------------------------------------
@@ -74,7 +74,7 @@ class LingualEntity:
         self._log_entry(entry=Entry(role=self._role, msg=the_msg))
 
 
-    def speak(self, msg : str, flags : Optional[FlagList] = None):
+    def speak(self, msg : str, flags : Optional[list[Flag]] = None):
         if self._channel is None:
             return
 

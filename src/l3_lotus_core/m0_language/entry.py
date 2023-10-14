@@ -47,17 +47,22 @@ class DialogueRole(str):
 class Flag(str):
     _m_enforce_mandate  = 'm'
     _m_quit  = 'q'
+    _m_edit_live = 'e'
 
     def __new__(cls, flag : str):
         return str.__new__(cls, flag)
 
     @classmethod
-    def get_quit_flag(cls):
+    def get_quit_flag(cls) -> Flag:
         return cls(flag=Flag._m_quit)
 
     @classmethod
-    def get_mandate_flag(cls):
+    def get_mandate_flag(cls) -> Flag:
         return cls(flag=Flag._m_enforce_mandate)
+
+    @classmethod
+    def get_edit_live_flag(cls) -> Flag:
+        return cls(flag=Flag._m_edit_live)
 
     @classmethod
     def get_all_flagtypes(cls):
@@ -68,13 +73,10 @@ class Flag(str):
         return as_list
 
 
-class FlagList(list[Flag]):
-    pass
-
 class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
-                 flags : Optional[FlagList] = None,
+                 flags : Optional[list[Flag]] = None,
                  tool_name = 'undefined_function'):
         super().__init__()
         self['role'] = role
@@ -82,7 +84,7 @@ class Entry(dict):
         if role == DialogueRole.tool_role():
             self['name'] = tool_name
         self._is_processed : bool = False
-        self.flags : FlagList = flags if not flags is None else []
+        self.flags : list[Flag] = flags if not flags is None else []
 
     def mark_processed(self):
         self._is_processed = True
@@ -92,12 +94,15 @@ class Entry(dict):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def get_enforce_mandate_flag(self) -> bool:
+    def contains_enforce_mandate_flag(self) -> bool:
         enforce_mandate : bool = False
 
         if Flag.get_mandate_flag() in self.flags:
             enforce_mandate = True
         return enforce_mandate
+
+    def get_flags(self):
+        return self.flags
 
     def get_is_read(self) -> bool:
         return self._is_processed

@@ -5,10 +5,13 @@ openai~=0.28.0
 dearpygui
 customtkinter~=5.2.0
 
-## READ
+## I/O
 PyPDF2~=3.0.1
 pyperclip
 pyautogui
+pynput==1.6.0
+#keyboard -> Currently not used
+
 
 ## WEB
 selenium~=4.12.0

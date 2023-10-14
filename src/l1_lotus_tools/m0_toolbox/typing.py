@@ -24,4 +24,3 @@ class TYPE(Tool):
 
         except:
             self.exception_log(f'An error occured while trying to simulate keyboard events')
-            
