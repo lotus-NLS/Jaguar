@@ -1,7 +1,8 @@
 import threading
-from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag
 from src.l2_lotus_agent import Agent, Task
 from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, TYPE, Tool
+
 
 # ---------------------------------------------------------
 
@@ -35,13 +36,15 @@ class Alpha(Agent):
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
 
-            # if entry.contains_enforce_mandate_flag():
-            #     required_funct_name = INITIALIZE_MANDATE.__name__
+            if Flag.get_mandate_flag() in entry.get_flags():
+                required_funct_name = INITIALIZE_MANDATE.__name__
 
-            # if entry.():
-            #     required_funct_name = INITIALIZE_MANDATE.__name__
+            elif Flag.get_edit_live_flag() in entry.get_flags():
+                required_funct_name = TYPE.__name__
 
-            required_funct_name = INITIALIZE_MANDATE.__name__ if entry.contains_enforce_mandate_flag() else None
+            else:
+                required_funct_name = None
+
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
                                      entries_to_respond_to=entries_to_process,

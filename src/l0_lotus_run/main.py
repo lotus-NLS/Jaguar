@@ -34,7 +34,7 @@ class Engine:
     @log_engine_step
     def initialize_event_listeners(self):
         def listen_for_hotkeys():
-            hotkey_dict = {'<ctrl>+<alt>+h': self.edit_live}
+            hotkey_dict = {'<ctrl>+<shift>+x': self.edit_live}
             with keyboard.GlobalHotKeys(hotkeys=hotkey_dict) as h:
                 h.join()
 
@@ -70,9 +70,9 @@ class Engine:
     def edit_live(self):
         keyboard_controller = keyboard.Controller()
         keyboard_controller.press(Key.ctrl)
-        keyboard_controller.press('a')
+        keyboard_controller.press('c')
         keyboard_controller.release(Key.ctrl)
-        keyboard_controller.release('a')
+        keyboard_controller.release('c')
 
         self.user.speak(msg=f'Write the character a',flags=[Flag.get_edit_live_flag()])
 

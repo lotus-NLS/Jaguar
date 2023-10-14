@@ -94,13 +94,6 @@ class Entry(dict):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def contains_enforce_mandate_flag(self) -> bool:
-        enforce_mandate : bool = False
-
-        if Flag.get_mandate_flag() in self.flags:
-            enforce_mandate = True
-        return enforce_mandate
-
     def get_flags(self):
         return self.flags
 
