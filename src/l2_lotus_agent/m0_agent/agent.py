@@ -1,5 +1,7 @@
 from typing import Optional
 from abc import abstractmethod
+import pyperclip
+import threading
 from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
@@ -35,6 +37,9 @@ class Agent(LingualEntity):
 
         # Set llm
         self.model : LLM = model_type
+
+        # Set dynamic content
+        self.clipboard_content : Optional[str] = None
 
     # ---------------------------------------------------
     # Main routine
@@ -94,8 +99,8 @@ class Agent(LingualEntity):
 
         if task.is_dialogue_task():
             role = DialogueRole.user_role()
-            log_msg = ('##Automatic message: The user has been provided with the function output. Please provide the user with an update'
-                       'In your update it is not necessary to provide the user with the function output')
+            log_msg = ('##Automatic message: The user has been provided with the function output.'
+                       'Please provide the user with summary/feedback')
 
         else:
             role = DialogueRole.system_role()
@@ -134,5 +139,24 @@ class Agent(LingualEntity):
     # Context
 
     def get_basic_entries(self) -> list[Entry]:
+        basic_entries = []
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
-        return [core_entry] + self._personal_log
+        basic_entries.append(core_entry)
+
+        if not self.clipboard_content is None:
+            clipboard_msg = f'Content of user clipboard: {self.clipboard_content}'
+            clipboard_entry = Entry(role=DialogueRole.tool_role(), msg= clipboard_msg,tool_name='clipboard')
+            basic_entries.append(clipboard_entry)
+
+        basic_entries += self._personal_log
+        return basic_entries
+
+
+    def monitor_clipboard(self):
+        def do_monitor():
+            while True:
+                new_content = pyperclip.waitForNewPaste()
+                self.clipboard_content = new_content
+
+        t = threading.Thread(target=do_monitor, daemon=True)
+        t.start()

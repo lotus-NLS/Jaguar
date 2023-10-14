@@ -10,6 +10,7 @@ class Alpha(Agent):
         super().__init__()
         self.setup_tools()
         self.launch()
+        self.monitor_clipboard()
 
     # ---------------------------------------------------
     # Loop
