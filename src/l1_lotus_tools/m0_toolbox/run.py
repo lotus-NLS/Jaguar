@@ -83,6 +83,9 @@ class RUN(Tool):
         self.shell_session.stdin.write(self.program_content_arg.val + '\n')
         self.shell_session.stdin.flush()
 
+        self.shell_session.stdin.write("echo 'cmd_done'\n")
+        self.shell_session.stdin.flush()
+
     # --------------------------------------------
 
     @staticmethod
@@ -102,10 +105,10 @@ class RUN(Tool):
             current_time = time.time()
             if self.is_error_state:
                 logger = self.exception_log
-                flag_str = 'Standard Error'
+                flag_str = 'Terminal Standard Error'
             else:
                 logger = self.update_log
-                flag_str = 'Standard Output'
+                flag_str = 'Terminal Standard Output'
 
             if current_time - self.last_msg_time >= 0.25 and self.logging_backlog != '':
                 out_str = f'{flag_str}\n{self.logging_backlog}'
@@ -122,7 +125,7 @@ class RUN(Tool):
         for line in iter(self.shell_session.stdout.readline, ''):
             cleaned_line = line.strip()
             if cleaned_line != '':
-                self.logging_backlog += f'{cleaned_line}\n'
+                self.logging_backlog += f'{cleaned_line}'
 
 
     def read_terminal_stderr(self):
@@ -130,4 +133,4 @@ class RUN(Tool):
             cleaned_line = line.strip()
             if cleaned_line != '':
                 self.is_error_state = True
-                self.logging_backlog += f'{cleaned_line}\n'
+                self.logging_backlog += f'{cleaned_line}'
