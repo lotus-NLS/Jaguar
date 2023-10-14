@@ -39,11 +39,11 @@ class ObjectiveTester(unittest.TestCase):
         self.assertEqual(self.root.desc, "new_game")
 
     def test_mark_complete(self):
-        self.sub.mark_complete()
+        self.sub.mark_successful()
         self.assertTrue(not self.sub.is_active)
 
     def test_cancel(self):
-        self.sub.cancel()
+        self.sub.abandon()
         self.assertIsNone(self.root.get_objective_by_id(self.sub))
 
     def test_make_subelement(self):

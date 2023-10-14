@@ -18,7 +18,7 @@ class UPDATE_MANDATE(Tool):
                                                            desc='The ID of the objective that you want to update')
 
         self.description_arg: ToolArg = self.create_arg(name='desc', dtype=str, is_optional=True,
-                                                        desc=f'Required for {Objective.edit_desc.__name__} and {Objective.make_subelement.__name__}'
+                                                        desc=f'Required for {Objective.make_subelement.__name__}'
                                                              f'to specify the edited description or description of the new element')
 
         self.operation_type_arg: ToolArg = self.create_arg(name='action', dtype=str,

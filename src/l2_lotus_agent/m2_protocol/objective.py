@@ -30,8 +30,8 @@ class Objective:
         self.child_objective_list : list[Objective] = []
         self.parent : Optional[Objective] = None
 
-        act_list = [self.edit_desc, self.mark_complete, self.cancel, self.make_subelement, self.retry]
-        self.action_dict = {funct.__name__ : funct for funct in act_list}
+        ops_list = [self.mark_successful, self.abandon, self.make_subelement, self.retry]
+        self.action_dict = {funct.__name__ : funct for funct in ops_list}
 
     # ----------------------------------------------------
     # get
@@ -82,19 +82,15 @@ class Objective:
     # ----------------------------------------------------
     #
 
+    def mark_successful(self):
+        self.is_active = False
+
+
     def retry(self):
         pass
 
 
-    def edit_desc(self, desc : str):
-        self.desc = desc
-
-
-    def mark_complete(self):
-        self.is_active = False
-
-
-    def cancel(self):
+    def abandon(self):
         self.is_active = False
 
         if not self.parent is None:
