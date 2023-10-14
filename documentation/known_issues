@@ -1,0 +1,18 @@
+-- Spawned subprocess is blocked --
+
+Issue:
+When user.input(...) is requested the RUN command is blocked by the user.input(...) if the subprocess is spawned like this
+result = subprocess.run(['python', temp_file_path], capture_output=True, text=True)
+
+How to reproduce:
+user.input(...) loop running, then ask agent to perform python hello world run task
+The user.input(...) will block execution of the hello world program
+
+Fix:
+result = subprocess.run(['python', temp_file_path], text=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+Background:
+When you call subprocess they inherit the I/O streams of the process that spawned them by default. That is the case when you run the process
+as above in the Issue section. The user.input(...) has the lock on the stdin stream so the child process has to wait to acquire that stream before it can launch.
+In the subprocess run in the fix section, passing subprocess.PIPE is a flag argument that tells subprocess.run to create its own stdin/stdout/stderr objects instead
+of inheriting from the parent process.

@@ -1,3 +1,27 @@
-openai
+## LLM
+openai~=0.28.0
+
+## GUI
 dearpygui
-customtkinter
+customtkinter~=5.2.0
+
+## I/O
+PyPDF2~=3.0.1
+pyperclip
+pyautogui
+pynput==1.6.0
+#keyboard -> Currently not used
+
+
+## WEB
+selenium~=4.12.0
+beautifulsoup4~=4.12.2
+requests~=2.31.0
+
+## MISC
+PyInquirer
+func_timeout
+distro~=1.8.0
+tiktoken~=0.5.1
+trafilatura~=1.6.2
+Scrapy~=2.10.1
