@@ -43,7 +43,3 @@ python3 /home/[username]/Roseus/src/l0_lotus_run/main.py
 ```
 
 For further information simply ask the agent: "Who are you and what you can do?"
-
-
-## Contributing
-All contributed code must adhere to the [Code Rulebook](documentation/code_rulebook.md).
