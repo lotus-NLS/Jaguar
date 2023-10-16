@@ -1,14 +1,11 @@
 ## Overview
 The Lotus framework facilitates interaction with the computer and the internet based on natural language instructions.
-For more information see the documentation page:
-
-[Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4): \
-This page also documents current objectives, tasks and notes relevant to development
+For more information see the documentation [Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4), which also documents current objectives, tasks and notes relevant to development.
 
 <p align="center">
   <img src="documentation/logo.jpg" alt="Logo" width="200">
   <br>
-  <em> Nelumbo Nucifera: (Literally: “Nut bearing lotus”) also called “Sacred lotus” a symbol for purity and divinity in Indian culture </em>
+  <em> Nelumbo Nucifera the most widely known Lotus Flower</em>
 </p>
 
 ## Setup for Ubuntu 22.04
