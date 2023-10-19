@@ -1,7 +1,7 @@
 import threading
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag
 from src.l2_lotus_agent import Agent, Task
-from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, TYPE, Tool
+from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
 
 # ---------------------------------------------------------
@@ -38,9 +38,6 @@ class Alpha(Agent):
             if Flag.get_mandate_flag() in entry.get_flags():
                 required_funct_name = INITIALIZE_MANDATE.__name__
 
-            elif Flag.get_edit_live_flag() in entry.get_flags():
-                required_funct_name = TYPE.__name__
-
             else:
                 required_funct_name = None
 
@@ -58,8 +55,7 @@ class Alpha(Agent):
 
     def setup_tools(self):
         public_tools = [RUN.make(), FILE_IO.make(), SEARCH.make()]
-        private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False),
-                         TYPE.make(is_public_tool=False)]
+        private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
         all_tools = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 

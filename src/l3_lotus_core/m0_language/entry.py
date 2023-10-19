@@ -47,7 +47,6 @@ class DialogueRole(str):
 class Flag(str):
     _m_enforce_mandate  = 'm'
     _m_quit  = 'q'
-    _m_edit_live = 'e'
 
     def __new__(cls, flag : str):
         return str.__new__(cls, flag)
@@ -59,10 +58,6 @@ class Flag(str):
     @classmethod
     def get_mandate_flag(cls) -> Flag:
         return cls(flag=Flag._m_enforce_mandate)
-
-    @classmethod
-    def get_edit_live_flag(cls) -> Flag:
-        return cls(flag=Flag._m_edit_live)
 
     @classmethod
     def get_all_flagtypes(cls):

@@ -10,8 +10,6 @@ customtkinter~=5.2.0
 PyPDF2~=3.0.1
 pyperclip
 pyautogui
-pynput==1.6.0
-#keyboard -> Currently not used
 
 
 ## WEB

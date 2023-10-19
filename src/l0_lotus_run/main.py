@@ -1,6 +1,3 @@
-import threading
-from pynput.keyboard import Key
-from pynput import keyboard
 from typing import Optional
 from pyutils import log_engine_step
 from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io, get_setting
@@ -32,15 +29,6 @@ class Engine:
         LingualEntity.enter_into_channel(channel=self.user_channel, channel_members=[self.user] + self.bots)
 
     @log_engine_step
-    def initialize_event_listeners(self):
-        def listen_for_hotkeys():
-            hotkey_dict = {'<ctrl>+<shift>+x': self.edit_live}
-            with keyboard.GlobalHotKeys(hotkeys=hotkey_dict) as h:
-                h.join()
-
-        threading.Thread(target=listen_for_hotkeys,daemon=True).start()
-
-    @log_engine_step
     def initialize_settings(self, perform_validation : bool = True):
         if self.settings_controller is None:
             self.settings_controller = SettingsController()
@@ -67,15 +55,6 @@ class Engine:
             gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
             gui.run()
 
-    def edit_live(self):
-        keyboard_controller = keyboard.Controller()
-        keyboard_controller.press(Key.ctrl)
-        keyboard_controller.press('c')
-        keyboard_controller.release(Key.ctrl)
-        keyboard_controller.release('c')
-
-        self.user.speak(msg=f'Write the character a',flags=[Flag.get_edit_live_flag()])
-
 
 def main():
     # Initialize the engine as empty vessel
@@ -83,9 +62,6 @@ def main():
 
     # Create user and bot entities
     the_engine.initialize_entities()
-
-    # Listen for user events like mouse and keyboard activitiy
-    the_engine.initialize_event_listeners()
 
     # Facilitate communications between entities
     the_engine.initialize_communications()
