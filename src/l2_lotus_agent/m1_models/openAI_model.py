@@ -29,7 +29,7 @@ class OpenAI_ModelTypes:
 # (https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb)
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
-        super().__init__(model_type=model_type, encoding = tiktoken.get_encoding('cl100k_base'))
+        super().__init__(model_type=model_type)
 
 
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:

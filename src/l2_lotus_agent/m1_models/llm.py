@@ -1,3 +1,4 @@
+import tiktoken
 from tiktoken import Encoding
 from abc import abstractmethod
 from src.l3_lotus_core import Entry
@@ -10,9 +11,9 @@ from .tokenizer import Tokenizer
 
 
 class LLM:
-    def __init__(self, model_type: str, encoding : Encoding):
+    def __init__(self, model_type: str):
         self._model_type : str = model_type
-        self.tokenizer : Tokenizer = Tokenizer(encoding=encoding)
+        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._model_type))
 
     @abstractmethod
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
