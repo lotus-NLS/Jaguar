@@ -77,12 +77,15 @@ class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
                  flags : Optional[list[Flag]] = None,
-                 tool_name = 'undefined_function'):
+                 name : Optional[str] = None):
         super().__init__()
         self['role'] = role
         self['content'] = msg
-        if role == DialogueRole.tool_role():
-            self['name'] = tool_name
+
+        if not name is None:
+            self['name'] = name
+        if role == DialogueRole.tool_role() and name is None:
+            self['name'] = 'unnamed_function'
         self._is_processed : bool = False
         self.flags : list[Flag] = flags if not flags is None else []
 

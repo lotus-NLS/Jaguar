@@ -86,7 +86,7 @@ class Alpha(Agent):
 
             if num_tokens > max_tokens_tool:
                 warning_msg = '[Progress]: The tool output exceeded the maximum number of tokens of 1000 and was shortened to that length ...'
-                self.log_tool_msg(msg=warning_msg)
+                self.log_tool_msg(msg=warning_msg, tool_name=tool_name)
 
         return tool_log
 

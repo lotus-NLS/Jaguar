@@ -52,9 +52,9 @@ class LingualEntity:
         self._log_entry(Entry(role=DialogueRole.user_role(), msg=msg))
 
 
-    def log_tool_msg(self, msg : str, tool_name : str = 'undefined_tool'):
+    def log_tool_msg(self, msg : str, tool_name : str):
         print(f'[Debug]: {self._role} read: {msg}')
-        self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, tool_name= tool_name))
+        self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, name= tool_name))
 
 
     def log_system_msg(self,msg : str):

@@ -145,7 +145,7 @@ class Agent(LingualEntity):
 
         if not self.clipboard_content is None:
             clipboard_msg = f'Content of user clipboard: {self.clipboard_content}'
-            clipboard_entry = Entry(role=DialogueRole.tool_role(), msg= clipboard_msg,tool_name='clipboard')
+            clipboard_entry = Entry(role=DialogueRole.tool_role(), msg= clipboard_msg, name='clipboard')
             basic_entries.append(clipboard_entry)
 
         basic_entries += self._personal_log
