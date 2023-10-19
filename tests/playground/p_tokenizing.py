@@ -1,4 +1,4 @@
-from src.l3_lotus_core import Entry
+from src.l3_lotus_core import Entry, DialogueRole
 from src.l2_lotus_agent import Tokenizer
 
 # ---------------------------------------------------------
@@ -40,7 +40,10 @@ for message in example_messages:
     role = message['role']
     content = message['content']
     name = message.get('name')
-    entry = Entry(role=role,msg=content,name=name)
+
+
+
+    entry = Entry(role=DialogueRole(role=role) ,msg=content, name=name)
     entries.append(entry)
 
 from src.l0_lotus_run.entities import Alpha
