@@ -7,7 +7,7 @@ from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m0_agent.task import TaskQueue, Task
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolHandler
-from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, OpenAI_ModelTypes
+from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
 from src.l2_lotus_agent.m2_action import Action, FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m2_protocol import Mandate, Identity, Cores
 
@@ -17,14 +17,14 @@ class Agent(LingualEntity):
     @classmethod
     def make_website_summarization_agent(cls):
         return Agent(identity=Identity(core=Cores.website_information_retriever),
-                     model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+                     model_type=OpenAIModel(ModelTypes_OpenAI.gpt_35_4k))
 
     @classmethod
     def make_report_composition_agent(cls):
-        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(OpenAI_ModelTypes.gpt_35_4k))
+        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(ModelTypes_OpenAI.gpt_35_4k))
 
 
-    def __init__(self, model_type : LLM = OpenAIModel(OpenAI_ModelTypes.gpt_40_8k) , identity : Identity = Identity(core=Cores.goto)):
+    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k), identity : Identity = Identity(core=Cores.goto)):
         LingualEntity.__init__(self, role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
@@ -160,3 +160,4 @@ class Agent(LingualEntity):
 
         t = threading.Thread(target=do_monitor, daemon=True)
         t.start()
+

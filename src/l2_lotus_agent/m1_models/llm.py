@@ -9,11 +9,10 @@ from .tokenizer import Tokenizer
 # ---------------------------------------------------------
 
 
-
 class LLM:
     def __init__(self, model_type: str):
-        self._model_type : str = model_type
-        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._model_type))
+        self.model_type : str = model_type
+        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
     def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
