@@ -1,5 +1,6 @@
 import openai
 import tiktoken
+from openai_function_tokens import estimate_tokens
 # from typing import Optional
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 from src.l2_lotus_agent.m2_action import Action, ActionOptions
@@ -40,9 +41,10 @@ class OpenAIModel(LLM):
             'temperature': action_options.temperature
         }
 
-        if action_options.get_funct_call_allowed():
+        func_call_options = action_options.funct_call_options
+        if func_call_options.call_allowed:
             args_dict['functions'] = tool_docs
-            args_dict['function_call'] = action_options.funct_call_options.get_openai_syntax()
+            args_dict['function_call'] = func_call_options.get_openai_syntax()
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
@@ -50,12 +52,13 @@ class OpenAIModel(LLM):
         print(f'[Debug]: Creating completion request')
         openai_response = openai.ChatCompletion.create(**args_dict)
         input_tokens_used = openai_response['usage']['prompt_tokens']
-        counted_input_tokens = self.tokenizer.get_context_tokens(entries=entries,funct_docs = tool_docs)
-        print(f"[Debug]: Received response from the model; Currently at {input_tokens_used}; Counted {counted_input_tokens}")
+        # counted_input_tokens = self.tokenizer.get_context_tokens(entries=entries,funct_docs = tool_docs)
+
+        functions = tool_docs if func_call_options.call_allowed else None
+        counted_input_tokens = estimate_tokens(messages=entries,
+                                               functions=functions,
+                                               function_call=action_options.funct_call_options.get_openai_syntax())
+        print(f"[Debug]: Received response from the model; Currently at {input_tokens_used}; Estimated {counted_input_tokens}")
 
         return Action(openai_response)
-
-
-
-
 
