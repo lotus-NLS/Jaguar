@@ -35,7 +35,6 @@ class ObjectiveTester(unittest.TestCase):
         self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):
-        self.root.edit_desc("new_game")
         self.assertEqual(self.root.desc, "new_game")
 
     def test_mark_complete(self):

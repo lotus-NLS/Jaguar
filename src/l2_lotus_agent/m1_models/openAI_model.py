@@ -50,7 +50,8 @@ class OpenAIModel(LLM):
         print(f'[Debug]: Creating completion request')
         openai_response = openai.ChatCompletion.create(**args_dict)
         input_tokens_used = openai_response['usage']['prompt_tokens']
-        print(f"[Debug]: Received response from the model; Currently at {input_tokens_used}")
+        counted_input_tokens = self.tokenizer.get_context_tokens(entries=entries,funct_docs = tool_docs)
+        print(f"[Debug]: Received response from the model; Currently at {input_tokens_used}; Counted {counted_input_tokens}")
 
         return Action(openai_response)
 
