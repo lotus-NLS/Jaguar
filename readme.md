@@ -2,6 +2,8 @@
 The Lotus framework facilitates interaction with the computer and the internet based on natural language instructions.
 For more information see the "Wiki" section on the [Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4).
 
+<!--suppress ALL -->
+
 <p align="center">
   <img src="documentation/logo.jpg" alt="Logo" width="200">
   <br>

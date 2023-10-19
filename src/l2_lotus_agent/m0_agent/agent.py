@@ -1,7 +1,5 @@
 from typing import Optional
 from abc import abstractmethod
-import pyperclip
-import threading
 from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
@@ -37,9 +35,6 @@ class Agent(LingualEntity):
 
         # Set llm
         self.model : LLM = model_type
-
-        # Set dynamic content
-        self.clipboard_content : Optional[str] = None
 
     # ---------------------------------------------------
     # Main routine
@@ -143,21 +138,5 @@ class Agent(LingualEntity):
         core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
         basic_entries.append(core_entry)
 
-        if not self.clipboard_content is None:
-            clipboard_msg = f'Content of user clipboard: {self.clipboard_content}'
-            clipboard_entry = Entry(role=DialogueRole.tool_role(), msg= clipboard_msg, name='clipboard')
-            basic_entries.append(clipboard_entry)
-
         basic_entries += self._personal_log
         return basic_entries
-
-
-    def monitor_clipboard(self):
-        def do_monitor():
-            while True:
-                new_content = pyperclip.waitForNewPaste()
-                self.clipboard_content = new_content
-
-        t = threading.Thread(target=do_monitor, daemon=True)
-        t.start()
-

@@ -1,7 +1,6 @@
 import math
-
 import openai
-import tiktoken
+# import tiktoken
 from openai_function_tokens import estimate_tokens
 # from typing import Optional
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
