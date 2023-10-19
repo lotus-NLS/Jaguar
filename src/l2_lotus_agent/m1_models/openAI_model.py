@@ -47,28 +47,14 @@ class OpenAIModel(LLM):
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        self.log_request(entries=entries, tool_docs=tool_docs if action_options.get_funct_call_allowed() else None)
+        print(f'[Debug]: Creating completion request')
         openai_response = openai.ChatCompletion.create(**args_dict)
-        self.log_response()
+        input_tokens_used = openai_response['usage']['prompt_tokens']
+        print(f"[Debug]: Received response from the model; Currently at {input_tokens_used}")
 
         return Action(openai_response)
 
 
-    def log_request(self, entries : list[Entry], tool_docs : list[dict]):
-        # Alternatively exact tokens used up to and including response can be obtained via the response object
 
-
-
-        input_tokens_used = self.tokenizer.get_context_tokens(entries=entries, funct_docs=tool_docs)
-        print(f'[Debug]: Creating completion request; Currently at {input_tokens_used} input tokens used')
-        # print(f'[Debug]: Current conversation memory of {self._model_type}: [...] {str(entries)[-500:]}')
-
-
-    @staticmethod
-    def log_response():
-        # The Prompt tokens are the input_tokens that went into the request
-        # input_tokens_used = openai_response['usage']['prompt_tokens']
-        # print(f'Tokens in response: {input_tokens_used}')
-        print(f"[Debug]: Received response from the model.")
 
 
