@@ -27,7 +27,7 @@ class UPDATE_MANDATE(Tool):
 
     def do(self):
         objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
-        operation = objective_to_edit.action_dict[self.operation_type_arg.val]
+        operation = objective_to_edit.ops_dict[self.operation_type_arg.val]
         operation_args = get_function_args(func=operation)
 
         arg_dict = {}

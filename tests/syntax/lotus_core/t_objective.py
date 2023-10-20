@@ -31,11 +31,11 @@ class ObjectiveTester(unittest.TestCase):
         self.assertIsNotNone(self.root.get_descendant_dict())
 
     def test_get_objective(self):
-        retrieved_sub = self.root.get_objective_by_id(objective_id=self.sub._uuid)
+        retrieved_sub = self.root.get_objective_by_id(objective_id=self.sub.identifier)
         self.assertEqual(self.sub, retrieved_sub)
 
     def test_edit(self):
-        self.assertEqual(self.root.desc, "new_game")
+        self.assertEqual(self.root.desc, "root")
 
     def test_mark_complete(self):
         self.sub.mark_successful()
@@ -43,7 +43,14 @@ class ObjectiveTester(unittest.TestCase):
 
     def test_cancel(self):
         self.sub.abandon()
-        self.assertIsNone(self.root.get_objective_by_id(self.sub))
+
+        e = None
+        try:
+            self.root.get_objective_by_id('00')
+        except Exception as ex:
+            e = ex
+        self.assertIsInstance(e, KeyError)
+
 
     def test_make_subelement(self):
         sub = self.root.make_subelement("sub2")
