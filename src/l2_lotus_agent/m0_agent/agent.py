@@ -4,8 +4,8 @@ from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
+from src.l2_lotus_agent.m1_models import Action, FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m1_protocol import Mandate, Identity, Cores
-from src.l2_lotus_agent.m2_action import Action, FunctCallOption, ActionOptions
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
 

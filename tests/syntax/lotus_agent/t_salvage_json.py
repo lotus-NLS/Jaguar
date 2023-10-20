@@ -1,6 +1,6 @@
 import unittest
 import json
-from src.l2_lotus_agent.m2_action.action import Action
+from src.l2_lotus_agent.m1_models.action import Action
 
 
 # ---------------------------------------------------------

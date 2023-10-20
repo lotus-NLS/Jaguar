@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
 
-from src.l2_lotus_agent.m2_action import ToolAction
+from src.l2_lotus_agent.m1_models import ToolAction
 
 # ---------------------------------------------------------
 
