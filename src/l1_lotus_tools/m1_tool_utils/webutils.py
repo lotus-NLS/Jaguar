@@ -17,68 +17,76 @@ class ScrapeModes:
     static = 'static'
 
 
+class WebDriver:
+    def __init__(self):
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        self.engine = webdriver.Chrome(options=chrome_options)
+        self.is_busy = False
+
+    def fetch_dynamic_content(self, site_url: str, wait_for_load_in_sec: float = 2) -> str:
+        self.is_busy = True
+
+        self.engine.get(site_url)
+        time.sleep(wait_for_load_in_sec)
+        page_source = self.engine.page_source
+
+        soup = BeautifulSoup(page_source, 'html.parser')
+        site_text = ''.join(element for element in soup.stripped_strings)
+
+        self.is_busy = False
+        return site_text
+
+    def fetch_static_content(self, site_url: str) -> str:
+        self.is_busy = True
+
+        def get_website_text():
+            downloaded = trafilatura.fetch_url(site_url)
+            return trafilatura.extract(downloaded)
+
+        content = func_timeout(timeout=Tool.timout_in_sec / 2., func=get_website_text)
+        self.is_busy = False
+        return content
+
+
+
+
 class Webtools:
     def __init__(self, initial_driver_count : int = 4):
-        self.drivers = []
-        self.busy_drivers = []
+        self.drivers : list[WebDriver] = []
 
         for _ in range(initial_driver_count):
-            driver_thread = threading.Thread(target=self.make_driver)
-            driver_thread.daemon = True
-            driver_thread.start()
+            threading.Thread(target=self.make_driver).start()
+
 
     def get_url_text(self,site_url: str, mode = ScrapeModes.static) -> str:
+        driver = self.get_free_driver()
         try:
             if mode == 'dynamic':
-                result = self.fetch_dynamic_content(site_url, wait_for_load_in_sec=2)
+                result = driver.fetch_dynamic_content(site_url, wait_for_load_in_sec=2)
             else:
-                result = self.fetch_static_content(site_url)
+                result = driver.fetch_static_content(site_url)
 
         except:
             result = f'Failed to retrieve text from website {site_url}'
 
         return result
 
-    def fetch_dynamic_content(self, site_url: str, wait_for_load_in_sec: float = 2) -> str:
-        driver = self.get_free_driver()
-        self.busy_drivers.append(driver)
-
-        driver.get(site_url)
-        time.sleep(wait_for_load_in_sec)
-        page_source = driver.page_source
-
-        soup = BeautifulSoup(page_source, 'html.parser')
-        site_text = ''.join(element for element in soup.stripped_strings)
-
-        self.busy_drivers.remove(driver)
-        driver.quit()
-
-        return site_text
 
     def get_free_driver(self):
-        unoccupied_drivers = [driver for driver in self.drivers if driver not in self.busy_drivers]
+        unoccupied_drivers = [driver for driver in self.drivers if not driver.is_busy]
         if len(unoccupied_drivers) > 0:
             return unoccupied_drivers[0]
 
         else:
             return self.make_driver()
 
+
     def make_driver(self):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        new_driver = webdriver.Chrome(options=chrome_options)
+        new_driver = WebDriver()
         self.drivers.append(new_driver)
 
         return new_driver
-
-
-    @staticmethod
-    def fetch_static_content(site_url: str) -> str:
-        def get_website_text():
-            downloaded = trafilatura.fetch_url(site_url)
-            return trafilatura.extract(downloaded)
-
-        return func_timeout(timeout=Tool.timout_in_sec/2., func=get_website_text)
 
 
     @staticmethod
