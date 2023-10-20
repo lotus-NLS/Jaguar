@@ -1,12 +1,9 @@
 import unittest
 import json
-from src.l2_lotus_agent.m1_models.actionstream import ToolCall
-
+from pyutils import get_salvaged_json
 
 # ---------------------------------------------------------
 
-tool_call = ToolCall()
-get_salvaged_json = ToolCall.get_salvaged_json
 
 class TestSalvageJSON(unittest.TestCase):
 

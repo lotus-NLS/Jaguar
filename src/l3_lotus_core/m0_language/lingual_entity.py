@@ -32,7 +32,7 @@ class LingualEntity:
     def leave_channel(self):
         if not self._channel is None:
             try:
-                self._channel.listener_loggers.remove(self._log_info)
+                self._channel.listener_loggers.remove(self._log_partial_entry)
             except:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
