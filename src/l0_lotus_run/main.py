@@ -22,9 +22,8 @@ class Engine:
 
 
     @staticmethod
-    def initialize_IO(self):
+    def initialize_IO():
         user_io.launch()
-
 
     def initialize_communications(self):
         self.user_channel = Channel()
@@ -69,6 +68,9 @@ def main():
 
     # Create user and bot entities
     the_engine.initialize_entities()
+
+    # Communicate with LotusDeploy
+    the_engine.initialize_IO()
 
     # Facilitate communications between entities
     the_engine.initialize_communications()
