@@ -31,7 +31,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_response_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ResponseStream:
+    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ResponseStream:
         openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {

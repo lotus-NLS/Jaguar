@@ -57,9 +57,8 @@ class Chunk:
         return text_content
 
 
-    # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
     def get_function_chunk(self) -> Optional[ToolCall]:
-        funct_call : dict = self.best_response.get('function_call')
+        funct_call : Optional[dict] = self.best_response.get('function_call')
 
         if funct_call is None:
             return None

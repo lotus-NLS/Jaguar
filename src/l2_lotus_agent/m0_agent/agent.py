@@ -141,13 +141,11 @@ class Agent(LingualEntity):
                                max_tokens : Optional[int] = None,
                                temperature : float = 0.3) -> ResponseStream:
 
-        action = self.model.get_response_stream(
+        return self.model.get_action_stream(
             entries= self.get_basic_entries() if entries is None else entries,
             tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
         )
-
-        return action
 
     # ---------------------------------------------------
     # Context
