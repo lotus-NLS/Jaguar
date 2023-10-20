@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pyutils import get_salvaged_json
 from typing import Optional
 import json
 
@@ -38,39 +39,10 @@ class ToolCall:
             tool_args_dict = json.loads(s=json_str)
         except:
             print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
-            tool_args_dict = json.loads(s=self.get_salvaged_json(broken_json=json_str))
+            tool_args_dict = json.loads(s=get_salvaged_json(broken_json=json_str))
 
         self._arguments = tool_args_dict
 
-
-    @staticmethod
-    def get_salvaged_json(broken_json: str) -> str:
-        control_char_map = {
-            '\n': '\\n',
-            '\t': '\\t',
-            '\r': '\\r',
-            '\b': '\\b',
-            '\f': '\\f',
-            '\\': '\\\\'
-        }
-
-        escaped = []
-        inside_field = False
-        char_is_escaped = False
-
-        for char in broken_json:
-            new_char = char
-
-            if char == '"' and not char_is_escaped:
-                inside_field = not inside_field
-
-            if inside_field and not char_is_escaped:
-                new_char = control_char_map[char] if char in control_char_map else char
-
-            char_is_escaped = char == '\\' and not char_is_escaped
-            escaped.append(new_char)
-
-        return ''.join(escaped)
 
 
 class Chunk:
