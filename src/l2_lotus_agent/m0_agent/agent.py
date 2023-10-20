@@ -5,7 +5,7 @@ from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
-from src.l2_lotus_agent.m1_models import Chunk, ActionStream, FunctCallOption, ActionOptions
+from src.l2_lotus_agent.m1_models import Chunk, ResponseStream, FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m1_protocol import Mandate, Identity, Cores
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
@@ -139,9 +139,9 @@ class Agent(LingualEntity):
                                custom_tool_docs : Optional[list[dict]] = None,
                                entries: Optional[list[Entry]] = None,
                                max_tokens : Optional[int] = None,
-                               temperature : float = 0.3) -> ActionStream:
+                               temperature : float = 0.3) -> ResponseStream:
 
-        action = self.model.get_action_stream(
+        action = self.model.get_response_stream(
             entries= self.get_basic_entries() if entries is None else entries,
             tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)

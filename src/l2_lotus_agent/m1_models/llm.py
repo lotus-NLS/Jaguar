@@ -3,7 +3,7 @@ from tiktoken import Encoding
 from abc import abstractmethod
 from src.l3_lotus_core import Entry
 
-from .actionstream import ActionStream, ActionOptions
+from .responsestream import ResponseStream, ActionOptions
 
 # ---------------------------------------------------------
 
@@ -14,7 +14,7 @@ class LLM:
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
-    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
+    def get_response_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ResponseStream:
         pass
 
 

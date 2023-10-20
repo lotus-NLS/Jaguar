@@ -72,7 +72,7 @@ class Chunk:
 
 # TODO: Can aggregate the content in the container by overriding __next__
 # TODO: Could also do implement a convert to string method to eleiminate get_text_response from agent
-class ActionStream(dict):
+class ResponseStream(dict):
     def __new__(cls, openAI_response : dict):
         return openAI_response
 

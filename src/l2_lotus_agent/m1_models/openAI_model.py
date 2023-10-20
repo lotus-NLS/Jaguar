@@ -1,13 +1,15 @@
 import math
 import openai
-# from openai_function_tokens import estimate_tokens
+from openai_function_tokens import estimate_tokens
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
-from .actionstream import ActionStream, ActionOptions
+from .responsestream import ResponseStream, ActionOptions
 from .llm import LLM
 
 
 # ---------------------------------------------------------
+
+
 
 class ModelTypes_OpenAI:
     # The 0613 models support function calling. Earlier models do not.
@@ -29,7 +31,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
+    def get_response_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ResponseStream:
         openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {
@@ -47,23 +49,32 @@ class OpenAIModel(LLM):
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        # print(f'[Debug]: Creating completion request')
+
+        self._log_request()
         openai_response = openai.ChatCompletion.create(**args_dict)
+        self._log_response(entries, tool_docs, action_options)
 
-        #
-        # exact_prompt_tokens = openai_response['usage']['prompt_tokens']
-        # exact_compl_tokens = openai_response['usage']['completion_tokens']
-        #
-        # functions = tool_docs if func_call_options.call_allowed else None
-        # counted_input_tokens = estimate_tokens(messages=entries,
-        #                                        functions=functions,
-        #                                        function_call=action_options.funct_call_options.get_openai_syntax())
-        #
-        # cent_costs = self._get_request_cost_cents(num_input_tokens=exact_prompt_tokens,num_output_tokens=exact_compl_tokens)
-        # print(f"[Debug]: Received response from the model; Currently at {exact_prompt_tokens}; Estimated {counted_input_tokens}"
-        #       f";Estimated costs in cents: {cent_costs} ")
+        return ResponseStream(openai_response)
 
-        return ActionStream(openai_response)
+    # ---------------------------------------------------
+    # Logging
+
+    @staticmethod
+    def _log_request():
+        print(f'[Debug]: Creating completion request')
+
+
+    # For non stream responses can also obtain exact token usage (see: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb)
+    # exact_prompt_tokens = openai_response['usage']['prompt_tokens']
+    # exact_compl_tokens = openai_response['usage']['completion_tokens']
+    def _log_response(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions):
+        functions = tool_docs if action_options.funct_call_options.call_allowed else None
+        counted_input_tokens = estimate_tokens(messages=entries,
+                                               functions=functions,
+                                               function_call=action_options.funct_call_options.get_openai_syntax())
+
+        cent_costs = self._get_request_cost_cents(num_input_tokens=counted_input_tokens, num_output_tokens=0)
+        print(f"[Debug]: Received response from the model; Estimated {counted_input_tokens} input tokens for {cent_costs} cents cost on input")
 
 
     def _get_request_cost_cents(self, num_input_tokens : int, num_output_tokens : int):
