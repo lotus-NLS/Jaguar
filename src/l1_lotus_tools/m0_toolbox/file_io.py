@@ -1,6 +1,6 @@
 from __future__ import annotations
 import os
-from src.l2_lotus_agent import ToolArg
+from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
 from pyutils import get_pdf_file_content, get_txt_file_content
 
 from src.l1_lotus_tools.tool import Tool

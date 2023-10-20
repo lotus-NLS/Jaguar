@@ -6,7 +6,7 @@ import threading
 from typing import Optional
 from subprocess import Popen
 import time
-from src.l2_lotus_agent import ToolArg
+from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
 from pyutils import InputWaiter
 
 from src.l1_lotus_tools.tool import Tool
