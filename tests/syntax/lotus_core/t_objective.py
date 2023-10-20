@@ -1,4 +1,4 @@
-from src.l2_lotus_agent.m2_protocol.objective import Objective  # Replace 'your_module' with the actual module name
+from src.l2_lotus_agent.m1_protocol.objective import Objective  # Replace 'your_module' with the actual module name
 import unittest
 
 # How do tests work?

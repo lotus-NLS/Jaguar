@@ -1,8 +1,6 @@
 import math
 import openai
-# import tiktoken
 from openai_function_tokens import estimate_tokens
-# from typing import Optional
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 from src.l2_lotus_agent.m2_action import Action, ActionOptions
 

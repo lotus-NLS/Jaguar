@@ -1,5 +1,4 @@
 import tiktoken
-# from tiktoken import Encoding
 from abc import abstractmethod
 from src.l3_lotus_core import Entry
 
