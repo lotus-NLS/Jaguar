@@ -2,8 +2,8 @@ import math
 import openai
 from openai_function_tokens import estimate_tokens
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
-from src.l2_lotus_agent.m1_models import Action, ActionOptions
 
+from .action import Action, ActionOptions
 from .llm import LLM
 
 

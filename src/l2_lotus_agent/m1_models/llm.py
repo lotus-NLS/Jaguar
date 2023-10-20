@@ -3,7 +3,7 @@ from tiktoken import Encoding
 from abc import abstractmethod
 from src.l3_lotus_core import Entry
 
-from src.l2_lotus_agent.m1_models.action import Action, ActionOptions
+from .action import Action, ActionOptions
 
 # ---------------------------------------------------------
 
