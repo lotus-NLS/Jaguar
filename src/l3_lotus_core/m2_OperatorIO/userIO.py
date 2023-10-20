@@ -39,4 +39,3 @@ class UserIO:
         return lowercase_user_input == 'y'
 
 user_io = UserIO()
-user_io.launch()
