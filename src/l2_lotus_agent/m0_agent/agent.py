@@ -56,7 +56,7 @@ class Agent(LingualEntity):
             action = self.get_next_action(
                 custom_tool_docs=None if task.required_funct_name is None else [self.tool_handler.get_tool_doc(tool_name=task.required_funct_name)],
                 funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
-                entries=self.get_basic_entries()+[task.get_entry()]
+                entries=self.get_basic_entries()+[task.get_entry()],
             )
 
         except Exception:

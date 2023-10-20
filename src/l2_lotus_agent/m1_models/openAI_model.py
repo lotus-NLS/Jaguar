@@ -35,7 +35,8 @@ class OpenAIModel(LLM):
         args_dict = {
             'model': self.model_type,
             'messages': entries,
-            'temperature': action_options.temperature
+            'temperature': action_options.temperature,
+            'stream' : True
         }
 
         func_call_options = action_options.funct_call_options
