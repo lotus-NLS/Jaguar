@@ -32,6 +32,3 @@ class Channel:
 
     def broadcast_message(self, entry : Entry):
         self._message_queue.put(entry)
-
-    def stop_after_next_timeout(self):
-        self._is_running = False

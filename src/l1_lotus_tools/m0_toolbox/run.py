@@ -90,7 +90,7 @@ class RUN(Tool):
 
     @staticmethod
     def get_shell_session() -> Optional[Popen]:
-        shell_cmd = 'powershell' if RUN.os_in_use == 'Windows' else '/bin/sh'
+        shell_cmd = 'cmd.exe' if RUN.os_in_use == 'Windows' else '/bin/sh'
         try:
             shell_session = subprocess.Popen(shell_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         except Exception as e:

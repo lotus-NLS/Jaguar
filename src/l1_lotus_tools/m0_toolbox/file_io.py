@@ -8,7 +8,6 @@ from src.l1_lotus_tools.tool import Tool
 
 # ---------------------------------------------------------
 
-
 class FILE_IO(Tool):
     read = 'read'
     write = 'write'
