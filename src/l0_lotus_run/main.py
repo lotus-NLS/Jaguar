@@ -40,7 +40,7 @@ class Engine:
             if Flag.get_quit_flag() in flags:
                 break
 
-            if Flag.get_reset_flag():
+            if Flag.get_reset_flag() in flags:
                 [bot.clear_log() for bot in self.bots]
                 print(f'[Debug]: Bot logs cleared')
                 continue
