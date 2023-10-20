@@ -29,7 +29,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
+    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {
@@ -47,21 +47,21 @@ class OpenAIModel(LLM):
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
 
-        print(f'[Debug]: Creating completion request')
+        # print(f'[Debug]: Creating completion request')
         openai_response = openai.ChatCompletion.create(**args_dict)
 
-
-        exact_prompt_tokens = openai_response['usage']['prompt_tokens']
-        exact_compl_tokens = openai_response['usage']['completion_tokens']
-
-        functions = tool_docs if func_call_options.call_allowed else None
-        counted_input_tokens = estimate_tokens(messages=entries,
-                                               functions=functions,
-                                               function_call=action_options.funct_call_options.get_openai_syntax())
-
-        cent_costs = self._get_request_cost_cents(num_input_tokens=exact_prompt_tokens,num_output_tokens=exact_compl_tokens)
-        print(f"[Debug]: Received response from the model; Currently at {exact_prompt_tokens}; Estimated {counted_input_tokens}"
-              f";Estimated costs in cents: {cent_costs} ")
+        #
+        # exact_prompt_tokens = openai_response['usage']['prompt_tokens']
+        # exact_compl_tokens = openai_response['usage']['completion_tokens']
+        #
+        # functions = tool_docs if func_call_options.call_allowed else None
+        # counted_input_tokens = estimate_tokens(messages=entries,
+        #                                        functions=functions,
+        #                                        function_call=action_options.funct_call_options.get_openai_syntax())
+        #
+        # cent_costs = self._get_request_cost_cents(num_input_tokens=exact_prompt_tokens,num_output_tokens=exact_compl_tokens)
+        # print(f"[Debug]: Received response from the model; Currently at {exact_prompt_tokens}; Estimated {counted_input_tokens}"
+        #       f";Estimated costs in cents: {cent_costs} ")
 
         return ActionStream(openai_response)
 

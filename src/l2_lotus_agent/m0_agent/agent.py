@@ -4,7 +4,7 @@ from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
-from src.l2_lotus_agent.m1_models import ActionStream, FunctCallOption, ActionOptions
+from src.l2_lotus_agent.m1_models import Chunk, ActionStream, FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m1_protocol import Mandate, Identity, Cores
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
@@ -53,7 +53,7 @@ class Agent(LingualEntity):
 
     def do(self, task : Task):
         try:
-            action = self.get_next_action(
+            action_stream = self.get_next_action_stream(
                 custom_tool_docs=None if task.required_funct_name is None else [self.tool_handler.get_tool_doc(tool_name=task.required_funct_name)],
                 funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
                 entries=self.get_basic_entries()+[task.get_entry()],
@@ -63,32 +63,38 @@ class Agent(LingualEntity):
             print(get_exception_msg(text=f'Unable to obtain response from {self.name}'))
             return
 
-        try:
-            # TODO
-            # text_content = action()
-            # tool_action = action()
-            text_content = None
-            tool_action = None
+        self.process_action_stream(action_stream=action_stream, task=task)
 
-        except Exception:
-            self.handle_tool_response(err_text=f'An error occured while trying to parse tool call arguments or text', task = task)
-            return
 
+    def process_action_stream(self, action_stream, task : Task):
+        self.tool_handler.initialize_toolcall()
+        for data in action_stream:
+            self.handle_chunk(chunk=Chunk(data=data), task= task)
+        self.tool_handler.process_toolcall()
+        self.handle_response(task=task)
+
+
+    def handle_chunk(self, chunk, task: Task):
         try:
+            text_content = chunk.get_text_chunk()
             if not text_content is None:
                 self.speak(msg=text_content)
 
-            if not tool_action is None:
-                self.tool_handler.use_tool(tool_action=tool_action)
-                self.handle_tool_response(task=task)
+        except:
+            self.handle_response(err_text=f'An error occured while trying to parse text chunk',
+                                 task=task)
 
-        except Exception:
-            self.handle_tool_response(err_text=f'The following error occured while trying to perform action:\nAction: {action}', task=task)
+        try:
+            self.tool_handler.update_toolcall(partial_call=chunk.get_function_chunk())
+
+        except:
+            self.handle_response(err_text=f'An error occured while trying to retrieve function chunk',
+                                 task=task)
 
     # ---------------------------------------------------
     # Actions
 
-    def handle_tool_response(self, task : Task,  err_text : Optional[str] = None):
+    def handle_response(self, task : Task, err_text : Optional[str] = None):
         if not err_text is None:
             self.think(get_exception_msg(text=err_text))
 
@@ -116,17 +122,16 @@ class Agent(LingualEntity):
         }
 
         # TODO
-        return self.get_next_action(**arg_dict).get_text()
+        return self.get_next_action_stream(**arg_dict).get_text()
 
+    def get_next_action_stream(self,
+                               funct_call_options : FunctCallOption = FunctCallOption.make_auto_option(),
+                               custom_tool_docs : Optional[list[dict]] = None,
+                               entries: Optional[list[Entry]] = None,
+                               max_tokens : Optional[int] = None,
+                               temperature : float = 0.3) -> ActionStream:
 
-    def get_next_action(self,
-                        funct_call_options : FunctCallOption = FunctCallOption.make_auto_option(),
-                        custom_tool_docs : Optional[list[dict]] = None,
-                        entries: Optional[list[Entry]] = None,
-                        max_tokens : Optional[int] = None,
-                        temperature : float = 0.3) -> ActionStream:
-
-        action = self.model.get_action(
+        action = self.model.get_action_stream(
             entries= self.get_basic_entries() if entries is None else entries,
             tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
+from pyutils import get_exception_msg
 
 from src.l2_lotus_agent.m1_models import ToolCall
 
@@ -10,16 +11,35 @@ from src.l2_lotus_agent.m1_models import ToolCall
 class ToolHandler:
     def __init__(self):
         self.tool_dict : dict[str,ToolInterface] = {}
+        self.current_tool_call : Optional[ToolCall] = None
 
+    def initialize_toolcall(self):
+        self.current_tool_call = ToolCall(name=None, json_str="")
 
+    def update_toolcall(self, partial_call : Optional[ToolCall]):
+        if not partial_call is None:
+            self.current_tool_call.update(partial_tool_call=partial_call)
 
-    def use_tool(self, tool_action : ToolCall):
+    def process_toolcall(self):
         print('[Debug]: Agent requested tool usage')
-        tool_name = tool_action.get_tool_name()
-        tool_args_dict = tool_action.get_arguments_()
+        tool_action = self.current_tool_call
 
-        if tool_name in self.tool_dict:
-            self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+        try:
+            tool_action.parse_json()
+            if tool_action.get_tool_name() is None or tool_action.get_arguments() is None:
+                return
+
+        except:
+            get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}')
+
+        try:
+            tool_name = tool_action.get_tool_name()
+            tool_args_dict = tool_action.get_arguments()
+
+            if tool_name in self.tool_dict:
+                self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+        except:
+            get_exception_msg(text=f'An error occured while trying handle tool call')
 
     def get_all_tools(self) -> list[ToolInterface]:
         return list(self.tool_dict.values())

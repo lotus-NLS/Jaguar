@@ -15,12 +15,15 @@ import json
 class ToolCall:
     def __init__(self, name : Optional[str], json_str : Optional[str]):
         self._name : Optional[str]  = name
-        self.json_str : Optional[str] = json_str
+        self.json_str : str = json_str
         self._arguments : Optional[dict] = None
 
-    def update(self, partial_tool_call : ToolCall):
-        other_name = partial_tool_call.json_str
-        other_jstr = partial_tool_call._name
+    def update(self, partial_tool_call : Optional[ToolCall]):
+        if partial_tool_call is None:
+            return
+
+        other_name = partial_tool_call._name
+        other_jstr = partial_tool_call.json_str
 
         if not other_name is None:
             self._name = other_name
@@ -30,23 +33,24 @@ class ToolCall:
     def get_tool_name(self) -> str:
         return self._name
 
-    def get_arguments_(self) -> dict:
+    def get_arguments(self) -> dict:
         return self._arguments
 
     def parse_json(self):
+        # print(f'Attempting to parse json str: {self.json_str}')
         json_str = self.json_str
 
         try:
             tool_args_dict = json.loads(s=json_str)
         except:
             print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
-            tool_args_dict = json.loads(s=self._get_salvaged_json(broken_json=json_str))
+            tool_args_dict = json.loads(s=self.get_salvaged_json(broken_json=json_str))
 
         self._arguments = tool_args_dict
 
 
     @staticmethod
-    def _get_salvaged_json(broken_json: str) -> str:
+    def get_salvaged_json(broken_json: str) -> str:
         control_char_map = {
             '\n': '\\n',
             '\t': '\\t',
@@ -55,7 +59,7 @@ class ToolCall:
             '\f': '\\f',
             '\\': '\\\\'
         }
-        
+
         escaped = []
         inside_field = False
         char_is_escaped = False
@@ -80,7 +84,7 @@ class Chunk:
         self.data = data
         self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
 
-    def get_text_content(self) -> Optional[str]:
+    def get_text_chunk(self) -> Optional[str]:
         text_content = None
         if not self.best_response is None:
             text_content = self.best_response.get('content')
@@ -88,13 +92,13 @@ class Chunk:
 
 
     # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
-    def get_function_content(self) -> Optional[ToolCall]:
+    def get_function_chunk(self) -> Optional[ToolCall]:
         funct_call : dict = self.best_response.get('function_call')
 
         if funct_call is None:
             return None
 
-        partial_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('attribute'))
+        partial_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
 
         return partial_call
 
