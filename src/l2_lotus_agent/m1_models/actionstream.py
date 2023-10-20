@@ -2,15 +2,8 @@ from __future__ import annotations
 from typing import Optional
 import json
 
-# 08.09.23: (D.H.):
-# The content of an action is either the text which is to be spoken or the instructions for the tool usage
 
 # ---------------------------------------------------------
-
-
-#         for chunk in openai_response:
-#             chunk_message = chunk['choices'][0]['delta']
-#             print(f'Received message: {chunk_message}')
 
 class ToolCall:
     def __init__(self):
@@ -39,7 +32,6 @@ class ToolCall:
         return self._arguments
 
     def parse_json(self):
-        # print(f'Attempting to parse json str: {self.json_str}')
         json_str = self.json_str
 
         try:
@@ -106,7 +98,8 @@ class Chunk:
 
         return partial_call
 
-
+# TODO: Can aggregate the content in the container by overriding __next__
+# TODO: Could also do implement a convert to string method to eleiminate get_text_response from agent
 class ActionStream(dict):
     def __new__(cls, openAI_response : dict):
         return openAI_response

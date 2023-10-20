@@ -56,7 +56,7 @@ class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
                  flags : Optional[list[Flag]] = None,
-                 name : Optional[str] = None):
+                 name : Optional[str] = 'None'):
         super().__init__()
         self['role'] = role
         self['content'] = msg
@@ -76,13 +76,19 @@ class Entry(dict):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def get_flags(self):
+    def append_content(self, additional_content : str):
+        self['content'] += additional_content
+
+    def get_name(self) -> Optional[str]:
+        return self.get('name')
+
+    def get_flags(self) -> list[Flag]:
         return self.flags
 
     def get_is_read(self) -> bool:
         return self._is_processed
 
-    def get_role(self) -> str:
+    def get_role(self) -> DialogueRole:
         return self['role']
 
     def get_content(self) -> str:

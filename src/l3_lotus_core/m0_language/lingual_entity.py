@@ -27,12 +27,12 @@ class LingualEntity:
     def join_channel(self, channel : Channel):
         self.leave_channel()
         self._channel  = channel
-        self._channel.listener_loggers.append(self._log_entry)
+        self._channel.listener_loggers.append(self._log_partial_entry)
 
     def leave_channel(self):
         if not self._channel is None:
             try:
-                self._channel.listener_loggers.remove(self._log_entry)
+                self._channel.listener_loggers.remove(self._log_info)
             except:
                 print(f'[Debug]: Could not find personal logger in channel {self._channel}')
             self._channel = None
@@ -43,25 +43,42 @@ class LingualEntity:
     # ------------------------------
     # log
 
-    def _log_entry(self, entry : Entry):
-        if not entry.get_role() == DialogueRole.user_role():
-            entry.mark_processed()
 
-        self._personal_log.append(entry)
-        Thread(target=self.react, args=(entry,)).start()
+    def _log_partial_entry(self, partial_entry : Entry):
+        role,name,msg,flags = partial_entry.get_role(), partial_entry.get_name(), partial_entry.get_content(), partial_entry.get_flags()
+        is_same_entity = False
+
+        last_entry = None
+        if len(self._personal_log) > 0:
+            last_entry = self._personal_log[-1]
+            is_same_entity = role == last_entry.get_role() and name == last_entry.get_name()
+
+        if not last_entry is None and is_same_entity:
+            last_entry.append_content(msg)
+        else:
+            new_entry = Entry(msg=msg, role=role, name=name, flags=flags)
+            if not new_entry.get_role() == DialogueRole.user_role():
+                new_entry.mark_processed()
+
+            self._personal_log.append(new_entry)
+            Thread(target=self.react, args=(new_entry,)).start()
+
+
+    def _log_info(self, msg : str, role : DialogueRole, name : Optional[str] = None, flags : Optional[list[Flag]] = None):
+        self._log_partial_entry(partial_entry=Entry(msg=msg, role=role, name=name, flags=flags))
 
 
     def log_user_msg(self, msg : str):
-        self._log_entry(Entry(role=DialogueRole.user_role(), msg=msg))
+        return self._log_info(msg=msg, role=DialogueRole.user_role())
 
 
     def log_tool_msg(self, msg : str, tool_name : str):
         print(f'[Debug]: {self._role} read: {msg}')
-        self._log_entry(entry=Entry(role=DialogueRole.tool_role(), msg=msg, name= tool_name))
+        self._log_info(msg=msg, role=DialogueRole.tool_role(), name=tool_name)
 
 
     def log_system_msg(self,msg : str):
-        self._log_entry(Entry(role=DialogueRole.system_role(), msg=msg))
+        self._log_info(msg=msg, role=DialogueRole.system_role())
 
     # ------------------------------
     # Speak and react
@@ -74,14 +91,14 @@ class LingualEntity:
         the_msg = f'## Internal monologue: {msg}'
         if verbose:
             print(f'[Debug]: {self._role} thought: {the_msg}')
-        self._log_entry(entry=Entry(role=self._role, msg=the_msg))
+        self._log_info(msg=msg, role=self._role, name=self.name)
 
 
     def speak(self, msg : str, flags : Optional[list[Flag]] = None):
         if self._channel is None:
             return
 
-        print(f'[Debug]: {self._role} said: {msg}')
+        # print(f'[Debug]: {self._role} said: {msg}')
         self._channel.broadcast_message(Entry(role=self._role, msg=msg,flags=flags))
 
     # ------------------------------
