@@ -13,25 +13,27 @@ import json
 #             print(f'Received message: {chunk_message}')
 
 class ToolCall:
-    def __init__(self, name : Optional[str], json_str : Optional[str]):
-        self._name : Optional[str]  = name
-        self.json_str : str = json_str
+    def __init__(self):
+        self.name : Optional[str]  = None
+        self.json_str : Optional[str] = None
         self._arguments : Optional[dict] = None
 
     def update(self, partial_tool_call : Optional[ToolCall]):
         if partial_tool_call is None:
             return
+        if self.json_str is None:
+            self.json_str = ''
 
-        other_name = partial_tool_call._name
+        other_name = partial_tool_call.name
         other_jstr = partial_tool_call.json_str
 
         if not other_name is None:
-            self._name = other_name
+            self.name = other_name
         if not other_jstr is None:
             self.json_str += other_jstr
 
     def get_tool_name(self) -> str:
-        return self._name
+        return self.name
 
     def get_arguments(self) -> dict:
         return self._arguments
@@ -98,7 +100,9 @@ class Chunk:
         if funct_call is None:
             return None
 
-        partial_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
+        partial_call = ToolCall()
+        partial_call.json_str = funct_call.get('arguments')
+        partial_call.name = funct_call.get('name')
 
         return partial_call
 

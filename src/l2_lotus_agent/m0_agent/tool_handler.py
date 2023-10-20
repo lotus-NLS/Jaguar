@@ -14,20 +14,18 @@ class ToolHandler:
         self.current_tool_call : Optional[ToolCall] = None
 
     def initialize_toolcall(self):
-        self.current_tool_call = ToolCall(name=None, json_str="")
+        self.current_tool_call = ToolCall()
 
-    def update_toolcall(self, partial_call : Optional[ToolCall]):
-        if not partial_call is None:
-            self.current_tool_call.update(partial_tool_call=partial_call)
+    def tool_call_active(self):
+        return not self.current_tool_call.get_tool_name() is None and not self.current_tool_call.json_str is None
 
-    def process_toolcall(self):
+
+    def handle_call(self):
         print('[Debug]: Agent requested tool usage')
         tool_action = self.current_tool_call
 
         try:
             tool_action.parse_json()
-            if tool_action.get_tool_name() is None or tool_action.get_arguments() is None:
-                return
 
         except:
             get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}')
