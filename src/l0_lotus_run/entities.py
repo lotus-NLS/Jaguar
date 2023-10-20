@@ -35,7 +35,7 @@ class Alpha(Agent):
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
 
-            if Flag.get_flag_mandate() in entry.get_flags():
+            if Flag.get_mandate_flag() in entry.get_flags():
                 required_funct_name = INITIALIZE_MANDATE.__name__
 
             else:

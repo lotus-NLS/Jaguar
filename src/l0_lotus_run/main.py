@@ -35,25 +35,25 @@ class Engine:
             self.settings_controller.setup(perform_validation=perform_validation)
 
     @log_engine_step
-    def run(self, run_in_terminal : bool = True):
+    def run(self):
         print(f'[Debug]: Lotus started')
-
         if get_setting(DialogueSettings.enable_introduction_label):
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
-        if run_in_terminal:
-            while True:
-                user_input = user_io.get_user_msg()
-                msg, flags = get_parsed_input(user_input)
-                if Flag.get_quit_flag() in flags:
-                    break
+        while True:
+            user_input = user_io.get_user_msg()
+            msg, flags = get_parsed_input(user_input)
+            if Flag.get_quit_flag() in flags:
+                break
 
-                print(f'[Debug]: Flags are {flags}')
-                self.user.speak(msg=msg, flags=flags)
+            if Flag.get_reset_flag():
+                [bot.clear_log() for bot in self.bots]
+                print(f'[Debug]: Bot logs cleared')
+                continue
 
-        else:
-            gui = ChatGUI(send_callback=self.user.speak, channel=self.user_channel)
-            gui.run()
+            print(f'[Debug]: Flags are {flags}')
+            self.user.speak(msg=msg, flags=flags)
+
 
 
 def main():
@@ -70,7 +70,7 @@ def main():
     the_engine.initialize_settings(perform_validation=True)
 
     # Start the routine
-    the_engine.run(run_in_terminal=True)
+    the_engine.run()
 
 if __name__ == "__main__":
     main()

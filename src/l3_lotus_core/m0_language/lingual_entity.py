@@ -21,6 +21,9 @@ class LingualEntity:
     # ------------------------------
     # Update
 
+    def clear_log(self):
+        self._personal_log = []
+
     def join_channel(self, channel : Channel):
         self.leave_channel()
         self._channel  = channel

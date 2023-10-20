@@ -6,13 +6,7 @@ import inspect
 
 class DialogueRole(str):
     def __new__(cls, role_str : str):
-        if not role_str in DialogueRole.__as_list__():
-            print(f'[Debug]: Given role {role_str} is not part of the allowed roles {DialogueRole.__as_list__()}.'
-                  f' Defaulting to agent role ...')
-            return cls.agent_role()
-
-        else:
-            return str.__new__(cls, role_str)
+        return str.__new__(cls, role_str)
 
     @classmethod
     def tool_role(cls):
@@ -31,15 +25,6 @@ class DialogueRole(str):
         return cls(role_str='system')
 
 
-    @classmethod
-    def __as_list__(cls):
-        as_list = []
-        for name, get_method in inspect.getmembers(cls, predicate=inspect.ismethod):
-            if name.endswith('flag'):
-                flag = get_method()
-                as_list.append(flag)
-        return as_list
-
 
 class Flag(str):
     def __new__(cls, flag_str : str):
@@ -50,8 +35,12 @@ class Flag(str):
         return cls(flag_str='q')
 
     @classmethod
-    def get_flag_mandate(cls) -> Flag:
+    def get_mandate_flag(cls) -> Flag:
         return cls(flag_str='m')
+
+    @classmethod
+    def get_reset_flag(cls) -> Flag:
+        return cls(flag_str='r')
 
     @classmethod
     def get_all_flagtypes(cls):
