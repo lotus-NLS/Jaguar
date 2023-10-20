@@ -57,13 +57,30 @@ from .this_file import that_class
 ```
 - **Inter-source dir imports**: Like this
 ```
-from [fullpath].that_module import that_class
+from [module] import that_class
 ```
 This requires making use of init files to specify which objects from the module to expose
 - **Import consolidation**: Consolidate imports from a single module in a single line if possible
+- **Hierachical init files**:
+  - The init file of module without subfolders should import individual symbols from files
+  ```
+  from .run import RUN
+  from .file_io import FILE_IO
+  from .mandate_ops import INITIALIZE_MANDATE, UPDATE_MANDATE
+  from .search import SEARCH
+  ```
+  -The init files of modules with subdirectories should instead import the directories, but check that
+no name collisions occur at runtime
+```
+from pyutils import check_subdir_namecollsions
+check_subdir_namecollsions()
+
+from .m0_toolbox import *
+from .tool import Tool
+```
+
 - **Arrange imports by nearness**: First import packages, then own code arranged by how far away nearest common ancestor is
   - Seperate intra-dir imports by an empty line
-
 
 ### V: Other
 - **kwargs only**: Pass arguments only by keyword

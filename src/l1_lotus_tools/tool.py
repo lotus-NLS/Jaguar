@@ -4,10 +4,7 @@ from typing import Any, Optional
 from pyutils import get_exception_msg
 from func_timeout import func_timeout, FunctionTimedOut
 
-
-from src.l2_lotus_agent import Agent
-from src.l2_lotus_agent.m0_agent import ToolInterface
-from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
+from src.l2_lotus_agent import Agent, ToolInterface, ToolArg
 
 # Generic tool class dev_logging
 # -> [START] : For tool launch
