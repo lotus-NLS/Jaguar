@@ -12,13 +12,13 @@ import json
 #             chunk_message = chunk['choices'][0]['delta']
 #             print(f'Received message: {chunk_message}')
 
-class ToolAction:
+class ToolCall:
     def __init__(self, name : Optional[str], json_str : Optional[str]):
         self._name : Optional[str]  = name
         self.json_str : Optional[str] = json_str
         self._arguments : Optional[dict] = None
 
-    def update(self, partial_tool_call : ToolAction):
+    def update(self, partial_tool_call : ToolCall):
         other_name = partial_tool_call.json_str
         other_jstr = partial_tool_call._name
 
@@ -47,10 +47,6 @@ class ToolAction:
 
     @staticmethod
     def _get_salvaged_json(broken_json: str) -> str:
-        currently_inside_quotes = False
-        current_char_escaped = False
-        escaped = []
-
         control_char_map = {
             '\n': '\\n',
             '\t': '\\t',
@@ -59,23 +55,22 @@ class ToolAction:
             '\f': '\\f',
             '\\': '\\\\'
         }
+        
+        escaped = []
+        inside_field = False
+        char_is_escaped = False
 
-        # TODO: Fix indentation and cleanup
         for char in broken_json:
-            if char == '"' and not current_char_escaped:
-                currently_inside_quotes = not currently_inside_quotes
+            new_char = char
 
-            if currently_inside_quotes and not current_char_escaped:
-                if char in control_char_map:
-                    escaped.append(control_char_map[char])
-                    continue
+            if char == '"' and not char_is_escaped:
+                inside_field = not inside_field
 
-            if char == '\\':
-                current_char_escaped = True
-            else:
-                current_char_escaped = False
+            if inside_field and not char_is_escaped:
+                new_char = control_char_map[char] if char in control_char_map else char
 
-            escaped.append(char)
+            char_is_escaped = char == '\\' and not char_is_escaped
+            escaped.append(new_char)
 
         return ''.join(escaped)
 
@@ -93,18 +88,18 @@ class Chunk:
 
 
     # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
-    def get_function_content(self) -> Optional[ToolAction]:
+    def get_function_content(self) -> Optional[ToolCall]:
         funct_call : dict = self.best_response.get('function_call')
 
         if funct_call is None:
             return None
 
-        partial_call = ToolAction(name=funct_call.get('name'), json_str=funct_call.get('attribute'))
+        partial_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('attribute'))
 
         return partial_call
 
 
-class Action(dict):
+class ActionStream(dict):
     def __new__(cls, openAI_response : dict):
         return openAI_response
 

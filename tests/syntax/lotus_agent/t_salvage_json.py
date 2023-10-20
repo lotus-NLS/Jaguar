@@ -1,11 +1,11 @@
 import unittest
 import json
-from src.l2_lotus_agent.m1_models.action import Action
+from src.l2_lotus_agent.m1_models.actionstream import ActionStream
 
 
 # ---------------------------------------------------------
 
-get_salvaged_json = Action.get_salvaged_json
+get_salvaged_json = ActionStream.get_salvaged_json
 
 class TestSalvageJSON(unittest.TestCase):
 

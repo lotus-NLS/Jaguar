@@ -3,7 +3,7 @@ import openai
 from openai_function_tokens import estimate_tokens
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
-from .action import Action, ActionOptions
+from .actionstream import ActionStream, ActionOptions
 from .llm import LLM
 
 
@@ -29,7 +29,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> Action:
+    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {
@@ -63,7 +63,7 @@ class OpenAIModel(LLM):
         print(f"[Debug]: Received response from the model; Currently at {exact_prompt_tokens}; Estimated {counted_input_tokens}"
               f";Estimated costs in cents: {cent_costs} ")
 
-        return Action(openai_response)
+        return ActionStream(openai_response)
 
 
     def _get_request_cost_cents(self, num_input_tokens : int, num_output_tokens : int):

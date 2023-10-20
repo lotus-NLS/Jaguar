@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
 
-from src.l2_lotus_agent.m1_models import ToolAction
+from src.l2_lotus_agent.m1_models import ToolCall
 
 # ---------------------------------------------------------
 
@@ -13,7 +13,7 @@ class ToolHandler:
 
 
 
-    def use_tool(self, tool_action : ToolAction):
+    def use_tool(self, tool_action : ToolCall):
         print('[Debug]: Agent requested tool usage')
         tool_name = tool_action.get_tool_name()
         tool_args_dict = tool_action.get_arguments_()
