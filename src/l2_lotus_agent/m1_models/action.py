@@ -1,4 +1,5 @@
-from typing import Union, Optional
+from __future__ import annotations
+from typing import Optional
 import json
 
 # 08.09.23: (D.H.):
@@ -6,10 +7,25 @@ import json
 
 # ---------------------------------------------------------
 
+
+#         for chunk in openai_response:
+#             chunk_message = chunk['choices'][0]['delta']
+#             print(f'Received message: {chunk_message}')
+
 class ToolAction:
-    def __init__(self,name : str, arguments : dict):
-        self._name : str = name
-        self._arguments : dict = arguments
+    def __init__(self, name : Optional[str], json_str : Optional[str]):
+        self._name : Optional[str]  = name
+        self.json_str : Optional[str] = json_str
+        self._arguments : Optional[dict] = None
+
+    def update(self, partial_tool_call : ToolAction):
+        other_name = partial_tool_call.json_str
+        other_jstr = partial_tool_call._name
+
+        if not other_name is None:
+            self._name = other_name
+        if not other_jstr is None:
+            self.json_str += other_jstr
 
     def get_tool_name(self) -> str:
         return self._name
@@ -17,63 +33,22 @@ class ToolAction:
     def get_arguments_(self) -> dict:
         return self._arguments
 
-
-class Action:
-    def __init__(self, openAI_response : dict):
-        try:
-            self._best_response : dict = openAI_response['choices'][0]['message']
-        except:
-            print('[Debug]: Failed to retrieve response from OpenAI. Defaulting to empty action')
-            self._best_response  : dict = {}
-
-    # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
-    def get_text(self) -> Union[str, None]:
-        content = self._best_response['content'] if 'content' in self._best_response else None
-        return content if isinstance(content,str) else None
-
-
-    def get_tool_action(self) -> Union[ToolAction, None]:
-        funct_call = self._best_response['function_call'] if 'function_call' in self._best_response else None
-
-        if funct_call is None:
-            return
-
-        if not isinstance(funct_call, dict):
-            print(f'[Debug]: Provided funct_call {funct_call} is not of dict type')
-            return
-
-        if not 'name' in funct_call:
-            print(f'[Debug]: Could not find name in dictionary. Aborting ... ')
-            return
-
-        if not 'arguments' in funct_call:
-            print(f'[Debug: Could not find arguments in dictionary. Aborting ...')
-            return
+    def parse_json(self):
+        json_str = self.json_str
 
         try:
-            tool_name = funct_call['name']
-            if not isinstance(tool_name, str):
-                raise TypeError
-
-            json_str = funct_call['arguments']
-
-            try:
-                tool_args_dict = json.loads(s=json_str)
-            except:
-                print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
-                tool_args_dict = json.loads(s=self.get_salvaged_json(broken_json=json_str))
-
+            tool_args_dict = json.loads(s=json_str)
         except:
-            print(f'[Debug]: An error occured while trying to parse given function call {funct_call}. Raising exception ...')
-            raise ValueError('Unable to parse tool instructions ')
+            print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
+            tool_args_dict = json.loads(s=self._get_salvaged_json(broken_json=json_str))
 
-        return ToolAction(name=tool_name, arguments=tool_args_dict)
+        self._arguments = tool_args_dict
 
 
     @staticmethod
-    def get_salvaged_json(broken_json: str) -> str:
+    def _get_salvaged_json(broken_json: str) -> str:
         currently_inside_quotes = False
-        next_char_escaped = False
+        current_char_escaped = False
         escaped = []
 
         control_char_map = {
@@ -85,27 +60,54 @@ class Action:
             '\\': '\\\\'
         }
 
+        # TODO: Fix indentation and cleanup
         for char in broken_json:
-            if char == '"' and not next_char_escaped:
+            if char == '"' and not current_char_escaped:
                 currently_inside_quotes = not currently_inside_quotes
 
-            if currently_inside_quotes and not next_char_escaped:
+            if currently_inside_quotes and not current_char_escaped:
                 if char in control_char_map:
                     escaped.append(control_char_map[char])
                     continue
 
             if char == '\\':
-                next_char_escaped = True
+                current_char_escaped = True
             else:
-                next_char_escaped = False
+                current_char_escaped = False
 
             escaped.append(char)
 
         return ''.join(escaped)
 
 
-    def __str__(self):
-        return str(self._best_response)
+class Chunk:
+    def __init__(self, data):
+        self.data = data
+        self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
+
+    def get_text_content(self) -> Optional[str]:
+        text_content = None
+        if not self.best_response is None:
+            text_content = self.best_response.get('content')
+        return text_content
+
+
+    # To my knowledge 'content' is always a key in the dict but not always filled with IdentityDefinitions
+    def get_function_content(self) -> Optional[ToolAction]:
+        funct_call : dict = self.best_response.get('function_call')
+
+        if funct_call is None:
+            return None
+
+        partial_call = ToolAction(name=funct_call.get('name'), json_str=funct_call.get('attribute'))
+
+        return partial_call
+
+
+class Action(dict):
+    def __new__(cls, openAI_response : dict):
+        return openAI_response
+
 
 
 class FunctCallOption:

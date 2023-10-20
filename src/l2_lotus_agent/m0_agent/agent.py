@@ -64,8 +64,11 @@ class Agent(LingualEntity):
             return
 
         try:
-            text_content = action.get_text()
-            tool_action = action.get_tool_action()
+            # TODO
+            # text_content = action()
+            # tool_action = action()
+            text_content = None
+            tool_action = None
 
         except Exception:
             self.handle_tool_response(err_text=f'An error occured while trying to parse tool call arguments or text', task = task)
@@ -112,6 +115,7 @@ class Agent(LingualEntity):
             'entries' : entries
         }
 
+        # TODO
         return self.get_next_action(**arg_dict).get_text()
 
 
