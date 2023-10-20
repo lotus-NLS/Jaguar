@@ -1,70 +1,65 @@
 from __future__ import annotations
 from typing import Optional
+import inspect
 
 # ----------------------------------------------------
 
 class DialogueRole(str):
-    _m_user = 'user'
-    _m_agent = 'assistant'
-    _m_system = 'system'
-    _m_tool = 'function'
-
-    def __new__(cls, role : str):
-        if not role in DialogueRole.__as_list__():
-            print(f'[Debug]: Given role {role} is not part of the allowed roles {DialogueRole.__as_list__()}.'
+    def __new__(cls, role_str : str):
+        if not role_str in DialogueRole.__as_list__():
+            print(f'[Debug]: Given role {role_str} is not part of the allowed roles {DialogueRole.__as_list__()}.'
                   f' Defaulting to agent role ...')
-            return str.__new__(cls, DialogueRole._m_agent)
+            return cls.agent_role()
 
         else:
-            return str.__new__(cls, role)
-
+            return str.__new__(cls, role_str)
 
     @classmethod
     def tool_role(cls):
-        return cls(DialogueRole._m_tool)
+        return cls(role_str='function')
 
     @classmethod
     def user_role(cls):
-        return cls(DialogueRole._m_user)
+        return cls(role_str='user')
 
     @classmethod
     def agent_role(cls):
-        return cls(DialogueRole._m_agent)
+        return cls(role_str='assistant')
 
     @classmethod
     def system_role(cls):
-        return cls(DialogueRole._m_system)
+        return cls(role_str='system')
+
 
     @classmethod
     def __as_list__(cls):
         as_list = []
-        for name, value in cls.__dict__.items():
-            if name.startswith("_m_"):
-                as_list.append(value)
+        for name, get_method in inspect.getmembers(cls, predicate=inspect.ismethod):
+            if name.endswith('flag'):
+                flag = get_method()
+                as_list.append(flag)
         return as_list
 
 
 class Flag(str):
-    _m_enforce_mandate  = 'm'
-    _m_quit  = 'q'
-
-    def __new__(cls, flag : str):
-        return str.__new__(cls, flag)
+    def __new__(cls, flag_str : str):
+        return str.__new__(cls, flag_str)
 
     @classmethod
     def get_quit_flag(cls) -> Flag:
-        return cls(flag=Flag._m_quit)
+        return cls(flag_str='q')
 
     @classmethod
-    def get_mandate_flag(cls) -> Flag:
-        return cls(flag=Flag._m_enforce_mandate)
+    def get_flag_mandate(cls) -> Flag:
+        return cls(flag_str='m')
 
     @classmethod
     def get_all_flagtypes(cls):
         as_list = []
-        for name, value in cls.__dict__.items():
-            if name.startswith("_m_"):
-                as_list.append(value)
+        for name, get_method in inspect.getmembers(cls, predicate=inspect.ismethod):
+            if name.startswith('get') and name.endswith('flag'):
+                flag = get_method()
+                as_list.append(flag)
         return as_list
 
 
