@@ -86,4 +86,6 @@ from .tool import Tool
 - **kwargs only**: Pass arguments only by keyword
 - **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
 - **Minimal nesting**: Max indentation level === 3
+- **Small directories**: The ideal amount of elements in any given source dir, elements being either files or folders, is 2-3
+, 4 is okay too and 5 is the upper limit 
 - **Short Source file length**: Max ~200 loc, Ideally < 120 loc
