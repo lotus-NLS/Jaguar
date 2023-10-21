@@ -10,22 +10,6 @@ from .llm import LLM
 # ---------------------------------------------------------
 
 
-
-class ModelTypes_OpenAI:
-    # The 0613 models support function calling. Earlier models do not.
-    # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
-    # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API
-
-    gpt_35_4k = 'gpt-3.5-turbo-0613'
-    gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
-    gpt_40_8k = 'gpt-4-0613'
-    gpt_40_32k = 'gpt-4-32k-0613'
-
-    @staticmethod
-    def get_test_model():
-        return ModelTypes_OpenAI.gpt_35_4k
-
-
 class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type)
@@ -98,3 +82,18 @@ class OpenAIModel(LLM):
             return 0.3 if is_input else 0.4
         else:
             return 0
+
+
+class ModelTypes_OpenAI:
+    # The 0613 models support function calling. Earlier models do not.
+    # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
+    # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API
+
+    gpt_35_4k = 'gpt-3.5-turbo-0613'
+    gpt_35_16k = 'gpt-3.5-turbo-16k-0613'
+    gpt_40_8k = 'gpt-4-0613'
+    gpt_40_32k = 'gpt-4-32k-0613'
+
+    @staticmethod
+    def get_test_model():
+        return ModelTypes_OpenAI.gpt_35_4k

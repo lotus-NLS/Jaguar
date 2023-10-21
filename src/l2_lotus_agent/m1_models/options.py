@@ -1,5 +1,18 @@
 from __future__ import annotations
 from typing import Optional
+# ---------------------------------------------------------
+
+
+class ActionOptions:
+    def __init__(self, funct_call_options : FunctCallOption, max_tokens : Optional[int] = None, temperature : float = 0.3):
+        self.funct_call_options : FunctCallOption = funct_call_options
+        self.max_tokens : int = max_tokens
+        self.temperature : float = temperature
+
+
+    def get_funct_call_allowed(self):
+        return self.funct_call_options.call_allowed
+
 
 
 class FunctCallOption:
@@ -25,12 +38,4 @@ class FunctCallOption:
             return {'name' : f'{self.required_funct_name}'}
 
 
-class ActionOptions:
-    def __init__(self, funct_call_options : FunctCallOption, max_tokens : Optional[int] = None, temperature : float = 0.3):
-        self.funct_call_options : FunctCallOption = funct_call_options
-        self.max_tokens : int = max_tokens
-        self.temperature : float = temperature
 
-
-    def get_funct_call_allowed(self):
-        return self.funct_call_options.call_allowed

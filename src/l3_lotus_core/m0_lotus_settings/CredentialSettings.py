@@ -39,7 +39,8 @@ class CredentialSettings(SettingGrouping):
             openai.api_key = self.openai_apikey_setting.value
             args_dict = {
                 'model': 'gpt-3.5-turbo',
-                'messages': [{'role' : 'user', 'content' : 'This is a test'}]
+                'messages': [{'role' : 'user', 'content' : 'This is a test'}],
+                'stream' : True
             }
             openai.ChatCompletion.create(**args_dict)
             is_successful = True

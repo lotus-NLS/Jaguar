@@ -8,9 +8,9 @@ from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
 from src.l2_lotus_agent.m1_models import ActionChunk, ActionStream
 from src.l2_lotus_agent.m1_models import FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m1_protocol import Mandate, Identity, Cores
+
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
-
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):

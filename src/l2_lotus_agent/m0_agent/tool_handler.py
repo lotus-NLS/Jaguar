@@ -4,7 +4,6 @@ from typing import Optional, Callable, Dict, Any, Union
 from pyutils import get_exception_msg
 
 from src.l2_lotus_agent.m1_models import ToolCall
-
 # ---------------------------------------------------------
 
 

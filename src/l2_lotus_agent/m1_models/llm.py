@@ -5,8 +5,6 @@ from src.l3_lotus_core import Entry
 
 from .actionstream import ActionStream
 from .options import ActionOptions
-
-
 # ---------------------------------------------------------
 
 

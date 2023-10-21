@@ -4,6 +4,50 @@ import inspect
 
 # ----------------------------------------------------
 
+class Entry(dict):
+    def __init__(self, role : DialogueRole,
+                 msg : str,
+                 flags : Optional[list[Flag]] = None,
+                 name : Optional[str] = 'None'):
+        super().__init__()
+        self['role'] = role
+        self['content'] = msg
+
+        if not name is None:
+            self['name'] = name
+        if role == DialogueRole.tool_role() and name is None:
+            self['name'] = 'unnamed_function'
+        self._is_processed : bool = False
+        self.flags : list[Flag] = flags if not flags is None else []
+
+    def mark_processed(self):
+        self._is_processed = True
+
+    # ----------------------------------------------------
+
+    def __str__(self):
+        return f'{self.get_role()}:{self.get_content()}\n'
+
+    def append_content(self, additional_content : str):
+        self['content'] += additional_content
+
+    def get_name(self) -> Optional[str]:
+        return self.get('name')
+
+    def get_flags(self) -> list[Flag]:
+        return self.flags
+
+    def get_is_read(self) -> bool:
+        return self._is_processed
+
+    def get_role(self) -> DialogueRole:
+        return self['role']
+
+    def get_content(self) -> str:
+        return self['content']
+
+
+
 class DialogueRole(str):
     def __new__(cls, role_str : str):
         return str.__new__(cls, role_str)
@@ -52,44 +96,3 @@ class Flag(str):
         return as_list
 
 
-class Entry(dict):
-    def __init__(self, role : DialogueRole,
-                 msg : str,
-                 flags : Optional[list[Flag]] = None,
-                 name : Optional[str] = 'None'):
-        super().__init__()
-        self['role'] = role
-        self['content'] = msg
-
-        if not name is None:
-            self['name'] = name
-        if role == DialogueRole.tool_role() and name is None:
-            self['name'] = 'unnamed_function'
-        self._is_processed : bool = False
-        self.flags : list[Flag] = flags if not flags is None else []
-
-    def mark_processed(self):
-        self._is_processed = True
-
-    # ----------------------------------------------------
-
-    def __str__(self):
-        return f'{self.get_role()}:{self.get_content()}\n'
-
-    def append_content(self, additional_content : str):
-        self['content'] += additional_content
-
-    def get_name(self) -> Optional[str]:
-        return self.get('name')
-
-    def get_flags(self) -> list[Flag]:
-        return self.flags
-
-    def get_is_read(self) -> bool:
-        return self._is_processed
-
-    def get_role(self) -> DialogueRole:
-        return self['role']
-
-    def get_content(self) -> str:
-        return self['content']

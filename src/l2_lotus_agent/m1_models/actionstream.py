@@ -3,9 +3,51 @@ from pyutils import get_salvaged_json
 from typing import Optional, Generator, Iterator
 import json
 from openai.openai_object import OpenAIObject
-
-
 # ---------------------------------------------------------
+
+
+class ActionStream:
+    def __init__(self, openai_generator : Generator):
+        self.data = openai_generator
+        self.text_content : str = ''
+
+    def __iter__(self) -> Iterator[ActionChunk]:
+        return self
+
+
+    def exhaust(self):
+        for chunk in self:
+            _ = chunk
+
+    def __next__(self) -> ActionChunk:
+        action_chunk = ActionChunk(data=self.data.__next__())
+        chunk_text = action_chunk.get_text_chunk()
+        self.text_content += chunk_text if not chunk_text is None else ''
+        return action_chunk
+
+
+class ActionChunk:
+    def __init__(self, data : OpenAIObject):
+        self.data = data
+        self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
+
+    def get_text_chunk(self) -> Optional[str]:
+        text_content = None
+        if not self.best_response is None:
+            text_content = self.best_response.get('content')
+        return text_content
+
+
+    def get_function_chunk(self) -> Optional[ToolCall]:
+        funct_call : Optional[dict] = self.best_response.get('function_call')
+
+        if funct_call is None:
+            tool_call = None
+        else:
+            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
+
+        return tool_call
+
 
 class ToolCall:
     @classmethod
@@ -47,45 +89,6 @@ class ToolCall:
 
 
 
-class ActionChunk:
-    def __init__(self, data : OpenAIObject):
-        self.data = data
-        self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
-
-    def get_text_chunk(self) -> Optional[str]:
-        text_content = None
-        if not self.best_response is None:
-            text_content = self.best_response.get('content')
-        return text_content
 
 
-    def get_function_chunk(self) -> Optional[ToolCall]:
-        funct_call : Optional[dict] = self.best_response.get('function_call')
 
-        if funct_call is None:
-            tool_call = None
-        else:
-            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
-
-        return tool_call
-
-
-class ActionStream:
-
-    def __init__(self, openai_generator : Generator):
-        self.data = openai_generator
-        self.text_content : str = ''
-
-    def __iter__(self) -> Iterator[ActionChunk]:
-        return self
-
-
-    def exhaust(self):
-        for chunk in self:
-            _ = chunk
-
-    def __next__(self) -> ActionChunk:
-        action_chunk = ActionChunk(data=self.data.__next__())
-        chunk_text = action_chunk.get_text_chunk()
-        self.text_content += chunk_text if not chunk_text is None else ''
-        return action_chunk

@@ -6,6 +6,7 @@ from src.l2_lotus_agent.m1_models import FunctCallOption
 from src.l2_lotus_agent import OpenAIModel, LLM, ModelTypes_OpenAI, Agent
 from src.l2_lotus_agent.m1_protocol import Identity, Cores
 
+# ----------------------------------------------------
 
 
 class TextAgent(Agent):

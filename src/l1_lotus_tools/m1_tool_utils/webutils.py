@@ -1,3 +1,4 @@
+from __future__ import annotations
 import threading
 import time
 import requests
@@ -12,45 +13,6 @@ from src.l1_lotus_tools.m0_toolbox.tool import Tool
 # ---------------------------------------------------------
 
 
-class ScrapeModes:
-    dynamic = 'dynamic'
-    static = 'static'
-
-
-class WebDriver:
-    def __init__(self):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        self.engine = webdriver.Chrome(options=chrome_options)
-        self.is_busy = False
-
-    def fetch_dynamic_content(self, site_url: str, wait_for_load_in_sec: float = 2) -> str:
-        self.is_busy = True
-
-        self.engine.get(site_url)
-        time.sleep(wait_for_load_in_sec)
-        page_source = self.engine.page_source
-
-        soup = BeautifulSoup(page_source, 'html.parser')
-        site_text = ''.join(element for element in soup.stripped_strings)
-
-        self.is_busy = False
-        return site_text
-
-    def fetch_static_content(self, site_url: str) -> str:
-        self.is_busy = True
-
-        def get_website_text():
-            downloaded = trafilatura.fetch_url(site_url)
-            return trafilatura.extract(downloaded)
-
-        content = func_timeout(timeout=Tool.timout_in_sec / 2., func=get_website_text)
-        self.is_busy = False
-        return content
-
-
-
-
 class Webtools:
     def __init__(self, initial_driver_count : int = 4):
         self.drivers : list[WebDriver] = []
@@ -59,7 +21,7 @@ class Webtools:
             threading.Thread(target=self.make_driver).start()
 
 
-    def get_url_text(self,site_url: str, mode = ScrapeModes.static) -> str:
+    def get_url_text(self,site_url: str, mode : ScrapeMode) -> str:
         driver = self.get_free_driver()
         try:
             if mode == 'dynamic':
@@ -103,3 +65,53 @@ class Webtools:
 
 
         return search_result_urls
+
+
+class ScrapeMode(str):
+    def __new__(cls, mode : str):
+        return str.__new__(cls, mode)
+
+    @classmethod
+    def dynamic_mode(cls):
+        return cls(mode='dynamic')
+
+    @classmethod
+    def static_mode(cls):
+        return cls(mode='static')
+
+
+
+class WebDriver:
+    def __init__(self):
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        self.engine = webdriver.Chrome(options=chrome_options)
+        self.is_busy = False
+
+    def fetch_dynamic_content(self, site_url: str, wait_for_load_in_sec: float = 2) -> str:
+        self.is_busy = True
+
+        self.engine.get(site_url)
+        time.sleep(wait_for_load_in_sec)
+        page_source = self.engine.page_source
+
+        soup = BeautifulSoup(page_source, 'html.parser')
+        site_text = ''.join(element for element in soup.stripped_strings)
+
+        self.is_busy = False
+        return site_text
+
+    def fetch_static_content(self, site_url: str) -> str:
+        self.is_busy = True
+
+        def get_website_text():
+            downloaded = trafilatura.fetch_url(site_url)
+            return trafilatura.extract(downloaded)
+
+        content = func_timeout(timeout=Tool.timout_in_sec / 2., func=get_website_text)
+        self.is_busy = False
+        return content
+
+
+
+
