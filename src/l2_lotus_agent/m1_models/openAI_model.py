@@ -3,7 +3,8 @@ import openai
 from openai_function_tokens import estimate_tokens
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
-from .responsestream import ResponseStream, ActionOptions
+from .actionstream import ActionStream
+from .. import ActionOptions
 from .llm import LLM
 
 
@@ -31,7 +32,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ResponseStream:
+    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
 
         args_dict = {
@@ -54,7 +55,7 @@ class OpenAIModel(LLM):
         openai_response = openai.ChatCompletion.create(**args_dict)
         self._log_response(entries, tool_docs, action_options)
 
-        return ResponseStream(openai_response)
+        return ActionStream(openai_response)
 
     # ---------------------------------------------------
     # Logging

@@ -5,7 +5,8 @@ from pyutils import get_exception_msg
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
-from src.l2_lotus_agent.m1_models import Chunk, ResponseStream, FunctCallOption, ActionOptions
+from src.l2_lotus_agent.m1_models import ActionChunk, ActionStream
+from .. import FunctCallOption, ActionOptions
 from src.l2_lotus_agent.m1_protocol import Mandate, Identity, Cores
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
@@ -87,7 +88,7 @@ class Agent(LingualEntity):
 
     def process_action_stream(self, action_stream):
         for data in action_stream:
-            self.handle_chunk(chunk=Chunk(data=data))
+            self.handle_chunk(chunk=ActionChunk(data=data))
 
 
     def handle_chunk(self, chunk):
@@ -102,7 +103,7 @@ class Agent(LingualEntity):
         try:
             tool_call = chunk.get_function_chunk()
             if not tool_call is None:
-                self.tool_handler.current_tool_call.update(partial_tool_call=tool_call)
+                self.tool_handler.current_tool_call.join(partial_tool_call=tool_call)
         except:
             self.request_text_response(f'An error occured while trying to retrieve function chunk')
 
@@ -119,7 +120,7 @@ class Agent(LingualEntity):
         action_stream =  self.get_next_action_stream(**arg_dict)
         text = ''
         for data in action_stream:
-            text += Chunk(data=data).get_text_chunk()
+            text += ActionChunk(data=data).get_text_chunk()
         return text
 
 
@@ -139,7 +140,7 @@ class Agent(LingualEntity):
                                custom_tool_docs : Optional[list[dict]] = None,
                                entries: Optional[list[Entry]] = None,
                                max_tokens : Optional[int] = None,
-                               temperature : float = 0.3) -> ResponseStream:
+                               temperature : float = 0.3) -> ActionStream:
 
         return self.model.get_action_stream(
             entries= self.get_basic_entries() if entries is None else entries,

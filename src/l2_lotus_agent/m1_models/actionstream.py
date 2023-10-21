@@ -1,0 +1,74 @@
+from __future__ import annotations
+from pyutils import get_salvaged_json
+from typing import Optional
+import json
+
+
+# ---------------------------------------------------------
+
+class ToolCall:
+    @classmethod
+    def make_empty(cls):
+        return cls(name=None, json_str=None)
+
+
+    def __init__(self, name : Optional[str], json_str : Optional[str]):
+        self.name : str  = name if not name is None else ''
+        self.json_str : str = json_str if not json_str is None else ''
+        self._arguments : Optional[dict] = None
+
+
+    def join(self, partial_tool_call : ToolCall):
+        self.name += partial_tool_call.name
+        self.json_str += partial_tool_call.json_str
+
+
+    def try_parse_json(self):
+        json_str = self.json_str
+
+        try:
+            tool_args_dict = json.loads(s=json_str)
+        except:
+            print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
+            tool_args_dict = json.loads(s=get_salvaged_json(broken_json=json_str))
+
+        self._arguments = tool_args_dict
+
+    # ---------------------------------------------------
+    # Actions
+
+    def get_tool_name(self) -> str:
+        return self.name
+
+    def get_arguments(self) -> dict:
+        return self._arguments
+
+
+
+class ActionChunk:
+    def __init__(self, data):
+        self.data = data
+        self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
+
+    def get_text_chunk(self) -> Optional[str]:
+        text_content = None
+        if not self.best_response is None:
+            text_content = self.best_response.get('content')
+        return text_content
+
+
+    def get_function_chunk(self) -> Optional[ToolCall]:
+        funct_call : Optional[dict] = self.best_response.get('function_call')
+
+        if funct_call is None:
+            tool_call = None
+        else:
+            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
+
+        return tool_call
+
+# TODO: Can aggregate the content in the container by overriding __next__
+# TODO: Could also do implement a convert to string method to eleiminate get_text_response from agent
+class ActionStream(dict):
+    def __new__(cls, openAI_response : dict):
+        return openAI_response

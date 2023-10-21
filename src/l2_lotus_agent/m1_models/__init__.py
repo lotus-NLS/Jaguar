@@ -1,4 +1,5 @@
 from .llm import LLM
 from .openAI_model import ModelTypes_OpenAI
 from .openAI_model import OpenAIModel
-from .responsestream import ResponseStream, FunctCallOption, ActionOptions, ToolCall, Chunk
+from .actionstream import ActionStream, ToolCall, ActionChunk
+from .options import FunctCallOption, ActionOptions

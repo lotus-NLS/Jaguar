@@ -14,7 +14,7 @@ class ToolHandler:
         self.current_tool_call : Optional[ToolCall] = None
 
     def initialize_toolcall(self):
-        self.current_tool_call = ToolCall()
+        self.current_tool_call = ToolCall.make_empty()
 
     def tool_call_active(self):
         return not self.current_tool_call.get_tool_name() is None and not self.current_tool_call.json_str is None
@@ -25,7 +25,7 @@ class ToolHandler:
         tool_action = self.current_tool_call
 
         try:
-            tool_action.parse_json()
+            tool_action.try_parse_json()
 
         except:
             get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}')
