@@ -86,12 +86,12 @@ class Agent(LingualEntity):
             self.request_text_response(request_msg=get_exception_msg(text=log_msg), role = role)
 
 
-    def process_action_stream(self, action_stream):
+    def process_action_stream(self, action_stream : ActionStream):
         for data in action_stream:
-            self.handle_chunk(chunk=ActionChunk(data=data))
+            self.handle_chunk(chunk=data)
 
 
-    def handle_chunk(self, chunk):
+    def handle_chunk(self, chunk : ActionChunk):
         try:
             text_content = chunk.get_text_chunk()
             if not text_content is None:
@@ -118,10 +118,9 @@ class Agent(LingualEntity):
             'entries' : entries
         }
         action_stream =  self.get_next_action_stream(**arg_dict)
-        text = ''
-        for data in action_stream:
-            text += ActionChunk(data=data).get_text_chunk()
-        return text
+        action_stream.exhaust()
+
+        return action_stream.text_content
 
 
     def request_text_response(self, request_msg : str, role : DialogueRole = DialogueRole.user_role(), max_tokens : Optional[int] = None):

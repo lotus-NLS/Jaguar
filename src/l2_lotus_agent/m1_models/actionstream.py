@@ -1,7 +1,8 @@
 from __future__ import annotations
 from pyutils import get_salvaged_json
-from typing import Optional
+from typing import Optional, Generator, Iterator
 import json
+from openai.openai_object import OpenAIObject
 
 
 # ---------------------------------------------------------
@@ -46,7 +47,7 @@ class ToolCall:
 
 
 class ActionChunk:
-    def __init__(self, data):
+    def __init__(self, data : OpenAIObject):
         self.data = data
         self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
 
@@ -67,8 +68,22 @@ class ActionChunk:
 
         return tool_call
 
-# TODO: Can aggregate the content in the container by overriding __next__
-# TODO: Could also do implement a convert to string method to eleiminate get_text_response from agent
-class ActionStream(dict):
-    def __new__(cls, openAI_response : dict):
-        return openAI_response
+
+class ActionStream:
+    def __iter__(self) -> Iterator[ActionChunk]:
+        return self
+
+    def __init__(self, openai_generator : Generator):
+        self.data = openai_generator
+        self.text_content : str = ''
+
+
+    def exhaust(self):
+        for chunk in self:
+            _ = chunk
+
+    def __next__(self) -> ActionChunk:
+        chunk_data = self.data.__next__()
+        action_chunk = ActionChunk(data=chunk_data)
+        self.text_content +=  action_chunk.get_text_chunk()
+        return action_chunk
