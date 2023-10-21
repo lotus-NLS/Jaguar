@@ -77,14 +77,15 @@ class LingualEntity:
 
 
     def think(self, msg: str):
-        new_entry = Entry(msg=f'## Internal monologue: {msg}', role=self._role, name=self.name)
+        to_log = f'## Internal monologue: {msg}'
+        # print(f'[Debug]: {self._role} thought: {}')
+        new_entry = Entry(msg=to_log, role=self._role, name=self.name)
         return self._process_partial_entry(partial_entry=new_entry)
 
 
     def speak(self, msg : str, flags : Optional[list[Flag]] = None):
         if self._channel is None:
             return
-
         self._channel.broadcast_message(Entry(role=self._role, msg=msg,flags=flags))
 
     # ------------------------------
@@ -96,11 +97,13 @@ class LingualEntity:
 
 
     def log_tool_msg(self, msg: str, tool_name: str):
+        print(f'[Debug]: Tool {tool_name}: {msg}')
         new_entry = Entry(msg=msg, role=DialogueRole.tool_role(), name=tool_name)
         return self._process_partial_entry(partial_entry=new_entry)
 
 
     def log_system_msg(self, msg: str):
+        print(f'[Debug]: System: {msg}')
         new_entry = Entry(msg=msg, role=DialogueRole.system_role())
         return self._process_partial_entry(partial_entry=new_entry)
 
