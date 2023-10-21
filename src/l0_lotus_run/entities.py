@@ -1,5 +1,5 @@
 import threading
-from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag
+from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag, user_io
 from src.l2_lotus_agent import Agent, Task
 from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
@@ -90,6 +90,15 @@ class Alpha(Agent):
 class User(LingualEntity):
     def __init__(self):
         super(User, self).__init__(role=DialogueRole.user_role())
+
+    def _process_partial_entry(self, partial_entry: Entry):
+        super()._process_partial_entry(partial_entry=partial_entry)
+
+        to_log = ''
+        if self.get_is_new_entry(partial_entry=partial_entry):
+            to_log += f'\n{partial_entry.get_role()}:'
+        to_log += f'{partial_entry.get_content()}'
+        user_io.print_str(the_str=to_log)
 
     def react(self, entry : Entry):
         pass

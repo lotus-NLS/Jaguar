@@ -48,16 +48,8 @@ class LingualEntity:
 
     def _process_partial_entry(self, partial_entry : Entry):
         role,name,msg,flags = partial_entry.get_role(), partial_entry.get_name(), partial_entry.get_content(), partial_entry.get_flags()
-        is_same_entity = False
 
-        last_entry = None
-        if len(self._personal_log) > 0:
-            last_entry = self._personal_log[-1]
-            is_same_entity = role == last_entry.get_role() and name == last_entry.get_name()
-
-        if not last_entry is None and is_same_entity:
-            last_entry.append_content(msg)
-        else:
+        if self.get_is_new_entry(partial_entry=partial_entry):
             new_entry = Entry(msg=msg, role=role, name=name, flags=flags)
             if not new_entry.get_role() == DialogueRole.user_role():
                 new_entry.mark_processed()
@@ -65,6 +57,19 @@ class LingualEntity:
             self._personal_log.append(new_entry)
             Thread(target=self.react, args=(new_entry,)).start()
 
+        else:
+            last_entry = self._personal_log[-1]
+            last_entry.append_content(msg)
+
+
+    def get_is_new_entry(self, partial_entry) -> bool:
+        role, name, msg, flags = partial_entry.get_role(), partial_entry.get_name(), partial_entry.get_content(), partial_entry.get_flags()
+        is_continuation = False
+        if len(self._personal_log) > 0:
+            last_entry = self._personal_log[-1]
+            is_continuation = role == last_entry.get_role() and name == last_entry.get_name()
+
+        return not is_continuation
 
     @abstractmethod
     def react(self, entry : Entry):

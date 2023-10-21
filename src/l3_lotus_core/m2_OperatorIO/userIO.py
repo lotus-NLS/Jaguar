@@ -1,16 +1,20 @@
 import threading
 from typing import Optional
 from pyutils import InputWaiter
-
+import sys
 
 class UserIO:
-    def __init__(self):
+    def __init__(self, text_logger : callable = None):
         self.input_waiter_list : list[InputWaiter] = []
+
+        no_newline_print = lambda the_str: (print(the_str, end=''), sys.stdout.flush())
+        self.str_logger : callable = text_logger if not text_logger is None else no_newline_print
 
     def launch(self):
         thread = threading.Thread(target=self.loop)
         thread.daemon = True
         thread.start()
+
 
     def loop(self):
         while True:
@@ -37,5 +41,9 @@ class UserIO:
                 print("Invalid input. Please enter (y/n)")
 
         return lowercase_user_input == 'y'
+
+
+    def print_str(self, the_str : str):
+        self.str_logger(the_str)
 
 user_io = UserIO()
