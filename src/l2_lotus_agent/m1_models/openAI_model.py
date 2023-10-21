@@ -4,9 +4,8 @@ from openai_function_tokens import estimate_tokens
 from src.l3_lotus_core import get_setting, Entry, CredentialSettings
 
 from .actionstream import ActionStream
-from .. import ActionOptions
+from .options import ActionOptions
 from .llm import LLM
-
 
 # ---------------------------------------------------------
 
