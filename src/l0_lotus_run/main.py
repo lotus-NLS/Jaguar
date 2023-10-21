@@ -27,8 +27,8 @@ class Engine:
 
     def initialize_communications(self):
         self.user_channel = Channel()
-        LingualEntity.enter_into_channel(channel=self.user_channel, channel_members=[self.user] + self.bots)
-
+        for participant in [self.user]+self.bots:
+            participant.join_channel(self.user_channel)
 
     def initialize_settings(self, perform_validation : bool = True):
         if self.settings_controller is None:

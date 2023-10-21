@@ -1,7 +1,7 @@
 # from typing import Optional
 from pyutils import get_function_args
-from src.l2_lotus_agent import Objective
-from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
+from src.l3_lotus_core import user_io
+from src.l2_lotus_agent import Objective, ToolArg
 
 from src.l1_lotus_tools.m0_toolbox.tool import Tool
 from src.l1_lotus_tools.m1_tool_utils.itemtree_format import get_leading_dashes_count,is_valid_hierarchy_format
@@ -73,9 +73,15 @@ class INITIALIZE_MANDATE(Tool):
         init_request_msg = (f'Here is my plan of action for your request:'
                             f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
-        if not self.acting_agent.retrieve_user_permission(request_msg=init_request_msg):
+
+        self.acting_agent.speak(msg=f'{init_request_msg} (y/n)')
+        user_approves = user_io.get_confirmation()
+
+        if not user_approves:
+            self.acting_agent.think(f'User denied permission')
             return
 
+        self.acting_agent.think(f'User confirmed permission')
         self.parse_objectives_lines(lines=objective_lines)
 
         if verbose_mode:

@@ -48,7 +48,7 @@ class SEARCH(Tool):
 
             raw_site_text = self.webtools.get_url_text(site_url=site_url)
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
-            summary_agent.think(msg=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}',verbose=False)
+            summary_agent.think(msg=f'Website text:\n {input_text}\n Query: {self.requested_info_arg.val}')
 
             result = summary_agent.get_text_response(max_tokens=300)
         except:
@@ -69,7 +69,7 @@ class SEARCH(Tool):
                                     f'First evaluate the sources for their usefulness for the query'
                                     f', and make an outline of what you learned')
         evaluation = composition_agent.get_text_response(max_tokens=300)
-        composition_agent.think(evaluation, verbose=False)
+        composition_agent.think(evaluation)
 
         # Make report
         composition_agent.log_system_msg(f'Now provide an answer to the initial query: {self.requested_info_arg.val}')

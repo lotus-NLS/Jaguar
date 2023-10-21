@@ -2,7 +2,7 @@ from __future__ import annotations
 from threading import Thread
 from typing import Union, Optional
 from abc import abstractmethod
-from src.l3_lotus_core.m2_OperatorIO import user_io
+# from src.l3_lotus_core.m2_OperatorIO import user_io
 
 from .channel import Channel
 from .entry import Entry, DialogueRole, Flag
@@ -87,35 +87,12 @@ class LingualEntity:
     def react(self, entry : Entry):
         pass
 
-    def think(self, msg : str, verbose = True):
-        the_msg = f'## Internal monologue: {msg}'
-        if verbose:
-            print(f'[Debug]: {self._role} thought: {the_msg}')
-        self._log_info(msg=msg, role=self._role, name=self.name)
+    def think(self, msg : str):
+        self._log_info(msg=f'## Internal monologue: {msg}', role=self._role, name=self.name)
 
 
     def speak(self, msg : str, flags : Optional[list[Flag]] = None):
         if self._channel is None:
             return
 
-        # print(f'[Debug]: {self._role} said: {msg}')
         self._channel.broadcast_message(Entry(role=self._role, msg=msg,flags=flags))
-
-    # ------------------------------
-    # Other
-
-    def retrieve_user_permission(self, request_msg : str) -> bool:
-        self.speak(msg=f'{request_msg} (y/n)')
-        user_approves = user_io.get_confirmation()
-
-        if user_approves:
-            self.think(f'User confirmed permission')
-        else:
-            self.think(f'User denied permission')
-        return user_approves
-
-    @staticmethod
-    def enter_into_channel(channel : Channel, channel_members : list[LingualEntity]):
-        for participant in channel_members:
-            participant.join_channel(channel)
-
