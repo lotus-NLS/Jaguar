@@ -68,7 +68,7 @@ class Agent(LingualEntity):
         self.tool_handler.initialize_toolcall()
         self.process_action_stream(action_stream=action_stream)
 
-        if self.tool_handler.tool_call_active():
+        if self.tool_handler.current_tool_call.is_active:
             self.tool_handler.handle_call()
 
             if task.skip_feedback:
@@ -103,7 +103,7 @@ class Agent(LingualEntity):
         try:
             tool_call = chunk.get_function_chunk()
             if not tool_call is None:
-                self.tool_handler.current_tool_call.join(partial_tool_call=tool_call)
+                self.tool_handler.current_tool_call.update(partial_tool_call=tool_call)
         except:
             self.request_text_response(f'An error occured while trying to retrieve function chunk')
 

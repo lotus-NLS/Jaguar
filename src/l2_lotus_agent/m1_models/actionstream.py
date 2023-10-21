@@ -17,9 +17,11 @@ class ToolCall:
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
         self._arguments : Optional[dict] = None
+        self.is_active = False
 
 
-    def join(self, partial_tool_call : ToolCall):
+    def update(self, partial_tool_call : ToolCall):
+        self.is_active = True
         self.name += partial_tool_call.name
         self.json_str += partial_tool_call.json_str
 
@@ -70,12 +72,13 @@ class ActionChunk:
 
 
 class ActionStream:
-    def __iter__(self) -> Iterator[ActionChunk]:
-        return self
 
     def __init__(self, openai_generator : Generator):
         self.data = openai_generator
         self.text_content : str = ''
+
+    def __iter__(self) -> Iterator[ActionChunk]:
+        return self
 
 
     def exhaust(self):
@@ -83,7 +86,7 @@ class ActionStream:
             _ = chunk
 
     def __next__(self) -> ActionChunk:
-        chunk_data = self.data.__next__()
-        action_chunk = ActionChunk(data=chunk_data)
-        self.text_content +=  action_chunk.get_text_chunk()
+        action_chunk = ActionChunk(data=self.data.__next__())
+        chunk_text = action_chunk.get_text_chunk()
+        self.text_content += chunk_text if not chunk_text is None else ''
         return action_chunk

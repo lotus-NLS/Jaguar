@@ -16,9 +16,6 @@ class ToolHandler:
     def initialize_toolcall(self):
         self.current_tool_call = ToolCall.make_empty()
 
-    def tool_call_active(self):
-        return not self.current_tool_call.get_tool_name() is None and not self.current_tool_call.json_str is None
-
 
     def handle_call(self):
         print('[Debug]: Agent requested tool usage')
