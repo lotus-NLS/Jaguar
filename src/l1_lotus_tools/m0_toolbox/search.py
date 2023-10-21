@@ -1,9 +1,9 @@
 from concurrent.futures import ThreadPoolExecutor
-from src.l2_lotus_agent import Agent
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
 
 from src.l1_lotus_tools.m0_toolbox.tool import Tool
 from src.l1_lotus_tools.m1_tool_utils.webutils import Webtools
+from src.l1_lotus_tools.m1_tool_utils.text_agent import TextAgent
 
 # NOTE : If you should wait or for how long until page elements load is something to be contemplated
 # ---------------------------------------------------------
@@ -44,7 +44,7 @@ class SEARCH(Tool):
 
     def get_site_report(self, site_url : str):
         try:
-            summary_agent = Agent.make_website_summarization_agent()
+            summary_agent = TextAgent.make_website_summarization_agent()
 
             raw_site_text = self.webtools.get_url_text(site_url=site_url)
             input_text = summary_agent.model.get_limited_string(the_str=raw_site_text,max_tokens=2000)
@@ -62,7 +62,7 @@ class SEARCH(Tool):
         for index, info_text in enumerate(site_report_list):
             all_summaries += f'## Report {index} ##' \
                              f'{info_text}\n'
-        composition_agent = Agent.make_report_composition_agent()
+        composition_agent = TextAgent.make_report_composition_agent()
 
         # Evaluate sources
         composition_agent.log_system_msg(msg=f'Reports:  {all_summaries}\n Query: {self.requested_info_arg.val}'

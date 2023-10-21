@@ -14,16 +14,6 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    @classmethod
-    def make_website_summarization_agent(cls) -> Agent:
-        return Agent(identity=Identity(core=Cores.website_information_retriever),
-                     model_type=OpenAIModel(ModelTypes_OpenAI.gpt_35_4k))
-
-    @classmethod
-    def make_report_composition_agent(cls) -> Agent:
-        return Agent(identity=Identity(Cores.report_composer), model_type=OpenAIModel(ModelTypes_OpenAI.gpt_35_4k))
-
-
     def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k), identity : Identity = Identity(core=Cores.goto)):
         LingualEntity.__init__(self, role=DialogueRole.agent_role())
 
@@ -66,28 +56,40 @@ class Agent(LingualEntity):
             return
 
         self.tool_handler.initialize_toolcall()
-        self.process_action_stream(action_stream=action_stream)
-
-        if self.tool_handler.current_tool_call.is_active:
-            self.tool_handler.handle_call()
-
-            if task.skip_feedback:
-                return
-
-            if task.is_dialogue_task():
-                role = DialogueRole.user_role()
-                log_msg = ('##Automatic message: The user has been provided with the function output.'
-                           'Please provide the user with summary/feedback')
-
-            else:
-                role = DialogueRole.system_role()
-                log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
-
-            self.request_text_response(request_msg=get_exception_msg(text=log_msg), role = role)
-
-
-    def process_action_stream(self, action_stream : ActionStream):
         for data in action_stream:
+            self.handle_chunk(chunk=data)
+
+        if not self.tool_handler.tool_call.is_non_empty:
+            return
+
+
+        self.tool_handler.handle_call()
+        if task.skip_feedback:
+            return
+
+        if task.is_dialogue_task():
+            role = DialogueRole.user_role()
+            log_msg = '##Automatic message: The user has been provided with the function output.Please provide the user with summary/feedback'
+
+        else:
+            role = DialogueRole.system_role()
+            log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
+
+        self.request_text_response(request_msg=get_exception_msg(text=log_msg), role = role)
+
+
+
+    # ---------------------------------------------------
+    # Actions
+
+    def request_text_response(self, request_msg : str, role : DialogueRole = DialogueRole.user_role(), max_tokens : Optional[int] = None):
+        arg_dict = {
+            'funct_call_options' : FunctCallOption.make_no_call_option(),
+            'max_tokens' : max_tokens,
+            'entries' : self.get_basic_entries()+[Entry(role=role,msg=request_msg)]
+        }
+
+        for data in self.get_next_action_stream(**arg_dict):
             self.handle_chunk(chunk=data)
 
 
@@ -99,39 +101,12 @@ class Agent(LingualEntity):
         except:
             self.think(get_exception_msg(text='An error occured while trying to parse text chunk'))
 
-
         try:
             tool_call = chunk.get_function_chunk()
             if not tool_call is None:
-                self.tool_handler.current_tool_call.update(partial_tool_call=tool_call)
+                self.tool_handler.tool_call.update(partial_tool_call=tool_call)
         except:
             self.request_text_response(f'An error occured while trying to retrieve function chunk')
-
-    # ---------------------------------------------------
-    # Actions
-
-
-    def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:
-        arg_dict = {
-            'funct_call_options' : FunctCallOption.make_no_call_option(),
-            'max_tokens' : max_tokens,
-            'entries' : entries
-        }
-        action_stream =  self.get_next_action_stream(**arg_dict)
-        action_stream.exhaust()
-
-        return action_stream.text_content
-
-
-    def request_text_response(self, request_msg : str, role : DialogueRole = DialogueRole.user_role(), max_tokens : Optional[int] = None):
-        arg_dict = {
-            'funct_call_options' : FunctCallOption.make_no_call_option(),
-            'max_tokens' : max_tokens,
-            'entries' : self.get_basic_entries()+[Entry(role=role,msg=request_msg)]
-        }
-
-        action_stream =  self.get_next_action_stream(**arg_dict)
-        self.process_action_stream(action_stream=action_stream)
 
 
     def get_next_action_stream(self,
@@ -146,6 +121,7 @@ class Agent(LingualEntity):
             tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
         )
+
 
     # ---------------------------------------------------
     # Context

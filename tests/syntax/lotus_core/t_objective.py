@@ -39,7 +39,7 @@ class ObjectiveTester(unittest.TestCase):
 
     def test_mark_complete(self):
         self.sub.mark_successful()
-        self.assertTrue(not self.sub.is_active)
+        self.assertTrue(not self.sub.is_non_empty)
 
     def test_cancel(self):
         self.sub.abandon()

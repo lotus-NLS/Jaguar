@@ -12,16 +12,15 @@ class ToolCall:
     def make_empty(cls):
         return cls(name=None, json_str=None)
 
-
     def __init__(self, name : Optional[str], json_str : Optional[str]):
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
         self._arguments : Optional[dict] = None
-        self.is_active = False
+        self.is_non_empty = False
 
 
     def update(self, partial_tool_call : ToolCall):
-        self.is_active = True
+        self.is_non_empty = True
         self.name += partial_tool_call.name
         self.json_str += partial_tool_call.json_str
 

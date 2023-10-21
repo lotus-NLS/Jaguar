@@ -11,15 +11,15 @@ from src.l2_lotus_agent.m1_models import ToolCall
 class ToolHandler:
     def __init__(self):
         self.tool_dict : dict[str,ToolInterface] = {}
-        self.current_tool_call : Optional[ToolCall] = None
+        self.tool_call : Optional[ToolCall] = None
 
     def initialize_toolcall(self):
-        self.current_tool_call = ToolCall.make_empty()
+        self.tool_call = ToolCall.make_empty()
 
 
     def handle_call(self):
         print('[Debug]: Agent requested tool usage')
-        tool_action = self.current_tool_call
+        tool_action = self.tool_call
 
         try:
             tool_action.try_parse_json()
