@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from src.l2_lotus_agent import Agent
 from src.l2_lotus_agent.m0_agent.tool_handler import ToolArg
 
-from src.l1_lotus_tools.tool import Tool
+from src.l1_lotus_tools.m0_toolbox.tool import Tool
 from src.l1_lotus_tools.m1_tool_utils.webutils import Webtools
 
 # NOTE : If you should wait or for how long until page elements load is something to be contemplated
