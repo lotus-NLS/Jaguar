@@ -1,7 +1,7 @@
 import threading
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag, user_io
 from src.l2_lotus_agent import Agent, Task
-from src.l1_lotus_tools import RUN,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
+from src.l1_lotus_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
 
 # ---------------------------------------------------------
@@ -54,7 +54,7 @@ class Alpha(Agent):
     # Tool setup
 
     def setup_tools(self):
-        public_tools = [RUN.make(), FILE_IO.make(), SEARCH.make()]
+        public_tools = [COMMAND.make(), FILE_IO.make(), SEARCH.make()]
         private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
         all_tools = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
