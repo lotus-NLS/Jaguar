@@ -3,6 +3,8 @@ from typing import Optional
 from pyutils import InputWaiter
 import sys
 
+# ---------------------------------------------------------
+
 class UserIO:
     def __init__(self, text_logger : callable = None):
         self.input_waiter_list : list[InputWaiter] = []

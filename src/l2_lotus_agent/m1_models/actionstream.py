@@ -5,10 +5,14 @@ import json
 from openai.openai_object import OpenAIObject
 # ---------------------------------------------------------
 
-
 class ActionStream:
-    def __init__(self, openai_generator : Generator):
-        self.data = openai_generator
+
+    @classmethod
+    def make_empty(cls) -> ActionStream:
+        return cls(openai_generator=None)
+
+    def __init__(self, openai_generator : Optional[Generator]):
+        self.generator_data : Optional[Generator] = openai_generator
         self.text_content : str = ''
 
     def __iter__(self) -> Iterator[ActionChunk]:
@@ -20,16 +24,21 @@ class ActionStream:
             _ = chunk
 
     def __next__(self) -> ActionChunk:
-        action_chunk = ActionChunk(data=self.data.__next__())
+        if self.generator_data is None:
+            raise StopIteration
+
+        action_chunk = ActionChunk(data=self.generator_data.__next__())
         chunk_text = action_chunk.get_text_chunk()
         self.text_content += chunk_text if not chunk_text is None else ''
         return action_chunk
 
 
 class ActionChunk:
+
     def __init__(self, data : OpenAIObject):
-        self.data = data
-        self.best_response : Optional[dict]  = self.data['choices'][0].get('delta')
+        self.response_data : OpenAIObject = data
+        self.best_response : Optional[dict]  = self.response_data['choices'][0].get('delta')
+
 
     def get_text_chunk(self) -> Optional[str]:
         text_content = None
@@ -58,11 +67,11 @@ class ToolCall:
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
         self._arguments : Optional[dict] = None
-        self.is_non_empty = False
+        self.is_empty = True
 
 
     def update(self, partial_tool_call : ToolCall):
-        self.is_non_empty = True
+        self.is_empty = False
         self.name += partial_tool_call.name
         self.json_str += partial_tool_call.json_str
 
@@ -86,6 +95,7 @@ class ToolCall:
 
     def get_arguments(self) -> dict:
         return self._arguments
+
 
 
 

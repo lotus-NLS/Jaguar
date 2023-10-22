@@ -12,8 +12,8 @@ import unittest
 class ObjectiveTester(unittest.TestCase):
 
     def setUp(self):
-        self.root = Objective.make_root("root")
-        self.sub = self.root.make_subelement(desc='sub')
+        self.root : Objective = Objective.make_root("root")
+        self.sub : Objective = self.root.make_subelement(desc='sub')
 
 
         print("\n//--------------------------------//")
@@ -39,7 +39,7 @@ class ObjectiveTester(unittest.TestCase):
 
     def test_mark_complete(self):
         self.sub.mark_successful()
-        self.assertTrue(not self.sub.is_non_empty)
+        self.assertTrue(not self.sub.is_active)
 
     def test_cancel(self):
         self.sub.abandon()

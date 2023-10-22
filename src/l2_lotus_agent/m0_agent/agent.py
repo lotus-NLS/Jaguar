@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from abc import abstractmethod
 from pyutils import get_exception_msg
+from func_timeout import func_timeout
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
 from src.l2_lotus_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
@@ -59,9 +60,8 @@ class Agent(LingualEntity):
         for data in action_stream:
             self.handle_chunk(chunk=data)
 
-        if not self.tool_handler.tool_call.is_non_empty:
+        if not self.tool_handler.tool_call_requested():
             return
-
 
         self.tool_handler.handle_call()
         if task.skip_feedback:
@@ -116,11 +116,20 @@ class Agent(LingualEntity):
                                max_tokens : Optional[int] = None,
                                temperature : float = 0.3) -> ActionStream:
 
-        return self.model.get_action_stream(
-            entries= self.get_basic_entries() if entries is None else entries,
-            tool_docs=self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            action_options=ActionOptions(funct_call_options=funct_call_options,max_tokens=max_tokens,temperature=temperature)
-        )
+        kwargs = {
+            'entries' : self.get_basic_entries() if entries is None else entries,
+            'tool_docs' : self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
+            'action_options' : ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
+        }
+
+        try:
+            action_stream = func_timeout(timeout=5,func=self.model.get_action_stream, kwargs=kwargs)
+
+        except:
+            print(f'[Debug]: An error occured while trying to obtain action stream. Defaulting to empty action')
+            action_stream = ActionStream.make_empty()
+
+        return action_stream
 
 
     # ---------------------------------------------------
