@@ -24,3 +24,4 @@ distro~=1.8.0
 tiktoken~=0.5.1
 trafilatura~=1.6.2
 Scrapy~=2.10.1
+apscheduler
