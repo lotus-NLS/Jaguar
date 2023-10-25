@@ -31,9 +31,7 @@ class Countdown:
 
     def get(self):
         _ = self.one_time_lock.read()
-        print(f'Temp debug: Countdown has run out')
-
-
+        # print(f'Temp debug: Countdown has run out')
 
     def _release(self):
         self.one_time_lock.write('open sesame')

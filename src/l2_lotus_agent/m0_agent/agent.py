@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from abc import abstractmethod
-from pyutils import get_exception_msg
+from pyutils import DevLogger
 from func_timeout import func_timeout
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry
 
@@ -53,7 +53,7 @@ class Agent(LingualEntity):
             )
 
         except Exception:
-            print(get_exception_msg(text=f'Unable to obtain response from {self.name}'))
+            print(DevLogger.get_exception_msg(text=f'Unable to obtain response from {self.name}'))
             return
 
         self.tool_handler.initialize_toolcall()
@@ -75,7 +75,7 @@ class Agent(LingualEntity):
             role = DialogueRole.system_role()
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
-        self.request_text_response(request_msg=get_exception_msg(text=log_msg), role = role)
+        self.request_text_response(request_msg=DevLogger.get_exception_msg(text=log_msg), role = role)
 
 
 
@@ -99,7 +99,7 @@ class Agent(LingualEntity):
             if not text_content is None:
                 self.speak(msg=text_content)
         except:
-            self.think(get_exception_msg(text='An error occured while trying to parse text chunk'))
+            self.think(DevLogger.get_exception_msg(text='An error occured while trying to parse text chunk'))
 
         try:
             tool_call = chunk.get_function_chunk()

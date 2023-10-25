@@ -2,7 +2,6 @@ import subprocess
 import platform
 import threading
 from threading import Lock
-from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 from subprocess import Popen
 from pyutils import Countdown

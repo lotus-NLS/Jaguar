@@ -1,16 +1,16 @@
 import traceback
 import json
 from typing import Any, Optional
-from pyutils import get_exception_msg
+from pyutils import DevLogger
 from func_timeout import func_timeout, FunctionTimedOut
 
 from src.l2_lotus_agent import Agent, ToolInterface, ToolArg
 
-# Generic tool class dev_logging
+# Generic tool class logging
 # -> [START] : For tool launch
 # -> [FINISH]: Tool done
 
-# Specifc tool implementations (READ, WRITE etc.) dev_logging:
+# Specifc tool implementations (READ, WRITE etc.) logging:
 # -> [Update] : For updates on tool progress
 # -> [ERROR] : For reporting encountered errors if any
 # ---------------------------------------------------------
@@ -145,7 +145,7 @@ class Tool(ToolInterface):
 
 
     def exception_log(self, to_log: str):
-        self._log(get_exception_msg(to_log))
+        self._log(DevLogger.get_exception_msg(to_log))
 
 
     def update_log(self, to_log: str):

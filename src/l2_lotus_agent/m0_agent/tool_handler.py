@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
-from pyutils import get_exception_msg
+from pyutils import DevLogger
 
 from src.l2_lotus_agent.m1_models import ToolCall
 # ---------------------------------------------------------
@@ -26,7 +26,7 @@ class ToolHandler:
             tool_action.try_parse_json()
 
         except:
-            get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}')
+            print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}'))
 
         try:
             tool_name = tool_action.get_tool_name()
@@ -35,7 +35,7 @@ class ToolHandler:
             if tool_name in self.tool_dict:
                 self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
         except:
-            get_exception_msg(text=f'An error occured while trying handle tool call')
+            print(DevLogger.get_exception_msg(text=f'An error occured while trying handle tool call'))
 
     def get_all_tools(self) -> list[ToolInterface]:
         return list(self.tool_dict.values())

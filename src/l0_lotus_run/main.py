@@ -1,5 +1,5 @@
 from typing import Optional
-from pyutils import logging_wrapper
+from pyutils import DevLogger
 from src.l3_lotus_core import Channel, LingualEntity,SettingsController, user_io, get_setting
 from src.l3_lotus_core import DialogueSettings, Flag
 from src.l2_lotus_agent import Agent
@@ -44,6 +44,7 @@ class Engine:
             user_input = user_io.get_user_msg()
             msg, flags = get_parsed_input(user_input)
             if Flag.get_quit_flag() in flags:
+
                 break
 
             if Flag.get_reset_flag() in flags:
@@ -58,7 +59,7 @@ class Engine:
     def __getattribute__(self, name):
         attr = object.__getattribute__(self, name)
         if callable(attr):
-            attr = logging_wrapper(attr)
+            attr = DevLogger.logging_wrapper(attr)
         return attr
 
 
