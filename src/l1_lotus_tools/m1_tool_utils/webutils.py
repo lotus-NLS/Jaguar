@@ -1,5 +1,5 @@
 from __future__ import annotations
-import threading
+from pyutils import DaemonThread
 import time
 import requests
 import trafilatura
@@ -18,8 +18,8 @@ class Webtools:
         self.drivers : list[WebDriver] = []
 
         for _ in range(initial_driver_count):
-            threading.Thread(target=self.make_driver, daemon=True).start()
-
+            start_thread = DaemonThread(target=self.make_driver)
+            start_thread.start()
 
     def get_url_text(self,site_url: str, mode : ScrapeMode) -> str:
         driver = self.get_free_driver()

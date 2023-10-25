@@ -1,4 +1,4 @@
-import threading
+from pyutils import DaemonThread
 from src.l3_lotus_core import LingualEntity, DialogueRole, Entry, Flag, user_io
 from src.l2_lotus_agent import Agent, Task
 from src.l1_lotus_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
@@ -16,7 +16,7 @@ class Alpha(Agent):
     # Loop
 
     def launch(self):
-        launch_thread = threading.Thread(target=self.loop, daemon=True)
+        launch_thread = DaemonThread(target=self.loop)
         launch_thread.start()
 
 

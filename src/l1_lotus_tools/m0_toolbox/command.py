@@ -1,6 +1,6 @@
 import subprocess
 import platform
-import threading
+from pyutils import DaemonThread
 from threading import Lock
 from typing import Optional
 from subprocess import Popen
@@ -71,11 +71,12 @@ class Shell:
             with self.history_lock:
                 self.update_history(line)
 
-        def do():
+        def listen_stream():
             while True:
                 proces_next_line()
 
-        threading.Thread(target=do).start()
+        this_thread = DaemonThread(target=listen_stream)
+        this_thread.start()
 
 
     # ---------------------------------------------------------
