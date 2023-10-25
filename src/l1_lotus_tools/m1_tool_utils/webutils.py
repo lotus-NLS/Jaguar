@@ -18,7 +18,7 @@ class Webtools:
         self.drivers : list[WebDriver] = []
 
         for _ in range(initial_driver_count):
-            threading.Thread(target=self.make_driver).start()
+            threading.Thread(target=self.make_driver, daemon=True).start()
 
 
     def get_url_text(self,site_url: str, mode : ScrapeMode) -> str:

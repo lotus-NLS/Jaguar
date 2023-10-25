@@ -12,8 +12,7 @@ class Channel:
         self._message_queue : Queue[Entry] = queue.Queue()
         self._is_running = True
 
-        monitor_thread = threading.Thread(target=self._process_queue)
-        monitor_thread.daemon = True
+        monitor_thread = threading.Thread(target=self._process_queue, daemon=True)
         monitor_thread.start()
 
     # ------------------------------

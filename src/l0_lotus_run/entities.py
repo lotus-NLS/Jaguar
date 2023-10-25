@@ -16,8 +16,7 @@ class Alpha(Agent):
     # Loop
 
     def launch(self):
-        launch_thread = threading.Thread(target=self.loop)
-        launch_thread.daemon = True
+        launch_thread = threading.Thread(target=self.loop, daemon=True)
         launch_thread.start()
 
 

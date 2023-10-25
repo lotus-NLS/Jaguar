@@ -13,8 +13,7 @@ class UserIO:
         self.str_logger : callable = text_logger if not text_logger is None else no_newline_print
 
     def launch(self):
-        thread = threading.Thread(target=self.loop)
-        thread.daemon = True
+        thread = threading.Thread(target=self.loop, daemon=True)
         thread.start()
 
 
