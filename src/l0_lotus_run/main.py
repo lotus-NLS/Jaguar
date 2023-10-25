@@ -43,8 +43,12 @@ class Engine:
         while True:
             user_input = user_io.get_user_msg()
             msg, flags = get_parsed_input(user_input)
-            if Flag.get_quit_flag() in flags:
 
+            if Flag.get_print_threads_flag() in flags:
+                DevLogger.print_threads()
+                continue
+
+            if Flag.get_quit_flag() in flags:
                 break
 
             if Flag.get_reset_flag() in flags:
