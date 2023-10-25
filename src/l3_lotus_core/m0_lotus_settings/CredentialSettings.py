@@ -1,6 +1,7 @@
 from __future__ import annotations
 import openai
 import requests
+from func_timeout import func_timeout
 
 from src.l3_lotus_core.m1_settings_modules import Setting,SettingGrouping, SettingTest
 
@@ -42,7 +43,8 @@ class CredentialSettings(SettingGrouping):
                 'messages': [{'role' : 'user', 'content' : 'This is a test'}],
                 'stream' : True
             }
-            openai.ChatCompletion.create(**args_dict)
+
+            func_timeout(timeout=5, func=openai.ChatCompletion.create, kwargs=args_dict)
             is_successful = True
 
         except Exception as err:

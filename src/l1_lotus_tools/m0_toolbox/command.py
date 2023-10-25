@@ -39,10 +39,8 @@ class COMMAND(Tool):
 class Shell:
     def __init__(self):
         self.session : Popen = self.get_session()
-        self.stdout_stream = iter(self.session.stdout.readline, '')
-        self.stderr_stream = iter(self.session.stdout.readline, '')
+        self.log_countdown = Countdown(time_to_finish=0.25)
         self.history : list[str] = []
-        self.finish_countdown = Countdown(time_to_finish=0.25)
 
         self.buffer = ''
 
@@ -62,6 +60,25 @@ class Shell:
 
         return shell_session
 
+
+    def start_listen(self):
+        self.start_listen_stream(stream=self.session.stdout)
+        self.start_listen_stream(stream=self.session.stderr)
+
+
+    def start_listen_stream(self, stream):
+        def proces_next_line():
+            line = stream.readline()
+            with self.history_lock:
+                self.update_history(line)
+
+        def do():
+            while True:
+                proces_next_line()
+
+        threading.Thread(target=do).start()
+
+
     # ---------------------------------------------------------
     # Routine
 
@@ -75,31 +92,15 @@ class Shell:
         self.session.stdin.write("echo 'cmd_done'\n")
         self.session.stdin.flush()
 
-        self.finish_countdown.launch()
-
-
-    def start_listen(self):
-        self.start_listen_to_stream(stream=self.session.stdin)
-        self.start_listen_to_stream(stream=self.session.stderr)
-
-
-    def start_listen_to_stream(self, stream):
-        def do():
-            while True:
-                line = stream.readline()
-                with self.history_lock:
-                    self.update_history(line)
-
-        threading.Thread(target=do,daemon=True).start()
+        self.log_countdown.launch()
 
 
     def update_history(self, msg : str):
         self.history.append(msg)
         self.buffer += msg
-        self.finish_countdown.reset()
-
+        self.log_countdown.reset()
 
     def get_buffer(self) -> str:
-        self.finish_countdown.get()
+        self.log_countdown.get()
         temp, self.buffer = self.buffer, ''
         return temp

@@ -106,7 +106,7 @@ class Agent(LingualEntity):
             if not tool_call is None:
                 self.tool_handler.tool_call.update(partial_tool_call=tool_call)
         except:
-            self.request_text_response(f'An error occured while trying to retrieve function chunk')
+            print(f'[Debug]: An error occured while trying to retrieve function chunk')
 
 
     def get_next_action_stream(self,
