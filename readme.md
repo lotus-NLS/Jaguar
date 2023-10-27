@@ -14,7 +14,7 @@ For more information see the "Wiki" section on the [Project management page](htt
 
 Clone repo into the home directory:
 ```
-git clone https://github.com/Somerandomguy10111/Roseus
+git clone [repo name]
 ```
 
 Setup venv:
@@ -32,16 +32,6 @@ If the program is run for the first time you will be prompted for your OpenAI AP
 
 ## Usage
 
-Navigate to the repo root
-```
-cd ~/Roseus
-```
-
-then run the following commands:
-```
-export PYTHONPATH=/"/home/[username]/Roseus:$PYTHONPATH/"
-source venv/bin/activate
-python3 /home/[username]/Roseus/src/l0_lotus_run/main.py
-```
+(Under construction)
 
 For further information simply ask the agent: "Who are you and what you can do?"
