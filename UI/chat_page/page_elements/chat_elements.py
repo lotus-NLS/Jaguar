@@ -1,5 +1,5 @@
-from deploy.lotusUI import InputElem, DivElem
-from styling import Style, Percentage, Pixels, Cursor, Color, Position, Display
+from UI.element_types import InputElem, DivElem
+from UI.styling import Style, Percentage, Pixels, Cursor, Color, Position, Display
 
 userInput = InputElem(
     the_id = 'text_bar',

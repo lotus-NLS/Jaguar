@@ -1,8 +1,8 @@
-from dash import Dash, html
+from dash import Dash
 from typing import Optional
 
-from element_types import Layout, ElemAttribute
-from page_elements.chat_elements import userInput, btn, bottom_container, chat_window
+from UI.element_types import Layout, ElemAttribute
+from UI.chat_page.page_elements.chat_elements import userInput, btn, bottom_container, chat_window
 
 # ----------------------------------------------
 # Logic
