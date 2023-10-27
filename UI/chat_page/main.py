@@ -36,17 +36,6 @@ def make_callback(target_attr : ElemAttribute,
 
 send_triggers = [btn.n_clicks, userInput.n_submit]
 
-@app.callback(
-    Output('message-div', 'children'),
-    [Input('send-button', 'n_clicks')]
-)
-def send_message(n_clicks):
-    if n_clicks is None:
-        return "Click the button to send a message."
-
-    response = requests.get("http://127.0.0.1:8000/send_string/?name=John")
-    message = response.json()['message']
-    return f"Received Message: {message}"
 
 reset_input_on_send = make_callback(
     target_attr=userInput.value,
