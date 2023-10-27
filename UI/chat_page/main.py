@@ -1,5 +1,6 @@
-from dash import Dash
+from dash import Dash, Input, Output
 from typing import Optional
+import requests
 
 from UI.element_types import Layout, ElemAttribute
 from UI.chat_page.page_elements.chat_elements import userInput, btn, bottom_container, chat_window
@@ -35,21 +36,17 @@ def make_callback(target_attr : ElemAttribute,
 
 send_triggers = [btn.n_clicks, userInput.n_submit]
 
-# def get_sent_text_div(n_clicks, n_submit, value):
-#     if n_clicks is None and n_submit is None:
-#         return []
-#     else:
-#         return html.Div([
-#             html.P(f"User: {value}")
-#             ]
-#         )
+@app.callback(
+    Output('message-div', 'children'),
+    [Input('send-button', 'n_clicks')]
+)
+def send_message(n_clicks):
+    if n_clicks is None:
+        return "Click the button to send a message."
 
-# update_chat_on_send = make_callback(
-#     target_attr=chat_window.children,
-#     trigger_attributes=send_triggers,
-#     state_attributes= [userInput.value],
-#     funct=get_sent_text_div
-# )
+    response = requests.get("http://127.0.0.1:8000/send_string/?name=John")
+    message = response.json()['message']
+    return f"Received Message: {message}"
 
 reset_input_on_send = make_callback(
     target_attr=userInput.value,
@@ -59,4 +56,4 @@ reset_input_on_send = make_callback(
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8050)
