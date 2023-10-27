@@ -1,16 +1,16 @@
 import uvicorn
 import threading
-from typing import Optional
 from queue import Queue
 from fastapi import FastAPI
 from pyutils import InputWaiter
 
-from api.base_types import ReqType, APIMessage
+from api.base_types import ReqType, APIMessage, NetworkQuantities
 # ----------------------------------------------
 
 # TODO: IO should be based on user_id
+# TODO: The server make POST requests to the client instead of waiting for the client to retrieve the messages
 class LotusServer:
-    def __init__(self, ip_addr : str = 'localhost', port : int = 8000):
+    def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
         self.app = FastAPI()
         self.ip_add : str = ip_addr
         self.port : int = port
@@ -55,6 +55,7 @@ class LotusServer:
 
 
     def msg_sender(self, lotus_msg: APIMessage) -> str:
+        _ = lotus_msg
         try:
             the_msg = self.outgoing_msg_queue.get(timeout=0.5)
         except:
@@ -71,6 +72,10 @@ class LotusServer:
     def get_msg(self) -> str:
         self.incoming_msg_queue = Queue()
         return self.incoming_msg_queue.get()
+
+    def send_msg(self, msg : str):
+        self.outgoing_msg_queue.put(msg)
+        return
 
 
 def main():
