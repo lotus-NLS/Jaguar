@@ -1,9 +1,9 @@
 import requests
-from requests import Response
-from api.base_types import APIMessage
+# from requests import Response
+from api.base_types import APIMessage, ReqType
 from api.server import LotusAPI_Server
 
-
+# ----------------------------------------------
 
 class LotusAPI:
 
@@ -11,22 +11,28 @@ class LotusAPI:
         self.ip_add : str = ip_addr
         self.port : int = port
 
-    def send_init(self, userID: str) -> Response:
-        api_message_instance = APIMessage(user_id="some_user",msg_content='string')
-        url = f"http://{self.ip_add}:{self.port}/{LotusAPI_Server.initialize.__name__}/"
+    def init_request(self, userID: str) -> dict:
+        the_response = self.fetch_response(
+                            endpoint=LotusAPI_Server.initialize.__name__,
+                            req_type=ReqType.get(),
+                            payload=APIMessage(user_id=f'{userID}'))
+
+        return the_response
+
+    def fetch_response(self, endpoint : str, req_type : ReqType, payload : APIMessage) -> dict:
+        the_dict = payload.model_dump()
+        url = f"http://{self.ip_add}:{self.port}/{endpoint}/"
 
         headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json',
         }
 
-        the_dict = api_message_instance.model_dump()
-
-        response = requests.get(url, headers=headers, json=the_dict)
+        req_function = requests.get if req_type == ReqType.get() else requests.post
+        response = req_function(url, headers=headers, json=the_dict)
         return response.json()
 
 
-
 comm = LotusAPI(ip_addr='127.0.0.1',port=8000)
-the_response = comm.send_init(userID='the_user')
-print(the_response)
+sample_response = comm.init_request(userID='the_user')
+print(sample_response)
