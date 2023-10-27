@@ -23,3 +23,8 @@ class ReqType(str):
     @classmethod
     def post(cls):
         return cls(type_str='system')
+
+
+class NetworkQuantities:
+    default_ip : str = '127.0.0.1'
+    default_port : int = 8000
