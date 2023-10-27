@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from engine.l0_api.m1_api_types.base_types import ReqType, APIMessage
+from api.base_types import ReqType, APIMessage
 # ----------------------------------------------
 
 

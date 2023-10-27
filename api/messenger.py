@@ -1,7 +1,7 @@
 import requests
 # from requests import Response
-from engine.l0_api.m1_api_types.base_types import APIMessage, ReqType
-from engine.l0_api.m0_run.server import LotusAPI_Server
+from api.base_types import APIMessage, ReqType
+from api.server import LotusAPI_Server
 
 # ----------------------------------------------
 
