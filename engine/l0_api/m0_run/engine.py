@@ -1,7 +1,7 @@
 from typing import Optional
 from pyutils import DevLogger
-from engine.l3_settings import Channel, LingualEntity,SettingsController, user_io, get_setting
-from engine.l3_settings import DialogueSettings, Flag
+from engine.l2_agent.m1_language import Channel, LingualEntity, Flag
+from engine.l3_settings import DialogueSettings, SettingsController, user_io, get_setting
 from engine.l2_agent import Agent
 
 from engine.l0_api.m1_entities.entities import Alpha, User

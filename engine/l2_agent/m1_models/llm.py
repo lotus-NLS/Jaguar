@@ -1,7 +1,7 @@
 import tiktoken
 from tiktoken import Encoding
 from abc import abstractmethod
-from engine.l3_settings import Entry
+from engine.l2_agent.m1_language import Entry
 
 from .actionstream import ActionStream
 from .options import ActionOptions

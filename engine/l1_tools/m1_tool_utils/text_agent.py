@@ -1,10 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-# from engine.l3_settings import LingualEntity, DialogueRole, Entry
-from engine.l3_settings import Entry
-from engine.l2_agent.m1_models import FunctCallOption
-from engine.l2_agent import OpenAIModel, LLM, ModelTypes_OpenAI, Agent
-from engine.l2_agent.m1_protocol import Identity, Cores
+from engine.l2_agent import OpenAIModel, LLM, ModelTypes_OpenAI, Agent, FunctCallOption, Identity, Cores, Entry
 
 # ----------------------------------------------------
 

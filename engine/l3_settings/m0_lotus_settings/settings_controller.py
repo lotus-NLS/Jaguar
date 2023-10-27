@@ -9,7 +9,7 @@ from .DialogueSettings import DialogueSettings
 # (10.10.23) D.H. : Settings Terminology
 # -> There is a settings resource either locally on the computer or in the cloud
 # -> The setup method of the Settings Controller completes only when valid values are obtained for every setting listed
-# -> Values are validated by the tests defined in each SettingsGrouping
+# -> Values are validated by the _tests defined in each SettingsGrouping
 
 # (10.10.23) D.H. : Settings Workflow
 # -> If valid values can be retrieved from the settings resource they are loaded up and the setup terminates

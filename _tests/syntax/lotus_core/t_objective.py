@@ -1,7 +1,7 @@
 from engine.l2_agent.m1_protocol.objective import Objective  # Replace 'your_module' with the actual module name
 import unittest
 
-# How do tests work?
+# How do _tests work?
 # -> All methods starting with "test_" are collected automatically into a test suite
 # -> Before each test "setUp" is run and "tearDown" is run after
 # -> The success of each test is determined by passing assertion methods provided by the unittest.TestCase class

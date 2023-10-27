@@ -1,7 +1,7 @@
 from __future__ import annotations
 from queue import Queue
 from typing import Optional
-from engine.l3_settings import Entry, DialogueRole
+from engine.l2_agent.m1_language import Entry, DialogueRole
 
 from engine.l2_agent.m1_protocol import Mandate
 # ---------------------------------------------------------
