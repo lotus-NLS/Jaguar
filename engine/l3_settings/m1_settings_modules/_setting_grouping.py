@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Callable
+from api import LotusAPI
 
-from engine.l3_settings.m2_OperatorIO import user_io
 from ._setting import Setting
 # ---------------------------------------------------------
 
@@ -60,7 +60,10 @@ class SettingGrouping:
         if not len(non_valid) == 0:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry setup for those settings? (y/n)')
-            if user_io.get_confirmation(msg=msg):
+
+            LotusAPI().msg_post(msg_content=msg)
+
+            if LotusAPI().get_confirmation():
                 self.setup(is_first_run=False)
 
 

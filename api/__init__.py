@@ -1,2 +1,2 @@
 from .server import LotusServer,APIMessage
-from .messenger import APIMessage
+from .the_api import LotusAPI

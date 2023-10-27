@@ -1,5 +1,5 @@
 from pyutils import DaemonThread
-from engine.l3_settings import user_io
+from api import LotusAPI
 from engine.l2_agent import LingualEntity, DialogueRole, Entry, Flag
 from engine.l2_agent import Agent, Task
 from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
@@ -90,6 +90,7 @@ class Alpha(Agent):
 class User(LingualEntity):
     def __init__(self):
         super(User, self).__init__(role=DialogueRole.user_role())
+        self.user_id = 'the_user'
 
     def _process_partial_entry(self, partial_entry: Entry):
         super()._process_partial_entry(partial_entry=partial_entry)
@@ -98,7 +99,9 @@ class User(LingualEntity):
         if self.get_is_new_entry(partial_entry=partial_entry):
             to_log += f'\n{partial_entry.get_role()}:'
         to_log += f'{partial_entry.get_content()}'
-        user_io.print_str(the_str=to_log)
+        # user_io.print_str(the_str=to_log)
+        LotusAPI().msg_post(msg_content=to_log)
+
 
     def react(self, entry : Entry):
         pass

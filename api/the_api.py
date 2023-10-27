@@ -9,29 +9,32 @@ class LotusAPI:
         self.ip_add : str = ip_addr
         self.port : int = port
 
-    def init_request(self, userID: str) -> str:
+    def init_request(self) -> str:
         response = self._communicate(endpoint=LotusServer.init_retriever.__name__,
                                      req_type=ReqType.post(),
-                                     payload=APIMessage(user_id=f'{userID}'))
+                                     payload=APIMessage())
 
         return response
 
 
-    def msg_post(self, userID: str, msg_content : str) -> str:
+    def msg_post(self, msg_content : str) -> str:
         response = self._communicate(endpoint=LotusServer.msg_retriever.__name__,
                                      req_type=ReqType.post(),
-                                     payload=APIMessage(user_id=f'{userID}', msg_content=msg_content))
+                                     payload=APIMessage(msg_content=msg_content))
         return response
 
 
-    def msg_get(self, userID : str) -> str:
+    def msg_get(self) -> str:
         response = self._communicate(endpoint=LotusServer.msg_sender.__name__,
                                      req_type=ReqType.get(),
-                                     payload=APIMessage(user_id=f'{userID}'))
+                                     payload=APIMessage())
 
         return response
 
-
+    # TODO:
+    @staticmethod
+    def get_confirmation() -> bool:
+        return False
 
     def _communicate(self, endpoint : str, req_type : ReqType, payload : APIMessage) -> str:
         the_dict = payload.model_dump()
@@ -58,7 +61,7 @@ class LotusAPI:
 
 comm = LotusAPI()
 # # init_confirm = comm.initialize_request(userID='the_user')
-receive_confirm = comm.msg_post(userID='the_user', msg_content='bla bla')
+receive_confirm = comm.msg_post(msg_content='bla bla')
 # server_message = comm.msg_get(userID='the_user')
 #
 # # print(init_confirm)

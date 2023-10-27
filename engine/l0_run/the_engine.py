@@ -1,8 +1,8 @@
 from typing import Optional
 from pyutils import DevLogger
-from api import LotusServer
+from api import LotusServer, LotusAPI
 from engine.l2_agent.m1_language import Channel, LingualEntity, Flag
-from engine.l3_settings import DialogueSettings, SettingsController, user_io, get_setting
+from engine.l3_settings import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
 
 from engine.l0_run.entities import Alpha, User
@@ -16,7 +16,6 @@ class Engine:
         self.bots : Optional[list[Agent]] = None
         self.settings_controller : Optional[SettingsController] = None
         self.server : Optional[LotusServer] = None
-        self.user_io = user_io
 
     def initialize_entities(self):
         self.user = User()
@@ -25,14 +24,14 @@ class Engine:
 
     def initialize_IO(self):
         self.server = LotusServer()
-        self.user_io.str_logger = self.server.send_msg
-        self.user_io.get_user_msg = self.server.get_msg
         self.server.start()
+
 
     def initialize_communications(self):
         self.user_channel = Channel()
         for participant in [self.user]+self.bots:
             participant.join_channel(self.user_channel)
+
 
     def initialize_settings(self, perform_validation : bool = True):
         if self.settings_controller is None:
@@ -45,7 +44,7 @@ class Engine:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
-            user_input = user_io.get_user_msg()
+            user_input = LotusAPI().msg_get()
             print(f'The user said {user_input}')
             msg, flags = get_parsed_input(user_input)
             print(f'[Debug]: Flags are {flags}')
