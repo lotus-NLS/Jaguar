@@ -1,7 +1,9 @@
-import threading
-from queue import Queue
 import uvicorn
+import threading
+from typing import Optional
+from queue import Queue
 from fastapi import FastAPI
+from pyutils import InputWaiter
 
 from api.base_types import ReqType, APIMessage
 # ----------------------------------------------
@@ -15,44 +17,17 @@ class LotusServer:
         self.user_messages = {}  # In-memory data structure to hold messages
 
         # Get requests to deploy
-        self._make_endpoint(funct=self.initialize, req_type=ReqType.post())
-        self._make_endpoint(funct=self.get_message, req_type=ReqType.post())
+        self._make_endpoint(funct=self.init_retriever, req_type=ReqType.post())
+        self._make_endpoint(funct=self.msg_retriever, req_type=ReqType.post())
 
         # Post requests to deploy
-        self._make_endpoint(funct=self.send_message, req_type=ReqType.get())
+        self._make_endpoint(funct=self.msg_sender, req_type=ReqType.get())
 
         # Introduce message queue
-        self.msg_queue : Queue[str] = Queue()
+        self.incoming_msg_queue : Queue[str] = Queue()
+        self.outgoing_msg_queue : Queue[str] = Queue()
+        self.init_waiter : InputWaiter = InputWaiter()
 
-
-    def _make_endpoint(self, funct : callable, req_type : ReqType):
-        decorator = self.app.get if req_type == ReqType.get() else self.app.post
-        decorator(f'/{funct.__name__}/')(funct)
-
-    # ----------------------------------------------
-
-    @staticmethod
-    def initialize(lotus_msg: APIMessage) -> str:
-        return 'initialize ok'
-
-
-    def get_message(self,lotus_msg: APIMessage) -> str:
-        self.msg_queue.put(lotus_msg.msg_content)
-        return 'message ok'
-
-
-    @staticmethod
-    def send_message(lotus_msg: APIMessage) -> str:
-        return 'there is this message'
-        # user_id = lotus_msg.user_id
-        # content = lotus_msg.msg_content
-
-
-    def get_msg(self):
-        self.msg_queue = Queue()
-        return self.msg_queue.get()
-
-    # ----------------------------------------------
 
     def start(self):
         def do_start():
@@ -63,12 +38,48 @@ class LotusServer:
         threading.Thread(target=do_start).start()
 
 
+    def _make_endpoint(self, funct : callable, req_type : ReqType):
+        decorator = self.app.get if req_type == ReqType.get() else self.app.post
+        decorator(f'/{funct.__name__}/')(funct)
+
+    # ----------------------------------------------
+
+    def init_retriever(self, lotus_msg: APIMessage) -> str:
+        self.init_waiter.write(lotus_msg.user_id)
+        return 'initialize ok'
+
+
+    def msg_retriever(self, lotus_msg: APIMessage) -> str:
+        self.incoming_msg_queue.put(lotus_msg.msg_content)
+        return 'message ok'
+
+
+    def msg_sender(self, lotus_msg: APIMessage) -> str:
+        try:
+            the_msg = self.outgoing_msg_queue.get(timeout=0.5)
+        except:
+            the_msg = 'No messgae found for sending'
+        return the_msg
+
+    # ----------------------------------------------
+
+    def get_init_signal(self) -> str:
+        user_id = self.init_waiter.read()
+        return user_id
+
+
+    def get_msg(self) -> str:
+        self.incoming_msg_queue = Queue()
+        return self.incoming_msg_queue.get()
+
+
 def main():
     # Create an instance of the class and get the FastAPI app object
-    my_app = LotusServer()
-    my_app.start()
+    my_server = LotusServer()
+    my_server.start()
 
-    print(my_app.get_msg())
+    print(my_server.get_msg())
+    print(my_server.get_init_signal())
 
 
 if __name__ == '__main__':

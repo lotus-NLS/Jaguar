@@ -28,7 +28,7 @@ class Countdown:
         run_time = datetime.now() + timedelta(seconds=self.initial_time)
         self.job = self.scheduler.add_job(func=self._release, trigger='date', next_run_time=run_time)
 
-
+    # Returns when the time has run out
     def get(self):
         _ = self.one_time_lock.read()
         # print(f'Temp debug: Countdown has run out')

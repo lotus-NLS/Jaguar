@@ -1,32 +1,31 @@
 import requests
-# from requests import Response
 from api.base_types import APIMessage, ReqType, NetworkQuantities
 from api.server import LotusServer
 
 # ----------------------------------------------
 
 class LotusAPI:
-    def __init__(self, ip_addr : str = 'localhost', port : int = 8000):
+    def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = NetworkQuantities.default_port):
         self.ip_add : str = ip_addr
         self.port : int = port
 
-    def initialize_request(self, userID: str) -> str:
-        response = self._communicate(endpoint=LotusServer.initialize.__name__,
-                          req_type=ReqType.post(),
-                          payload=APIMessage(user_id=f'{userID}'))
+    def init_request(self, userID: str) -> str:
+        response = self._communicate(endpoint=LotusServer.init_retriever.__name__,
+                                     req_type=ReqType.post(),
+                                     payload=APIMessage(user_id=f'{userID}'))
 
         return response
 
 
-    def message_post_request(self,userID: str, msg_content : str) -> str:
-        response = self._communicate(endpoint=LotusServer.get_message.__name__,
+    def msg_post(self, userID: str, msg_content : str) -> str:
+        response = self._communicate(endpoint=LotusServer.msg_retriever.__name__,
                                      req_type=ReqType.post(),
                                      payload=APIMessage(user_id=f'{userID}', msg_content=msg_content))
         return response
 
 
-    def message_get_request(self, userID : str) -> str:
-        response = self._communicate(endpoint=LotusServer.send_message.__name__,
+    def msg_get(self, userID : str) -> str:
+        response = self._communicate(endpoint=LotusServer.msg_sender.__name__,
                                      req_type=ReqType.get(),
                                      payload=APIMessage(user_id=f'{userID}'))
 
@@ -45,15 +44,23 @@ class LotusAPI:
 
         req_function = requests.get if req_type == ReqType.get() else requests.post
         response = req_function(url, headers=headers, json=the_dict)
-        return response.json()
+
+        try:
+            the_response = response.json()
+        except Exception as e:
+            status_code = response.status_code
+            reason = response.reason
+            the_response =  f"Failed to decode JSON due to error:\"{e}\". Status Code: {status_code}, Reason: {reason}"
+
+        return the_response
 
 
 
 comm = LotusAPI()
-init_confirm = comm.initialize_request(userID='the_user')
-receive_confirm = comm.message_post_request(userID='the_user', msg_content='bla bla')
-server_message = comm.message_get_request(userID='the_user')
+# init_confirm = comm.initialize_request(userID='the_user')
+receive_confirm = comm.msg_post(userID='the_user', msg_content='bla bla')
+server_message = comm.msg_get(userID='the_user')
 
-print(init_confirm)
+# print(init_confirm)
 print(receive_confirm)
 print(server_message)
