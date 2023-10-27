@@ -1,6 +1,6 @@
 import unittest
 import json
-from src.pyutils import get_salvaged_json
+from lotusEngine.pyutils import get_salvaged_json
 
 # ---------------------------------------------------------
 
