@@ -11,6 +11,7 @@ class APIMessage(BaseModel):
         # it would be great if there was some way around that redundancy but I dont think there is
         super().__init__(user_id=user_id, msg_content=msg_content,settings_content=settings_content)
 
+
 class ReqType(str):
     def __new__(cls, type_str: str):
         return str.__new__(cls, type_str)
