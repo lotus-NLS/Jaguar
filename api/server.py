@@ -7,7 +7,6 @@ from pyutils import InputWaiter
 from api.base_types import ReqType, APIMessage, NetworkQuantities
 # ----------------------------------------------
 
-# TODO: IO should be based on user_id
 # TODO: The server make POST requests to the client instead of waiting for the client to retrieve the messages
 class LotusServer:
     def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
