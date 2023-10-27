@@ -1,6 +1,5 @@
-from dash import Dash, Input, Output
+from dash import Dash
 from typing import Optional
-import requests
 
 from UI.element_types import Layout, ElemAttribute
 from UI.chat_page.page_elements.chat_elements import userInput, btn, bottom_container, chat_window

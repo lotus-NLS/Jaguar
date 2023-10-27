@@ -1,6 +1,6 @@
 # import time
 # from tests.test_module import TestModule
-# from engine.l2_lotus_agent.m0_language.conversation_participant import ConversationParticipant, DialogueRole, Channel
+# from engine.l2_agent.m0_language.conversation_participant import ConversationParticipant, DialogueRole, Channel
 #
 #
 # class ConversationTestModule(TestModule):
