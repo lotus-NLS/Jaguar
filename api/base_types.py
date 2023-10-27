@@ -28,3 +28,5 @@ class ReqType(str):
 class NetworkQuantities:
     default_ip : str = '127.0.0.1'
     default_port : int = 8000
+
+# TODO: Can consolidate function and request type into "endpoint", eliminating redundancy

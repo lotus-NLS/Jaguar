@@ -100,7 +100,7 @@ class User(LingualEntity):
             to_log += f'\n{partial_entry.get_role()}:'
         to_log += f'{partial_entry.get_content()}'
         # user_io.print_str(the_str=to_log)
-        LotusAPI().msg_post(msg_content=to_log)
+        LotusAPI().post_engine_message(msg_content=to_log)
 
 
     def react(self, entry : Entry):

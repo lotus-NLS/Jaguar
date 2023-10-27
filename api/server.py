@@ -16,11 +16,11 @@ class LotusServer:
         self.user_messages = {}  # In-memory data structure to hold messages
 
         # Get requests to deploy
-        self._make_endpoint(funct=self.init_retriever, req_type=ReqType.post())
-        self._make_endpoint(funct=self.msg_retriever, req_type=ReqType.post())
+        self._make_endpoint(funct=self.incoming_init_handler, req_type=ReqType.get())
+        self._make_endpoint(funct=self.incoming_msg_handler, req_type=ReqType.get())
 
         # Post requests to deploy
-        self._make_endpoint(funct=self.msg_sender, req_type=ReqType.get())
+        self._make_endpoint(funct=self.outgoing_msg_handler, req_type=ReqType.post())
 
         # Introduce message queue
         self.incoming_msg_queue : Queue[str] = Queue()
@@ -43,17 +43,17 @@ class LotusServer:
 
     # ----------------------------------------------
 
-    def init_retriever(self, lotus_msg: APIMessage) -> str:
+    def incoming_init_handler(self, lotus_msg: APIMessage) -> str:
         self.init_waiter.write(lotus_msg.user_id)
         return 'initialize ok'
 
 
-    def msg_retriever(self, lotus_msg: APIMessage) -> str:
+    def incoming_msg_handler(self, lotus_msg: APIMessage) -> str:
         self.incoming_msg_queue.put(lotus_msg.msg_content)
         return 'message ok'
 
 
-    def msg_sender(self, lotus_msg: APIMessage) -> str:
+    def outgoing_msg_handler(self, lotus_msg: APIMessage) -> str:
         _ = lotus_msg
         try:
             the_msg = self.outgoing_msg_queue.get(timeout=0.5)
@@ -77,14 +77,14 @@ class LotusServer:
         return
 
 
-def main():
-    # Create an instance of the class and get the FastAPI app object
-    my_server = LotusServer()
-    my_server.start()
-
-    print(my_server.get_msg())
-    print(my_server.get_init_signal())
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     # Create an instance of the class and get the FastAPI app object
+#     my_server = LotusServer()
+#     my_server.start()
+#
+#     print(my_server.get_msg())
+#     print(my_server.get_init_signal())
+#
+#
+# if __name__ == '__main__':
+#     main()

@@ -3,8 +3,8 @@ from .the_api import LotusAPI
 
 comm = LotusAPI()
 # init_confirm = comm.initialize_request(userID='the_user')
-receive_confirm = comm.msg_post(msg_content='bla bla')
-server_message = comm.msg_get()
+receive_confirm = comm.post_engine_message(msg_content='bla bla')
+server_message = comm.get_user_msg()
 
 # print(init_confirm)
 print(receive_confirm)

@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 from pyutils import DevLogger
 from api import LotusServer, LotusAPI
@@ -44,7 +45,7 @@ class Engine:
            self.user.speak('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
-            user_input = LotusAPI().msg_get()
+            user_input = LotusAPI().get_user_msg()
             print(f'The user said {user_input}')
             msg, flags = get_parsed_input(user_input)
             print(f'[Debug]: Flags are {flags}')

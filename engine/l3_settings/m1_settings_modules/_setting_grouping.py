@@ -61,7 +61,7 @@ class SettingGrouping:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry setup for those settings? (y/n)')
 
-            LotusAPI().msg_post(msg_content=msg)
+            LotusAPI().post_engine_message(msg_content=msg)
 
             if LotusAPI().get_confirmation():
                 self.setup(is_first_run=False)

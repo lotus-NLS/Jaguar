@@ -9,23 +9,24 @@ class LotusAPI:
         self.ip_add : str = ip_addr
         self.port : int = port
 
+    # TODO: This should actually be a get request made by the client not a post request made by the server
     def init_request(self) -> str:
-        response = self._communicate(endpoint=LotusServer.init_retriever.__name__,
-                                     req_type=ReqType.post(),
+        response = self._communicate(endpoint=LotusServer.incoming_init_handler.__name__,
+                                     req_type=ReqType.get(),
                                      payload=APIMessage())
 
         return response
 
-
-    def msg_post(self, msg_content : str) -> str:
-        response = self._communicate(endpoint=LotusServer.msg_retriever.__name__,
+    # TODO: This should actually be a get request made by the client not a post request made by the server
+    def post_engine_message(self, msg_content : str) -> str:
+        response = self._communicate(endpoint=LotusServer.outgoing_msg_handler.__name__,
                                      req_type=ReqType.post(),
                                      payload=APIMessage(msg_content=msg_content))
         return response
 
 
-    def msg_get(self) -> str:
-        response = self._communicate(endpoint=LotusServer.msg_sender.__name__,
+    def get_user_msg(self) -> str:
+        response = self._communicate(endpoint=LotusServer.incoming_msg_handler.__name__,
                                      req_type=ReqType.get(),
                                      payload=APIMessage())
 
