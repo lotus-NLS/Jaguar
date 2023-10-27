@@ -1,13 +1,14 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
-class Message(BaseModel):
-    type: str = Field(..., description="The type of message (e.g., 'initialize', 'receive_message')")
-    content: str = Field(None, description="The message content")
-    arguments: dict = Field({}, description="Additional arguments for the request")
+class APIMessage(BaseModel):
+    user_id: str
+    msg_content: Optional[str] = None
+    # settings_content: Optional[str] = None
 
 
 class ReqType(str):
-    def __new__(cls, type_str : str):
+    def __new__(cls, type_str: str):
         return str.__new__(cls, type_str)
 
     @classmethod

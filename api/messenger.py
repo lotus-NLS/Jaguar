@@ -1,12 +1,32 @@
 import requests
+from requests import Response
+from api.base_types import APIMessage
+from api.server import LotusAPI_Server
 
 
-class LotusAPI_Communicator:
-    def send_request(self, endpoint, params=None, data=None):
-        base_url = "http://127.0.0.1:8000"  # Replace with your FastAPI app's URL
 
-        response = requests.get(f"{base_url}/{endpoint}/", params=params) if data is None else requests.post(
-            f"{base_url}/{endpoint}/", json=data)
+class LotusAPI:
+
+    def __init__(self, ip_addr : str, port : int):
+        self.ip_add : str = ip_addr
+        self.port : int = port
+
+    def send_init(self, userID: str) -> Response:
+        api_message_instance = APIMessage(user_id="some_user",msg_content='string')
+        url = f"http://{self.ip_add}:{self.port}/{LotusAPI_Server.initialize.__name__}/"
+
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        the_dict = api_message_instance.model_dump()
+
+        response = requests.get(url, headers=headers, json=the_dict)
         return response.json()
 
 
+
+comm = LotusAPI(ip_addr='127.0.0.1',port=8000)
+the_response = comm.send_init(userID='the_user')
+print(the_response)
