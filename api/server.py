@@ -1,5 +1,3 @@
-import uvicorn
-import threading
 from pyutils import InputWaiter
 
 from api.io_module import IOModule
@@ -7,18 +5,33 @@ from api.base_types import ReqType, APIMessage, NetworkQuantities
 # ----------------------------------------------
 
 # TODO: The server make POST requests to the client instead of waiting for the client to retrieve the messages
+
 class LotusServer(IOModule):
+    _instance = None
+    _is_initialized = False
+
+    def __new__(cls, *args,**kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+
+        return cls._instance
+
+
     def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
-        super().__init__(ip_addr=ip_addr,port=port)
-        self.user_messages = {}
+        if not LotusServer._is_initialized:
+            super().__init__(ip_addr=ip_addr,port=port)
+            self.user_messages = {}
 
-        # Get requests to deploy
-        self._make_endpoint(funct=self.init_endpoint, req_type=ReqType.post())
-        self._make_endpoint(funct=self.user_msg_endpoint, req_type=ReqType.post())
+            # Get requests to deploy
+            self.make_endpoint(funct=self.init_endpoint, req_type=ReqType.post())
+            self.make_endpoint(funct=self.user_msg_endpoint, req_type=ReqType.post())
 
-        # Introduce message queue
-        self.incoming_msg_waiter : InputWaiter = InputWaiter()
-        self.init_waiter : InputWaiter = InputWaiter()
+            # Introduce message queue
+            self.incoming_msg_waiter : InputWaiter = InputWaiter()
+            self.init_waiter : InputWaiter = InputWaiter()
+
+            LotusServer._is_initialized = True
+
 
     # ----------------------------------------------
 
@@ -40,7 +53,6 @@ class LotusServer(IOModule):
 
     # ----------------------------------------------
 
-
     # TODO
     def post_engine_message(self, msg_content : str):
         pass
@@ -49,7 +61,7 @@ class LotusServer(IOModule):
     def get_confirmation(self):
         pass
 
-
     # TODO
     def send_msg(self, msg : str):
         pass
+

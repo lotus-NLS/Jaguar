@@ -22,7 +22,7 @@ class IOModule:
         threading.Thread(target=do_start).start()
 
 
-    def _make_endpoint(self, funct : callable, req_type : ReqType):
+    def make_endpoint(self, funct : callable, req_type : ReqType):
         decorator = self.app.get if req_type == ReqType.get() else self.app.post
         decorator(f'/{funct.__name__}/')(funct)
 
