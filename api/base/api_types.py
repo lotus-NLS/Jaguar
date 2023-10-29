@@ -4,12 +4,14 @@ from pydantic import BaseModel
 class APIMessage(BaseModel):
     user_id: str
     msg_content: Optional[str] = None
+    bool_content : Optional[bool] = None
     settings_content: Optional[str] = None
 
-    def __init__(self, user_id: str = 'abcd', msg_content: Optional[str] = None, settings_content : Optional[str] = None):
+    def __init__(self, user_id: str = 'default_id', msg_content: Optional[str] = None, settings_content : Optional[str] = None
+                 ,bool_content : Optional[bool] = None):
         # !! The kwargs name have to match the attributes defined above
         # it would be great if there was some way around that redundancy but I dont think there is
-        super().__init__(user_id=user_id, msg_content=msg_content,settings_content=settings_content)
+        super().__init__(user_id=user_id, msg_content=msg_content,settings_content=settings_content,bool_content=bool_content)
 
 
 class ReqType(str):

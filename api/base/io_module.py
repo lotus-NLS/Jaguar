@@ -1,7 +1,7 @@
 import uvicorn
 import requests
 from fastapi import FastAPI
-import threading
+from pyutils import DaemonThread
 from api.base.api_types import ReqType, APIMessage, NetworkQuantities, Endpoint
 
 # ----------------------------------------------
@@ -18,8 +18,8 @@ class LotusIO:
             uvicorn_config = uvicorn.Config(app=self.app, host=self.ip_addr, port=self.port)
             server = uvicorn.Server(config=uvicorn_config)
             server.run()
+        DaemonThread(target=do_start).start()
 
-        threading.Thread(target=do_start).start()
 
 
     def handle_endpoint(self,endpoint : Endpoint, handler : callable):

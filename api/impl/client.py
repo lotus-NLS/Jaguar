@@ -32,6 +32,6 @@ class LotusClient(LotusIO):
     def send_user_msg(self,msg_content : str) -> None:
         self._communicate(endpoint=ends.user_data, payload=APIMessage(msg_content=msg_content))
 
-    # TODO
-    def send_confirmation(self):
-        pass
+
+    def send_confirmation(self, is_confirmed : bool):
+        self._communicate(endpoint=ends.user_data, payload=APIMessage(bool_content=is_confirmed))

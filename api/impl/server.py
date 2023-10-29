@@ -21,20 +21,26 @@ class LotusServer(LotusIO):
             super().__init__(ip_addr=ip_addr,port=port)
             self.user_data_endpoint = self.handle_endpoint(endpoint=ends.user_data, handler=self._user_data_handler)
             self._incoming_msg_waiter : InputWaiter = InputWaiter()
-            
+            self._incoming_bool_waiter : InputWaiter = InputWaiter()
+
             LotusServer._is_initialized = True
 
     # ----------------------------------------------
     # Handlers
 
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
-        self._incoming_msg_waiter.write(lotus_msg.msg_content)
+        if not lotus_msg.msg_content is None:
+            self._incoming_msg_waiter.write(lotus_msg.msg_content)
+
+        if lotus_msg.bool_content is None:
+            self._incoming_bool_waiter.write(lotus_msg.bool_content)
+
         return 'message ok'
 
-    
+
     # ----------------------------------------------
     # API  
-
+3
     def post_engine_message(self, msg_content : str) -> None:
         self._communicate(endpoint=ends.agent_data, payload=APIMessage(msg_content=msg_content))
 
@@ -43,6 +49,7 @@ class LotusServer(LotusIO):
         self._incoming_msg_waiter.clear()
         return self._incoming_msg_waiter.read()
 
-    # TODO
-    def get_confirmation(self) -> bool:
+
+    def get_confirmation(self):
+        self._incoming_bool_waiter.clear()
         pass
