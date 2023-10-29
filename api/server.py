@@ -41,6 +41,15 @@ class LotusServer:
         decorator = self.app.get if req_type == ReqType.get() else self.app.post
         decorator(f'/{funct.__name__}/')(funct)
 
+    # TODO
+    def post_engine_message(self, msg_content : str):
+        pass
+
+    # TODO
+    def get_confirmation(self):
+        pass
+
+
     # ----------------------------------------------
 
     def incoming_init_handler(self, lotus_msg: APIMessage) -> str:
@@ -67,8 +76,8 @@ class LotusServer:
         user_id = self.init_waiter.read()
         return user_id
 
-
-    def get_msg(self) -> str:
+    # TODO
+    def get_user_msg(self) -> str:
         self.incoming_msg_queue = Queue()
         return self.incoming_msg_queue.get()
 

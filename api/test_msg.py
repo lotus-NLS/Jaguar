@@ -1,7 +1,7 @@
-from .the_api import LotusAPI
+from .the_api import LotusServer
 
 
-comm = LotusAPI()
+comm = LotusServer()
 # init_confirm = comm.initialize_request(userID='the_user')
 receive_confirm = comm.post_engine_message(msg_content='bla bla')
 server_message = comm.get_user_msg()
