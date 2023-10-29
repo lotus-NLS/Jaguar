@@ -6,8 +6,7 @@ function appendMessage(msg) {
 }
 
 
-//TODO: Before the event listening starts, should verify that the object even exists
-//else wait or raise Exception
+//TODO: Before the event listening starts, should verify that the object even exists else wait or raise Exception
 document.addEventListener('DOMContentLoaded', function(){
     console.log('Document loaded!');
 
