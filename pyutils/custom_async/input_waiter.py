@@ -5,7 +5,7 @@ class InputWaiter:
         self.q = Queue()
 
     def clear(self):
-        self.q = Queue
+        self.q = Queue()
 
     def write(self, value):
         self.q.put(value)

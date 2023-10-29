@@ -1,10 +1,16 @@
+import time
+
 from api.server import LotusServer
+from api.client import LotusClient
 
 
-new_lotus_server = LotusServer(ip_addr='300',port=2)
-this_lotus_server = LotusServer(ip_addr='300',port=3)
-# this_lotus_serverr = LotusServer()
+the_lotus_client = LotusClient()
 
 
+time.sleep(0.5)
 
-print('Done')
+the_lotus_client.send_user_msg(msg_content='Hello ')
+
+
+while True:
+    time.sleep(5)

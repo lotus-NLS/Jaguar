@@ -26,16 +26,22 @@ class ReqType(str):
 
 
 class Endpoint:
-    def __init__(self, name : str, req_type : ReqType):
+    def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
         self.name : str = name
         self.req_type : ReqType = req_type
+        self.ip_addr : str = ip_addr
+        self.port : int = port
 
 
 class NetworkQuantities:
     default_ip : str = '127.0.0.1'
-    default_port : int = 8000
+    default_engine_port : int = 8000
+    default_client_port : int = 8001
 
 
 class ends:
-    user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post())
-    agent_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get())
+    user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post(),ip_addr=NetworkQuantities.default_ip
+                         ,port=NetworkQuantities.default_engine_port)
+
+    agent_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get(),
+                          ip_addr=NetworkQuantities.default_ip,port=NetworkQuantities.default_client_port)

@@ -24,13 +24,13 @@ class LotusIO:
 
     def handle_endpoint(self,endpoint : Endpoint, handler : callable):
         decorator = self.app.get if endpoint.req_type == ReqType.get() else self.app.post
-        decorator(f'/{handler.__name__}/')(handler)
+        decorator(f'/{endpoint.name}/')(handler)
 
 
-
-    def _communicate(self, endpoint: Endpoint, payload: APIMessage) -> str:
+    @staticmethod
+    def _communicate(endpoint: Endpoint, payload: APIMessage) -> str:
         the_dict = payload.model_dump()
-        url = f"http://{self.ip_addr}:{self.port}/{endpoint}/"
+        url = f"http://{endpoint.ip_addr}:{endpoint.port}/{endpoint.name}/"
 
         headers = {
             'accept': 'application/json',
