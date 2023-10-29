@@ -2,11 +2,11 @@ import uvicorn
 import requests
 from fastapi import FastAPI
 import threading
-from api.base_types import ReqType, APIMessage, NetworkQuantities
+from api.base_types import ReqType, APIMessage, NetworkQuantities, Endpoint
 
 # ----------------------------------------------
 
-class IOModule:
+class LotusIO:
     def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
         self.app = FastAPI()
         self.ip_addr : str = ip_addr
@@ -22,12 +22,13 @@ class IOModule:
         threading.Thread(target=do_start).start()
 
 
-    def make_endpoint(self, funct : callable, req_type : ReqType):
-        decorator = self.app.get if req_type == ReqType.get() else self.app.post
-        decorator(f'/{funct.__name__}/')(funct)
+    def handle_endpoint(self,endpoint : Endpoint, handler : callable):
+        decorator = self.app.get if endpoint.req_type == ReqType.get() else self.app.post
+        decorator(f'/{handler.__name__}/')(handler)
 
 
-    def _communicate(self, endpoint: str, req_type: ReqType, payload: APIMessage) -> str:
+
+    def _communicate(self, endpoint: Endpoint, payload: APIMessage) -> str:
         the_dict = payload.model_dump()
         url = f"http://{self.ip_addr}:{self.port}/{endpoint}/"
 
@@ -36,7 +37,7 @@ class IOModule:
             'Content-Type': 'application/json',
         }
 
-        req_function = requests.get if req_type == ReqType.get() else requests.post
+        req_function = requests.get if endpoint.req_type == ReqType.get() else requests.post
         response = req_function(url, headers=headers, json=the_dict)
 
         try:

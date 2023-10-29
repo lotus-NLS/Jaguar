@@ -25,8 +25,17 @@ class ReqType(str):
         return cls(type_str='system')
 
 
+class Endpoint:
+    def __init__(self, name : str, req_type : ReqType):
+        self.name : str = name
+        self.req_type : ReqType = req_type
+
+
 class NetworkQuantities:
     default_ip : str = '127.0.0.1'
     default_port : int = 8000
 
-# TODO: Can consolidate function and request type into "endpoint", eliminating redundancy
+
+class ends:
+    user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post())
+    agent_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get())
