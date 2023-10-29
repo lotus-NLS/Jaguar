@@ -1,5 +1,6 @@
 import uvicorn
 import requests
+from typing import Optional
 from fastapi import FastAPI
 from pyutils import DaemonThread
 from api.base.api_types import ReqType, APIMessage, NetworkQuantities, Endpoint
@@ -28,7 +29,7 @@ class LotusIO:
 
 
     @staticmethod
-    def _communicate(endpoint: Endpoint, payload: APIMessage) -> str:
+    def _communicate(endpoint: Endpoint, payload: APIMessage) -> Optional[str]:
         the_dict = payload.model_dump()
         url = f"http://{endpoint.ip_addr}:{endpoint.port}/{endpoint.name}/"
 
@@ -38,7 +39,11 @@ class LotusIO:
         }
 
         req_function = requests.get if endpoint.req_type == ReqType.get() else requests.post
-        response = req_function(url, headers=headers, json=the_dict)
+        try:
+            response = req_function(url, headers=headers, json=the_dict)
+        except Exception as e:
+            print(f'Connection to endpoint {endpoint.name} could not be established due to error : {e}')
+            return None
 
         try:
             the_response = response.json()

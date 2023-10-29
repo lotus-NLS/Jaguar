@@ -1,6 +1,7 @@
 import time
 from api.impl.client import LotusClient
 
+# ----------------------------------------------
 
 the_lotus_client = LotusClient()
 
