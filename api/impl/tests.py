@@ -1,7 +1,7 @@
 import time
 
 from api.server import LotusServer
-from api.client import LotusClient
+from api.impl.client import LotusClient
 
 
 the_lotus_client = LotusClient()

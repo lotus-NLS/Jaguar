@@ -1,7 +1,7 @@
 from pyutils import InputWaiter
 
-from api.io_module import LotusIO
-from api.base_types import APIMessage, NetworkQuantities, ends
+from api.base.io_module import LotusIO
+from api.base.api_types import APIMessage, NetworkQuantities, ends
 # ----------------------------------------------
 
 class LotusServer(LotusIO):

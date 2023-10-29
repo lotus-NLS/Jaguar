@@ -2,7 +2,7 @@ import uvicorn
 import requests
 from fastapi import FastAPI
 import threading
-from api.base_types import ReqType, APIMessage, NetworkQuantities, Endpoint
+from api.base.api_types import ReqType, APIMessage, NetworkQuantities, Endpoint
 
 # ----------------------------------------------
 
