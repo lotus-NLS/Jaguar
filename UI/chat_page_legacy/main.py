@@ -2,13 +2,14 @@ from dash import Dash, html
 from typing import Optional
 
 from UI.element_types import Layout, ElemAttribute
-from UI.chat_page.page_elements.chat_elements import userInput, btn, bottom_container, chat_window
+from UI.chat_page_legacy.page_elements.chat_elements import userInput, btn, bottom_container, chat_window
 
 # ----------------------------------------------
 # Logic
 
 external_scripts = [
-    'https://cdn.jsdelivr.net/npm/brython@3.11/brython.min.js"',  # Replace with the actual Brython path
+    'https://cdn.jsdelivr.net/npm/brython@3.11/brython.min.js"',
+    '/static/my_brython_script.py'
 ]
 
 app = Dash(__name__, external_scripts=external_scripts)
@@ -16,20 +17,20 @@ app = Dash(__name__, external_scripts=external_scripts)
 # Layout
 
 
-app.layout = html.Div([
-        # Your Dash components here
-        html.Script(
-            type="text/python",
-            children=[
-                '''
-                from browser import console
-                console.log("Hello, World!")
-                '''
-            ]
-        ),
-        html.Script("brython()")
-    ]
-)
+# app.layout = html.Div([
+#         # Your Dash components here
+#         html.Script(
+#             type="text/python",
+#             children=[
+#                 '''
+#                 from browser import console
+#                 console.log("Hello, World!")
+#                 '''
+#             ]
+#         ),
+#         html.Script("brython()")
+#     ]
+# )
 
 
 @app.server.after_request
@@ -40,7 +41,7 @@ def after_request_func(response):
                 b'</body>',
                 b'''<script type="text/python">
                     from browser import console
-                    console.log("Hello, World!")
+                    console.log("Hello, Worlddd!")
                    </script>
                    <script>brython()</script>
                    </body>'''
