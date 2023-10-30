@@ -1,0 +1,1 @@
+from .the_doc import document

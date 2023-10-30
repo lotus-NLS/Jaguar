@@ -1,4 +1,5 @@
-from browser import document
+
+# from pywebdev.src.browser import
 
 def append_message(event):
     chat_window = document["chat-window"]

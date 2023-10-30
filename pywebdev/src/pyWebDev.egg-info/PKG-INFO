@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: pyWebDev
+Version: 0.1
+Summary: Substitute HTML, JS and CSS with pure Python
+Author: Daniel Hollarek
+Requires-Dist: Flask
