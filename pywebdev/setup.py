@@ -3,8 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pywebdev',
     version='0.2',
-    packages=['devkit', 'browser'],
-    package_dir={'': 'src'},
+    packages=find_packages(),
     install_requires=[
         'flask',
     ],
