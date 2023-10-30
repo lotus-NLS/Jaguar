@@ -1,3 +1,4 @@
+import os
 from yattag import Doc
 from abc import abstractmethod
 
@@ -43,11 +44,24 @@ class DocWriter:
 
     # ----------------------------------------------
 
+    # def add_div(self, id_name=None, style=None, **kwargs):
+    #     attributes = {}
+    #     if id_name:
+    #         attributes['id'] = id_name
+    #     if style:
+    #         attributes['style'] = style
+    #     attributes.update(kwargs)
+    #
+    #     with self.add_tag('div', **attributes):
+    #         pass
+
     def add_input(self, input_type, id_name, **kwargs):
         self.add_stag('input', type=input_type, id=id_name, **kwargs)
 
-    def add_python_script(self, content):
-        self.add_script('text/python', content)
+    def add_python_script(self, script_name : str):
+        script_path = os.path.join("scripts", f"{script_name}.py")
+        with open(script_path, "r") as file:
+            self.add_script('text/python', file.read())
 
     def add_script(self, script_type, content):
         with self.add_tag('script', type=script_type):
@@ -64,4 +78,3 @@ class DocWriter:
 
     def get_value(self) -> str:
         return self.doc.getvalue()
-
