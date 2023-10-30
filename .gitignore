@@ -4,4 +4,5 @@ __pycache__
 temp
 build
 dist
-.egg-info
+*.egg-info/
+

@@ -21,7 +21,7 @@ class DocWriter:
         with self.add_tag('html', lang='en'):
             with self.add_tag('head'):
                 self.add_head_content()
-            with self.add_tag('body', onload="browser()"):
+            with self.add_tag('body', onload="brython()"):
                 self.add_body_content()
         return self.get_value()
 
