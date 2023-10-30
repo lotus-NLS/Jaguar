@@ -60,13 +60,13 @@ class DocWriter:
     #     with self.add_tag('div', **attributes):
     #         pass
 
-    def add_input(self, input_type, id_name, **kwargs):
-        self.add_stag('input', type=input_type, id=id_name, **kwargs)
+    def add_input(self, input_type, the_id, **kwargs):
+        self.add_stag('input', type=input_type, id=the_id, **kwargs)
 
-    def add_python_script(self, script_path : str):
-        script_path = os.path.join( f"{script_path}.py")
+    def add_python_script(self, rel_path : str):
+        script_path = os.path.join(self.rootpath,rel_path)
         with open(script_path, "r") as file:
-            self.add_script('text/python', file.read())
+            self.add_script('text/python', file.read().replace('pywebdev.browser','browser'))
 
     def add_script(self, script_type, content):
         with self.add_tag('script', type=script_type):

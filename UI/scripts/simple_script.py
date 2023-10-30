@@ -1,7 +1,7 @@
 from pywebdev.browser import document
 
-
 def append_message(event):
+    _ = event
     chat_window = document["chat-window"]
     text_bar = document["text_bar"]
     new_element = document.createElement("div")

@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'flask',
+        'yattag'
     ],
     author='Daniel Hollarek',
     description='Substitute HTML, JS and CSS with pure Python',

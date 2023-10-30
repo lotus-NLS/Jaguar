@@ -1,1 +1,1 @@
-from .the_doc import document
+from .doc_class import document

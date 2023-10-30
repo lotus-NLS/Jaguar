@@ -5,7 +5,7 @@ For more information see the "Wiki" section on the [Project management page](htt
 <!--suppress ALL -->
 
 <p align="center">
-  <img src="documentation/logo.jpg" alt="Logo" width="200">
+  <img src="_documentation/logo.jpg" alt="Logo" width="200">
   <br>
   <em> Nelumbo Nucifera the most widely known Lotus Flower</em>
 </p>
