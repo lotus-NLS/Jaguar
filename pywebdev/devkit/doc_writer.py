@@ -49,17 +49,6 @@ class DocWriter:
 
     # ----------------------------------------------
 
-    # def add_div(self, id_name=None, style=None, **kwargs):
-    #     attributes = {}
-    #     if id_name:
-    #         attributes['id'] = id_name
-    #     if style:
-    #         attributes['style'] = style
-    #     attributes.update(kwargs)
-    #
-    #     with self.add_tag('div', **attributes):
-    #         pass
-
     def add_input(self, input_type, the_id, **kwargs):
         self.add_stag('input', type=input_type, id=the_id, **kwargs)
 
