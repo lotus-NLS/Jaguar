@@ -1,4 +1,5 @@
 import os
+import inspect
 from yattag import Doc
 from abc import abstractmethod
 
@@ -10,13 +11,17 @@ class DocWriter:
         self.doc, self.tag, self.text = Doc().tagtext()
         self.title = title
 
+        frame = inspect.currentframe().f_back
+        filename = frame.f_globals["__file__"]
+        self.rootpath = os.path.dirname(os.path.abspath(filename))
+
     # ----------------------------------------------
 
     def get_index(self) -> str:
         with self.add_tag('html', lang='en'):
             with self.add_tag('head'):
                 self.add_head_content()
-            with self.add_tag('body', onload="brython()"):
+            with self.add_tag('body', onload="browser()"):
                 self.add_body_content()
         return self.get_value()
 
@@ -58,8 +63,8 @@ class DocWriter:
     def add_input(self, input_type, id_name, **kwargs):
         self.add_stag('input', type=input_type, id=id_name, **kwargs)
 
-    def add_python_script(self, script_name : str):
-        script_path = os.path.join("scripts", f"{script_name}.py")
+    def add_python_script(self, script_path : str):
+        script_path = os.path.join( f"{script_path}.py")
         with open(script_path, "r") as file:
             self.add_script('text/python', file.read())
 
