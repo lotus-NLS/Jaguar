@@ -1,5 +1,5 @@
 from flask import Flask
-from browser import document
+from pyWebdevKit import DocWriter
 
 # ----------------------------------------------
 
