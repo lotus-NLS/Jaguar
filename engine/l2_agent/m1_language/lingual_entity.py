@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from threading import Thread
-from typing import Union, Optional
+from typing import Optional, List
 from abc import abstractmethod
+from pyutils import Countdown, DaemonThread
+from queue import Queue
 
 from .channel import Channel, Stream
 from .entry import Entry, DialogueRole, Flag
@@ -16,9 +18,40 @@ class LingualEntity:
         super().__init__()
         self._role : DialogueRole = role
         self._personal_log : list[Entry] = []
-        self._channel : Union[Channel, None] = None
+        self._channel : Optional[Channel] = None
         self.name = name if not name is None else self._role
         self.stream : Optional[Stream] = None
+
+        self.staff_countdown : Countdown = Countdown(time_to_finish=0.5, on_countdown_finish=self.try_release_staff)
+        self.to_say : Queue[Entry] = Queue()
+        DaemonThread(target=self.do_speak).start()
+
+
+    def speak(self, msg: str, flags: Optional[List[Flag]] = None):
+        self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
+
+
+    def do_speak(self):
+        while True:
+            new_entry = self.to_say.get()
+            flags = new_entry.flags
+            if self._channel is None:
+                return
+
+            self._channel.staff_lock.acquire(blocking=True)
+            self._channel.broadcast(new_entry)
+            self.staff_countdown.relaunch()
+
+            if not flags is None:
+                self.try_release_staff() if Flag.get_entry_end_flag() in flags else None
+
+
+    def try_release_staff(self):
+        print(f'The staff has been released from {self.name}')
+        try:
+            self._channel.release_staff()
+        except:
+            pass
 
     # ------------------------------
     # Update
@@ -89,11 +122,6 @@ class LingualEntity:
         new_entry = Entry(msg=to_log, role=self._role, name=self.name)
         return self._process_partial_entry(partial_entry=new_entry)
 
-
-    def speak(self, msg : str, flags : Optional[list[Flag]] = None):
-        if self._channel is None:
-            return
-        self._channel.broadcast_message(Entry(role=self._role, msg=msg,flags=flags))
 
     # ------------------------------
     # log

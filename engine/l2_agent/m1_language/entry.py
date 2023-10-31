@@ -75,6 +75,10 @@ class Flag(str):
         return str.__new__(cls, flag_str)
 
     @classmethod
+    def get_entry_end_flag(cls) -> Flag:
+        return cls(flag_str='e')
+
+    @classmethod
     def get_print_threads_flag(cls) -> Flag:
         return cls(flag_str='t')
 

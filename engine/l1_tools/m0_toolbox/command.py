@@ -98,9 +98,9 @@ class Shell:
     def update_history(self, msg : str):
         self.history.append(msg)
         self.buffer += msg
-        self.log_countdown.reset()
+        self.log_countdown.relaunch()
 
     def get_buffer(self) -> str:
-        self.log_countdown.get()
+        self.log_countdown.finish()
         temp, self.buffer = self.buffer, ''
         return temp
