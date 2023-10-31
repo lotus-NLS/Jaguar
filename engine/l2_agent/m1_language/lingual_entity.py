@@ -38,7 +38,9 @@ class LingualEntity:
             if self._channel is None:
                 return
 
-            self._channel.staff_lock.acquire(blocking=True)
+            if self._channel.speaker_staff.holder != self:
+                self._channel.acquire_staff(holder=self)
+
             self._channel.broadcast(new_entry)
             self.staff_countdown.relaunch()
 
@@ -47,7 +49,7 @@ class LingualEntity:
 
 
     def try_release_staff(self):
-        print(f'The staff has been released from {self.name}')
+        print(f'[Debug]: The staff has been released from {self.name}')
         try:
             self._channel.release_staff()
         except:

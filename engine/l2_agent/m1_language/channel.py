@@ -8,6 +8,28 @@ from .entry import Entry
 
 # ----------------------------------------------------
 
+
+from threading import Lock
+
+class SpeakerStaff:
+    def __init__(self):
+        self.lock = Lock()
+        self.holder = None
+
+    def acquire(self, holder):
+        acquired = self.lock.acquire(blocking=False)  # Try to acquire the lock
+        if acquired:
+            self.holder = holder
+        return acquired
+
+    def release(self):
+        self.lock.release()
+        self.holder = None
+
+    def current_holder(self):
+        return self.holder
+    
+
 class Stream(Queue):
     def __init__(self):
         super().__init__()
@@ -23,13 +45,13 @@ class Channel:
         self.listener_loggers: list[Callable[[Entry], None]] = []
         self._message_queue : Queue[Entry] = queue.Queue()
         self.stream_list : list[Stream] = []
-        self.staff_lock = Lock()
+        self.speaker_staff : SpeakerStaff = SpeakerStaff()
 
-    def acquire_staff(self):
-        self.staff_lock.acquire()
+    def acquire_staff(self, holder):
+        self.speaker_staff.acquire(holder=holder)
 
     def release_staff(self):
-        self.staff_lock.release()
+        self.speaker_staff.release()
 
     # ------------------------------
     # Other
