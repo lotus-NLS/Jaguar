@@ -1,15 +1,15 @@
 import subprocess
 import platform
+
+from subprocess import Popen, STDOUT, PIPE
 from pyutils import DaemonThread
 from threading import Lock
 from typing import Optional
-from subprocess import Popen
 from pyutils import Countdown
 from engine.l2_agent.m0_agent.tool_handler import ToolArg
 
 from engine.l1_tools.m0_toolbox.tool import Tool
 # ---------------------------------------------------------
-
 
 class COMMAND(Tool):
     os_in_use = platform.system()
@@ -17,12 +17,7 @@ class COMMAND(Tool):
     def __init__(self):
         super().__init__()
         self.desc = f'Run commands in the terminal'
-
-        self.cmd_arg: ToolArg = self.create_arg(
-            name='program_content', dtype=str,
-            desc='The code to execute')
-
-        self.logging_backlog = ''
+        self.cmd_arg: ToolArg = self.create_arg(name='program_content', dtype=str,desc='The code to execute')
         self.shell = Shell()
 
 
@@ -37,47 +32,35 @@ class COMMAND(Tool):
 
 class Shell:
     def __init__(self):
-        self.session : Popen = self.get_session()
-        self.log_countdown = Countdown(time_to_finish=0.25)
+        self.session : Optional[Popen] = self.get_session()
         self.history : list[str] = []
-
-        self.buffer = ''
-
         self.history_lock = Lock()
-        self.start_listen()
 
+        self.log_countdown = Countdown(time_to_finish=0.25)
+        self.buffer_str : str = ''
+
+        DaemonThread(target=self.listen_stdout).start()
+
+    # ---------------------------------------------------------
+    # Setup
 
     @staticmethod
     def get_session() -> Optional[Popen]:
         shell_cmd = 'cmd.exe' if COMMAND.os_in_use == 'Windows' else '/bin/sh'
+        shell_session = None
         try:
-            shell_session = subprocess.Popen(shell_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE, text=True)
+            shell_session = subprocess.Popen(shell_cmd,stdin=PIPE, stdout=PIPE,stderr=STDOUT, text=True)
+
         except Exception as e:
             print(f'[Error]: An exception occured while trying to start terminal session using {shell_cmd}: {e}')
-            shell_session = None
 
         return shell_session
 
 
-    def start_listen(self):
-        self.start_listen_stream(stream=self.session.stdout)
-        self.start_listen_stream(stream=self.session.stderr)
-
-
-    def start_listen_stream(self, stream):
-        def process_next_line():
-            line = stream.readline()
-            with self.history_lock:
-                self.update_history(line)
-
-        def listen_stream():
-            while True:
-                process_next_line()
-
-        this_thread = DaemonThread(target=listen_stream)
-        this_thread.start()
-
+    def listen_stdout(self):
+        while True:
+            line = self.session.stdout.readline()
+            self.update_history(line)
 
     # ---------------------------------------------------------
     # Routine
@@ -96,11 +79,13 @@ class Shell:
 
 
     def update_history(self, msg : str):
-        self.history.append(msg)
-        self.buffer += msg
-        self.log_countdown.relaunch()
+        with self.history_lock:
+            self.history.append(msg)
+            self.buffer_str += msg
+            self.log_countdown.relaunch()
+
 
     def get_buffer(self) -> str:
         self.log_countdown.finish()
-        temp, self.buffer = self.buffer, ''
+        temp, self.buffer_str = self.buffer_str, ''
         return temp
