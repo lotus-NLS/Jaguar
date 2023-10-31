@@ -66,14 +66,14 @@ class Shell:
 
 
     def start_listen_stream(self, stream):
-        def proces_next_line():
+        def process_next_line():
             line = stream.readline()
             with self.history_lock:
                 self.update_history(line)
 
         def listen_stream():
             while True:
-                proces_next_line()
+                process_next_line()
 
         this_thread = DaemonThread(target=listen_stream)
         this_thread.start()

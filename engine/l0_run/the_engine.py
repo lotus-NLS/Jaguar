@@ -30,7 +30,7 @@ class Engine:
     def initialize_communications(self):
         self.user_channel = Channel()
         for participant in [self.user]+self.bots:
-            participant.join_channel(self.user_channel)
+            participant.start_listen(self.user_channel)
 
 
     def initialize_settings(self, perform_validation : bool = True):
@@ -49,7 +49,6 @@ class Engine:
             msg, flags = get_parsed_input(user_input)
             print(f'[Debug]: Flags are {flags}')
 
-
             if Flag.get_print_threads_flag() in flags:
                 DevLogger.print_threads()
                 continue
@@ -63,6 +62,7 @@ class Engine:
                 continue
 
             self.user.speak(msg=msg, flags=flags)
+
 
     # Make the engine log the individual steps
     def __getattribute__(self, name):

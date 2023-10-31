@@ -1,14 +1,15 @@
 from __future__ import annotations
+
 from threading import Thread
 from typing import Union, Optional
 from abc import abstractmethod
-# from engine.l3_settings.m2_OperatorIO import user_io
 
-from .channel import Channel
+from .channel import Channel, Stream
 from .entry import Entry, DialogueRole, Flag
 
 
 # ----------------------------------------------------
+
 
 class LingualEntity:
     def __init__(self, role : DialogueRole, name : Optional[str] = None):
@@ -17,6 +18,7 @@ class LingualEntity:
         self._personal_log : list[Entry] = []
         self._channel : Union[Channel, None] = None
         self.name = name if not name is None else self._role
+        self.stream : Optional[Stream] = None
 
     # ------------------------------
     # Update
@@ -24,21 +26,26 @@ class LingualEntity:
     def clear_log(self):
         self._personal_log = []
 
+    def start_listen(self, channel : Channel):
+        Thread(target=self.listen_to_channel, args=(channel,),daemon=True).start()
 
-    def join_channel(self, channel : Channel):
-        self.leave_channel()
-        self._channel  = channel
-        self._channel.listener_loggers.append(self._process_partial_entry)
+    def listen_to_channel(self, channel : Channel):
+        self._channel = channel
+        if not self.stream is None:
+            self.leave_channel()
+
+        self.stream = channel.get_stream()
+        while True:
+            entry = self.stream.get()
+            if entry is None:
+                break
+
+            self._process_partial_entry(partial_entry=entry)
 
 
     def leave_channel(self):
-        if not self._channel is None:
-            try:
-                self._channel.listener_loggers.remove(self._process_partial_entry)
-            except:
-                print(f'[Debug]: Could not find personal logger in channel {self._channel}')
-            self._channel = None
-
+        self.stream.close()
+        self._channel = None
 
     def get_unread_entries(self) -> list[Entry]:
         return [entry for entry in self._personal_log if not entry.get_is_read()]
