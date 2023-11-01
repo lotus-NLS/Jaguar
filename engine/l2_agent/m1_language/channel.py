@@ -1,6 +1,6 @@
 from pyutils import Countdown
 from .channel_interface import ChannelInterface
-from .language_types import Entry, SpeakerStaff
+from .language_types import Entry, SpeakerStaff, Flag
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------
@@ -29,14 +29,17 @@ class Channel(ChannelInterface):
         except:
             pass
 
+
     # ------------------------------
     # Update members
 
     def add_entity(self, entity : LingualEntity):
         self.members.append(entity)
+        entity.channel = self
 
     def try_remote_entity(self, entity : LingualEntity):
         try:
+            entity.channel = None
             self.members.remove(entity)
         except:
             pass
@@ -45,5 +48,8 @@ class Channel(ChannelInterface):
     # Other
 
     def broadcast(self, entry : Entry):
+        if not entry.flags is None:
+            self.try_release_staff() if Flag.get_entry_end_flag() in entry.flags else None
+
         for member in self.members:
             member.process_partial_entry(partial_entry=entry)

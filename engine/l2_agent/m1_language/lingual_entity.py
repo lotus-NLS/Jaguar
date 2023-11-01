@@ -19,7 +19,7 @@ class LingualEntity:
         self.name : str = name if not name is None else self._role
         self._personal_log : list[Entry] = []
 
-        self._channel : Optional[Channel] = None
+        self.channel : Optional[Channel] = None
         self.to_say : Queue[Entry] = Queue()
         DaemonThread(target=self.speaking_routine).start()
 
@@ -30,20 +30,16 @@ class LingualEntity:
 
     def speaking_routine(self):
         while True:
-            new_entry = self.to_say.get()
-            flags = new_entry.flags
+            if not self.channel is None:
+                self.do_speak(self.to_say.get())
 
-            if self._channel is None:
-                return
 
-            if self._channel.speaker_staff.holder != self:
-                self._channel.acquire_staff(holder=self)
+    def do_speak(self, new_entry):
+        if self.channel.speaker_staff.holder != self:
+            self.channel.acquire_staff(holder=self)
 
-            self._channel.broadcast(new_entry)
-            self._channel.reset_return_countdown()
-
-            if not flags is None:
-                self._channel.try_release_staff() if Flag.get_entry_end_flag() in flags else None
+        self.channel.broadcast(new_entry)
+        self.channel.reset_return_countdown()
 
     # ------------------------------
     # Update
