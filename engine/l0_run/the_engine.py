@@ -1,5 +1,5 @@
 from typing import Optional
-from pyutils import DevLogger
+from pyutils import DevLogger, CustomThread
 from api import LotusServer
 from engine.l2_agent.m1_language import Channel, LingualEntity, Flag
 from engine.l3_settings import DialogueSettings, SettingsController, get_setting
@@ -50,7 +50,7 @@ class Engine:
             print(f'[Debug]: Flags are {flags}')
 
             if Flag.get_print_threads_flag() in flags:
-                DevLogger.print_threads()
+                CustomThread.print_active_customthreads()
                 continue
 
             if Flag.get_quit_flag() in flags:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from threading import Thread
 from typing import Optional, List
 from abc import abstractmethod
 from pyutils import DaemonThread
@@ -74,7 +73,7 @@ class LingualEntity:
 
         if Flag.get_entry_end_flag() in new_entry.get_flags():
             self.current_entry = None
-            Thread(target=self.react, args=(new_entry,)).start()
+            DaemonThread(target=self.react, args=(new_entry,)).start()
 
 
     def logger(self, new_entry : Entry):
