@@ -18,6 +18,7 @@ class LingualEntity:
         self._role : DialogueRole = role
         self.name : str = name if not name is None else self._role
         self._personal_log : list[Entry] = []
+        self.current_entry : Optional[Entry] = None
 
         self.channel : Optional[Channel] = None
         self.to_say : Queue[Entry] = Queue()
@@ -33,7 +34,16 @@ class LingualEntity:
     # ------------------------------
     # Speak
 
-    def enqueue_msg(self, msg: str, flags: Optional[List[Flag]] = None):
+    def enqueue_partial(self, msg: str, flags: Optional[List[Flag]] = None):
+        if flags is None:
+            flags = []
+        self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
+
+    def enqueue_line(self, msg: str, flags: Optional[List[Flag]] = None):
+        if flags is None:
+            flags = []
+
+        flags.append(Flag.get_entry_end_flag())
         self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
 
     def speaking_routine(self):
@@ -53,25 +63,23 @@ class LingualEntity:
     # ------------------------------
     # Listen
 
-
-    def process_entry(self, new_entry : Entry):
-        if self.get_is_new_entry(partial_entry=new_entry):
+    def process_entry(self, new_entry: Entry):
+        self.logger(new_entry=new_entry)
+        if self.current_entry is None:
+            self.current_entry = new_entry
             self._personal_log.append(new_entry)
+        else:
+            self.current_entry.append_content(additional_content=new_entry.get_content())
+
+
+        if Flag.get_entry_end_flag() in new_entry.get_flags():
+            self.current_entry = None
             Thread(target=self.react, args=(new_entry,)).start()
 
-        else:
-            last_entry = self._personal_log[-1]
-            last_entry.append_content(new_entry.get_content())
 
-
-    def get_is_new_entry(self, partial_entry) -> bool:
-        role, name, msg, flags = partial_entry.get_role(), partial_entry.get_name(), partial_entry.get_content(), partial_entry.get_flags()
-        is_continuation = False
-        if len(self._personal_log) > 0:
-            last_entry = self._personal_log[-1]
-            is_continuation = role == last_entry.get_role() and name == last_entry.get_name()
-
-        return not is_continuation
+    @abstractmethod
+    def logger(self, new_entry : Entry):
+        pass
 
 
     @abstractmethod

@@ -41,7 +41,7 @@ class Engine:
     def run(self):
         print(f'[Debug]: Lotus started')
         if get_setting(DialogueSettings.enable_introduction_label):
-           self.user.enqueue_msg('[Manual inquiry for user]: Who are you and what can you do?')
+           self.user.enqueue_line('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
             user_input = LotusServer().get_user_msg()
@@ -61,7 +61,7 @@ class Engine:
                 print(f'[Debug]: Bot logs cleared')
                 continue
 
-            self.user.enqueue_msg(msg=msg, flags=flags)
+            self.user.enqueue_line(msg=msg, flags=flags)
 
 
     # Make the engine log the individual steps

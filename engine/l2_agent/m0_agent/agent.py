@@ -97,7 +97,9 @@ class Agent(LingualEntity):
         try:
             text_content = chunk.get_text_chunk()
             if not text_content is None:
-                self.enqueue_msg(msg=text_content)
+                self.enqueue_partial(msg=text_content)
+            else:
+                self.enqueue_line(msg='')
         except:
             self.think(DevLogger.get_exception_msg(text='An error occured while trying to parse text chunk'))
 

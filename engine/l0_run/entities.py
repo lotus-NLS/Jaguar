@@ -92,14 +92,16 @@ class User(LingualEntity):
         super(User, self).__init__(role=DialogueRole.user_role())
         self.user_id = 'the_user'
 
-    def process_entry(self, partial_entry: Entry):
-        super().process_entry(new_entry=partial_entry)
+    def process_entry(self, new_entry: Entry):
+        super().process_entry(new_entry=new_entry)
 
+
+    def logger(self, new_entry : Entry):
+        super().logger(new_entry=new_entry)
         to_log = ''
-        if self.get_is_new_entry(partial_entry=partial_entry):
-            to_log += f'\n{partial_entry.get_role()}:'
-        to_log += f'{partial_entry.get_content()}'
-        # user_io.print_str(the_str=to_log)
+        if self.current_entry is None:
+            to_log += f'\n{new_entry.get_role()}:'
+        to_log += f'{new_entry.get_content()}'
         LotusServer().post_engine_message(msg_content=to_log)
 
 
