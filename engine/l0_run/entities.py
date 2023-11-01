@@ -1,6 +1,7 @@
 from pyutils import DaemonThread
 from api import LotusServer
-from engine.l2_agent import LingualEntity, DialogueRole, Entry, Flag
+from engine.l2_agent import LingualEntity
+from api.base.language_types import Entry, DialogueRole, Flag
 from engine.l2_agent import Agent, Task
 from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 

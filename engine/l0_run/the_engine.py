@@ -1,12 +1,12 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from api import LotusServer
-from engine.l2_agent.m1_language import Channel, LingualEntity, Flag
+from engine.l2_agent.m1_language import Channel, LingualEntity
+from api.base.language_types import Flag
 from engine.l3_settings import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
 
 from engine.l0_run.entities import Alpha, User
-from engine.l0_run.parse_input import get_parsed_input
 # ---------------------------------------------------------
 
 class Engine:
@@ -44,9 +44,9 @@ class Engine:
            self.user.enqueue_line('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
-            user_input = LotusServer().get_user_msg()
-            print(f'The user said {user_input}')
-            msg, flags = get_parsed_input(user_input)
+            user_entry = LotusServer().get_user_entry()
+            flags = user_entry.get_flags()
+            print(f'[Debug]: The user said {user_entry.get_content()}')
             print(f'[Debug]: Flags are {flags}')
 
             if Flag.get_print_threads_flag() in flags:
@@ -61,7 +61,7 @@ class Engine:
                 print(f'[Debug]: Bot logs cleared')
                 continue
 
-            self.user.enqueue_line(msg=msg, flags=flags)
+            self.user.enqueue_line(msg=user_entry.get_content(), flags=flags)
 
 
     # Make the engine log the individual steps

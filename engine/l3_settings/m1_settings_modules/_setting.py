@@ -48,7 +48,7 @@ class Setting:
             msg = f'Enter value for setting {self.label} (Type: {self.dtype.__name__}'
             msg += ', Options: True/False)' if self.dtype is bool else ')'
             LotusServer().post_engine_message(msg_content=msg)
-            LotusServer().get_user_msg()
+            LotusServer().get_user_entry()
 
 
         self.value = self.get_typecast_value(value_str=value_str)

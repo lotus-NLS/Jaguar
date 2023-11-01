@@ -1,4 +1,3 @@
-from flask import Flask
 from pywebdev.devkit import PyWebApp
 
 # ----------------------------------------------

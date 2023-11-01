@@ -1,9 +1,10 @@
 from __future__ import annotations
+
+import inspect
 from threading import Lock
 from typing import Optional
-import inspect
 
-# ----------------------------------------------------
+# ----------------------------------------------
 
 class Entry(dict):
     def __init__(self, role : DialogueRole,
@@ -23,6 +24,10 @@ class Entry(dict):
 
     def mark_processed(self):
         self._is_processed = True
+
+    @classmethod
+    def from_model(cls, entry_model) -> Entry:
+        return cls(role=entry_model.role, msg=entry_model.content, flags=entry_model.flags)
 
     # ----------------------------------------------------
 
@@ -48,7 +53,6 @@ class Entry(dict):
         return self['content']
 
 
-
 class DialogueRole(str):
     def __new__(cls, role_str : str):
         return str.__new__(cls, role_str)
@@ -68,7 +72,6 @@ class DialogueRole(str):
     @classmethod
     def system_role(cls):
         return cls(role_str='system')
-
 
 
 class Flag(str):
@@ -122,4 +125,3 @@ class SpeakerStaff:
 
     def current_holder(self):
         return self.holder
-

@@ -1,6 +1,6 @@
 from pyutils import Countdown
 from .channel_interface import ChannelInterface
-from .language_types import Entry, SpeakerStaff, Flag
+from api.base.language_types import Entry, Flag, SpeakerStaff
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------
