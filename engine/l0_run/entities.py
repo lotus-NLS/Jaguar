@@ -92,8 +92,8 @@ class User(LingualEntity):
         super(User, self).__init__(role=DialogueRole.user_role())
         self.user_id = 'the_user'
 
-    def process_partial_entry(self, partial_entry: Entry):
-        super().process_partial_entry(partial_entry=partial_entry)
+    def process_entry(self, partial_entry: Entry):
+        super().process_entry(new_entry=partial_entry)
 
         to_log = ''
         if self.get_is_new_entry(partial_entry=partial_entry):

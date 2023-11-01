@@ -52,4 +52,4 @@ class Channel(ChannelInterface):
             self.try_release_staff() if Flag.get_entry_end_flag() in entry.flags else None
 
         for member in self.members:
-            member.process_partial_entry(partial_entry=entry)
+            member.process_entry(new_entry=entry)

@@ -18,7 +18,7 @@ class Entry(dict):
             self['name'] = name
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
-        self._is_processed : bool = False
+        self._is_processed : bool = True if not role == DialogueRole.user_role() else False
         self.flags : list[Flag] = flags if not flags is None else []
 
     def mark_processed(self):
