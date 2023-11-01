@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-from queue import Queue
 from threading import Lock
 from typing import Optional
 import inspect
@@ -125,12 +123,3 @@ class SpeakerStaff:
     def current_holder(self):
         return self.holder
 
-
-class Stream(Queue):
-    def __init__(self):
-        super().__init__()
-        self.is_active : bool = True
-
-    def close(self):
-        self.put(None)
-        self.is_active = False

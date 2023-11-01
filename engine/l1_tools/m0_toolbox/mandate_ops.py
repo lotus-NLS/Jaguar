@@ -74,7 +74,7 @@ class INITIALIZE_MANDATE(Tool):
                             f'\n{self.content_arg.val}\n'
                             f'Do you approve?')
 
-        self.acting_agent.speak(msg=f'{init_request_msg} (y/n)')
+        self.acting_agent.enqueue_msg(msg=f'{init_request_msg} (y/n)')
         user_approves =  LotusServer().get_confirmation()
 
         if not user_approves:
