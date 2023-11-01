@@ -1,9 +1,9 @@
 from flask import Flask
-from pywebdev.devkit import DocWriter
+from pywebdev.devkit import PyWebApp
 
 # ----------------------------------------------
 
-class ChatHTML(DocWriter):
+class ChatHTML(PyWebApp):
     def add_body_content(self):
         with self.add_tag('div', id='chat-window', style='height:300px; border:1px solid #ccc; overflow:auto;'):
             self.text('<!-- Chat history will go here -->')
@@ -13,14 +13,9 @@ class ChatHTML(DocWriter):
         self.add_python_script(rel_path='scripts/simple_script.py')
 
 
-app = Flask(__name__)
-@app.route('/')
-def route_index():
-    this_page = ChatHTML(title='This new app')
-    return this_page.get_index()
-
 
 if __name__ == '__main__':
+    app = ChatHTML(title='This new app')
     app.run(debug=True)
 
 
