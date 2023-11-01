@@ -1,49 +1,16 @@
-import queue
 from queue import Queue
 from typing import Callable
-from threading import Lock
 
+from .language_types import Entry, SpeakerStaff, Stream
 
-from .entry import Entry
 
 # ----------------------------------------------------
-
-
-from threading import Lock
-
-class SpeakerStaff:
-    def __init__(self):
-        self.lock = Lock()
-        self.holder = None
-
-    def acquire(self, holder):
-        acquired = self.lock.acquire(blocking=False)  # Try to acquire the lock
-        if acquired:
-            self.holder = holder
-        return acquired
-
-    def release(self):
-        self.lock.release()
-        self.holder = None
-
-    def current_holder(self):
-        return self.holder
-    
-
-class Stream(Queue):
-    def __init__(self):
-        super().__init__()
-        self.is_active : bool = True
-
-    def close(self):
-        self.put(None)
-        self.is_active = False
 
 
 class Channel:
     def __init__(self):
         self.listener_loggers: list[Callable[[Entry], None]] = []
-        self._message_queue : Queue[Entry] = queue.Queue()
+        self._message_queue : Queue[Entry] = Queue()
         self.stream_list : list[Stream] = []
         self.speaker_staff : SpeakerStaff = SpeakerStaff()
 

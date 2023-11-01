@@ -6,8 +6,8 @@ from abc import abstractmethod
 from pyutils import Countdown, DaemonThread
 from queue import Queue
 
-from .channel import Channel, Stream
-from .entry import Entry, DialogueRole, Flag
+from .channel import Channel
+from .language_types import Entry, DialogueRole, Flag, Stream
 
 
 # ----------------------------------------------------
@@ -83,7 +83,7 @@ class LingualEntity:
         self._channel = None
 
     def get_unread_entries(self) -> list[Entry]:
-        return [entry for entry in self._personal_log if not entry.get_is_read()]
+        return [entry for entry in self._personal_log if not entry.get_is_processed()]
 
     # ------------------------------
     # Speak and react

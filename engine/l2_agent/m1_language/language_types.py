@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from queue import Queue
+from threading import Lock
 from typing import Optional
 import inspect
 
@@ -37,7 +40,7 @@ class Entry(dict):
     def get_flags(self) -> list[Flag]:
         return self.flags
 
-    def get_is_read(self) -> bool:
+    def get_is_processed(self) -> bool:
         return self._is_processed
 
     def get_role(self) -> DialogueRole:
@@ -104,3 +107,30 @@ class Flag(str):
         return as_list
 
 
+class SpeakerStaff:
+    def __init__(self):
+        self.lock = Lock()
+        self.holder = None
+
+    def acquire(self, holder):
+        acquired = self.lock.acquire(blocking=False)  # Try to acquire the lock
+        if acquired:
+            self.holder = holder
+        return acquired
+
+    def release(self):
+        self.lock.release()
+        self.holder = None
+
+    def current_holder(self):
+        return self.holder
+
+
+class Stream(Queue):
+    def __init__(self):
+        super().__init__()
+        self.is_active : bool = True
+
+    def close(self):
+        self.put(None)
+        self.is_active = False
