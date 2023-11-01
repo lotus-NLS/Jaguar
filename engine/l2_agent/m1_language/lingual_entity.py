@@ -11,17 +11,17 @@ from .channel import ChannelInterface as Channel
 
 # ----------------------------------------------------
 
-
 class LingualEntity:
     def __init__(self, role : DialogueRole, name : Optional[str] = None):
         super().__init__()
         self._role : DialogueRole = role
         self.name : str = name if not name is None else self._role
+
         self._personal_log : list[Entry] = []
         self.current_entry : Optional[Entry] = None
+        self.to_say : Queue[Entry] = Queue()
 
         self.channel : Optional[Channel] = None
-        self.to_say : Queue[Entry] = Queue()
         DaemonThread(target=self.speaking_routine).start()
 
 
@@ -77,10 +77,8 @@ class LingualEntity:
             Thread(target=self.react, args=(new_entry,)).start()
 
 
-    @abstractmethod
     def logger(self, new_entry : Entry):
         pass
-
 
     @abstractmethod
     def react(self, entry : Entry):

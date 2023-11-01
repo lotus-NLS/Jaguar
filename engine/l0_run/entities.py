@@ -33,14 +33,9 @@ class Alpha(Agent):
 
 
     def react(self, entry: Entry):
-        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.get_dialogue_task_present():
+        if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_is_enqueued():
 
-            if Flag.get_mandate_flag() in entry.get_flags():
-                required_funct_name = INITIALIZE_MANDATE.__name__
-
-            else:
-                required_funct_name = None
-
+            required_funct_name = None if not Flag.get_mandate_flag() in entry.get_flags() else INITIALIZE_MANDATE.__name__
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
                                      entries_to_respond_to=entries_to_process,

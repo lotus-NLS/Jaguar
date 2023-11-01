@@ -24,7 +24,7 @@ class TaskQueue(Queue):
     def get_work_task_present(self) -> bool:
         return any(task.is_mandate_task() for task in self.queued_items)
 
-    def get_dialogue_task_present(self) -> bool:
+    def dialogue_task_is_enqueued(self) -> bool:
         return any(task.is_dialogue_task() for task in self.queued_items)
 
 
