@@ -97,19 +97,17 @@ class Agent(LingualEntity):
     def handle_chunk(self, chunk : ActionChunk):
         try:
             text_content = chunk.get_text_chunk()
+            tool_call = chunk.get_function_chunk()
+
             if not text_content is None:
                 self.enqueue_partial(msg=text_content)
-            else:
+            elif text_content is None and tool_call is None:
                 self.enqueue_line(msg='')
-        except:
-            self.think(DevLogger.get_exception_msg(text='An error occured while trying to parse text chunk'))
 
-        try:
-            tool_call = chunk.get_function_chunk()
             if not tool_call is None:
                 self.tool_handler.tool_call.update(partial_tool_call=tool_call)
         except:
-            print(f'[Debug]: An error occured while trying to retrieve function chunk')
+            print(f'[Debug]: An error occured while trying to parse chunk')
 
 
     def get_next_action_stream(self,
