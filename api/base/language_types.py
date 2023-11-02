@@ -1,11 +1,12 @@
 from __future__ import annotations
 from threading import Lock
 from typing import Optional
-from pydantic import BaseModel
+from pyutils import Serializable
 
 # ----------------------------------------------
 
-class Entry(dict):
+
+class Entry(dict, Serializable):
     def __init__(self, role : DialogueRole,
                  msg : str,
                  flags : FlagContainer = None,
@@ -23,10 +24,6 @@ class Entry(dict):
 
     def mark_processed(self):
         self._is_processed = True
-
-    @classmethod
-    def from_model(cls, entry_model) -> Entry:
-        return cls(role=entry_model.role, msg=entry_model.content, flags=entry_model.flags)
 
     # ----------------------------------------------------
 
@@ -52,18 +49,6 @@ class Entry(dict):
         return self['content']
 
 
-class EntryModel(BaseModel):
-    role: str
-    content: str
-    flags: Optional[list[str]] = None
-
-    def __init__(self, entry: Optional[Entry] = None, **data):
-        if entry is not None:
-            data['role'] = entry.get_role()
-            data['content'] = entry.get_content()
-            data['flags'] = entry.get_flags()
-        super().__init__(**data)
-
 class DialogueRole(str):
     def __new__(cls, role_str : str):
         return str.__new__(cls, role_str)
@@ -85,7 +70,7 @@ class DialogueRole(str):
         return cls(role_str='system')
 
 
-class FlagContainer:
+class FlagContainer(Serializable):
     def __init__(self, is_entry_end: bool = False, do_print_threads: bool = False, do_quit: bool = False, enforce_mandate: bool = False, do_reset: bool = False):
         self.is_entry_end: bool = is_entry_end
         self.print_threads: bool = do_print_threads
@@ -97,8 +82,22 @@ class FlagContainer:
     def make_default(cls):
         return cls()
 
+    # def to_str(self) -> str:
+    #     flag_str = ""
+    #     if self.is_entry_end:
+    #         flag_str += "-e "
+    #     if self.print_threads:
+    #         flag_str += "-t "
+    #     if self.quit:
+    #         flag_str += "-q "
+    #     if self.mandate:
+    #         flag_str += "-m "
+    #     if self.reset:
+    #         flag_str += "-r "
+    #     return flag_str.strip()
+
     @classmethod
-    def try_from_str(cls, flag_str: str) -> 'FlagContainer':
+    def from_text_specification(cls, flag_str: str) -> FlagContainer:
         this_container = cls()
         if '-e' in flag_str:
             this_container.is_entry_end = True
@@ -111,6 +110,7 @@ class FlagContainer:
         if '-r' in flag_str:
             this_container.reset = True
         return this_container
+
 
 class SpeakerStaff:
     def __init__(self):

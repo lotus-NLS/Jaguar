@@ -12,6 +12,6 @@ while True:
     user_input = input(f'Content?')
     flag_str = input(f'Flags?')
 
-    flags = FlagContainer.try_from_str(flag_str=flag_str)
+    flags = FlagContainer.from_text_specification(flag_str=flag_str)
     the_entry = Entry(msg=user_input,role= DialogueRole.agent_role(), flags=flags)
     the_lotus_client.send_user_entry(entry=the_entry)

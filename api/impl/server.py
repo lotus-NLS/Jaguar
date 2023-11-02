@@ -1,7 +1,7 @@
 from pyutils import InputWaiter
 
 from api.base.io_module import LotusIO
-from api.base.api_types import APIMessage, NetworkQuantities, Ends, EntryModel
+from api.base.api_types import APIMessage, NetworkQuantities, Ends
 from api.base.language_types import Entry, DialogueRole
 
 
@@ -46,7 +46,7 @@ class LotusServer(LotusIO):
 
     def post_engine_message(self, msg_content : str) -> None:
         entry = Entry(msg=msg_content, role=DialogueRole.agent_role())
-        the_msg = APIMessage(entry_model=EntryModel(entry=entry))
+        the_msg = APIMessage(entry_str=entry.to_str())
         self._communicate(endpoint=Ends.agent_data, payload=the_msg)
 
     

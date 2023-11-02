@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
 
-from api.base.language_types import Entry, EntryModel, DialogueRole
+from api.base.language_types import Entry
 
 # ----------------------------------------------
 # Classes
 
 class APIMessage(BaseModel):
     user_id: str = 'default_id'
-    entry_model: Optional[EntryModel] = None
+    entry_str: Optional[str] = None
     bool_content : Optional[bool] = None
     settings_content: Optional[str] = None
 
@@ -17,11 +17,7 @@ class APIMessage(BaseModel):
         return self.user_id
 
     def get_entry(self) -> Optional[Entry]:
-        entry = None
-        model = self.entry_model
-        if not model is None:
-            entry = Entry(role=DialogueRole(role_str=model.role), msg=model.content,flags=model.flags)
-        return entry
+        return Entry.from_str(self.entry_str)
 
     def get_bool_content(self) -> Optional[bool]:
         return self.bool_content

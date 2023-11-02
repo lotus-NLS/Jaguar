@@ -1,5 +1,5 @@
 from api.base.io_module import LotusIO
-from api.base.api_types import APIMessage, NetworkQuantities, Ends, EntryModel
+from api.base.api_types import APIMessage, NetworkQuantities, Ends
 from api.base.language_types import Entry
 
 
@@ -32,9 +32,10 @@ class LotusClient(LotusIO):
     # API
 
     def send_user_entry(self, entry : Entry) -> None:
-        payload = APIMessage(entry_model=EntryModel(entry=entry))
+        payload = APIMessage(entry_str=entry.to_str())
         self._communicate(endpoint=Ends.user_data, payload=payload)
 
 
     def send_confirmation(self, is_confirmed : bool):
         self._communicate(endpoint=Ends.user_data, payload=APIMessage(bool_content=is_confirmed))
+
