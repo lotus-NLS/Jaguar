@@ -79,6 +79,15 @@ class Flag(str):
         return str.__new__(cls, flag_str)
 
     @classmethod
+    def try_from_str(cls, flag_str) -> Optional[Flag]:
+        all_flags = cls.get_all_flagtypes()
+        the_flag = None
+        if flag_str in all_flags:
+            the_flag = Flag(flag_str=flag_str)
+
+        return the_flag
+
+    @classmethod
     def get_entry_end_flag(cls) -> Flag:
         return cls(flag_str='e')
 
