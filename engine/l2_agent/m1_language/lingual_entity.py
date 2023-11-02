@@ -33,16 +33,12 @@ class LingualEntity:
     # ------------------------------
     # Speak
 
-    def enqueue_partial(self, msg: str, flags: Optional[List[Flag]] = None):
-        if flags is None:
-            flags = []
-        self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
-
-    def enqueue_final(self, msg: str, flags: Optional[List[Flag]] = None):
+    def enqueue(self, msg: str, flags: Optional[List[Flag]] = None, final : bool = True):
         if flags is None:
             flags = []
 
-        flags.append(Flag.get_entry_end_flag())
+        if final:
+            flags.append(Flag.get_entry_end_flag())
         self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
 
     def speaking_routine(self):
