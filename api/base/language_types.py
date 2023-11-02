@@ -59,12 +59,12 @@ class EntryModel(BaseModel):
     content: str
     flags: Optional[list[str]] = None
 
-    def __init__(self, entry):
-        super().__init__()
-        self.role = entry.get_role()
-        self.content = entry.get_content()
-        self.flags = entry.get_flags()
-
+    def __init__(self, entry: Optional[Entry] = None, **data):
+        if entry is not None:
+            data['role'] = entry.get_role()
+            data['content'] = entry.get_content()
+            data['flags'] = entry.get_flags()
+        super().__init__(**data)
 
 class DialogueRole(str):
     def __new__(cls, role_str : str):

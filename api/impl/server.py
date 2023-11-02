@@ -33,8 +33,7 @@ class LotusServer(LotusIO):
 
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
         if not lotus_msg.get_entry() is None:
-            entry_model = lotus_msg.get_entry()
-            self._incoming_entry_waiter.write(Entry.from_model(entry_model=entry_model))
+            self._incoming_entry_waiter.write(lotus_msg.get_entry())
 
         if lotus_msg.get_bool_content() is None:
             self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
