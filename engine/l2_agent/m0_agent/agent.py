@@ -47,23 +47,19 @@ class Agent(LingualEntity):
     # Main routine
 
     def do(self, task : Task):
-        self.tool_handler.initialize_toolcall()
         try:
-            self.handle_action(
+            self.tool_handler.initialize_toolcall()
+            self.register_action(
                 custom_tool_docs=None if task.required_funct_name is None else [self.tool_handler.get_tool_doc(tool_name=task.required_funct_name)],
                 funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
-                entries=self.get_basic_entries()+[task.get_entry()],
-            )
+                entries=self.get_basic_entries()+[task.get_entry()])
 
         except Exception:
-            print(DevLogger.get_exception_msg(text=f'Unable to obtain response from {self.name}'))
+            print(DevLogger.get_exception_msg(text=f'An error occured while trying to register action from {self.name}'))
             return
-
-
 
         if self.tool_handler.tool_call_requested():
             self.handle_tool_call(task=task)
-
 
 
     def handle_tool_call(self, task : Task):
@@ -80,18 +76,18 @@ class Agent(LingualEntity):
             role = DialogueRole.system_role()
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
-        self.handle_action(funct_call_options=FunctCallOption.make_no_call_option(),
-                           entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+        self.register_action(funct_call_options=FunctCallOption.make_no_call_option(),
+                             entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
 
     # ---------------------------------------------------
     # Actions and context
 
-    def handle_action(self,
-                      funct_call_options: FunctCallOption = FunctCallOption.make_auto_option(),
-                      custom_tool_docs: Optional[list[dict]] = None,
-                      entries: Optional[list[Entry]] = None,
-                      max_tokens: Optional[int] = None,
-                      temperature: float = 0.3):
+    def register_action(self,
+                        funct_call_options: FunctCallOption = FunctCallOption.make_auto_option(),
+                        custom_tool_docs: Optional[list[dict]] = None,
+                        entries: Optional[list[Entry]] = None,
+                        max_tokens: Optional[int] = None,
+                        temperature: float = 0.3):
 
         kwargs = {
             'entries': self.get_basic_entries() if entries is None else entries,
