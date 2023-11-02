@@ -31,17 +31,13 @@ class LotusServer(LotusIO):
     # ----------------------------------------------
     # Handlers
 
-    # TODO: Pydantic doesnt catch wrong typing!!
-    # lotus_ms.alskdjfalie throws no warning
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
-        # print(lotus_msg.entry_model)
-
-        if not lotus_msg.entry_model is None:
-            entry_model = lotus_msg.entry_model
+        if not lotus_msg.get_entry_model() is None:
+            entry_model = lotus_msg.get_entry_model()
             self._incoming_entry_waiter.write(Entry.from_model(entry_model=entry_model))
 
-        if lotus_msg.bool_content is None:
-            self._incoming_bool_waiter.write(lotus_msg.bool_content)
+        if lotus_msg.get_bool_content() is None:
+            self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
 
         return 'message ok'
 

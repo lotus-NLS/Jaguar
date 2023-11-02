@@ -23,6 +23,17 @@ class APIMessage(BaseModel):
     bool_content : Optional[bool] = None
     settings_content: Optional[str] = None
 
+    def get_user_id(self) -> str:
+        return self.user_id
+
+    def get_entry_model(self) -> Optional[EntryModel]:
+        return self.entry_model
+
+    def get_bool_content(self) -> Optional[bool]:
+        return self.bool_content
+
+    def get_settings_content(self) -> Optional[str]:
+        return self.settings_content
 
 class Endpoint:
     def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
@@ -30,6 +41,8 @@ class Endpoint:
         self.req_type : ReqType = req_type
         self.ip_addr : str = ip_addr
         self.port : int = port
+
+
 
 # ----------------------------------------------
 # Enums
