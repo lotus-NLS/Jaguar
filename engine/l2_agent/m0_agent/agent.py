@@ -50,15 +50,16 @@ class Agent(LingualEntity):
         try:
             toolname = task.required_funct_name
             self.tool_handler.reset_toolcall()
-            self.register_action(
+            action_stream = self.get_next_action_stream(
                 custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
                 funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
                 entries=self.get_basic_entries()+[task.get_entry()])
 
         except Exception:
-            print(DevLogger.get_exception_msg(text=f'An error occured while trying to register action from {self.name}'))
+            print(DevLogger.get_exception_msg(text=f'An error occured while trying to obtain action stream from {self.name}'))
             return
 
+        self.handle_stream(action_stream=action_stream)
         if self.tool_handler.tool_call_requested():
             self.handle_tool_call(task=task)
 
@@ -77,24 +78,25 @@ class Agent(LingualEntity):
             role = DialogueRole.system_role()
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
-        self.register_action(funct_call_options=FunctCallOption.make_no_call_option(),
-                             entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+        action_stream = self.get_next_action_stream(funct_call_options=FunctCallOption.make_no_call_option(),
+                                    entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+        self.handle_stream(action_stream=action_stream)
+
 
     # ---------------------------------------------------
     # Actions and context
 
-    def register_action(self,
-                        funct_call_options: FunctCallOption = FunctCallOption.make_auto_option(),
-                        custom_tool_docs: Optional[list[dict]] = None,
-                        entries: Optional[list[Entry]] = None,
-                        max_tokens: Optional[int] = None,
-                        temperature: float = 0.3):
+    def get_next_action_stream(self,
+                               funct_call_options: FunctCallOption = FunctCallOption.make_auto_option(),
+                               custom_tool_docs: Optional[list[dict]] = None,
+                               entries: Optional[list[Entry]] = None,
+                               max_tokens: Optional[int] = None,
+                               temperature: float = 0.3) -> ActionStream:
 
         kwargs = {
             'entries': self.get_basic_entries() if entries is None else entries,
             'tool_docs': self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,
-                                            temperature=temperature)
+            'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
         }
 
         try:
@@ -104,6 +106,10 @@ class Agent(LingualEntity):
             print(f'[Debug]: An error occured while trying to obtain action stream. Defaulting to empty action')
             action_stream = ActionStream.make_empty()
 
+        return action_stream
+
+
+    def handle_stream(self, action_stream : ActionStream):
         for data in action_stream:
             self.handle_chunk(chunk=data)
 
