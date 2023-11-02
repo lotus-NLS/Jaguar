@@ -18,18 +18,10 @@ class EntryModel(BaseModel):
 
 
 class APIMessage(BaseModel):
-    user_id: str
+    user_id: str = 'default_id'
     entry_model: Optional[EntryModel] = None
     bool_content : Optional[bool] = None
     settings_content: Optional[str] = None
-
-    # !! The kwargs name have to match the attributes defined above
-    # it would be great if there was some way around that redundancy but I dont think there is
-    def __init__(self, user_id: str = 'default_id'
-                 , entry_model: Optional[EntryModel] = None
-                 , settings_content : Optional[str] = None
-                 , bool_content : Optional[bool] = None):
-        super().__init__(user_id=user_id, entry_model=entry_model, settings_content=settings_content, bool_content=bool_content)
 
 
 class Endpoint:
