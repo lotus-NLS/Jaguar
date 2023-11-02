@@ -9,7 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from engine.l3_settings import get_setting, CredentialSettings
 
-from engine.l1_tools.m0_toolbox.tool import Tool
+from engine.l1_tools.m1_tooldef.tool import Tool
 # ---------------------------------------------------------
 
 

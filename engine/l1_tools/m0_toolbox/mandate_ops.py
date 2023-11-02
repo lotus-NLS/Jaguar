@@ -3,7 +3,7 @@ from pyutils import get_function_args
 from api import LotusServer
 from engine.l2_agent import Objective, ToolArg
 
-from engine.l1_tools.m0_toolbox.tool import Tool
+from engine.l1_tools.m1_tooldef.tool import Tool
 from engine.l1_tools.m1_tool_utils.itemtree_format import get_leading_dashes_count,is_valid_hierarchy_format
 # ---------------------------------------------------------
 
