@@ -18,7 +18,7 @@ class ToolHandler:
     def tool_call_requested(self) -> bool:
         return not self.tool_call.is_empty
 
-    def handle_call(self):
+    def execute_tool_call(self):
         print('[Debug]: Agent requested tool usage')
         tool_action = self.tool_call
 
