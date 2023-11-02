@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Callable
-from api import LotusServer
+from api import LotusEngine
 
 from ._setting import Setting
 # ---------------------------------------------------------
@@ -61,9 +61,9 @@ class SettingGrouping:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry setup for those settings? (y/n)')
 
-            LotusServer().post_engine_message(msg_content=msg)
+            LotusEngine().post_engine_message(msg_content=msg)
 
-            if LotusServer().get_confirmation():
+            if LotusEngine().get_confirmation():
                 self.setup(is_first_run=False)
 
 

@@ -1,10 +1,10 @@
 import time
-from api.impl.client import LotusClient
+from api.impl.client import LotusServer
 from api.base.language_types import Entry, DialogueRole, FlagContainer
 
 # ----------------------------------------------
 
-the_lotus_client = LotusClient()
+the_lotus_client = LotusServer()
 
 
 time.sleep(0.5)

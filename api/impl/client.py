@@ -5,7 +5,7 @@ from api.base.language_types import Entry
 
 # ----------------------------------------------
 
-class LotusClient(LotusIO):
+class LotusServer(LotusIO):
     _instance = None
     _is_initialized = False
 

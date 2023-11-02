@@ -1,6 +1,6 @@
 # from typing import Optional
 from pyutils import get_function_args
-from api import LotusServer
+from api import LotusEngine
 from engine.l2_agent import Objective, ToolArg
 
 from engine.l1_tools.m1_tooldef.tool import Tool
@@ -75,7 +75,7 @@ class INITIALIZE_MANDATE(Tool):
                             f'Do you approve?')
 
         self.acting_agent.enqueue(msg=f'{init_request_msg} (y/n)')
-        user_approves =  LotusServer().get_confirmation()
+        user_approves =  LotusEngine().get_confirmation()
 
         if not user_approves:
             self.acting_agent.think(f'User denied permission')

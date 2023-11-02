@@ -1,2 +1,2 @@
-from .server import LotusServer
-from .client import LotusClient
+from .server import LotusEngine
+from .client import LotusServer

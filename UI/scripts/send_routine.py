@@ -1,18 +1,33 @@
-from pywebdev.browser import document
+from pywebdev.browser import window, document
 
-def append_message(event):
-    _ = event
+# ----------------------------------------------
+
+socket = window.io.connect('http://localhost:5000')
+
+def send_to_server(msg : str):
+    window.console.log('I sent the msg :)')
+    socket.emit('message', msg)
+
+
+def append_to_chat(msg : str):
     chat_window = document["chat-window"]
-    text_bar = document["text_bar"]
     new_element = document.createElement("div")
-    new_element.innerHTML = f"<p>User: {text_bar.value}</p>"
+    new_element.innerHTML = f"<p>User: {msg}</p>"
     chat_window.appendChild(new_element)
-    text_bar.value = ""
+
+
+def handle_message(event):
+    _ = event
+    text_bar = document["text_bar"]
+    entered_text = text_bar.value
+    append_to_chat(msg=entered_text)
+    send_to_server(msg=entered_text)
+    text_bar.value = ''
 
 
 def handle_keyup(event):
     if event.key == "Enter":
-        append_message(event)
+        handle_message(event)
 
 document["text_bar"].bind("keyup", handle_keyup)
-document["Send"].bind("click", append_message)
+document["Send"].bind("click", handle_message)
