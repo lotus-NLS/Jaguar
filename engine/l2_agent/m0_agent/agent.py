@@ -48,9 +48,10 @@ class Agent(LingualEntity):
 
     def do(self, task : Task):
         try:
-            self.tool_handler.initialize_toolcall()
+            toolname = task.required_funct_name
+            self.tool_handler.reset_toolcall()
             self.register_action(
-                custom_tool_docs=None if task.required_funct_name is None else [self.tool_handler.get_tool_doc(tool_name=task.required_funct_name)],
+                custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
                 funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
                 entries=self.get_basic_entries()+[task.get_entry()])
 
@@ -122,8 +123,6 @@ class Agent(LingualEntity):
                 self.tool_handler.tool_call.update(partial_tool_call=tool_chunk)
         except:
             print(f'[Debug]: An error occured while trying to parse chunk')
-
-
 
 
     def get_basic_entries(self) -> list[Entry]:
