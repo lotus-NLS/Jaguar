@@ -38,7 +38,7 @@ class LingualEntity:
             flags = []
         self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
 
-    def enqueue_line(self, msg: str, flags: Optional[List[Flag]] = None):
+    def enqueue_final(self, msg: str, flags: Optional[List[Flag]] = None):
         if flags is None:
             flags = []
 

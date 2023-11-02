@@ -98,11 +98,12 @@ class Agent(LingualEntity):
         try:
             text_content = chunk.get_text_chunk()
             tool_call = chunk.get_function_chunk()
+            is_msg_stop = text_content is None and tool_call is None
 
             if not text_content is None:
                 self.enqueue_partial(msg=text_content)
-            elif text_content is None and tool_call is None:
-                self.enqueue_line(msg='')
+            elif is_msg_stop:
+                self.enqueue_final(msg='')
 
             if not tool_call is None:
                 self.tool_handler.tool_call.update(partial_tool_call=tool_call)
