@@ -1,6 +1,6 @@
 from pyutils import Countdown
 from .channel_interface import ChannelInterface
-from api.base.language_types import Entry, Flag, SpeakerStaff
+from api.base.language_types import Entry, SpeakerStaff
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------
@@ -49,7 +49,7 @@ class Channel(ChannelInterface):
 
     def broadcast(self, entry : Entry):
         if not entry.flags is None:
-            self.try_release_staff() if Flag.get_entry_end_flag() in entry.flags else None
+            self.try_release_staff() if entry.flags.is_entry_end else None
 
         for member in self.members:
             member.process_entry(new_entry=entry)

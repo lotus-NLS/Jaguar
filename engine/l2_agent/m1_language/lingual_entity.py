@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional, List
+from typing import Optional
 from abc import abstractmethod
 from pyutils import DaemonThread
 from queue import Queue
 
-from api.base.language_types import Entry, DialogueRole, Flag
+from api.base.language_types import Entry, DialogueRole, FlagContainer
 from .channel import ChannelInterface as Channel
 
 # ----------------------------------------------------
@@ -33,12 +33,9 @@ class LingualEntity:
     # ------------------------------
     # Speak
 
-    def enqueue(self, msg: str, flags: Optional[List[Flag]] = None, final : bool = True):
-        if flags is None:
-            flags = []
-
+    def enqueue(self, msg: str, flags: FlagContainer = FlagContainer.make_default(), final : bool = True):
         if final:
-            flags.append(Flag.get_entry_end_flag())
+            flags.is_entry_end = True
 
         self.entries_to_say.put(Entry(role=self._role, msg=msg, flags=flags))
 
@@ -67,7 +64,7 @@ class LingualEntity:
             self.current_entry.append_content(additional_content=new_entry.get_content())
 
 
-        if Flag.get_entry_end_flag() in new_entry.get_flags():
+        if new_entry.flags.is_entry_end:
             self.current_entry = None
             DaemonThread(target=self.react, args=(new_entry,)).start()
 
@@ -82,7 +79,7 @@ class LingualEntity:
     # ------------------------------
     # log
 
-    def process_entry_from_info(self,msg : str, role : DialogueRole,name : str = '', flags : Optional[list[Flag]] = None):
+    def process_entry_from_info(self,msg : str, role : DialogueRole,name : str = '', flags : FlagContainer = FlagContainer.make_default()):
         self.process_entry(Entry(msg=msg,role=role,name=name,flags=flags))
 
     def think(self, msg: str):

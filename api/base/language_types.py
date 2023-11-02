@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-import inspect
 from threading import Lock
 from typing import Optional
 from pydantic import BaseModel
@@ -10,7 +8,7 @@ from pydantic import BaseModel
 class Entry(dict):
     def __init__(self, role : DialogueRole,
                  msg : str,
-                 flags : Optional[list[Flag]] = None,
+                 flags : FlagContainer = None,
                  name : Optional[str] = 'None'):
         super().__init__()
         self['role'] = role
@@ -21,7 +19,7 @@ class Entry(dict):
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
-        self.flags : list[Flag] = flags if not flags is None else []
+        self.flags : FlagContainer = flags if not flags is None else []
 
     def mark_processed(self):
         self._is_processed = True
@@ -41,7 +39,7 @@ class Entry(dict):
     def get_name(self) -> Optional[str]:
         return self.get('name')
 
-    def get_flags(self) -> list[Flag]:
+    def get_flags(self) -> FlagContainer:
         return self.flags
 
     def get_is_processed(self) -> bool:
@@ -87,48 +85,32 @@ class DialogueRole(str):
         return cls(role_str='system')
 
 
-class Flag(str):
-    def __new__(cls, flag_str : str):
-        return str.__new__(cls, flag_str)
+class FlagContainer:
+    def __init__(self, is_entry_end: bool = False, do_print_threads: bool = False, do_quit: bool = False, enforce_mandate: bool = False, do_reset: bool = False):
+        self.is_entry_end: bool = is_entry_end
+        self.print_threads: bool = do_print_threads
+        self.quit: bool = do_quit
+        self.mandate: bool = enforce_mandate
+        self.reset: bool = do_reset
 
     @classmethod
-    def try_from_str(cls, flag_str) -> Optional[Flag]:
-        all_flags = cls.get_all_flagtypes()
-        the_flag = None
-        if flag_str in all_flags:
-            the_flag = Flag(flag_str=flag_str)
-
-        return the_flag
+    def make_default(cls):
+        return cls()
 
     @classmethod
-    def get_entry_end_flag(cls) -> Flag:
-        return cls(flag_str='e')
-
-    @classmethod
-    def get_print_threads_flag(cls) -> Flag:
-        return cls(flag_str='t')
-
-    @classmethod
-    def get_quit_flag(cls) -> Flag:
-        return cls(flag_str='q')
-
-    @classmethod
-    def get_mandate_flag(cls) -> Flag:
-        return cls(flag_str='m')
-
-    @classmethod
-    def get_reset_flag(cls) -> Flag:
-        return cls(flag_str='r')
-
-    @classmethod
-    def get_all_flagtypes(cls):
-        as_list = []
-        for name, get_method in inspect.getmembers(cls, predicate=inspect.ismethod):
-            if name.startswith('get') and name.endswith('flag'):
-                flag = get_method()
-                as_list.append(flag)
-        return as_list
-
+    def try_from_str(cls, flag_str: str) -> 'FlagContainer':
+        this_container = cls()
+        if '-e' in flag_str:
+            this_container.is_entry_end = True
+        if '-t' in flag_str:
+            this_container.print_threads = True
+        if '-q' in flag_str:
+            this_container.quit = True
+        if '-m' in flag_str:
+            this_container.mandate = True
+        if '-r' in flag_str:
+            this_container.reset = True
+        return this_container
 
 class SpeakerStaff:
     def __init__(self):

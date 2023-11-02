@@ -2,7 +2,6 @@ from typing import Optional
 from pyutils import DevLogger, CustomThread
 from api import LotusServer
 from engine.l2_agent.m1_language import Channel, LingualEntity
-from api.base.language_types import Flag
 from engine.l3_settings import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
 
@@ -49,14 +48,14 @@ class Engine:
             print(f'[Debug]: The user said {user_entry.get_content()}')
             print(f'[Debug]: Flags are {flags}')
 
-            if Flag.get_print_threads_flag() in flags:
+            if flags.print_threads:
                 CustomThread.print_active_customthreads()
                 continue
 
-            if Flag.get_quit_flag() in flags:
+            if flags.quit:
                 break
 
-            if Flag.get_reset_flag() in flags:
+            if flags.reset:
                 [bot.clear_log() for bot in self.bots]
                 print(f'[Debug]: Bot logs cleared')
                 continue

@@ -1,7 +1,7 @@
 from pyutils import DaemonThread
 from api import LotusServer
 from engine.l2_agent import LingualEntity
-from api.base.language_types import Entry, DialogueRole, Flag
+from api.base.language_types import Entry, DialogueRole
 from engine.l2_agent import Agent, Task
 from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
@@ -36,7 +36,7 @@ class Alpha(Agent):
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_is_enqueued():
 
-            required_funct_name = None if not Flag.get_mandate_flag() in entry.get_flags() else INITIALIZE_MANDATE.__name__
+            required_funct_name = None if not entry.flags.mandate else INITIALIZE_MANDATE.__name__
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
                                      entries_to_respond_to=entries_to_process,
