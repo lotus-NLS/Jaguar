@@ -9,4 +9,10 @@ def append_message(event):
     chat_window.appendChild(new_element)
     text_bar.value = ""
 
+
+def handle_keyup(event):
+    if event.key == "Enter":
+        append_message(event)
+
+document["text_bar"].bind("keyup", handle_keyup)
 document["Send"].bind("click", append_message)
