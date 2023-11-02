@@ -25,15 +25,14 @@ class LotusClient(LotusIO):
 
     @staticmethod
     def agent_data_handler(lotus_msg : APIMessage) -> None:
-        entry_model = lotus_msg.get_entry_model()
-        content = entry_model.content
-        print(f'Client heard: {content}')
+        entry = lotus_msg.get_entry()
+        print(f'Client heard: {entry.get_content()}')
 
     # ----------------------------------------------
     # API
 
     def send_user_entry(self, entry : Entry) -> None:
-        payload = APIMessage(entry_model=EntryModel.from_entry(entry=entry))
+        payload = APIMessage(entry_model=EntryModel(entry=entry))
         self._communicate(endpoint=Ends.user_data, payload=payload)
 
 

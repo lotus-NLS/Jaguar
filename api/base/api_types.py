@@ -2,20 +2,10 @@ from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel
 
-from api.base.language_types import Entry
+from api.base.language_types import Entry, EntryModel, DialogueRole
 
 # ----------------------------------------------
 # Classes
-
-class EntryModel(BaseModel):
-    role: str
-    content: str
-    flags: Optional[list[str]] = None
-
-    @classmethod
-    def from_entry(cls, entry: Entry):
-        return cls(role=entry.get_role(), content=entry.get_content(), flags=entry.flags)
-
 
 class APIMessage(BaseModel):
     user_id: str = 'default_id'
@@ -26,8 +16,12 @@ class APIMessage(BaseModel):
     def get_user_id(self) -> str:
         return self.user_id
 
-    def get_entry_model(self) -> Optional[EntryModel]:
-        return self.entry_model
+    def get_entry(self) -> Optional[Entry]:
+        entry = None
+        model = self.entry_model
+        if not model is None:
+            entry = Entry(role=DialogueRole(role_str=model.role), msg=model.content,flags=model.flags)
+        return entry
 
     def get_bool_content(self) -> Optional[bool]:
         return self.bool_content
@@ -35,14 +29,13 @@ class APIMessage(BaseModel):
     def get_settings_content(self) -> Optional[str]:
         return self.settings_content
 
+
 class Endpoint:
     def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
         self.name : str = name
         self.req_type : ReqType = req_type
         self.ip_addr : str = ip_addr
         self.port : int = port
-
-
 
 # ----------------------------------------------
 # Enums

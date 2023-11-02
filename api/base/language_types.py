@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 from threading import Lock
 from typing import Optional
+from pydantic import BaseModel
 
 # ----------------------------------------------
 
@@ -51,6 +52,18 @@ class Entry(dict):
 
     def get_content(self) -> str:
         return self['content']
+
+
+class EntryModel(BaseModel):
+    role: str
+    content: str
+    flags: Optional[list[str]] = None
+
+    def __init__(self, entry):
+        super().__init__()
+        self.role = entry.get_role()
+        self.content = entry.get_content()
+        self.flags = entry.get_flags()
 
 
 class DialogueRole(str):

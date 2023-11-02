@@ -32,8 +32,8 @@ class LotusServer(LotusIO):
     # Handlers
 
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
-        if not lotus_msg.get_entry_model() is None:
-            entry_model = lotus_msg.get_entry_model()
+        if not lotus_msg.get_entry() is None:
+            entry_model = lotus_msg.get_entry()
             self._incoming_entry_waiter.write(Entry.from_model(entry_model=entry_model))
 
         if lotus_msg.get_bool_content() is None:
@@ -46,8 +46,8 @@ class LotusServer(LotusIO):
     # API
 
     def post_engine_message(self, msg_content : str) -> None:
-        entry = Entry(msg=msg_content,role=DialogueRole.agent_role())
-        the_msg = APIMessage(entry_model=EntryModel.from_entry(entry=entry))
+        entry = Entry(msg=msg_content, role=DialogueRole.agent_role())
+        the_msg = APIMessage(entry_model=EntryModel(entry=entry))
         self._communicate(endpoint=Ends.agent_data, payload=the_msg)
 
     
