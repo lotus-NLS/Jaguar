@@ -18,7 +18,7 @@ class LingualEntity:
 
         self._personal_log : list[Entry] = []
         self.current_entry : Optional[Entry] = None
-        self.to_say : Queue[Entry] = Queue()
+        self.entries_to_say : Queue[Entry] = Queue()
 
         self.channel : Optional[Channel] = None
         DaemonThread(target=self.speaking_routine).start()
@@ -39,24 +39,24 @@ class LingualEntity:
 
         if final:
             flags.append(Flag.get_entry_end_flag())
-        self.to_say.put(Entry(role=self._role, msg=msg, flags=flags))
+
+        self.entries_to_say.put(Entry(role=self._role, msg=msg, flags=flags))
+
 
     def speaking_routine(self):
         while True:
-            self.do_speak(self.to_say.get())
+            new_entry = self.entries_to_say.get()
+            if self.channel is None:
+                return
 
-    def do_speak(self, new_entry):
-        if self.channel is None:
-            return
+            if self.channel.speaker_staff.holder != self:
+                self.channel.acquire_staff(holder=self)
 
-        if self.channel.speaker_staff.holder != self:
-            self.channel.acquire_staff(holder=self)
-
-        self.channel.broadcast(new_entry)
-        self.channel.reset_return_countdown()
+            self.channel.broadcast(new_entry)
+            self.channel.reset_return_countdown()
 
     # ------------------------------
-    # Listen
+    # Listen and react
 
     def process_entry(self, new_entry: Entry):
         self.logger(new_entry=new_entry)
@@ -82,17 +82,17 @@ class LingualEntity:
     # ------------------------------
     # log
 
+    def process_entry_from_info(self,msg : str, role : DialogueRole,name : str = '', flags : Optional[list[Flag]] = None):
+        self.process_entry(Entry(msg=msg,role=role,name=name,flags=flags))
+
     def think(self, msg: str):
-        to_log = f'## Internal monologue: {msg}'
-        new_entry = Entry(msg=to_log, role=self._role, name=self.name)
-        return self.process_entry(new_entry=new_entry)
+        return self.process_entry_from_info(msg=f'## Internal monologue: {msg}',role=self._role)
 
     def log_tool_msg(self, msg: str, tool_name: str):
         print(f'[Debug]: Tool {tool_name}: {msg}')
-        return self.process_entry(new_entry=Entry(msg=msg, role=DialogueRole.tool_role(), name=tool_name))
-
+        return self.process_entry_from_info(msg=msg, role=DialogueRole.tool_role(), name=tool_name)
 
     def log_system_msg(self, msg: str):
-        return self.process_entry(new_entry=Entry(msg=msg, role=DialogueRole.system_role()))
+        return self.process_entry_from_info(msg=msg, role=DialogueRole.system_role())
 
 
