@@ -5,7 +5,7 @@ from api.base.language_types import Entry
 
 # ----------------------------------------------
 
-class LotusServer(LotusIO):
+class LotusServerIO(LotusIO):
     _instance = None
     _is_initialized = False
 
@@ -18,7 +18,6 @@ class LotusServer(LotusIO):
     def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = NetworkQuantities.default_client_port):
         super().__init__(ip_addr=ip_addr,port=port)
         self.agent_data_endpoint = self.handle_endpoint(endpoint=Ends.agent_data, handler=self.agent_data_handler)
-        self.start()
 
     # ----------------------------------------------
     # Handlers

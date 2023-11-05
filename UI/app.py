@@ -1,5 +1,5 @@
-from pywebdev.devkit import PyWebApp, InputType, Style
-from api import LotusServer
+from pywebdev.devkit import PyWebApp
+from api import LotusServerIO, Entry, DialogueRole
 from flask_socketio import SocketIO
 
 # ----------------------------------------------
@@ -21,9 +21,12 @@ class ChatHTML(PyWebApp):
         self.add_python_script(relPath='scripts/socketio.py')
 
 
+
 if __name__ == '__main__':
     app = ChatHTML(title='This new app')
     socketio = SocketIO(app, cors_allowed_origins='*')
+    this_server = LotusServerIO()
+    this_server.start()
 
 
     @socketio.on('connect')
@@ -39,5 +42,7 @@ if __name__ == '__main__':
     @socketio.on('message')
     def handle_message(msg):
         print('Received message:', msg)
+        this_server.send_user_entry(entry=Entry(msg=msg,role=DialogueRole.user_role()))
+
 
     app.run(debug=True)

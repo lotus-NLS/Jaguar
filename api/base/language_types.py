@@ -20,7 +20,7 @@ class Entry(dict, Serializable):
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
-        self.flags : FlagContainer = flags if not flags is None else []
+        self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
 
     def mark_processed(self):
         self._is_processed = True
