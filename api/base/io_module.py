@@ -3,12 +3,12 @@ import requests
 from typing import Optional
 from fastapi import FastAPI
 from pyutils import DaemonThread
-from api.base.api_types import ReqType, APIMessage, NetworkQuantities, Endpoint
+from api.base.api_types import ReqType, APIMessage, DefaultNetwork, Endpoint
 
 # ----------------------------------------------
 
 class LotusIO:
-    def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
+    def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
         self.app = FastAPI()
         self.ip_addr : str = ip_addr
         self.port : int = port

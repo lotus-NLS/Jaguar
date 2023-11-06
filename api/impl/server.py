@@ -1,7 +1,7 @@
 from pyutils import InputWaiter
 
 from api.base.io_module import LotusIO
-from api.base.api_types import APIMessage, NetworkQuantities, Ends
+from api.base.api_types import APIMessage, DefaultNetwork, Ends
 from api.base.language_types import Entry, DialogueRole
 
 
@@ -19,7 +19,7 @@ class LotusEngineIO(LotusIO):
         return cls._instance
 
 
-    def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = 8000):
+    def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
         if not LotusEngineIO._is_initialized:
             super().__init__(ip_addr=ip_addr,port=port)
             self.user_data_endpoint = self.handle_endpoint(endpoint=Ends.user_data, handler=self._user_data_handler)

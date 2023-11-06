@@ -49,16 +49,16 @@ class ReqType(str):
         return cls(type_str='system')
 
 
-class NetworkQuantities:
-    default_ip : str = '127.0.0.1'
-    default_engine_port : int = 8000
-    default_client_port : int = 8001
+class DefaultNetwork:
+    ip : str = '127.0.0.1'
+    engine_port : int = 8000
+    client_port : int = 8001
 
 
 class Ends:
-    user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post(),ip_addr=NetworkQuantities.default_ip
-                         ,port=NetworkQuantities.default_engine_port)
+    user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post(), ip_addr=DefaultNetwork.ip
+                         , port=DefaultNetwork.engine_port)
 
     agent_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get(),
-                          ip_addr=NetworkQuantities.default_ip,port=NetworkQuantities.default_client_port)
+                          ip_addr=DefaultNetwork.ip, port=DefaultNetwork.client_port)
 

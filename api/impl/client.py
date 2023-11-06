@@ -1,6 +1,6 @@
 from typing import Optional
 from api.base.io_module import LotusIO
-from api.base.api_types import APIMessage, NetworkQuantities, Ends
+from api.base.api_types import APIMessage, DefaultNetwork, Ends
 from api.base.language_types import Entry
 from flask_socketio import SocketIO
 
@@ -16,9 +16,9 @@ class LotusServerIO(LotusIO):
 
         return cls._instance
     
-    def __init__(self,socketio : Optional[SocketIO] ,
-                 ip_addr : str = NetworkQuantities.default_ip,
-                 port : int = NetworkQuantities.default_client_port):
+    def __init__(self, socketio : Optional[SocketIO],
+                 ip_addr : str = DefaultNetwork.ip,
+                 port : int = DefaultNetwork.client_port):
         super().__init__(ip_addr=ip_addr,port=port)
         self.agent_data_endpoint = self.handle_endpoint(endpoint=Ends.agent_data, handler=self.agent_data_handler)
         self.the_socket : SocketIO = socketio

@@ -20,6 +20,7 @@ class ChatHTML(PyWebApp):
         self.add_python_script(relPath='scripts/send_routine.py')
         self.add_python_script(relPath='scripts/receive_routine.py')
 
+
 app = ChatHTML(title='This new app')
 socketio = SocketIO(app, cors_allowed_origins='*')
 this_server = LotusServerIO(socketio = socketio)
