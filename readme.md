@@ -3,7 +3,7 @@ The Lotus framework facilitates interaction with the computer and the internet t
 For more information see the "Wiki" section on the [Project management page](https://furtive-point-c71.notion.site/GPT-pyWrite-Lotus-7a44993ddb1b42edbba4d6275d7c9628?pvs=4).
 
 <p align="center">
-  <img src="documentation/logo.jpg" alt="Logo" width="200">
+  <img src="_documentation/logo.jpg" alt="Logo" width="200">
   <br>
   <em> Nelumbo Nucifera the most widely known Lotus Flower</em>
 </p>
