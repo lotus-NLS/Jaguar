@@ -1,5 +1,7 @@
 from pywebdev.browser import window, document
 
+from api.constants.network import DefaultNetwork
+
 # ----------------------------------------------
 
 socket = window.io.connect('http://localhost:5000')
@@ -26,3 +28,4 @@ def handle_agent_msg(msg : str, is_entry_end = True):
         last_element.innerHTML += f"{msg}"
 
 socket.on('agentmessage', handle_agent_msg)
+window.console.log(f'ip: {DefaultNetwork.ip}')

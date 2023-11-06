@@ -1,6 +1,10 @@
+import os
 from pywebdev.devkit import PyWebApp
-from api import LotusClientIO, Entry, DialogueRole
+from api.server import LotusServerIO
+# from api import Entry, DialogueRole
+
 from flask_socketio import SocketIO
+from flask import send_from_directory
 
 # ----------------------------------------------
 
@@ -23,8 +27,14 @@ class ChatHTML(PyWebApp):
 
 app = ChatHTML(title='This new app')
 socketio = SocketIO(app, cors_allowed_origins='*')
-this_server = LotusClientIO(socketio = socketio)
+this_server = LotusServerIO()
 this_server.start()
+
+
+@app.route('/api/<path:filename>')
+def api_files(filename):
+    return send_from_directory('/home/daniel/Lotus/api', filename)
+
 
 @socketio.on('connect')
 def handle_connect():
@@ -39,6 +49,5 @@ def handle_disconnect():
 @socketio.on('message')
 def handle_user_msg(msg):
     print('Received message:', msg)
-    this_server.send_user_entry(entry=Entry(msg=msg,role=DialogueRole.user_role()))
 
 app.run(debug=True, use_reloader=False)
