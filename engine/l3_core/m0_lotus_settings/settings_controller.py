@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from engine.l3_settings.m1_settings_modules import all_settings
+from engine.l3_core.m1_settings_modules import all_settings
 
 from .CredentialSettings import CredentialSettings
 from .DialogueSettings import DialogueSettings

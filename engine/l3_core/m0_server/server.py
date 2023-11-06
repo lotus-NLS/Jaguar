@@ -61,6 +61,10 @@ class LotusServerIO:
     # ----------------------------------------------
     # API
 
+    # TODO
+    def post_engine_message(self,msg : str):
+        pass
+
     def get_user_entry(self) -> Entry:
         self._incoming_entry_waiter.clear()
         user_entry = self._incoming_entry_waiter.read()

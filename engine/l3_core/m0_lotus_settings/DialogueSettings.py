@@ -1,5 +1,5 @@
-from engine.l3_settings.m1_settings_modules import Setting
-from engine.l3_settings.m1_settings_modules import SettingGrouping, SettingTest
+from engine.l3_core.m1_settings_modules import Setting
+from engine.l3_core.m1_settings_modules import SettingGrouping, SettingTest
 
 
 class DialogueSettings(SettingGrouping):

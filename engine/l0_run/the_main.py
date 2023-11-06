@@ -1,10 +1,10 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from engine.l2_agent.m1_language import Channel, LingualEntity
-from engine.l3_settings import DialogueSettings, SettingsController, get_setting
+from engine.l3_core import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
 
-from engine.l0_run.server import LotusServerIO
+from engine.l3_core.m0_server.server import LotusServerIO
 from engine.l0_run.entities import Alpha, User
 # ---------------------------------------------------------
 

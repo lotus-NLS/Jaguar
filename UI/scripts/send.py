@@ -1,10 +1,11 @@
-from pywebdev.browser import window, document
+from browser import window, document
 
 # ----------------------------------------------
 
 # The socket of the website
 
 def send_to_server(msg : str):
+    _ = msg
     window.console.log('I sent the msg :)')
     # socket.emit('message', msg)
 

@@ -1,4 +1,4 @@
-from pywebdev.browser import window, document
+from browser import window, document
 from api.constants.network import DefaultNetwork
 from client import newthing
 
