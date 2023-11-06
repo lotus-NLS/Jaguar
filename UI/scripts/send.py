@@ -3,11 +3,10 @@ from pywebdev.browser import window, document
 # ----------------------------------------------
 
 # The socket of the website
-socket = window.io.connect('http://localhost:5000')
 
 def send_to_server(msg : str):
     window.console.log('I sent the msg :)')
-    socket.emit('message', msg)
+    # socket.emit('message', msg)
 
 
 # def append_to_chat(msg : str):

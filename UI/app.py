@@ -1,7 +1,5 @@
 import os
 from pywebdev.devkit import PyWebApp
-from api.server import LotusServerIO
-# from api import Entry, DialogueRole
 
 from flask_socketio import SocketIO
 from flask import send_from_directory
@@ -21,33 +19,21 @@ class ChatHTML(PyWebApp):
         self.add_button(the_id='Send', value ='Send')
 
         # Chat Interactivity
-        self.add_python_script(relPath='scripts/send_routine.py')
-        self.add_python_script(relPath='scripts/receive_routine.py')
+        self.add_python_script(relPath='scripts/send.py')
+        self.add_python_script(relPath='scripts/receive.py')
 
 
 app = ChatHTML(title='This new app')
 socketio = SocketIO(app, cors_allowed_origins='*')
-this_server = LotusServerIO()
-this_server.start()
-
 
 @app.route('/api/<path:filename>')
 def api_files(filename):
-    return send_from_directory('/home/daniel/Lotus/api', filename)
+    parent_directory = os.path.dirname(app.directory_path)
+    # print(f'App root path: {app.root_path}')
 
+    print(parent_directory)
+    api_directory = os.path.join(parent_directory, 'api')
+    return send_from_directory(api_directory, filename)
 
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
-
-
-@socketio.on('message')
-def handle_user_msg(msg):
-    print('Received message:', msg)
 
 app.run(debug=True, use_reloader=False)
