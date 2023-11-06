@@ -1,40 +1,29 @@
-from __future__ import annotations
-from typing import Optional
-from pydantic import BaseModel
 
 from api.base.language_types import Entry
 
 # ----------------------------------------------
 # Classes
 
-class APIMessage(BaseModel):
-    user_id: str = 'default_id'
-    entry_str: Optional[str] = None
-    bool_content : Optional[bool] = None
-    settings_content: Optional[str] = None
+class APIMessage:
+
+    def __init__(self):
+        self.user_id = 'default_id'
+        self.entry_str = None
+        self.bool_content  = None
+        self.settings_content = None
 
     def get_user_id(self) -> str:
         return self.user_id
 
-    def get_entry(self) -> Optional[Entry]:
+    def get_entry(self) -> Entry:
         return Entry.from_str(self.entry_str)
 
-    def get_bool_content(self) -> Optional[bool]:
+    def get_bool_content(self) -> bool:
         return self.bool_content
 
-    def get_settings_content(self) -> Optional[str]:
+    def get_settings_content(self) -> str:
         return self.settings_content
 
-
-class Endpoint:
-    def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
-        self.name : str = name
-        self.req_type : ReqType = req_type
-        self.ip_addr : str = ip_addr
-        self.port : int = port
-
-# ----------------------------------------------
-# Enums
 
 class ReqType(str):
     def __new__(cls, type_str: str):
@@ -47,6 +36,17 @@ class ReqType(str):
     @classmethod
     def post(cls):
         return cls(type_str='system')
+
+
+class Endpoint:
+    def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
+        self.name : str = name
+        self.req_type : ReqType = req_type
+        self.ip_addr : str = ip_addr
+        self.port : int = port
+
+# ----------------------------------------------
+# Enums
 
 
 class DefaultNetwork:
