@@ -4,17 +4,18 @@ from engine.l2_agent.m1_language import Channel, LingualEntity
 from engine.l3_core import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
 
-from engine.l3_core.m0_server.server import LotusServerIO
-from engine.l0_run.entities import Alpha, User
+from engine.l3_core.m0_server.server import EngineIO
+from engine.l0_main.entities import Alpha, User
 # ---------------------------------------------------------
 
-class Engine:
+class LotusEngine:
     def __init__(self):
         self.user_channel : Optional[Channel] = None
         self.user : Optional[LingualEntity] = None
         self.bots : Optional[list[Agent]] = None
         self.settings_controller : Optional[SettingsController] = None
-        self.server : Optional[LotusServerIO] = None
+        self.server : Optional[EngineIO] = None
+
 
     def initialize_entities(self):
         self.user = User()
@@ -22,8 +23,9 @@ class Engine:
 
 
     def initialize_IO(self):
-        self.server = LotusServerIO()
+        self.server = EngineIO()
         self.server.start()
+
 
     def initialize_communications(self):
         self.user_channel = Channel()
@@ -36,13 +38,19 @@ class Engine:
             self.settings_controller = SettingsController()
             self.settings_controller.setup(perform_validation=perform_validation)
 
+
     def run(self):
+        self.initialize_entities()
+        self.initialize_IO()
+        self.initialize_communications()
+        self.initialize_settings(perform_validation=True)
         print(f'[Debug]: Lotus started')
+
         if get_setting(DialogueSettings.enable_introduction_label):
            self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
-            user_entry = LotusServerIO().get_user_entry()
+            user_entry = EngineIO().get_user_entry()
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
             print(f'[Debug]: Flags are {flags}')
@@ -62,34 +70,9 @@ class Engine:
 
             self.user.enqueue(msg=user_entry.get_content(), flags=flags)
 
-
     # Make the engine log the individual steps
     def __getattribute__(self, name):
         attr = object.__getattribute__(self, name)
         if callable(attr):
             attr = DevLogger.logging_wrapper(attr)
         return attr
-
-
-def main():
-    # Initialize the engine as empty vessel
-    the_engine : Engine = Engine()
-
-    # Create user and bot entities
-    the_engine.initialize_entities()
-
-    # Communicate with LotusDeploy
-    the_engine.initialize_IO()
-
-    # Facilitate communications between entities
-    the_engine.initialize_communications()
-
-    # Read or write settings if no settings available
-    the_engine.initialize_settings(perform_validation=True)
-
-    # Start the routine
-    the_engine.run()
-
-if __name__ == "__main__":
-    main()
-

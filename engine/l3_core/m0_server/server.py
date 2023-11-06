@@ -12,7 +12,7 @@ from pyutils import DaemonThread
 
 # ----------------------------------------------
 
-class LotusServerIO:
+class EngineIO:
     _instance = None
     _is_initialized = False
 
@@ -32,7 +32,7 @@ class LotusServerIO:
 
 
     def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
-        if not LotusServerIO._is_initialized:
+        if not EngineIO._is_initialized:
             self.app = FastAPI()
             self.ip_addr: str = ip_addr
             self.port: int = port
@@ -45,7 +45,7 @@ class LotusServerIO:
                 data = await request.json()
                 return {"message": "Item received", "data": data}
 
-            LotusServerIO._is_initialized = True
+            EngineIO._is_initialized = True
 
             @self.app.get("/stream")
             async def stream():

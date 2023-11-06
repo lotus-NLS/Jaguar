@@ -1,12 +1,11 @@
 import os
 from pywebdev.devkit import PyWebApp
 
-from flask_socketio import SocketIO
-from flask import send_from_directory
+
 
 # ----------------------------------------------
 
-class ChatHTML(PyWebApp):
+class LotusWebApp(PyWebApp):
     def add_body_content(self):
         # Chat window
         # chat_window_style = Style(height='300px', border='1px solid #ccc', overflow='auto')
@@ -21,22 +20,3 @@ class ChatHTML(PyWebApp):
         # Chat Interactivity
         self.add_python_script(relPath='scripts/send.py')
         self.add_python_script(relPath='scripts/receive.py')
-
-# ----------------------------------------------
-# Run webapp
-
-app = ChatHTML(title='This new app')
-socketio = SocketIO(app, cors_allowed_origins='*')
-
-@app.route('/api/<path:filename>')
-def api_lib(filename):
-    parent_directory = os.path.dirname(app.directory_path)
-    api_directory = os.path.join(parent_directory, 'api')
-    return send_from_directory(api_directory, filename)
-
-@app.route('/client/<path:filename>')
-def client_lib(filename):
-    clientdir = os.path.join(app.directory_path, 'scripts/client')
-    return send_from_directory(clientdir, filename)
-
-app.run(debug=True, use_reloader=False)
