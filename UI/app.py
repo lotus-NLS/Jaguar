@@ -20,26 +20,24 @@ class ChatHTML(PyWebApp):
         self.add_python_script(relPath='scripts/send_routine.py')
         self.add_python_script(relPath='scripts/receive_routine.py')
 
+app = ChatHTML(title='This new app')
+socketio = SocketIO(app, cors_allowed_origins='*')
+this_server = LotusServerIO(socketio = socketio)
+this_server.start()
 
-if __name__ == '__main__':
-    app = ChatHTML(title='This new app')
-    socketio = SocketIO(app, cors_allowed_origins='*')
-    this_server = LotusServerIO(socketio = socketio)
-    this_server.start()
-
-    @socketio.on('connect')
-    def handle_connect():
-        print('Client connected')
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
 
 
-    @socketio.on('disconnect')
-    def handle_disconnect():
-        print('Client disconnected')
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
 
 
-    @socketio.on('message')
-    def handle_user_msg(msg):
-        print('Received message:', msg)
-        this_server.send_user_entry(entry=Entry(msg=msg,role=DialogueRole.user_role()))
+@socketio.on('message')
+def handle_user_msg(msg):
+    print('Received message:', msg)
+    this_server.send_user_entry(entry=Entry(msg=msg,role=DialogueRole.user_role()))
 
-    app.run(debug=True)
+app.run(debug=True, use_reloader=False)

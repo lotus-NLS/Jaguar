@@ -1,3 +1,4 @@
+from typing import Optional
 from api.base.io_module import LotusIO
 from api.base.api_types import APIMessage, NetworkQuantities, Ends
 from api.base.language_types import Entry
@@ -15,7 +16,7 @@ class LotusServerIO(LotusIO):
 
         return cls._instance
     
-    def __init__(self,socketio : SocketIO,
+    def __init__(self,socketio : Optional[SocketIO] ,
                  ip_addr : str = NetworkQuantities.default_ip,
                  port : int = NetworkQuantities.default_client_port):
         super().__init__(ip_addr=ip_addr,port=port)

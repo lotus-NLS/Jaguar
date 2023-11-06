@@ -22,7 +22,6 @@ class LotusIO:
         DaemonThread(target=do_start).start()
 
 
-
     def handle_endpoint(self,endpoint : Endpoint, handler : callable):
         decorator = self.app.get if endpoint.req_type == ReqType.get() else self.app.post
         decorator(f'/{endpoint.name}/')(handler)
