@@ -2,7 +2,7 @@ import math
 import openai
 from openai_function_tokens import estimate_tokens
 from api.classes.language import Entry
-from engine.l3_singletons import get_setting, CredentialSettings
+from engine.l3_singletons import CredentialSettings
 
 from .actionstream import ActionStream
 from .options import ActionOptions
@@ -17,7 +17,7 @@ class OpenAIModel(LLM):
 
 
     def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
-        openai.api_key = get_setting(label=CredentialSettings.openai_apikey_label)
+        openai.api_key = CredentialSettings().get_openai_key()
 
         args_dict = {
             'model': self.model_type,

@@ -1,3 +1,3 @@
-from .settings_controller import get_setting, SettingsController
 from .DialogueSettings import DialogueSettings
 from .CredentialSettings import CredentialSettings
+from .LotusSettings import LotusSettings

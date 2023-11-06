@@ -3,7 +3,7 @@ from typing import Optional
 from pyutils import DevLogger, CustomThread
 from pywebdev import PyWebApp
 from engine.l2_agent.m1_language import Channel, LingualEntity
-from engine.l3_singletons import DialogueSettings, SettingsController, get_setting
+from engine.l3_singletons import LotusSettings, DialogueSettings
 from engine.l2_agent import Agent
 
 from engine.l3_singletons.m0_server.engine_io import EngineIO
@@ -16,7 +16,7 @@ class LotusEngine:
     def __init__(self, web_app : PyWebApp):
         self.user_channel : Channel = Channel()
         self.user : LingualEntity = User()
-        self.settings_controller : SettingsController = SettingsController()
+        self.settings : LotusSettings = LotusSettings()
         self.IO : EngineIO = EngineIO(web_app=web_app)
 
         self.bots: Optional[list[Agent]] = None
@@ -32,7 +32,7 @@ class LotusEngine:
 
     @DevLogger.logging_wrapper
     def setup_settings(self, perform_validation : bool = True):
-        self.settings_controller.setup(perform_validation=perform_validation)
+        self.settings.setup(perform_validation=perform_validation)
 
     @DevLogger.logging_wrapper
     def run(self):
@@ -41,7 +41,7 @@ class LotusEngine:
         self.setup_settings(perform_validation=True)
         print(f'[Debug]: Lotus started')
 
-        if get_setting(DialogueSettings.enable_introduction_label):
+        if DialogueSettings().get_enable_introduction():
            self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:

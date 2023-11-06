@@ -8,28 +8,42 @@ from engine.l3_singletons.m1_settings_modules import Setting,SettingGrouping, Se
 # ---------------------------------------------------------
 
 class CredentialSettings(SettingGrouping):
-    openai_apikey_label = 'openai_api_key'
-    google_apikey_label = 'google_api_key'
-    search_engineID_label = 'search_engine_id'
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(CredentialSettings, cls).__new__(cls)
+            cls._instance.__initialized = False
+        return cls._instance
 
     def __init__(self):
+        if self.__initialized:
+            return
+
         super(CredentialSettings, self).__init__()
 
-        self.openai_apikey_test = SettingTest(test_body=self.test_openai_apikey)
-        self.search_engine_test = SettingTest(test_body=self.test_search_engine)
+        self._openai_apikey_test : SettingTest = SettingTest(test_body=self.test_openai_apikey)
+        self._search_engine_test : SettingTest = SettingTest(test_body=self.test_search_engine)
 
-        self.openai_apikey_setting : Setting = self.make_setting(label=CredentialSettings.openai_apikey_label,
-                                                                 test=self.openai_apikey_test)
+        self._openai_apikey_setting : Setting = self.make_setting(label='openai_api_key', test=self._openai_apikey_test)
+        self._google_apikey_setting : Setting = self.make_setting(label='google_api_key', test=self._search_engine_test)
+        self._search_engineID_setting : Setting = self.make_setting(label='search_engine_id', test=self._search_engine_test)
 
-        self.google_apikey_setting : Setting = self.make_setting(label=CredentialSettings.google_apikey_label,
-                                                                 test=self.search_engine_test)
+        self.__initialized = True
+    # ---------------------------------------------------------
+    # Retrieve Settings
 
-        self.search_engineID_setting : Setting = self.make_setting(label=CredentialSettings.search_engineID_label,
-                                                                   test=self.search_engine_test)
+    def get_openai_key(self):
+        return self._openai_apikey_setting.value
+
+    def get_google_apikey(self):
+        return self._google_apikey_setting.value
+
+    def get_searchengine_ID(self):
+        return self._search_engineID_setting.value
 
     # ---------------------------------------------------------
     # Tests
-
 
     def test_openai_apikey(self) -> bool:
         temp = openai.api_key
@@ -37,7 +51,7 @@ class CredentialSettings(SettingGrouping):
         err_details = ''
 
         try:
-            openai.api_key = self.openai_apikey_setting.value
+            openai.api_key = self._openai_apikey_setting.value
             args_dict = {
                 'model': 'gpt-3.5-turbo',
                 'messages': [{'role' : 'user', 'content' : 'This is a test'}],
@@ -66,8 +80,8 @@ class CredentialSettings(SettingGrouping):
             url = "https://www.googleapis.com/customsearch/v1"
             params = {
                 'q': 'snails',
-                'key': self.google_apikey_setting.value,
-                'cx': self.search_engineID_setting.value
+                'key': self._google_apikey_setting.value,
+                'cx': self._search_engineID_setting.value
             }
             response = requests.get(url, params=params)
             response_json = response.json()

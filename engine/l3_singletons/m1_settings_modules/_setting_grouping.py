@@ -8,7 +8,7 @@ from ._setting import Setting
 
 class SettingTest:
     @classmethod
-    def make_empty_test(cls):
+    def make_automatic_pass(cls):
         def empty_test() -> bool:
             return True
 

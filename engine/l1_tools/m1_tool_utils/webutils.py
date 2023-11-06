@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from func_timeout import func_timeout
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from engine.l3_singletons import get_setting, CredentialSettings
+from engine.l3_singletons import CredentialSettings
 
 from engine.l1_tools.m1_tooldef.tool import Tool
 # ---------------------------------------------------------
@@ -56,8 +56,8 @@ class Webtools:
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             'q': f'{search_term}',
-            'key': get_setting(CredentialSettings.google_apikey_label),
-            'cx': get_setting(CredentialSettings.search_engineID_label),
+            'key': CredentialSettings().get_google_apikey(),
+            'cx': CredentialSettings().get_searchengine_ID(),
             'num' : num_results
         }
         search_results = requests.get(url, params=params).json()['items']

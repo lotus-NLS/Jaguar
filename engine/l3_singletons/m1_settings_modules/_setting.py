@@ -2,8 +2,25 @@ from __future__ import annotations
 import ast
 import configparser
 import os
-from typing import Union, Optional
+from typing import Optional
 from engine.l3_singletons.m0_server import EngineIO
+
+
+# (10.10.23) D.H. : Settings Terminology
+# -> There is a settings resource either locally on the computer or in the cloud
+# -> The setup method of the Settings Controller completes only when valid values are obtained for every setting listed
+# -> Values are validated by the _tests defined in each SettingsGrouping
+
+# (10.10.23) D.H. : Settings Workflow
+# -> If valid values can be retrieved from the settings resource they are loaded up and the setup terminates
+# -> If not, the user will be informed for which settings valid values could not be obtained and be asked if he wants to retry
+#  via a y/n prompt
+# -> If the user does choose to retry he will be asked to enter new values for the settings that failed to validate
+# -> When all settings are valid or the user declines to enter new values on the y/n prompt the setup process terminates
+
+
+# NOTE : Because everything is saved in a single file, setting labels must be unique
+# and so must the name of SettingGroupings  also must be unique
 
 # ----------------------------------------------------
 
@@ -18,7 +35,7 @@ class Setting:
         self.label : str = label
         self.section : str = section
         self.dtype : type = dtype
-        self.value: Union[None,dtype] = None
+        self.value: Optional[dtype] = None
 
         self._is_functional : bool = False
 

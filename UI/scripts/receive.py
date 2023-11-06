@@ -26,6 +26,7 @@ def handle_agent_msg(msg : str, is_entry_end = True):
 
 
 def handle_custom_event(msg):
+    _ = msg
     window.console.log('asdf')
 
 evt_source = window.EventSource.new('/stream')

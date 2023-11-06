@@ -20,27 +20,29 @@ class EngineIO:
         return cls._instance
 
     def __init__(self, web_app : Optional[PyWebApp] = None):
-        if not EngineIO._is_initialized:
-            self.web_app : PyWebApp = web_app
-            self._incoming_entry_waiter : InputWaiter = InputWaiter()
-            self._incoming_bool_waiter : InputWaiter = InputWaiter()
+        if EngineIO._is_initialized:
+            return
 
-            @self.web_app.route('/item/', methods=['POST'])
-            def create_item():
-                data = request.json
-                return jsonify({"message": "Item received", "data": data})
+        self.web_app : PyWebApp = web_app
+        self._incoming_entry_waiter : InputWaiter = InputWaiter()
+        self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-            @self.web_app.route('/stream')
-            def stream():
-                def event_stream():
-                    while True:
-                        yield 'event: customEventName\ndata: Hello\n\n'
-                        time.sleep(1)
-                    pass
+        @self.web_app.route('/item/', methods=['POST'])
+        def create_item():
+            data = request.json
+            return jsonify({"message": "Item received", "data": data})
 
-                return Response(event_stream(), mimetype='text/event-stream')
+        @self.web_app.route('/stream')
+        def stream():
+            def event_stream():
+                while True:
+                    yield 'event: customEventName\ndata: Hello\n\n'
+                    time.sleep(1)
+                pass
 
-            EngineIO._is_initialized = True
+            return Response(event_stream(), mimetype='text/event-stream')
+
+        EngineIO._is_initialized = True
 
     # ----------------------------------------------
     # Handlers
