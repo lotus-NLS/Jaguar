@@ -1,6 +1,4 @@
-import os
 from pywebdev.devkit import PyWebApp
-
 
 # ----------------------------------------------
 

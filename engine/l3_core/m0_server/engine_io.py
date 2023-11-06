@@ -30,17 +30,17 @@ class EngineIO:
                 data = request.json
                 return jsonify({"message": "Item received", "data": data})
 
-            EngineIO._is_initialized = True
-
             @self.web_app.route('/stream')
             def stream():
                 def event_stream():
                     while True:
-                        yield 'Hello'
+                        yield 'event: customEventName\ndata: Hello\n\n'
                         time.sleep(1)
                     pass
 
                 return Response(event_stream(), mimetype='text/event-stream')
+
+            EngineIO._is_initialized = True
 
     # ----------------------------------------------
     # Handlers
