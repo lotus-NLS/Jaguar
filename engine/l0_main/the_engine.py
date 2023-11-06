@@ -1,4 +1,3 @@
-import time
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from pywebdev import PyWebApp
@@ -21,18 +20,22 @@ class LotusEngine:
 
         self.bots: Optional[list[Agent]] = None
 
+
     @DevLogger.logging_wrapper
     def initialize_agents(self):
         self.bots = [Alpha()]
+
 
     @DevLogger.logging_wrapper
     def launch_communications(self):
         for participant in [self.user]+self.bots:
             self.user_channel.add_entity(entity=participant)
 
+
     @DevLogger.logging_wrapper
     def setup_settings(self, perform_validation : bool = True):
         self.settings.setup(perform_validation=perform_validation)
+
 
     @DevLogger.logging_wrapper
     def run(self):

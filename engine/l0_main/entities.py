@@ -75,7 +75,6 @@ class Alpha(Agent):
                 msg = self.model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)
 
             self.log_tool_msg(msg=msg, tool_name=tool_name)
-
             if num_tokens > max_tokens_tool:
                 warning_msg = '[Progress]: The tool output exceeded the maximum number of tokens of 1000 and was shortened to that length ...'
                 self.log_tool_msg(msg=warning_msg, tool_name=tool_name)
@@ -86,11 +85,8 @@ class Alpha(Agent):
 
 class User(LingualEntity):
     def __init__(self):
-        super(User, self).__init__(role=DialogueRole.user_role())
+        super().__init__(role=DialogueRole.user_role())
         self.user_id = 'the_user'
-
-    def process_entry(self, new_entry: Entry):
-        super().process_entry(new_entry=new_entry)
 
 
     def logger(self, new_entry : Entry):

@@ -1,4 +1,4 @@
-from browser import ajax, window
+from browser import ajax
 
 
 class Client:
@@ -30,6 +30,3 @@ class Client:
             req.send(data)
         else:
             req.send()
-
-def hi():
-    window.console.log('Hi :)')
