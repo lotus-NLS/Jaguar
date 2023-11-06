@@ -93,7 +93,6 @@ class User(LingualEntity):
 
 
     def logger(self, new_entry : Entry):
-        super().logger(new_entry=new_entry)
         to_log = ''
         if self.current_entry is None:
             to_log += f'\n{new_entry.get_role()}:'

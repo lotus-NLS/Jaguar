@@ -28,7 +28,7 @@ class LotusServerIO(LotusIO):
 
     def agent_data_handler(self,lotus_msg : APIMessage) -> None:
         entry = lotus_msg.get_entry()
-        self.the_socket.emit('agentmessage', entry.get_content())
+        self.the_socket.emit('agentmessage', (entry.get_content(),entry.flags.is_entry_end))
         print(f'Client heard: {entry.get_content()}')
 
     # ----------------------------------------------

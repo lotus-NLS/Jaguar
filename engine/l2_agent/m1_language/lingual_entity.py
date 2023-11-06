@@ -33,7 +33,7 @@ class LingualEntity:
     # ------------------------------
     # Speak
 
-    def enqueue(self, msg: str, flags: FlagContainer = FlagContainer.make_default(), final : bool = True):
+    def enqueue(self, msg: str, flags: FlagContainer = FlagContainer.make_default(), final : bool = False):
         if final:
             flags.is_entry_end = True
 
@@ -57,14 +57,16 @@ class LingualEntity:
 
     def process_entry(self, new_entry: Entry):
         self.logger(new_entry=new_entry)
+
         if self.current_entry is None:
+            print(f'temp debug: Set current entry to :{new_entry}')
             self.current_entry = new_entry
             self._personal_log.append(new_entry)
         else:
             self.current_entry.append_content(additional_content=new_entry.get_content())
 
-
         if new_entry.flags.is_entry_end:
+            print(f'temp debug: Reset the currenty entry')
             self.current_entry = None
             DaemonThread(target=self.react, args=(new_entry,)).start()
 

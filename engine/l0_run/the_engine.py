@@ -47,6 +47,7 @@ class Engine:
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
             print(f'[Debug]: Flags are {flags}')
+            flags.is_entry_end = True
 
             if flags.print_threads:
                 CustomThread.print_active_customthreads()
