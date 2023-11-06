@@ -1,5 +1,4 @@
 from __future__ import annotations
-from threading import Lock
 from typing import Optional
 from pyutils import Serializable
 
@@ -112,20 +111,3 @@ class FlagContainer(Serializable):
         return this_container
 
 
-class SpeakerStaff:
-    def __init__(self):
-        self.lock = Lock()
-        self.holder = None
-
-    def acquire(self, holder):
-        acquired = self.lock.acquire(blocking=False)  # Try to acquire the lock
-        if acquired:
-            self.holder = holder
-        return acquired
-
-    def release(self):
-        self.lock.release()
-        self.holder = None
-
-    def current_holder(self):
-        return self.holder

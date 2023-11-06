@@ -71,4 +71,3 @@ class LotusServerIO:
     def get_confirmation(self):
         self._incoming_bool_waiter.clear()
         pass
-

@@ -1,4 +1,5 @@
-from api.types.language import Entry, SpeakerStaff
+from api.types.language import Entry
+from engine.l2_agent.m1_language.channel import SpeakerStaff
 from abc import abstractmethod
 # ----------------------------------------------------
 

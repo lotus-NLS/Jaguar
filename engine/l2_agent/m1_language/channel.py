@@ -1,6 +1,10 @@
+from __future__ import annotations
+
+from threading import Lock
+
 from pyutils import Countdown
 from .channel_interface import ChannelInterface
-from api.types.language import Entry, SpeakerStaff
+from api.types.language import Entry
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------
@@ -53,3 +57,22 @@ class Channel(ChannelInterface):
 
         for member in self.members:
             member.process_entry(new_entry=entry)
+
+
+class SpeakerStaff:
+    def __init__(self):
+        self.lock = Lock()
+        self.holder = None
+
+    def acquire(self, holder):
+        acquired = self.lock.acquire(blocking=False)  # Try to acquire the lock
+        if acquired:
+            self.holder = holder
+        return acquired
+
+    def release(self):
+        self.lock.release()
+        self.holder = None
+
+    def current_holder(self):
+        return self.holder

@@ -1,22 +1,4 @@
-# import time
-# from api.server.client import LotusClientIO
-# from api.constants.language_types import Entry, DialogueRole, FlagContainer
-# 
-# # ----------------------------------------------
-# 
-# the_lotus_server = LotusClientIO(socketio=None)
-# the_lotus_server.start()
-# 
-# time.sleep(0.5)
-# while True:
-#     user_input = input(f'Content?')
-#     flag_str = input(f'Flags?')
-# 
-#     flags = FlagContainer.from_text_specification(flag_str=flag_str)
-#     the_entry = Entry(msg=user_input,role= DialogueRole.agent_role(), flags=flags)
-#     the_lotus_server.send_user_entry(entry=the_entry)
 import time
-
 import requests
 from api.server.server import LotusServerIO
 
