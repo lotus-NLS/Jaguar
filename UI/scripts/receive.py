@@ -28,3 +28,6 @@ def handle_agent_msg(msg : str, is_entry_end = True):
 
 window.console.log(f'ip: {DefaultNetwork.ip}')
 newthing.hi()
+
+evt_source = window.EventSource.new('/stream')
+# evt_source.bind('message', add_message)

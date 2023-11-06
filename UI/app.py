@@ -39,5 +39,4 @@ def client_lib(filename):
     clientdir = os.path.join(app.directory_path, 'scripts/client')
     return send_from_directory(clientdir, filename)
 
-
 app.run(debug=True, use_reloader=False)

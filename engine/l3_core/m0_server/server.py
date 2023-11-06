@@ -1,5 +1,7 @@
+import time
 from pyutils import InputWaiter
 from fastapi import FastAPI, Request
+from starlette.responses import StreamingResponse
 import uvicorn
 
 
@@ -45,8 +47,19 @@ class LotusServerIO:
 
             LotusServerIO._is_initialized = True
 
+            @self.app.get("/stream")
+            async def stream():
+                return StreamingResponse(self.event_stream(), media_type="text/event-stream")
+
     # ----------------------------------------------
     # Handlers
+
+    @staticmethod
+    def event_stream():
+        while True:
+            yield f"data: The server time is {time.ctime()}\n\n"
+            time.sleep(1)  # Stream data every 1 second
+
 
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
         if not lotus_msg.get_entry() is None:
@@ -56,7 +69,6 @@ class LotusServerIO:
             self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
 
         return 'message ok'
-
 
     # ----------------------------------------------
     # API
