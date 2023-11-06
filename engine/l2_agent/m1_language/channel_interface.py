@@ -1,4 +1,4 @@
-from api.base.language_types import Entry, SpeakerStaff
+from api.types.language import Entry, SpeakerStaff
 from abc import abstractmethod
 # ----------------------------------------------------
 

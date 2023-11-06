@@ -1,12 +1,16 @@
 from pyutils import InputWaiter
+from fastapi import FastAPI, Request
+import uvicorn
 
-from api.base.io_module import Server
-from api.base.api_types import APIMessage, DefaultNetwork, Ends
-from api.base.language_types import Entry, DialogueRole
+
+from api.types.api import APIMessage
+from api.constants.network import DefaultNetwork
+from api.types.language import Entry
+from pyutils import DaemonThread
 
 # ----------------------------------------------
 
-class LotusServerIO(Server):
+class LotusServerIO:
     _instance = None
     _is_initialized = False
 
@@ -17,13 +21,27 @@ class LotusServerIO(Server):
 
         return cls._instance
 
+    def start(self):
+        def do_start():
+            uvicorn_config = uvicorn.Config(app=self.app, host=self.ip_addr, port=self.port)
+            server = uvicorn.Server(config=uvicorn_config)
+            server.run()
+        DaemonThread(target=do_start).start()
+
 
     def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
         if not LotusServerIO._is_initialized:
-            super().__init__(ip_addr=ip_addr,port=port)
-            # self.user_data_endpoint = self.handle_endpoint(endpoint=Ends.user_data, handler=self._user_data_handler)
+            self.app = FastAPI()
+            self.ip_addr: str = ip_addr
+            self.port: int = port
+
             self._incoming_entry_waiter : InputWaiter = InputWaiter()
             self._incoming_bool_waiter : InputWaiter = InputWaiter()
+
+            @self.app.post("/item/")
+            async def create_item(request: Request):
+                data = await request.json()
+                return {"message": "Item received", "data": data}
 
             LotusServerIO._is_initialized = True
 
@@ -43,12 +61,6 @@ class LotusServerIO(Server):
     # ----------------------------------------------
     # API
 
-    # def post_engine_message(self, msg_content : str) -> None:
-    #     entry = Entry(msg=msg_content, role=DialogueRole.agent_role())
-    #     the_msg = APIMessage(entry_str=entry.to_str())
-    #     self._communicate(endpoint=Ends.agent_data, payload=the_msg)
-
-    
     def get_user_entry(self) -> Entry:
         self._incoming_entry_waiter.clear()
         user_entry = self._incoming_entry_waiter.read()
@@ -59,3 +71,4 @@ class LotusServerIO(Server):
     def get_confirmation(self):
         self._incoming_bool_waiter.clear()
         pass
+

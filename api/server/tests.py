@@ -1,6 +1,6 @@
 # import time
-# from api.impl.client import LotusClientIO
-# from api.base.language_types import Entry, DialogueRole, FlagContainer
+# from api.server.client import LotusClientIO
+# from api.constants.language_types import Entry, DialogueRole, FlagContainer
 # 
 # # ----------------------------------------------
 # 
@@ -18,7 +18,7 @@
 import time
 
 import requests
-from api.impl.server import LotusServerIO
+from api.server.server import LotusServerIO
 
 
 test_server = LotusServerIO()

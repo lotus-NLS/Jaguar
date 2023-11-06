@@ -5,7 +5,7 @@ from abc import abstractmethod
 from pyutils import DaemonThread
 from queue import Queue
 
-from api.base.language_types import Entry, DialogueRole, FlagContainer
+from api.types.language import Entry, DialogueRole, FlagContainer
 from .channel import ChannelInterface as Channel
 
 # ----------------------------------------------------
