@@ -1,7 +1,7 @@
 from api.base.io_module import LotusIO
 from api.base.api_types import APIMessage, NetworkQuantities, Ends
 from api.base.language_types import Entry
-
+from flask_socketio import SocketIO
 
 # ----------------------------------------------
 
@@ -15,16 +15,19 @@ class LotusServerIO(LotusIO):
 
         return cls._instance
     
-    def __init__(self, ip_addr : str = NetworkQuantities.default_ip, port : int = NetworkQuantities.default_client_port):
+    def __init__(self,socketio : SocketIO,
+                 ip_addr : str = NetworkQuantities.default_ip,
+                 port : int = NetworkQuantities.default_client_port):
         super().__init__(ip_addr=ip_addr,port=port)
         self.agent_data_endpoint = self.handle_endpoint(endpoint=Ends.agent_data, handler=self.agent_data_handler)
+        self.the_socket : SocketIO = socketio
 
     # ----------------------------------------------
     # Handlers
 
-    @staticmethod
-    def agent_data_handler(lotus_msg : APIMessage) -> None:
+    def agent_data_handler(self,lotus_msg : APIMessage) -> None:
         entry = lotus_msg.get_entry()
+        self.the_socket.emit('agentmessage', entry.get_content())
         print(f'Client heard: {entry.get_content()}')
 
     # ----------------------------------------------

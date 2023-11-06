@@ -2,6 +2,7 @@ from pywebdev.browser import window, document
 
 # ----------------------------------------------
 
+# The socket of the website
 socket = window.io.connect('http://localhost:5000')
 
 def send_to_server(msg : str):
@@ -16,7 +17,7 @@ def append_to_chat(msg : str):
     chat_window.appendChild(new_element)
 
 
-def handle_message(event):
+def handle_user_msg(event):
     _ = event
     text_bar = document["text_bar"]
     entered_text = text_bar.value
@@ -27,7 +28,7 @@ def handle_message(event):
 
 def handle_keyup(event):
     if event.key == "Enter":
-        handle_message(event)
+        handle_user_msg(event)
 
 document["text_bar"].bind("keyup", handle_keyup)
-document["Send"].bind("click", handle_message)
+document["Send"].bind("click", handle_user_msg)

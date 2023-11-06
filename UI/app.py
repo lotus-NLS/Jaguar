@@ -18,16 +18,14 @@ class ChatHTML(PyWebApp):
 
         # Chat Interactivity
         self.add_python_script(relPath='scripts/send_routine.py')
-        self.add_python_script(relPath='scripts/socketio.py')
-
+        self.add_python_script(relPath='scripts/receive_routine.py')
 
 
 if __name__ == '__main__':
     app = ChatHTML(title='This new app')
     socketio = SocketIO(app, cors_allowed_origins='*')
-    this_server = LotusServerIO()
+    this_server = LotusServerIO(socketio = socketio)
     this_server.start()
-
 
     @socketio.on('connect')
     def handle_connect():
@@ -40,9 +38,8 @@ if __name__ == '__main__':
 
 
     @socketio.on('message')
-    def handle_message(msg):
+    def handle_user_msg(msg):
         print('Received message:', msg)
         this_server.send_user_entry(entry=Entry(msg=msg,role=DialogueRole.user_role()))
-
 
     app.run(debug=True)
