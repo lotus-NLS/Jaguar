@@ -1,6 +1,6 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
-from api import LotusEngineIO
+from api import LotusServerIO
 from engine.l2_agent.m1_language import Channel, LingualEntity
 from engine.l3_settings import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
@@ -14,7 +14,7 @@ class Engine:
         self.user : Optional[LingualEntity] = None
         self.bots : Optional[list[Agent]] = None
         self.settings_controller : Optional[SettingsController] = None
-        self.server : Optional[LotusEngineIO] = None
+        self.server : Optional[LotusServerIO] = None
 
     def initialize_entities(self):
         self.user = User()
@@ -22,7 +22,7 @@ class Engine:
 
 
     def initialize_IO(self):
-        self.server = LotusEngineIO()
+        self.server = LotusServerIO()
         self.server.start()
 
 
@@ -43,7 +43,7 @@ class Engine:
            self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
 
         while True:
-            user_entry = LotusEngineIO().get_user_entry()
+            user_entry = LotusServerIO().get_user_entry()
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
             print(f'[Debug]: Flags are {flags}')

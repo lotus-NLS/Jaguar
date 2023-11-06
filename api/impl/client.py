@@ -6,7 +6,7 @@ from flask_socketio import SocketIO
 
 # ----------------------------------------------
 
-class LotusServerIO(LotusIO):
+class LotusClientIO(LotusIO):
     _instance = None
     _is_initialized = False
 

@@ -7,7 +7,7 @@ from api.base.language_types import Entry, DialogueRole
 
 # ----------------------------------------------
 
-class LotusEngineIO(LotusIO):
+class LotusServerIO(LotusIO):
     _instance = None
     _is_initialized = False
 
@@ -20,13 +20,13 @@ class LotusEngineIO(LotusIO):
 
 
     def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
-        if not LotusEngineIO._is_initialized:
+        if not LotusServerIO._is_initialized:
             super().__init__(ip_addr=ip_addr,port=port)
             self.user_data_endpoint = self.handle_endpoint(endpoint=Ends.user_data, handler=self._user_data_handler)
             self._incoming_entry_waiter : InputWaiter = InputWaiter()
             self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-            LotusEngineIO._is_initialized = True
+            LotusServerIO._is_initialized = True
 
     # ----------------------------------------------
     # Handlers

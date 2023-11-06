@@ -3,7 +3,7 @@ import ast
 import configparser
 import os
 from typing import Union, Optional
-from api import LotusEngineIO
+from api import LotusServerIO
 
 # ----------------------------------------------------
 
@@ -47,8 +47,8 @@ class Setting:
         else:
             msg = f'Enter value for setting {self.label} (Type: {self.dtype.__name__}'
             msg += ', Options: True/False)' if self.dtype is bool else ')'
-            LotusEngineIO().post_engine_message(msg_content=msg)
-            LotusEngineIO().get_user_entry()
+            LotusServerIO().post_engine_message(msg_content=msg)
+            LotusServerIO().get_user_entry()
 
 
         self.value = self.get_typecast_value(value_str=value_str)

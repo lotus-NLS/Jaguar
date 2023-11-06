@@ -1,5 +1,5 @@
 from pyutils import DaemonThread
-from api import LotusEngineIO
+from api import LotusServerIO
 from engine.l2_agent import LingualEntity
 from api.base.language_types import Entry, DialogueRole
 from engine.l2_agent import Agent, Task
@@ -97,7 +97,7 @@ class User(LingualEntity):
         if self.current_entry is None:
             to_log += f'\n{new_entry.get_role()}:'
         to_log += f'{new_entry.get_content()}'
-        LotusEngineIO().post_engine_message(msg_content=to_log)
+        LotusServerIO().post_engine_message(msg_content=to_log)
 
 
     def react(self, entry : Entry):
