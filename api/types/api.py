@@ -1,4 +1,4 @@
-
+from typing import Optional
 from api.types.language import Entry
 
 # ----------------------------------------------
@@ -7,9 +7,9 @@ from api.types.language import Entry
 class APIMessage:
     def __init__(self):
         self.user_id = 'default_id'
-        self.entry_str = None
-        self.bool_content  = None
-        self.settings_content = None
+        self.entry_str : Optional[str] = None
+        self.bool_content : Optional[bool] = None
+        self.settings_content : Optional[str] = None
 
     def get_user_id(self) -> str:
         return self.user_id
