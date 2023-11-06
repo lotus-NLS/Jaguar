@@ -10,7 +10,7 @@ For more information see the "Wiki" section on the [Project management page](htt
 
 ## Setup for Ubuntu 22.04
 
-Clone core code and pystuff into the home directory:
+Clone repo into home directory:
 ```
 git clone https://github.com/Somerandomguy10111/Lotus
 ```
