@@ -46,7 +46,7 @@ class Shell:
 
     @staticmethod
     def get_session() -> Optional[Popen]:
-        shell_cmd = 'cmd.exe' if COMMAND.os_in_use == 'Windows' else '/bin/sh'
+        shell_cmd = 'cmd.exe' if COMMAND.os_in_use == 'Windows' else '/bin/bash'
         shell_session = None
         try:
             shell_session = subprocess.Popen(shell_cmd,stdin=PIPE, stdout=PIPE,stderr=STDOUT, text=True)
