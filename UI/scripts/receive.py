@@ -1,6 +1,4 @@
 from browser import window, document
-from api.constants.network import DefaultNetwork
-from client import newthing
 
 # ----------------------------------------------
 
@@ -25,9 +23,6 @@ def handle_agent_msg(msg : str, is_entry_end = True):
         make_new_entry(msg=msg)
     else:
         last_element.innerHTML += f"{msg}"
-
-window.console.log(f'ip: {DefaultNetwork.ip}')
-newthing.hi()
 
 
 def handle_custom_event(msg):

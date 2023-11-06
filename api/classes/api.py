@@ -38,8 +38,6 @@ class ReqType(str):
 
 
 class Endpoint:
-    def __init__(self, name : str, req_type : ReqType, ip_addr : str, port : int):
+    def __init__(self, name : str, req_type : ReqType):
         self.name : str = name
         self.req_type : ReqType = req_type
-        self.ip_addr : str = ip_addr
-        self.port : int = port
