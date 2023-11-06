@@ -1,7 +1,7 @@
 import math
 import openai
 from openai_function_tokens import estimate_tokens
-from api.types.language import Entry
+from api.classes.language import Entry
 from engine.l3_settings import get_setting, CredentialSettings
 
 from .actionstream import ActionStream

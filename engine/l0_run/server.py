@@ -3,9 +3,9 @@ from fastapi import FastAPI, Request
 import uvicorn
 
 
-from api.types.api import APIMessage
+from api.classes.api import APIMessage
 from api.constants.network import DefaultNetwork
-from api.types.language import Entry
+from api.classes.language import Entry
 from pyutils import DaemonThread
 
 # ----------------------------------------------

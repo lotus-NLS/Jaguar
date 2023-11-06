@@ -1,5 +1,5 @@
 from typing import Optional
-from api.types.language import Entry
+from api.classes.language import Entry
 
 # ----------------------------------------------
 # Classes

@@ -1,2 +1,2 @@
-from api.types import *
+from api.classes import *
 from api.constants import *

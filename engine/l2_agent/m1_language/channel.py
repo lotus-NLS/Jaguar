@@ -4,7 +4,7 @@ from threading import Lock
 
 from pyutils import Countdown
 from .channel_interface import ChannelInterface
-from api.types.language import Entry
+from api.classes.language import Entry
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------

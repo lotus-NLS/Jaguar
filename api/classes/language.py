@@ -36,20 +36,6 @@ class FlagContainer(Serializable):
     def make_default(cls):
         return cls()
 
-    # def to_str(self) -> str:
-    #     flag_str = ""
-    #     if self.is_entry_end:
-    #         flag_str += "-e "
-    #     if self.print_threads:
-    #         flag_str += "-t "
-    #     if self.quit:
-    #         flag_str += "-q "
-    #     if self.mandate:
-    #         flag_str += "-m "
-    #     if self.reset:
-    #         flag_str += "-r "
-    #     return flag_str.strip()
-
     @classmethod
     def from_text_specification(cls, flag_str: str):
         this_container = cls()
@@ -64,7 +50,6 @@ class FlagContainer(Serializable):
         if '-r' in flag_str:
             this_container.reset = True
         return this_container
-
 
 
 class Entry(dict, Serializable):

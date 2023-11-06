@@ -1,4 +1,4 @@
-from api.types.api import Endpoint, ReqType
+from api.classes.api import Endpoint, ReqType
 
 
 class DefaultNetwork:

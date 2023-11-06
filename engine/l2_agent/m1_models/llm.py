@@ -1,7 +1,7 @@
 import tiktoken
 from tiktoken import Encoding
 from abc import abstractmethod
-from api.types.language import Entry
+from api.classes.language import Entry
 
 from .actionstream import ActionStream
 from .options import ActionOptions
