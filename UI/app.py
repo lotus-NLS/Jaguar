@@ -22,18 +22,22 @@ class ChatHTML(PyWebApp):
         self.add_python_script(relPath='scripts/send.py')
         self.add_python_script(relPath='scripts/receive.py')
 
+# ----------------------------------------------
+# Run webapp
 
 app = ChatHTML(title='This new app')
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 @app.route('/api/<path:filename>')
-def api_files(filename):
+def api_lib(filename):
     parent_directory = os.path.dirname(app.directory_path)
-    # print(f'App root path: {app.root_path}')
-
-    print(parent_directory)
     api_directory = os.path.join(parent_directory, 'api')
     return send_from_directory(api_directory, filename)
+
+@app.route('/client/<path:filename>')
+def client_lib(filename):
+    clientdir = os.path.join(app.directory_path, 'scripts/client')
+    return send_from_directory(clientdir, filename)
 
 
 app.run(debug=True, use_reloader=False)

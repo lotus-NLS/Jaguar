@@ -1,10 +1,9 @@
 from pywebdev.browser import window, document
-
 from api.constants.network import DefaultNetwork
+from client import newthing
 
 # ----------------------------------------------
 
-# socket = window.io.connect('http://localhost:5000')
 chat_window = document["chat-window"]
 
 def make_new_entry(msg):
@@ -27,5 +26,5 @@ def handle_agent_msg(msg : str, is_entry_end = True):
     else:
         last_element.innerHTML += f"{msg}"
 
-# socket.on('agentmessage', handle_agent_msg)
 window.console.log(f'ip: {DefaultNetwork.ip}')
+newthing.hi()
