@@ -2,7 +2,7 @@ import math
 import openai
 from openai_function_tokens import estimate_tokens
 from api.classes.language import Entry
-from engine.l3_core import get_setting, CredentialSettings
+from engine.l3_singletons import get_setting, CredentialSettings
 
 from .actionstream import ActionStream
 from .options import ActionOptions

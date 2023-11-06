@@ -3,7 +3,7 @@ import ast
 import configparser
 import os
 from typing import Union, Optional
-from engine.l3_core.m0_server import EngineIO
+from engine.l3_singletons.m0_server import EngineIO
 
 # ----------------------------------------------------
 

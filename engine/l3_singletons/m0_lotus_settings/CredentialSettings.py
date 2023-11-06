@@ -3,7 +3,7 @@ import openai
 import requests
 from func_timeout import func_timeout
 
-from engine.l3_core.m1_settings_modules import Setting,SettingGrouping, SettingTest
+from engine.l3_singletons.m1_settings_modules import Setting,SettingGrouping, SettingTest
 
 # ---------------------------------------------------------
 

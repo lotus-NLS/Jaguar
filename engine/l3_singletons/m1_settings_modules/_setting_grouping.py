@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Callable
-from engine.l3_core.m0_server import EngineIO
+from engine.l3_singletons.m0_server import EngineIO
 
 from ._setting import Setting
 

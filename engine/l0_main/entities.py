@@ -1,7 +1,7 @@
 from pyutils import DaemonThread
 
 from api.classes.language import Entry, DialogueRole
-from engine.l3_core.m0_server import EngineIO
+from engine.l3_singletons.m0_server import EngineIO
 from engine.l2_agent import LingualEntity
 from engine.l2_agent import Agent, Task
 from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
