@@ -1,4 +1,5 @@
 from browser import window, document
+from api.classes import Entry
 
 # ----------------------------------------------
 
@@ -9,7 +10,16 @@ def make_new_entry(msg):
     new_element.innerHTML = f"\n<p>Agent: {msg}</p>"
     chat_window.appendChild(new_element)
 
-def handle_agent_msg(msg : str, is_entry_end = True):
+def handle_agent_msg(msg : dict):
+
+    # window.console.log(entry_msg['data'])
+
+    content : str = msg['data']
+
+
+    new_entry : Entry = Entry.from_str(s=content)
+    is_entry_end = new_entry.flags.is_entry_end
+    msg = new_entry.get_content()
     window.console.log('Agent message arrived :)')
 
     try:
@@ -25,9 +35,5 @@ def handle_agent_msg(msg : str, is_entry_end = True):
         last_element.innerHTML += f"{msg}"
 
 
-def handle_custom_event(msg):
-    _ = msg
-    window.console.log('asdf')
-
 evt_source = window.EventSource.new('/stream')
-evt_source.bind('customEventName', handle_custom_event)
+evt_source.bind('customEventName', handle_agent_msg)

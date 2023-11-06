@@ -1,3 +1,5 @@
+import time
+
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from pywebdev import PyWebApp
@@ -42,6 +44,11 @@ class LotusEngine:
         self.initialize_agents()
         self.launch_communications()
         self.setup_settings(perform_validation=True)
+
+        while True:
+            time.sleep(2)
+            self.IO.post_engine_message('Hey :)')
+
         print(f'[Debug]: Lotus started')
 
         if DialogueSettings().get_enable_introduction():
