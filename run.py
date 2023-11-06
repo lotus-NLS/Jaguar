@@ -9,8 +9,9 @@ from UI import LotusWebApp
 
 class LotusServer:
     def __init__(self):
-        self.engine : LotusEngine = LotusEngine()
-        self.web_app : LotusWebApp = LotusWebApp(title='Lotus')
+        self.web_app: LotusWebApp = LotusWebApp(title='Lotus')
+        self.engine : LotusEngine = LotusEngine(web_app=self.web_app)
+
 
         @self.web_app.route('/api/<path:filename>')
         def api_lib(filename):

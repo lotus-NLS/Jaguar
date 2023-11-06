@@ -1,5 +1,6 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
+from pywebdev import PyWebApp
 from engine.l2_agent.m1_language import Channel, LingualEntity
 from engine.l3_core import DialogueSettings, SettingsController, get_setting
 from engine.l2_agent import Agent
@@ -9,41 +10,34 @@ from engine.l0_main.entities import Alpha, User
 # ---------------------------------------------------------
 
 class LotusEngine:
-    def __init__(self):
-        self.user_channel : Optional[Channel] = None
-        self.user : Optional[LingualEntity] = None
-        self.bots : Optional[list[Agent]] = None
-        self.settings_controller : Optional[SettingsController] = None
-        self.server : Optional[EngineIO] = None
 
+    @DevLogger.logging_wrapper
+    def __init__(self, web_app : PyWebApp):
+        self.user_channel : Channel = Channel()
+        self.user : LingualEntity = User()
+        self.settings_controller : SettingsController = SettingsController()
+        self.IO : EngineIO = EngineIO(web_app=web_app)
 
-    def initialize_entities(self):
-        self.user = User()
+        self.bots: Optional[list[Agent]] = None
+
+    @DevLogger.logging_wrapper
+    def initialize_agents(self):
         self.bots = [Alpha()]
 
-
-    def initialize_IO(self):
-        self.server = EngineIO()
-        self.server.start()
-
-
-    def initialize_communications(self):
-        self.user_channel = Channel()
+    @DevLogger.logging_wrapper
+    def launch_communications(self):
         for participant in [self.user]+self.bots:
             self.user_channel.add_entity(entity=participant)
 
+    @DevLogger.logging_wrapper
+    def setup_settings(self, perform_validation : bool = True):
+        self.settings_controller.setup(perform_validation=perform_validation)
 
-    def initialize_settings(self, perform_validation : bool = True):
-        if self.settings_controller is None:
-            self.settings_controller = SettingsController()
-            self.settings_controller.setup(perform_validation=perform_validation)
-
-
+    @DevLogger.logging_wrapper
     def run(self):
-        self.initialize_entities()
-        self.initialize_IO()
-        self.initialize_communications()
-        self.initialize_settings(perform_validation=True)
+        self.initialize_agents()
+        self.launch_communications()
+        self.setup_settings(perform_validation=True)
         print(f'[Debug]: Lotus started')
 
         if get_setting(DialogueSettings.enable_introduction_label):
@@ -71,8 +65,8 @@ class LotusEngine:
             self.user.enqueue(msg=user_entry.get_content(), flags=flags)
 
     # Make the engine log the individual steps
-    def __getattribute__(self, name):
-        attr = object.__getattribute__(self, name)
-        if callable(attr):
-            attr = DevLogger.logging_wrapper(attr)
-        return attr
+    # def __getattribute__(self, name):
+    #     attr = object.__getattribute__(self, name)
+    #     if callable(attr):
+    #         attr = DevLogger.logging_wrapper(attr)
+    #     return attr

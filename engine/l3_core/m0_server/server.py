@@ -1,15 +1,11 @@
 import time
 from pyutils import InputWaiter
-from fastapi import FastAPI, Request
-from starlette.responses import StreamingResponse
-import uvicorn
-
+from flask import jsonify,request, Response
+from typing import Optional
 
 from api.classes.api import APIMessage
-from api.constants.network import DefaultNetwork
 from api.classes.language import Entry
-from pyutils import DaemonThread
-
+from pywebdev import PyWebApp
 # ----------------------------------------------
 
 class EngineIO:
@@ -23,43 +19,31 @@ class EngineIO:
 
         return cls._instance
 
-    def start(self):
-        def do_start():
-            uvicorn_config = uvicorn.Config(app=self.app, host=self.ip_addr, port=self.port)
-            server = uvicorn.Server(config=uvicorn_config)
-            server.run()
-        DaemonThread(target=do_start).start()
-
-
-    def __init__(self, ip_addr : str = DefaultNetwork.ip, port : int = 8000):
+    def __init__(self, web_app : Optional[PyWebApp] = None):
         if not EngineIO._is_initialized:
-            self.app = FastAPI()
-            self.ip_addr: str = ip_addr
-            self.port: int = port
-
+            self.web_app : PyWebApp = web_app
             self._incoming_entry_waiter : InputWaiter = InputWaiter()
             self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-            @self.app.post("/item/")
-            async def create_item(request: Request):
-                data = await request.json()
-                return {"message": "Item received", "data": data}
+            @self.web_app.route('/item/', methods=['POST'])
+            def create_item():
+                data = request.json
+                return jsonify({"message": "Item received", "data": data})
 
             EngineIO._is_initialized = True
 
-            @self.app.get("/stream")
-            async def stream():
-                return StreamingResponse(self.event_stream(), media_type="text/event-stream")
+            @self.web_app.route('/stream')
+            def stream():
+                def event_stream():
+                    while True:
+                        yield 'Hello'
+                        time.sleep(1)
+                    pass
+
+                return Response(event_stream(), mimetype='text/event-stream')
 
     # ----------------------------------------------
     # Handlers
-
-    @staticmethod
-    def event_stream():
-        while True:
-            yield f"data: The server time is {time.ctime()}\n\n"
-            time.sleep(1)  # Stream data every 1 second
-
 
     def _user_data_handler(self, lotus_msg: APIMessage) -> str:
         if not lotus_msg.get_entry() is None:
