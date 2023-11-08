@@ -4,10 +4,6 @@ import pickle
 # ----------------------------------------------
 
 class Serializable:
-
-    def __getstate__(self):
-        pass
-
     def to_str(self) -> str:
         return base64.b64encode(pickle.dumps(self)).decode('utf-8')
 

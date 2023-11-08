@@ -1,5 +1,6 @@
 import json
 from typing import Optional
+import ast
 from .serializable import Serializable
 
 # ----------------------------------------------
@@ -60,14 +61,12 @@ class Entry(dict, Serializable):
                  name : Optional[str] = 'None'):
         super().__init__()
         self['role'] = role
-
         self['content'] = msg
-
-        if not name is None:
-            self['name'] = name
 
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
+        else:
+            self['name'] = name
 
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
         self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
@@ -75,6 +74,31 @@ class Entry(dict, Serializable):
 
     def mark_processed(self):
         self._is_processed = True
+
+    # TODO: These methods strike me as unnecessarily verbose. They can surely be shortened
+    def to_str(self) -> str:
+        attr_dict = {
+            'role': str(self['role']),
+            'content': str(self['content']),
+            'name': str(self.get('name')),
+            'is_processed': str(self._is_processed),
+            'flags': self.flags.to_str()
+        }
+        return json.dumps(attr_dict)
+
+    @staticmethod
+    def from_str(s: str):
+        attr_dict = ast.literal_eval(s)
+        role = attr_dict.get('role')
+        content = attr_dict.get('content')
+        name = attr_dict.get('name')
+        is_processed = attr_dict.get('is_processed')
+        flags_str = attr_dict.get('flags')
+
+        new_entry = Entry(role=role, msg=content, flags=FlagContainer.from_str(s=flags_str), name=name)
+        new_entry._is_processed = is_processed
+        return new_entry
+
 
     # ----------------------------------------------------
 

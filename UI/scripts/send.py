@@ -19,9 +19,8 @@ def send_entry_to_server(msg : str):
     request = ajax.Ajax()
     request.bind('complete', on_complete)
     endpoint = Ends.user_data
-    request.open(method=endpoint.req_type,
-                 url=f'http://{DefaultNetwork.ip}:{DefaultNetwork.port}/{endpoint.name}',
-                 param=True)
+    request.open(method=endpoint.get_req_type(),
+                 url=f'http://{DefaultNetwork.ip}:{DefaultNetwork.port}/{endpoint.name}')
 
     request.set_header('content-type', 'application/x-www-form-urlencoded')
     request.send(request_data)
