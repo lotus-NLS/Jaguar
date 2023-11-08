@@ -75,8 +75,6 @@ class OpenAIModel(LLM):
     def _get_centcost_per_kt(self, is_input: bool) -> float:
         if self.model_type == ModelTypes_OpenAI.gpt_40_8k:
             return 3 if is_input else 6
-        elif self.model_type == ModelTypes_OpenAI.gpt_40_32k:
-            return 6 if is_input else 12
         elif self.model_type == ModelTypes_OpenAI.gpt_35_4k:
             return 0.15 if is_input else 0.2
         elif self.model_type == ModelTypes_OpenAI.gpt_35_16k:

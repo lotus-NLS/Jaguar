@@ -1,10 +1,8 @@
 from __future__ import annotations
 import ast
-import configparser
-import os
 from typing import Optional
-from engine.l3_singletons.m0_server import EngineIO
-
+import boto3
+import json
 
 # (10.10.23) D.H. : Settings Terminology
 # -> There is a settings resource either locally on the computer or in the cloud
@@ -24,11 +22,9 @@ from engine.l3_singletons.m0_server import EngineIO
 
 # ----------------------------------------------------
 
-home = os.path.expanduser("~")
-config_path = os.path.join(home, 'settings_[uuid_4d9498a7-2f46-4372-9c49-c96e3c41d4f7].ini')
-config_parser = configparser.ConfigParser()
-all_settings = {}
-
+# AWS
+secret_name = "lotus_api_keys"
+region_name = "eu-north-1"
 
 class Setting:
     def __init__(self, label : str, section : str, dtype : type):
@@ -39,7 +35,6 @@ class Setting:
 
         self._is_functional : bool = False
 
-        all_settings[self.label] = self
 
 
     def get_is_validated(self) -> bool:
@@ -48,27 +43,20 @@ class Setting:
     # --------------------------------------------
     # Setup value
 
-    def set_value(self,from_file : bool):
-        value_str = ''
-        _ = value_str
+    def set_value(self):
+        session = boto3.session.Session()
+        client = session.client(
+            service_name='secretsmanager',
+            region_name=region_name
+        )
 
-        if from_file:
-            try:
-                config_parser.read(config_path)
-                value_str = config_parser.get(self.section, self.label)
-
-            except Exception as e:
-                print(f'An error occured while trying to read value from file : {e}')
-                return
-
-        else:
-            msg = f'Enter value for setting {self.label} (Type: {self.dtype.__name__}'
-            msg += ', Options: True/False)' if self.dtype is bool else ')'
-            EngineIO().post_engine_message(msg=msg)
-            EngineIO().get_user_entry()
-
-
-        self.value = self.get_typecast_value(value_str=value_str)
+        try:
+            get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+            secrets = json.loads(get_secret_value_response['SecretString'])
+            value_str = secrets.get(self.label, '')
+            self.value = self.get_typecast_value(value_str=value_str)
+        except Exception as e:
+            print(f'An error occurred while trying to read value from AWS: {e}')
 
 
     def get_typecast_value(self, value_str : str) -> Optional[object]:
@@ -89,16 +77,3 @@ class Setting:
 
     def validate_functionality(self):
         self._is_functional = True
-
-
-    def save_state_to_file(self):
-        try:
-            if self.section not in config_parser.sections():
-                config_parser.add_section(self.section)
-            config_parser.set(section=self.section, option=self.label, value=str(self.value))
-            with open(config_path, 'w') as f:
-                config_parser.write(f)
-            print(f'[Debug]: Saved value for setting {self.label} to settings file')
-
-        except Exception as e:
-            print(f'[Error]: An exception occured while trying to save setting {self.label}: {e}')

@@ -48,24 +48,21 @@ class SettingGrouping:
     # ---------------------------------------------------------
     # Value setup
 
-    def setup(self, is_first_run = True):
+    def setup(self):
         for the_setting in self.get_non_validated_settings():
-            the_setting.set_value(from_file = is_first_run)
+            the_setting.set_value()
 
         self.perform_tests()
         valid, non_valid = self.get_validated_settings(), self.get_non_validated_settings()
 
-        for setting in valid:
-            setting.save_state_to_file()
-
         if not len(non_valid) == 0:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
-                   f' failed to validate: {[setting.label for setting in non_valid]}\nRetry setup for those settings? (y/n)')
+                   f' failed to validate: {[setting.label for setting in non_valid]}\nRetry validation for those settings? (y/n)')
 
             EngineIO().post_engine_message(msg=msg)
 
             if EngineIO().get_confirmation():
-                self.setup(is_first_run=False)
+                self.setup()
 
 
     def get_non_validated_settings(self) -> list[Setting]:

@@ -51,27 +51,27 @@ class LotusEngine:
 
         print(f'[Debug]: Lotus started')
 
-        if DialogueSettings().get_enable_introduction():
-           self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
-
-        while True:
-            user_entry = EngineIO().get_user_entry()
-            flags = user_entry.get_flags()
-            print(f'[Debug]: The user said {user_entry.get_content()}')
-            print(f'[Debug]: Flags are {flags}')
-            flags.is_entry_end = True
-
-            if flags.print_threads:
-                CustomThread.print_active_customthreads()
-                continue
-
-            if flags.quit:
-                break
-
-            if flags.reset:
-                [bot.clear_log() for bot in self.bots]
-                print(f'[Debug]: Bot logs cleared')
-                continue
-
-            self.user.enqueue(msg=user_entry.get_content(), flags=flags)
+        # if DialogueSettings().get_enable_introduction():
+        #    self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
+        #
+        # while True:
+        #     user_entry = EngineIO().get_user_entry()
+        #     flags = user_entry.get_flags()
+        #     print(f'[Debug]: The user said {user_entry.get_content()}')
+        #     print(f'[Debug]: Flags are {flags}')
+        #     flags.is_entry_end = True
+        #
+        #     if flags.print_threads:
+        #         CustomThread.print_active_customthreads()
+        #         continue
+        #
+        #     if flags.quit:
+        #         break
+        #
+        #     if flags.reset:
+        #         [bot.clear_log() for bot in self.bots]
+        #         print(f'[Debug]: Bot logs cleared')
+        #         continue
+        #
+        #     self.user.enqueue(msg=user_entry.get_content(), flags=flags)
 
