@@ -55,6 +55,7 @@ class Setting:
             secrets = json.loads(get_secret_value_response['SecretString'])
             value_str = secrets.get(self.label, '')
             self.value = self.get_typecast_value(value_str=value_str)
+
         except Exception as e:
             print(f'An error occurred while trying to read value from AWS: {e}')
 
