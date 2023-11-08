@@ -7,8 +7,8 @@ from browser import window, document
 def send_to_server(msg : str):
     _ = msg
     window.console.log('I sent the msg :)')
-    # socket.emit('message', msg)
 
+    # socket.emit('message', msg)
 
 # def append_to_chat(msg : str):
 #     chat_window = document["chat-window"]

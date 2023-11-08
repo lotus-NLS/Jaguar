@@ -1,10 +1,11 @@
 from typing import Optional
 from api.classes.language import Entry
+from .serializable import Serializable
 
 # ----------------------------------------------
 # Classes
 
-class APIMessage:
+class APIMessage(Serializable):
     def __init__(self):
         self.user_id = 'default_id'
         self.entry_str : Optional[str] = None
