@@ -1,3 +1,4 @@
+import json
 from typing import Optional
 from .serializable import Serializable
 
@@ -59,14 +60,18 @@ class Entry(dict, Serializable):
                  name : Optional[str] = 'None'):
         super().__init__()
         self['role'] = role
+
         self['content'] = msg
 
         if not name is None:
             self['name'] = name
+
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
+
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
         self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
+
 
     def mark_processed(self):
         self._is_processed = True
