@@ -7,18 +7,15 @@ chat_window = document["chat-window"]
 
 def make_new_entry(msg):
     new_element = document.createElement("div")
-    new_element.innerHTML = f"\n<p>Agent: {msg}</p>"
+    new_element.innerHTML = f"<p>{msg}</p>"
     chat_window.appendChild(new_element)
 
-def handle_agent_msg(msg : dict):
 
-    # window.console.log(entry_msg['data'])
-
-    content : str = msg['data']
-
-
-    new_entry : Entry = Entry.from_str(s=content)
+def handle_engine_msg(msg : dict):
+    entry_content : str = msg['data']
+    new_entry : Entry = Entry.from_str(s=entry_content)
     is_entry_end = new_entry.flags.is_entry_end
+
     msg = new_entry.get_content()
     window.console.log('Agent message arrived :)')
 
@@ -36,4 +33,4 @@ def handle_agent_msg(msg : dict):
 
 
 evt_source = window.EventSource.new(f'/{Ends.agent_data.identifier}')
-evt_source.bind('customEventName', handle_agent_msg)
+evt_source.bind('customEventName', handle_engine_msg)

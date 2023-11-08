@@ -1,5 +1,3 @@
-import time
-
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from pywebdev import PyWebApp
@@ -54,8 +52,7 @@ class LotusEngine:
             user_entry = EngineIO().get_user_entry()
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
-            print(f'[Debug]: Flags are {flags}')
-            flags.is_entry_end = True
+            print(f'[Debug]: Flags are {flags.to_str()}')
 
             if flags.print_threads:
                 CustomThread.print_active_customthreads()
@@ -69,5 +66,5 @@ class LotusEngine:
                 print(f'[Debug]: Bot logs cleared')
                 continue
 
-            self.user.enqueue(msg=user_entry.get_content(), flags=flags)
+            self.user.enqueue(msg=user_entry.get_content(), final=True)
 

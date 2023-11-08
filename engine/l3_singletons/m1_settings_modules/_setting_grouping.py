@@ -59,7 +59,7 @@ class SettingGrouping:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry validation for those settings? (y/n)')
 
-            EngineIO().post_engine_message(msg=msg)
+            EngineIO().post_engine_msg(msg=msg)
 
             if EngineIO().get_confirmation():
                 self.setup()

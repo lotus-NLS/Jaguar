@@ -82,7 +82,6 @@ class Alpha(Agent):
         return tool_log
 
 
-
 class User(LingualEntity):
     def __init__(self):
         super().__init__(role=DialogueRole.user_role())
@@ -92,9 +91,11 @@ class User(LingualEntity):
     def logger(self, new_entry : Entry):
         to_log = ''
         if self.current_entry is None:
-            to_log += f'\n{new_entry.get_role()}:'
+            to_log += f'{new_entry.get_role()}:'
         to_log += f'{new_entry.get_content()}'
-        EngineIO().post_engine_message(msg=to_log)
+        new_entry['content'] = to_log
+
+        EngineIO().post_engine_entry(new_entry)
 
 
     def react(self, entry : Entry):

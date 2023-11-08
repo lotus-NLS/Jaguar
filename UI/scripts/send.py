@@ -12,7 +12,7 @@ def on_complete(req):
 
 
 def send_entry_to_server(msg : str):
-    the_entry = Entry(msg=msg,role=DialogueRole.user_role())
+    the_entry = Entry(msg=msg,role=DialogueRole.user_role(), is_final=True)
     the_api_msg = APIMessage(entry=the_entry)
     window.console.log('I sent the msg :)')
 

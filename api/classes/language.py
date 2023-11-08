@@ -58,7 +58,8 @@ class Entry(dict, Serializable):
     def __init__(self, role : DialogueRole,
                  msg : str,
                  flags : FlagContainer = None,
-                 name : Optional[str] = 'None'):
+                 name : Optional[str] = 'None',
+                 is_final : bool = False):
         super().__init__()
         self['role'] = role
         self['content'] = msg
@@ -70,6 +71,9 @@ class Entry(dict, Serializable):
 
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
         self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
+
+        if is_final:
+            self.flags.is_entry_end = True
 
 
     def mark_processed(self):
