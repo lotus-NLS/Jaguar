@@ -1,11 +1,10 @@
 import time
 from pyutils import InputWaiter
-from flask import Response
+from flask import Response, request
 from typing import Optional
 from queue import Queue
 
-from api.classes.api import APIMessage
-from api.classes.language import Entry, DialogueRole
+from api import APIMessage, Entry, DialogueRole, Ends
 from pywebdev import PyWebApp
 # ----------------------------------------------
 
@@ -31,8 +30,8 @@ class EngineIO:
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
         self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-        self._web_app.route('/stream')(self._engine_datastream_handler)
-        self._web_app.route('/user_msg', methods=['POST'])(self._user_data_handler)
+        self._web_app.route(f'/{Ends.agent_data.identifier}')(self._engine_datastream_handler)
+        self._web_app.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
 
         EngineIO._is_initialized = True
 
@@ -49,16 +48,22 @@ class EngineIO:
 
         return Response(event_stream(), mimetype='text/event-stream')
 
+    def _user_data_handler(self) -> str:
+        try:
+            msg_content = request.get_json()['msg_content']
+            lotus_msg = APIMessage.from_str(s=msg_content)
+            if not lotus_msg.get_entry() is None:
+                self._incoming_entry_waiter.write(lotus_msg.get_entry())
 
-    def _user_data_handler(self, msg_content : str) -> str:
-        lotus_msg = APIMessage.from_str(s=msg_content)
-        if not lotus_msg.get_entry() is None:
-            self._incoming_entry_waiter.write(lotus_msg.get_entry())
+            if lotus_msg.get_bool_content() is None:
+                self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
 
-        if lotus_msg.get_bool_content() is None:
-            self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
+            status_msg = 'message ok'
 
-        return 'message ok'
+        except Exception as e:
+            status_msg = f'Failed to parse message due to error: {e}'
+
+        return status_msg
 
 
     # ----------------------------------------------

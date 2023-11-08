@@ -1,5 +1,5 @@
 from browser import window, document
-from api.classes import Entry
+from api import Entry, Ends
 
 # ----------------------------------------------
 
@@ -35,5 +35,5 @@ def handle_agent_msg(msg : dict):
         last_element.innerHTML += f"{msg}"
 
 
-evt_source = window.EventSource.new('/stream')
+evt_source = window.EventSource.new(f'/{Ends.agent_data.identifier}')
 evt_source.bind('customEventName', handle_agent_msg)

@@ -1,5 +1,6 @@
 from browser import window, document, ajax
 from api import APIMessage, Entry, DialogueRole, Ends, DefaultNetwork
+import json
 # ----------------------------------------------
 
 
@@ -15,14 +16,15 @@ def send_entry_to_server(msg : str):
     the_api_msg = APIMessage(entry=the_entry)
     window.console.log('I sent the msg :)')
 
-    request_data = {"msg_content": the_api_msg.to_str()}
+    request_data = json.dumps({"msg_content": the_api_msg.to_str()})
     request = ajax.Ajax()
     request.bind('complete', on_complete)
     endpoint = Ends.user_data
-    request.open(method=endpoint.get_req_type(),
-                 url=f'http://{DefaultNetwork.ip}:{DefaultNetwork.port}/{endpoint.name}')
+    request.open(endpoint.get_req_type(),
+                 f'http://{DefaultNetwork.ip}:{DefaultNetwork.port}/{endpoint.identifier}',
+                 True)
 
-    request.set_header('content-type', 'application/x-www-form-urlencoded')
+    request.set_header('content-type', 'application/json')
     request.send(request_data)
 
 

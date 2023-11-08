@@ -53,7 +53,7 @@ class Alpha(Agent):
     def setup_tools(self):
         public_tools = [COMMAND.make(), FILE_IO.make(), SEARCH.make()]
         private_tools = [UPDATE_MANDATE.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
-        all_tools = public_tools + private_tools
+        all_tools : list[Tool] = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
 
         for tool in all_tools:
