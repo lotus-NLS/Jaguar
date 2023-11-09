@@ -15,7 +15,7 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_128k),
+    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k),
                        identity : Identity = Identity(core=Cores.goto)):
         super().__init__(role=DialogueRole.agent_role())
 
@@ -139,9 +139,7 @@ class Agent(LingualEntity):
 
 
     def get_basic_entries(self) -> list[Entry]:
-        basic_entries = []
-        core_entry = Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())
-        basic_entries.append(core_entry)
-
+        basic_entries = [Entry(role=DialogueRole.system_role(), msg=self.identity.get_str())]
         basic_entries += self._personal_log
+
         return basic_entries
