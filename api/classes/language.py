@@ -27,7 +27,11 @@ class DialogueRole(str):
 
 
 class FlagContainer(Serializable):
-    def __init__(self, is_entry_end: bool = False, do_print_threads: bool = False, do_quit: bool = False, enforce_mandate: bool = False, do_reset: bool = False):
+    def __init__(self, is_entry_end: bool = False,
+                 do_print_threads: bool = False,
+                 do_quit: bool = False,
+                 enforce_mandate: bool = False,
+                 do_reset: bool = False):
         self.is_entry_end: bool = is_entry_end
         self.print_threads: bool = do_print_threads
         self.quit: bool = do_quit
@@ -40,7 +44,7 @@ class FlagContainer(Serializable):
         return cls()
 
 
-    def as_text_specification(self):
+    def as_text(self):
         flag_str = ""
         if self.is_entry_end:
             flag_str += '-e '

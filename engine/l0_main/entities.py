@@ -89,6 +89,7 @@ class User(LingualEntity):
 
 
     def logger(self, new_entry : Entry):
+        print(f'Sending entry: {new_entry.get_content()} {new_entry.flags.as_text()}')
         EngineIO().post_engine_entry(new_entry)
 
 

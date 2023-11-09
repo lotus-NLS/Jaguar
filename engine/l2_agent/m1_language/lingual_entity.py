@@ -43,7 +43,9 @@ class LingualEntity:
         if final:
             flags.is_entry_end = True
 
-        self.entries_to_say.put(Entry(role=self._role, msg=msg, flags=flags))
+        new_entry = Entry(role=self._role, msg=msg, flags=flags)
+        print(f'Entry at enqueue: {new_entry}; {flags.as_text()}')
+        self.entries_to_say.put(new_entry)
 
 
     def speaking_routine(self):

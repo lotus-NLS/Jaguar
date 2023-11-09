@@ -15,10 +15,9 @@ def handle_engine_msg(msg : dict):
     entry_content : str = msg['data']
     new_entry : Entry = Entry.from_str(s=entry_content)
     is_entry_end = new_entry.flags.is_entry_end
-
     msg = new_entry.get_content()
-    window.console.log('Agent message arrived :)')
 
+    window.console.log(f'Agent entry arrived :) Entry end: {is_entry_end}')
     try:
         last_element = chat_window.children[-1]
     except:

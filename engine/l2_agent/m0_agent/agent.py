@@ -101,8 +101,7 @@ class Agent(LingualEntity):
             'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
         }
 
-        # TODO: remove
-        print('temp debug')
+        print(f'Current action stream produced with context:')
         self.print_entries(kwargs['entries'])
 
         try:
