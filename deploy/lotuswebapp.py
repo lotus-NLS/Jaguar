@@ -1,4 +1,4 @@
-from pywebdev.devkit import PyWebApp
+from pywebdev import PyWebApp
 
 # ----------------------------------------------
 
