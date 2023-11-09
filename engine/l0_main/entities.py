@@ -91,6 +91,9 @@ class User(LingualEntity):
 
     def logger(self, new_entry : Entry):
         # print(f'Received entry with content: {new_entry.get_content()}')
+        if new_entry.get_role() == DialogueRole.user_role():
+            return
+        
         EngineIO().post_engine_entry(entry=copy.deepcopy(new_entry))
 
 
