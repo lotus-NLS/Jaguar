@@ -1,8 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from abc import abstractmethod
-from pyutils import DevLogger
-from func_timeout import func_timeout
+from func_timeout import func_timeout, FunctionTimedOut
 
 from engine.l2_agent.m1_language import LingualEntity
 from api.classes.language import Entry, DialogueRole
@@ -101,10 +100,9 @@ class Agent(LingualEntity):
         self.print_entries(kwargs['entries'])
 
         try:
-
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
 
-        except TimeoutError:
+        except FunctionTimedOut:
             print(f'[Debug]: Action stream request timed out. Check OpenAI server health or internet connection')
             action_stream = ActionStream.make_empty()
 

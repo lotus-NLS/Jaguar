@@ -90,7 +90,7 @@ class User(LingualEntity):
 
 
     def logger(self, new_entry : Entry):
-        print(f'Received entry with content: {new_entry.get_content()}')
+        # print(f'Received entry with content: {new_entry.get_content()}')
         EngineIO().post_engine_entry(entry=copy.deepcopy(new_entry))
 
 
