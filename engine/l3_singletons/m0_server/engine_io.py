@@ -29,7 +29,7 @@ class EngineIO:
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
         self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-        self._web_app.route(f'/{Ends.agent_data.identifier}')(self._engine_datastream_handler)
+        self._web_app.route(f'/{Ends.engine_data.identifier}')(self._engine_datastream_handler)
         self._web_app.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
 
         EngineIO._is_initialized = True
@@ -41,7 +41,7 @@ class EngineIO:
         def event_stream():
             while True:
                 new_entry = self._outgoing_entry_queue.get()
-                yield f'event: customEventName\ndata: {new_entry.serialize_as_str()}\n\n'
+                yield f'data: {new_entry.serialize_as_str()}\n\n'
 
         return Response(event_stream(), mimetype='text/event-stream')
 

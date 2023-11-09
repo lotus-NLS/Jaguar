@@ -7,4 +7,4 @@ class DefaultNetwork:
 
 class Ends:
     user_data = Endpoint(name='user_data_endpoint', req_type=ReqType.post())
-    agent_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get())
+    engine_data = Endpoint(name='agent_data_endpoint', req_type=ReqType.get())

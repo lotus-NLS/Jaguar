@@ -11,7 +11,7 @@ def make_new_entry(msg):
     chat_window.appendChild(new_element)
 
 
-def handle_engine_msg(msg : dict):
+def handle_engine_data(msg : dict):
     entry_content : str = msg['data']
     new_entry : Entry = Entry.from_serialized_str(s=entry_content)
     is_entry_end = new_entry.flags.is_entry_end
@@ -19,8 +19,6 @@ def handle_engine_msg(msg : dict):
 
     window.console.log(f'Agent entry arrived with content: {msg}')
     # window.console.log(f'{last_element is None}; {is_entry_end}')
-
-
 
     try:
         last_element = chat_window.children[-1]
@@ -33,5 +31,5 @@ def handle_engine_msg(msg : dict):
         last_element.innerHTML += f"{msg}"
 
 
-evt_source = window.EventSource.new(f'/{Ends.agent_data.identifier}')
-evt_source.bind('customEventName', handle_engine_msg)
+evt_source = window.EventSource.new(f'/{Ends.engine_data.identifier}')
+evt_source.onmessage = handle_engine_data
