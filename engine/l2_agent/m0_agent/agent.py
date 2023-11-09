@@ -48,18 +48,14 @@ class Agent(LingualEntity):
     # Main routine
 
     def do(self, task : Task):
-        try:
-            toolname = task.required_funct_name
+        toolname = task.required_funct_name
 
-            self.tool_handler.reset_toolcall()
-            action_stream = self.get_next_action_stream(
-                custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
-                funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
-                entries=self.get_basic_entries()+[task.get_entry()])
+        self.tool_handler.reset_toolcall()
+        action_stream = self.get_next_action_stream(
+            custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
+            funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
+            entries=self.get_basic_entries()+[task.get_entry()])
 
-        except Exception:
-            print(DevLogger.get_exception_msg(text=f'An error occured while trying to obtain action stream from {self.name}'))
-            return
 
         self.handle_stream(action_stream=action_stream)
         if self.tool_handler.tool_call_requested():
@@ -105,10 +101,15 @@ class Agent(LingualEntity):
         self.print_entries(kwargs['entries'])
 
         try:
+
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
 
-        except:
-            print(f'[Debug]: An error occured while trying to obtain action stream. Defaulting to empty action')
+        except TimeoutError:
+            print(f'[Debug]: Action stream request timed out. Check OpenAI server health or internet connection')
+            action_stream = ActionStream.make_empty()
+
+        except Exception as e:
+            print(f'[Debug]: An error occured while trying to obtain action stream: {e} Defaulting to empty action')
             action_stream = ActionStream.make_empty()
 
         return action_stream
