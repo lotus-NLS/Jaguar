@@ -41,14 +41,14 @@ class EngineIO:
         def event_stream():
             while True:
                 new_entry = self._outgoing_entry_queue.get()
-                yield f'event: customEventName\ndata: {new_entry.to_str()}\n\n'
+                yield f'event: customEventName\ndata: {new_entry.serialize_as_str()}\n\n'
 
         return Response(event_stream(), mimetype='text/event-stream')
 
     def _user_data_handler(self) -> str:
         try:
             msg_content = request.get_json()['msg_content']
-            lotus_msg = APIMessage.from_str(s=msg_content)
+            lotus_msg = APIMessage.from_serialized_str(s=msg_content)
             if not lotus_msg.get_entry() is None:
                 self._incoming_entry_waiter.write(lotus_msg.get_entry())
 

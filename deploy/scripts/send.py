@@ -27,7 +27,7 @@ def on_complete(req):
 
 
 def send_api_msg(api_message : APIMessage):
-    request_data = json.dumps({"msg_content": api_message.to_str()})
+    request_data = json.dumps({"msg_content": api_message.serialize_as_str()})
     request = ajax.Ajax()
     request.bind('complete', on_complete)
     endpoint = Ends.user_data

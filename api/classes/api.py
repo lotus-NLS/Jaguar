@@ -8,7 +8,7 @@ from .serializable import Serializable
 class APIMessage(Serializable):
     def __init__(self, entry : Entry, bool_content : Optional[bool] = None, settings_content : Optional[dict] = None):
         self.user_id = 'default_id'
-        self.entry_str : Optional[str] = entry.to_str()
+        self.entry_str : Optional[str] = entry.serialize_as_str()
         # self.bool_content : Optional[str] = bool_content.to_str() if not bool_content is None else None
         # self.settings_content : Optional[str] = settings_content.to_str() if not settings_content is None else None
         self.bool_content : Optional[str] = bool_content
@@ -18,7 +18,7 @@ class APIMessage(Serializable):
         return self.user_id
 
     def get_entry(self) -> Entry:
-        return Entry.from_str(self.entry_str)
+        return Entry.from_serialized_str(self.entry_str)
 
     # TODO
     @staticmethod

@@ -100,18 +100,18 @@ class Entry(dict, Serializable):
         self._is_processed = True
 
     # TODO: These methods strike me as unnecessarily verbose. They can surely be shortened
-    def to_str(self) -> str:
+    def serialize_as_str(self) -> str:
         attr_dict = {
             'role': str(self['role']),
             'content': str(self['content']),
             'name': str(self.get('name')),
             'is_processed': str(self._is_processed),
-            'flags': self.flags.to_str()
+            'flags': self.flags.serialize_as_str()
         }
         return json.dumps(attr_dict)
 
     @staticmethod
-    def from_str(s: str):
+    def from_serialized_str(s: str):
         attr_dict = ast.literal_eval(s)
         role = attr_dict.get('role')
         content = attr_dict.get('content')
@@ -119,7 +119,7 @@ class Entry(dict, Serializable):
         is_processed = attr_dict.get('is_processed')
         flags_str = attr_dict.get('flags')
 
-        new_entry = Entry(role=role, msg=content, flags=FlagContainer.from_str(s=flags_str), name=name)
+        new_entry = Entry(role=role, msg=content, flags=FlagContainer.from_serialized_str(s=flags_str), name=name)
         new_entry._is_processed = is_processed
         return new_entry
 

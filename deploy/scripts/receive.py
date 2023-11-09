@@ -13,7 +13,7 @@ def make_new_entry(msg):
 
 def handle_engine_msg(msg : dict):
     entry_content : str = msg['data']
-    new_entry : Entry = Entry.from_str(s=entry_content)
+    new_entry : Entry = Entry.from_serialized_str(s=entry_content)
     is_entry_end = new_entry.flags.is_entry_end
     msg = new_entry.get_content()
 
