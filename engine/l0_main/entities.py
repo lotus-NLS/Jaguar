@@ -94,7 +94,10 @@ class User(LingualEntity):
         if new_entry.get_role() == DialogueRole.user_role():
             return
 
-        EngineIO().post_engine_entry(entry=copy.deepcopy(new_entry))
+        the_entry = copy.deepcopy(new_entry)
+        the_entry.flags.is_entry_start = self.current_entry is None
+
+        EngineIO().post_engine_entry(entry=the_entry)
 
 
     def react(self, entry : Entry):

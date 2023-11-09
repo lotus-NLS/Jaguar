@@ -28,11 +28,13 @@ class DialogueRole(str):
 
 class FlagContainer(Serializable):
     def __init__(self, is_entry_end: bool = False,
+                 is_entry_start : bool = False,
                  do_print_threads: bool = False,
                  do_quit: bool = False,
                  enforce_mandate: bool = False,
                  do_reset: bool = False):
         self.is_entry_end: bool = is_entry_end
+        self.is_entry_start : bool = is_entry_start
         self.print_threads: bool = do_print_threads
         self.quit: bool = do_quit
         self.mandate: bool = enforce_mandate
@@ -43,9 +45,10 @@ class FlagContainer(Serializable):
     def make_default(cls):
         return cls()
 
-
     def as_text(self):
         flag_str = ""
+        if self.is_entry_end:
+            flag_str += '-s '
         if self.is_entry_end:
             flag_str += '-e '
         if self.print_threads:
@@ -58,9 +61,12 @@ class FlagContainer(Serializable):
             flag_str += '-r '
         return flag_str.strip()
 
+
     @classmethod
     def from_text_specification(cls, flag_str: str):
         this_container = cls()
+        if '-s' in flag_str:
+            this_container.is_entry_start = True
         if '-e' in flag_str:
             this_container.is_entry_end = True
         if '-t' in flag_str:
@@ -78,7 +84,7 @@ class Entry(dict, Serializable):
     def __init__(self, role : DialogueRole,
                  msg : str,
                  flags : FlagContainer = None,
-                 name : Optional[str] = 'None',
+                 name : Optional[str] = None,
                  is_final : bool = False):
         super().__init__()
         self['role'] = role
@@ -87,7 +93,7 @@ class Entry(dict, Serializable):
         if role == DialogueRole.tool_role() and name is None:
             self['name'] = 'unnamed_function'
         else:
-            self['name'] = name
+            self['name'] = name if not name is None else role
 
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
         self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
