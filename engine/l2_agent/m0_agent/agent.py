@@ -110,8 +110,11 @@ class Agent(LingualEntity):
 
 
     def handle_stream(self, action_stream : ActionStream):
-        for data in action_stream:
-            self.handle_chunk(chunk=data)
+        try:
+            for data in action_stream:
+                self.handle_chunk(chunk=data)
+        except Exception as e:
+            print(f'[Debug]: An error occured while trying to handle stream: {e}')
 
 
     def handle_chunk(self, chunk : ActionChunk):
