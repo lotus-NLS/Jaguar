@@ -93,7 +93,7 @@ class User(LingualEntity):
         # print(f'Received entry with content: {new_entry.get_content()}')
         if new_entry.get_role() == DialogueRole.user_role():
             return
-        
+
         EngineIO().post_engine_entry(entry=copy.deepcopy(new_entry))
 
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Callable
-from engine.l3_singletons.m0_server import EngineIO
 
 from ._setting import Setting
 
@@ -59,10 +58,12 @@ class SettingGrouping:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry validation for those settings? (y/n)')
 
-            EngineIO().post_engine_msg(msg=msg)
-
-            if EngineIO().get_confirmation():
+            print(msg)
+            user_input = input()
+            if user_input == 'y':
                 self.setup()
+            else:
+                print(f'Skipping validation')
 
 
     def get_non_validated_settings(self) -> list[Setting]:

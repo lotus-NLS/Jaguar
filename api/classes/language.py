@@ -129,8 +129,8 @@ class Entry(dict, Serializable):
     def __str__(self):
         return f'{self.get_role()}:{self.get_content()}\n'
 
-    def append_content(self, additional_content : str):
-        self['content'] += additional_content
+    def append_content(self, to_add : str):
+        self['content'] += to_add
 
     def get_name(self) -> Optional[str]:
         return self.get('name')

@@ -46,7 +46,6 @@ class LingualEntity:
             flags.is_entry_end = True
 
         new_entry = Entry(role=self._role, msg=msg, flags=flags)
-        # print(f'Entry at enqueue from entity {self._role}: {new_entry}; {flags.as_text()}')
         self.entries_to_say.put(new_entry)
 
 
@@ -59,7 +58,7 @@ class LingualEntity:
             if self.channel.speaker_staff.holder != self:
                 self.channel.acquire_staff(holder=self)
 
-            self.channel.broadcast(new_entry)
+            self.channel.broadcast(entry=new_entry)
             self.channel.reset_return_countdown()
 
     # ------------------------------
@@ -69,14 +68,12 @@ class LingualEntity:
         self.logger(new_entry=new_entry)
 
         if self.current_entry is None:
-            # print(f'temp debug: Set current entry to :{new_entry}')
             self.current_entry = new_entry
             self._personal_log.append(new_entry)
         else:
-            self.current_entry.append_content(additional_content=new_entry.get_content())
+            self.current_entry.append_content(to_add=new_entry.get_content())
 
         if new_entry.flags.is_entry_end:
-            # print(f'temp debug: Reset the currenty entry')
             self.current_entry = None
             DaemonThread(target=self.react, args=(new_entry,)).start()
 

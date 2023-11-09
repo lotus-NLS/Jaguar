@@ -1,11 +1,9 @@
-import time
-
 from pyutils import InputWaiter
 from flask import Response, request
 from typing import Optional
 from queue import Queue
 
-from api import APIMessage, Entry, Ends, DialogueRole
+from api import APIMessage, Entry, Ends
 from pywebdev import PyWebApp
 # ----------------------------------------------
 
@@ -72,15 +70,9 @@ class EngineIO:
         self._outgoing_entry_queue.put(entry)
 
 
-    def post_engine_msg(self, msg : str):
-        entry = Entry(msg=msg,role=DialogueRole.agent_role())
-        self._outgoing_entry_queue.put(entry)
-
-
     def get_user_entry(self) -> Entry:
         self._incoming_entry_waiter.clear()
         user_entry = self._incoming_entry_waiter.read()
-        # print(f'Entry received')
         return user_entry
 
 

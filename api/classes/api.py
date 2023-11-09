@@ -21,7 +21,9 @@ class APIMessage(Serializable):
         return Entry.from_str(self.entry_str)
 
     # TODO
+    @staticmethod
     def get_bool_content(self) -> bool:
+        _ = self
         # return self.bool_content.from_str()
         return True
 

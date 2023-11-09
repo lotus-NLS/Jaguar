@@ -50,8 +50,7 @@ class Channel(ChannelInterface):
     # Other
 
     def broadcast(self, entry : Entry):
-        if not entry.flags is None:
-            self.try_release_staff() if entry.flags.is_entry_end else None
+        self.try_release_staff() if entry.flags.is_entry_end else None
 
         for member in self.members:
             member.process_entry(new_entry=entry)
