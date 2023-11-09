@@ -39,12 +39,14 @@ class LingualEntity:
     # ------------------------------
     # Speak
 
-    def enqueue(self, msg: str, flags: FlagContainer = FlagContainer.make_default(), final : bool = False):
+    def enqueue(self, msg: str, arg_flags: Optional[FlagContainer] = None, final : bool = False):
+        flags = FlagContainer.make_default() if arg_flags is None else arg_flags
+
         if final:
             flags.is_entry_end = True
 
         new_entry = Entry(role=self._role, msg=msg, flags=flags)
-        print(f'Entry at enqueue: {new_entry}; {flags.as_text()}')
+        # print(f'Entry at enqueue from entity {self._role}: {new_entry}; {flags.as_text()}')
         self.entries_to_say.put(new_entry)
 
 

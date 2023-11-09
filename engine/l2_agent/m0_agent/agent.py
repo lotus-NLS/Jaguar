@@ -129,9 +129,9 @@ class Agent(LingualEntity):
             is_msg_stop = text_content is None and tool_chunk is None
 
             if not text_content is None:
-                self.enqueue(msg=text_content, final=False)
+                self.enqueue(msg=text_content)
             elif is_msg_stop:
-                self.enqueue(msg='')
+                self.enqueue(msg='',final=True)
 
             if not tool_chunk is None:
                 self.tool_handler.tool_call.update(partial_tool_call=tool_chunk)
