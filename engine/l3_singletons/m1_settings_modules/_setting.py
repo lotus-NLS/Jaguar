@@ -37,8 +37,8 @@ class Setting:
 
 
 
-    def get_is_validated(self) -> bool:
-        return self._is_functional and not self.value is None
+    def get_is_functional(self) -> bool:
+        return self._is_functional
 
     # --------------------------------------------
     # Setup value

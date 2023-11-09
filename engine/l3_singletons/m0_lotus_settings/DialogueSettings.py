@@ -8,5 +8,7 @@ class DialogueSettings(SettingGrouping):
         self.enable_introduction : Setting = self.make_setting(label='enable_introduction',
                                                                test=SettingTest.make_automatic_pass(),
                                                                dtype=bool)
+        self.enable_introduction.value = False
+
     def get_enable_introduction(self) -> bool:
         return self.enable_introduction.value

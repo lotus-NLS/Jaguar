@@ -8,10 +8,10 @@ from ._setting import Setting
 class SettingTest:
     @classmethod
     def make_automatic_pass(cls):
-        def empty_test() -> bool:
+        def automatic_pass_test() -> bool:
             return True
 
-        return cls(test_body=empty_test)
+        return cls(test_body=automatic_pass_test)
 
     def __init__(self, test_body : Callable[[],bool]):
         self.do_check : Callable[[],bool] = test_body
@@ -67,11 +67,11 @@ class SettingGrouping:
 
 
     def get_non_validated_settings(self) -> list[Setting]:
-        return [setting for setting in self.all_settings_in_group if not setting.get_is_validated()]
+        return [setting for setting in self.all_settings_in_group if not setting.get_is_functional()]
 
 
     def get_validated_settings(self) -> list[Setting]:
-        return [setting for setting in self.all_settings_in_group if setting.get_is_validated()]
+        return [setting for setting in self.all_settings_in_group if setting.get_is_functional()]
 
 
     def perform_tests(self):
