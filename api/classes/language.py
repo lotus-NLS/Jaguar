@@ -34,9 +34,25 @@ class FlagContainer(Serializable):
         self.mandate: bool = enforce_mandate
         self.reset: bool = do_reset
 
+
     @classmethod
     def make_default(cls):
         return cls()
+
+
+    def as_text_specification(self):
+        flag_str = ""
+        if self.is_entry_end:
+            flag_str += '-e '
+        if self.print_threads:
+            flag_str += '-t '
+        if self.quit:
+            flag_str += '-q '
+        if self.mandate:
+            flag_str += '-m '
+        if self.reset:
+            flag_str += '-r '
+        return flag_str.strip()
 
     @classmethod
     def from_text_specification(cls, flag_str: str):

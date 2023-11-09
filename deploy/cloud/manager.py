@@ -119,10 +119,32 @@ class CloudManager:
     # ----------------------------------------------
     # Database management
 
+    def create_dynamodb_table(self, table_name: str,
+                              key_schema: list,
+                              attribute_definitions: list,
+                              provisioned_throughput: dict) -> None:
+        try:
+            response = self.dynamodb_client.create_table(
+                TableName=table_name,
+                KeySchema=key_schema,
+                AttributeDefinitions=attribute_definitions,
+                ProvisionedThroughput=provisioned_throughput
+            )
+            _ = response
+
+            print(f"Table creation initiated: {table_name}")
+            waiter = self.dynamodb_client.get_waiter('table_exists')
+            waiter.wait(TableName=table_name)
+            print(f"Table created: {table_name}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
-print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
+# print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
 # cloud_manager.start_all_instances()
 # cloud_manager.shutdown_all_instances()
 # cloud_manager.reach_number_of_instances(desired_count=5)
 # cloud_manager.shutdown_all_instances()
 # print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
+cloud_manager.create_dynamodb_table()

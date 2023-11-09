@@ -79,7 +79,7 @@ class EngineIO:
     def get_user_entry(self) -> Entry:
         self._incoming_entry_waiter.clear()
         user_entry = self._incoming_entry_waiter.read()
-        print(f'Entry received')
+        # print(f'Entry received')
         return user_entry
 
 
