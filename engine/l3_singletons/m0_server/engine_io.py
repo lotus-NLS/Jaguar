@@ -1,3 +1,5 @@
+import time
+
 from pyutils import InputWaiter
 from flask import Response, request
 from typing import Optional
@@ -25,7 +27,7 @@ class EngineIO:
             return
 
         self._web_app : PyWebApp = web_app
-        self._outpoing_entry_queue : Queue[Entry] = Queue()
+        self._outgoing_entry_queue : Queue[Entry] = Queue()
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
         self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
@@ -40,9 +42,8 @@ class EngineIO:
     def _engine_datastream_handler(self):
         def event_stream():
             while True:
-                new_entry = self._outpoing_entry_queue.get()
+                new_entry = self._outgoing_entry_queue.get()
                 yield f'event: customEventName\ndata: {new_entry.to_str()}\n\n'
-            pass
 
         return Response(event_stream(), mimetype='text/event-stream')
 
@@ -68,12 +69,12 @@ class EngineIO:
     # API
 
     def post_engine_entry(self, entry : Entry):
-        self._outpoing_entry_queue.put(entry)
+        self._outgoing_entry_queue.put(entry)
 
 
     def post_engine_msg(self, msg : str):
         entry = Entry(msg=msg,role=DialogueRole.agent_role())
-        self._outpoing_entry_queue.put(entry)
+        self._outgoing_entry_queue.put(entry)
 
 
     def get_user_entry(self) -> Entry:

@@ -17,13 +17,15 @@ def handle_engine_msg(msg : dict):
     is_entry_end = new_entry.flags.is_entry_end
     msg = new_entry.get_content()
 
-    window.console.log(f'Agent entry arrived :) Entry end: {is_entry_end}')
+    window.console.log(f'Agent entry arrived with content: {msg}')
+    # window.console.log(f'{last_element is None}; {is_entry_end}')
+
+
+
     try:
         last_element = chat_window.children[-1]
     except:
         last_element = None
-
-    window.console.log(f'{last_element is None}; {is_entry_end}')
 
     if is_entry_end or last_element is None:
         make_new_entry(msg=msg)
