@@ -16,7 +16,8 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_128k), identity : Identity = Identity(core=Cores.goto)):
+    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_128k),
+                       identity : Identity = Identity(core=Cores.goto)):
         super().__init__(role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
@@ -49,6 +50,7 @@ class Agent(LingualEntity):
     def do(self, task : Task):
         try:
             toolname = task.required_funct_name
+
             self.tool_handler.reset_toolcall()
             action_stream = self.get_next_action_stream(
                 custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
@@ -79,7 +81,7 @@ class Agent(LingualEntity):
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
         action_stream = self.get_next_action_stream(funct_call_options=FunctCallOption.make_no_call_option(),
-                                    entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+                                                    entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
         self.handle_stream(action_stream=action_stream)
 
 
@@ -98,6 +100,10 @@ class Agent(LingualEntity):
             'tool_docs': self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
             'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
         }
+
+        # TODO: remove
+        print('temp debug')
+        self.print_entries(kwargs['entries'])
 
         try:
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)

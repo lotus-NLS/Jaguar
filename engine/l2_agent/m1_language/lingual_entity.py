@@ -23,6 +23,12 @@ class LingualEntity:
         self.channel : Optional[Channel] = None
         DaemonThread(target=self.speaking_routine).start()
 
+    @staticmethod
+    def print_entries(entries : list[Entry]):
+        total_log = ''
+        for entry in entries:
+            total_log += str(entry)
+        print(total_log)
 
     def clear_log(self):
         self._personal_log = []
