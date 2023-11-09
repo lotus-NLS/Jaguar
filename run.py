@@ -11,18 +11,16 @@ class LotusServer:
     def __init__(self):
         self.web_app: LotusWebApp = LotusWebApp(title='Lotus')
         self.engine : LotusEngine = LotusEngine(web_app=self.web_app)
-
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
 
         @self.web_app.route('/api/<path:filename>')
         def api_lib(filename):
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            api_dir = os.path.join(current_dir, 'api')
+            api_dir = os.path.join(self.current_dir, 'api')
             return send_from_directory(api_dir, filename)
 
         @self.web_app.route('/client/<path:filename>')
         def client_lib(filename):
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            clientdir = os.path.join(current_dir, 'deploy', 'scripts/classes')
+            clientdir = os.path.join(self.current_dir, 'deploy', 'scripts', 'client')
             return send_from_directory(clientdir, filename)
 
 

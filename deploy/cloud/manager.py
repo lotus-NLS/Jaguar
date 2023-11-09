@@ -141,6 +141,7 @@ class CloudManager:
 
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
+cloud_manager.shutdown_all_instances()
 # print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
 # cloud_manager.start_all_instances()
 # cloud_manager.shutdown_all_instances()
