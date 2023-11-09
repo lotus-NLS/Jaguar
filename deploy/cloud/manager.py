@@ -2,9 +2,10 @@ from __future__ import annotations
 import boto3
 from typing import Optional, List
 from botocore.exceptions import ClientError
-
+import json
 from deploy.cloud.enums import AWSRegions, EC2Type, AMI, InstanceState
 
+# ----------------------------------------------
 
 class InstanceTemplate:
     def __init__(self, image_id: AMI, ec2_type: EC2Type, setup_script: str = '') -> None:
@@ -26,10 +27,12 @@ class CloudManager:
         self.ec2_client = boto3.client('ec2', region_name=self.region)
         self.elb_client = boto3.client('elbv2', region_name=self.region)
         self.dynamodb_client = boto3.client('dynamodb', region_name=self.region)
+        self.lambda_client = boto3.client('lambda', region_name=self.region)
+        self.events_client = boto3.client('events', region_name=self.region)
+        self.iam_client = boto3.client('iam',region_name=self.region)
 
     # ----------------------------------------------
     # EC2 management
-
 
     def get_number_of_running_instances(self) -> int:
         try:
@@ -139,9 +142,121 @@ class CloudManager:
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    # ----------------------------------------------
+    # Lambda management
+
+
+
+    def deploy_lambda_function(self, lambda_name: str, role_arn: str, handler: str, module_code: str):
+        try:
+            import io
+            import zipfile
+
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+                zip_file.writestr('backup_repo.py', module_code)
+
+
+            response = self.lambda_client.create_function(
+                FunctionName=lambda_name,
+                Runtime='python3.10',
+                Role=role_arn,
+                Handler=handler,
+                Code={'ZipFile': zip_buffer.getvalue()},
+            )
+
+            print(f"Lambda function deployed: {lambda_name}")
+            return response['FunctionArn']
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+
+    # def schedule_lambda_backup(self, function_arn: str, schedule_expression: str):
+    #     try:
+    #         rule_response = self.events_client.put_rule(
+    #             Name='github_backup_rule',
+    #             ScheduleExpression=schedule_expression,  # e.g., 'rate(1 day)'
+    #             State='ENABLED',
+    #         )
+    #
+    #         self.events_client.put_targets(
+    #             Rule='github_backup_rule',
+    #             Targets=[{'Id': '1', 'Arn': function_arn}]
+    #         )
+    #
+    #         print(f"Scheduled Lambda for GitHub backups with rule: {rule_response['RuleArn']}")
+    #     except Exception as e:
+    #         print(f"An error occurred: {e}")
+    # ----------------------------------------------
+
+    @staticmethod
+    def create_lambda_iam(role_name: str, policy_arns: list[str]):
+        try:
+            trust_relationship = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {"Service": "lambda.amazonaws.com"},
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            }
+
+            # Create the role
+            iam_client = boto3.client('iam')
+            role = iam_client.create_role(
+                RoleName=role_name,
+                AssumeRolePolicyDocument=json.dumps(trust_relationship)
+            )
+
+            # Attach policies to the role
+            for policy_arn in policy_arns:
+                iam_client.attach_role_policy(
+                    RoleName=role_name,
+                    PolicyArn=policy_arn
+                )
+
+            print(f"IAM Role created: {role_name}")
+            return role['Role']['Arn']
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+    def get_iam_roles(self) -> list[dict]:
+        try:
+            response = self.iam_client.list_roles()
+            roles = response.get('Roles', [])
+
+            print(f'Found the following roles')
+            for role in roles:
+                print(f"Role Name: {role['RoleName']}, ARN: {role['Arn']}, Creation Date: {role['CreateDate']}")
+
+            return roles
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
-cloud_manager.shutdown_all_instances()
+# cloud_manager.create_lambda_iam(role_name='MyLambdaRole4'
+#                                 ,policy_arns=['arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+#                                               'arn:aws:iam::aws:policy/SecretsManagerReadWrite'])
+# cloud_manager.get_iam_roles()
+
+function_name = "MyGitHubBackupFunction9"
+role_arn = "arn:aws:iam::139384887340:role/MyLambdaRole4"
+handler = "backup_repo.backup_github_repo"
+
+with open('/home/daniel/Lotus/deploy/cloud/backup_repo.py') as f:
+    module_code = f.read()
+
+cloud_manager.deploy_lambda_function(function_name, role_arn, handler,module_code)
+
+
+# cloud_manager.shutdown_all_instances()
 # print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
 # cloud_manager.start_all_instances()
 # cloud_manager.shutdown_all_instances()

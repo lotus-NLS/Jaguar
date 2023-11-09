@@ -16,6 +16,7 @@ pyautogui
 
 
 ## WEB
+gitpython
 boto3
 botocore
 flask_socketio
