@@ -11,8 +11,8 @@ from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_M
 # ---------------------------------------------------------
 
 class Alpha(Agent):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, show_debug : bool = True):
+        super().__init__(show_debug=show_debug)
         self.setup_tools()
         self.launch()
 
@@ -90,7 +90,6 @@ class User(LingualEntity):
 
 
     def logger(self, new_entry : Entry):
-        # print(f'Received entry with content: {new_entry.get_content()}')
         if new_entry.get_role() == DialogueRole.user_role():
             return
 

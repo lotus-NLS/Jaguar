@@ -15,8 +15,9 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_35_16k),
-                       identity : Identity = Identity(core=Cores.goto)):
+    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_35_4k),
+                       identity : Identity = Identity(core=Cores.goto),
+                       show_debug : bool = False):
         super().__init__(role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
@@ -29,6 +30,9 @@ class Agent(LingualEntity):
 
         # Set llm
         self.model : LLM = model_type
+
+        # Determintes if details are logged
+        self.show_debug : bool = show_debug
 
 
     @abstractmethod
@@ -96,8 +100,10 @@ class Agent(LingualEntity):
             'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
         }
 
-        print(f'Current action stream produced with context:')
-        self.print_entries(kwargs['entries'])
+        if self.show_debug:
+            pass
+            # print(f'Current action stream produced with context:')
+            # self.print_entries(kwargs['entries'])
 
         try:
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)

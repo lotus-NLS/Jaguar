@@ -49,9 +49,6 @@ class LingualEntity:
 
     def speaking_routine(self):
         while True:
-
-
-
             new_entry = self.entries_to_say.get()
             if self.channel is None:
                 return
@@ -70,7 +67,7 @@ class LingualEntity:
 
         if self.current_entry is None:
             self.current_entry = copy.copy(new_entry)
-            self._personal_log.append(new_entry)
+            self._personal_log.append(self.current_entry)
         else:
             self.current_entry.append_content(to_add=new_entry.get_content())
 
