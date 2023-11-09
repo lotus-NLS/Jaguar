@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import copy
 from typing import Optional
 from abc import abstractmethod
+
+import pyutils
 from pyutils import DaemonThread
 from queue import Queue
 
@@ -46,6 +49,9 @@ class LingualEntity:
 
     def speaking_routine(self):
         while True:
+
+
+
             new_entry = self.entries_to_say.get()
             if self.channel is None:
                 return
@@ -63,7 +69,7 @@ class LingualEntity:
         self.logger(new_entry=new_entry)
 
         if self.current_entry is None:
-            self.current_entry = new_entry
+            self.current_entry = copy.copy(new_entry)
             self._personal_log.append(new_entry)
         else:
             self.current_entry.append_content(to_add=new_entry.get_content())
