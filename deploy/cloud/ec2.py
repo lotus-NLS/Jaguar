@@ -38,7 +38,7 @@ instances_to_launch = ideal_instance_count - running_instances
 
 # Launch additional instances if needed
 if instances_to_launch > 0:
-    new_instances = ec2.create_instances(
+    new_instances = ec2.launch_instances(
         ImageId='ami-0fe8bec493a81c7da',
         MinCount=instances_to_launch,
         MaxCount=instances_to_launch,
