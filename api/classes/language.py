@@ -83,7 +83,7 @@ class FlagContainer(Serializable):
 class Entry(dict, Serializable):
     def __init__(self, role : DialogueRole,
                  msg : str,
-                 flags : FlagContainer = None,
+                 flags : Optional[FlagContainer] = None,
                  name : Optional[str] = None,
                  is_final : bool = False):
         super().__init__()

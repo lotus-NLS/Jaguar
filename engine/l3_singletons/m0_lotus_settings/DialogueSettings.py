@@ -10,6 +10,3 @@ class DialogueSettings(SettingGrouping):
                                                                dtype=bool)
     def get_enable_introduction(self) -> bool:
         return self.enable_introduction.value
-
-    def check(self):
-        pass

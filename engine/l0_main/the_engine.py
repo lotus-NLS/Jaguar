@@ -46,7 +46,7 @@ class LotusEngine:
         print(f'[Debug]: Lotus started')
 
         if DialogueSettings().get_enable_introduction():
-           self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?')
+           self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
 
         while True:
             user_entry = EngineIO().get_user_entry()
