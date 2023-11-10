@@ -1,4 +1,7 @@
 import openai
+import json
+from typing import Optional
+from pyutils import DevLogger
 from api.classes.language import Entry
 from engine.l3_singletons import CredentialSettings
 
@@ -49,6 +52,20 @@ class OpenAIModel(LLM):
     @staticmethod
     def _log_response():
         print(f"[Debug]: Received response from the model")
+
+    # Accurate up to ~10%
+    def get_tokens_estimate(self, entries: list[Entry], tool_docs : Optional[list[dict]] = None) -> Optional[int]:
+        try:
+            token_count = 0
+            the_tools = [] if tool_docs is None else tool_docs
+            for entry in entries:
+                token_count += self.get_num_tokens(f'{entry}')
+            for tool_docs in the_tools:
+                token_count += json.dumps(tool_docs)
+            return token_count
+        except Exception as e:
+            DevLogger.print_error(text=f'Failed to estimate token count: {e}')
+            return None
 
 
 class ModelTypes_OpenAI:
