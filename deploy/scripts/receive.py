@@ -5,11 +5,18 @@ from api import Entry, Ends, Flag
 
 chat_window = document["chat-window"]
 
+def convert_markdown_to_html(markdown_text):
+    converter = window.showdown.Converter.new()
+    html = converter.makeHtml(markdown_text)
+    return html
+
+
 def make_new_entry(entry : Entry):
     msg = entry.get_content()
     new_element = document.createElement("div")
     new_element.innerHTML = f"{entry.get_name()}: {msg}"
     chat_window.appendChild(new_element)
+
 
 
 def handle_engine_data(msg : dict):

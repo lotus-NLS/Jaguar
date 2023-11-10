@@ -1,6 +1,6 @@
 from browser import document
 from api import APIMessage, Entry, DialogueRole, DefaultNetwork
-from client.client import Client
+from lib.client import Client
 # ----------------------------------------------
 
 def handle_user_msg(event):
