@@ -13,16 +13,44 @@ class EC2Manger:
     # ----------------------------------------------
     # set
 
-    def launch_instances(self, num: int, instance: InstanceTemplate = InstanceTemplate.make_default()):
+    def launch_instances(self, num: int, template: InstanceTemplate = InstanceTemplate.make_default()):
         try:
-            response = self.ec2_client.run_instances(
-                ImageId=instance.image_id,
-                MinCount=num,
-                MaxCount=num,
-                InstanceType=instance.ec2_type,
-                UserData=instance.setup_script,
-            )
+            params = {
+                "ImageId": template.image_id,
+                "MinCount": num,
+                "MaxCount": num,
+                "InstanceType": template.ec2_type,
+            }
+            if template.setup_script:
+                params["UserData"] = template.setup_script
+            if template.key_pair_name:
+                params["KeyName"] = template.key_pair_name
 
+            if template.network_interface_id:
+                params["NetworkInterfaces"] = [
+                    {
+                        'DeviceIndex': 0,
+                        'NetworkInterfaceId': template.network_interface_id,
+                        'AssociatePublicIpAddress': True
+                    }
+                ]
+
+            if template.instance_name:
+                params["TagSpecifications"] = [
+                    {
+                        'ResourceType': 'instance',
+                        'Tags': [
+                            {
+                                'Key': 'Name',
+                                'Value': template.instance_name
+                            }
+                        ]
+                    }
+                ]
+            if template.security_group:
+                params["SecurityGroupIds"] = [template.security_group]
+
+            response = self.ec2_client.run_instances(**params)
             instance_ids = [inst['InstanceId'] for inst in response['Instances']]
             print(f"Launching instances: {instance_ids}")
             self.wait(instance_ids=instance_ids, instance_state=InstanceState.RUNNING)

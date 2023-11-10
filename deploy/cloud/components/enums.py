@@ -34,7 +34,7 @@ class EC2Type(Enum):
     T3_SMALL = 't3.small'
 
 
-class AMI(Enum):
+class ImageID(Enum):
     UBUNTU_2204 = 'ami-0fe8bec493a81c7da'
 
 
@@ -45,12 +45,22 @@ class InstanceState(Enum):
 
 
 class InstanceTemplate:
-    def __init__(self, image_id: AMI, ec2_type: EC2Type, setup_script: str = '') -> None:
+    def __init__(self, image_id: ImageID,
+                       ec2_type: EC2Type,
+                       setup_script: str = '',
+                       key_pair_name : Optional[str] = None,
+                       network_interface_id : Optional[str] = None,
+                       instance_name : Optional[str] = None,
+                       security_group : Optional[str] = None) -> None:
         self.image_id: str = image_id.value
         self.ec2_type: str = ec2_type.value
         self.setup_script: Optional[str]  = setup_script
+        self.key_pair_name : Optional[str] = key_pair_name
+        self.network_interface_id : Optional[dict] = network_interface_id
+        self.instance_name : Optional[str] = instance_name
+        self.security_group : Optional[str] = security_group
 
     @classmethod
     def make_default(cls) -> InstanceTemplate:
-        new_instance = cls(image_id=AMI.UBUNTU_2204, ec2_type=EC2Type.T3_MICRO)
+        new_instance = cls(image_id=ImageID.UBUNTU_2204, ec2_type=EC2Type.T3_MICRO)
         return new_instance
