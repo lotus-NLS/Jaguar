@@ -1,6 +1,6 @@
 from browser import document
 from api import APIMessage, Entry, DialogueRole, DefaultNetwork
-from lib.client import Client
+from lib import Client, convert_markdown_to_html
 # ----------------------------------------------
 
 def handle_user_msg(event):
@@ -14,7 +14,7 @@ def handle_user_msg(event):
 
 def append_user_msg(msg : str):
     new_element = document.createElement("div")
-    new_element.innerHTML = f"<p>User: {msg}</p>"
+    new_element.innerHTML = convert_markdown_to_html(markdown_text=f"User: {msg}")
     chat_window.appendChild(new_element)
 
 
