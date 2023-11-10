@@ -10,23 +10,25 @@ class EC2Manger:
         self.region : str = region.value
         self.ec2_client  = boto3.client('ec2', region_name=region.value)
 
-
     # ----------------------------------------------
-    # get
+    # set
 
-
-    def get_number_of_running_instances(self) -> int:
+    def launch_instances(self, num: int, instance: InstanceTemplate = InstanceTemplate.make_default()):
         try:
-            response = self.ec2_client.describe_instances(
-                Filters=[{'Name': 'instance-state-name', 'Values': ['running']}]
+            response = self.ec2_client.run_instances(
+                ImageId=instance.image_id,
+                MinCount=num,
+                MaxCount=num,
+                InstanceType=instance.ec2_type,
+                UserData=instance.setup_script,
             )
-            running_instances = [instance for reservation in response['Reservations'] for instance in
-                                 reservation['Instances']]
-            return len(running_instances)
+
+            instance_ids = [inst['InstanceId'] for inst in response['Instances']]
+            print(f"Launching instances: {instance_ids}")
+            self.wait(instance_ids=instance_ids, instance_state=InstanceState.RUNNING)
 
         except Exception as e:
             print(f"An error occurred: {e}")
-            return 0
 
 
     def shutdown_all_instances(self) -> None:
@@ -58,24 +60,20 @@ class EC2Manger:
             print(f'No instances found')
 
     # ----------------------------------------------
-    # set
+    # get
 
-    def launch_instances(self, num: int, instance: InstanceTemplate = InstanceTemplate.make_default()):
+    def get_number_of_running_instances(self) -> int:
         try:
-            response = self.ec2_client.run_instances(
-                ImageId=instance.image_id,
-                MinCount=num,
-                MaxCount=num,
-                InstanceType=instance.ec2_type,
-                UserData=instance.setup_script,
+            response = self.ec2_client.describe_instances(
+                Filters=[{'Name': 'instance-state-name', 'Values': ['running']}]
             )
-
-            instance_ids = [inst['InstanceId'] for inst in response['Instances']]
-            print(f"Launching instances: {instance_ids}")
-            self.wait(instance_ids=instance_ids, instance_state=InstanceState.RUNNING)
+            running_instances = [instance for reservation in response['Reservations'] for instance in
+                                 reservation['Instances']]
+            return len(running_instances)
 
         except Exception as e:
             print(f"An error occurred: {e}")
+            return 0
 
 
     def _get_all_instance_ids(self) -> List[str]:
@@ -88,6 +86,8 @@ class EC2Manger:
             print(f"An error occurred: {e}")
             return []
 
+    # ----------------------------------------------
+    # Other
 
     def wait(self, instance_ids: List[str], instance_state: InstanceState) -> None:
         instance_state_val = instance_state.value
@@ -103,3 +103,5 @@ class EC2Manger:
 
         except ClientError as e:
             print(f"An error occurred: {e}")
+
+
