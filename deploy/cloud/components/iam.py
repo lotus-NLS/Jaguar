@@ -27,6 +27,21 @@ class IAM_Manager:
             return None
 
 
+    def create_instance_profile(self, profile_name: str, role_name: str):
+        try:
+            response = self.client.create_instance_profile(InstanceProfileName=profile_name)
+            instance_profile_arn = response['InstanceProfile']['Arn']
+            print(f"Instance profile created: {profile_name}")
+
+            self.client.add_role_to_instance_profile(InstanceProfileName=profile_name,RoleName=role_name)
+            print(f"Role '{role_name}' attached to instance profile '{profile_name}'")
+
+            return instance_profile_arn
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
     # ----------------------------------------------
     # get
 
