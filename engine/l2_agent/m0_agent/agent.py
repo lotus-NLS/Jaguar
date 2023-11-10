@@ -6,7 +6,7 @@ from pyutils import DevLogger
 
 from api.classes.language import Entry, DialogueRole
 from engine.l2_agent.m1_language import LingualEntity
-from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
+from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelsOpenAI
 from engine.l2_agent.m1_models import ActionChunk, ActionStream
 from engine.l2_agent.m1_models import ToolCallOption, ActionOptions
 from engine.l2_agent.m1_protocol import Mandate, Identity, Cores
@@ -16,8 +16,8 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k),
-                       identity : Identity = Identity(core=Cores.goto)):
+    def __init__(self, model_type : LLM = OpenAIModel(ModelsOpenAI.gpt_40_128k),
+                 identity : Identity = Identity(core=Cores.goto)):
         super().__init__(role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
