@@ -1,4 +1,4 @@
-from browser import window, ajax
+from browser import ajax
 
 from api import APIMessage
 import json

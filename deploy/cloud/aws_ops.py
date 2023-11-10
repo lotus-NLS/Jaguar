@@ -17,7 +17,7 @@ handler = "backup_repo.backup_github_repo"
 with open('/deploy/cloud/components/backup_repo.py') as f:
     module_code = f.read()
 
-cloud_manager.deploy_lambda_function(function_name, role_arn, handler,module_code)
+cloud_manager.lambda_aws.deploy_lambda_function(function_name, role_arn, handler,module_code)
 
 
 # cloud_manager.shutdown_all_instances()

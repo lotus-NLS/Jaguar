@@ -1,2 +1,0 @@
-class LambdaManager:
-    pass
