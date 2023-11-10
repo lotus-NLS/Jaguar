@@ -1,15 +1,15 @@
 from browser import window
 
-# ----------------------------------------------
+class ParagraphConverter:
+    def __init__(self):
+        self.markdown_content = ""
+        self.converter = window.showdown.Converter.new()
 
+    def reset(self):
+        self.markdown_content = ""
 
-# converter = new showdown.Converter(),
-# text      = '# hello, markdown!',
-# html      = converter.makeHtml(text);
+    def add_markdown(self, markdown_text):
+        self.markdown_content += markdown_text + "\n"
 
-def convert_markdown_to_html(markdown_text):
-    converter = window.showdown.Converter.new()
-
-    print(converter)
-    html = converter.makeHtml(markdown_text)
-    return html
+    def get(self):
+        return self.converter.makeHtml(self.markdown_content)

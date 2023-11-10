@@ -1,6 +1,6 @@
 from browser import document
 from api import APIMessage, Entry, DialogueRole, DefaultNetwork
-from lib import Client, convert_markdown_to_html
+from lib import Client, ParagraphConverter
 # ----------------------------------------------
 
 def handle_user_msg(event):
@@ -13,10 +13,13 @@ def handle_user_msg(event):
     the_client.send_api_msg(api_message=api_msg)
 
 def append_user_msg(msg : str):
-    new_element = document.createElement("div")
-    new_element.innerHTML = convert_markdown_to_html(markdown_text=f"User: {msg}")
-    chat_window.appendChild(new_element)
+    paragraph_converter = ParagraphConverter()
+    paragraph_converter.add_markdown(markdown_text=f"User: {msg}")
 
+    new_element = document.createElement("div")
+    new_element.innerHTML = paragraph_converter.get()
+
+    chat_window.appendChild(new_element)
 
 def handle_keyup(event):
     if event.key == "Enter":

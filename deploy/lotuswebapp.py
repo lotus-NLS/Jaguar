@@ -4,17 +4,6 @@ from pywebdev import PyWebApp
 
 class LotusWebApp(PyWebApp):
     def add_body_content(self):
-        self.add_plain_text("""<script>
-            // Create a new instance of the Showdown converter
-            var converter = new showdown.Converter();
-
-            // Convert the Markdown to HTML
-            var html = converter.makeHtml('#abc');
-
-            // Log the HTML to the console
-            console.log(html);
-        </script>""")
-
         chat_window_style = 'height:80vh; width:80%; border:1px solid #ccc; overflow:auto; margin:auto;'
         with self.add_tag('div', id='chat-window', style=chat_window_style):
             self.generate_text('')
