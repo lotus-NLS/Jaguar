@@ -52,7 +52,7 @@ class InstanceTemplate:
                  network_interface_id: Optional[str] = None,
                  instance_name: Optional[str] = None,
                  security_group: Optional[str] = None,
-                 iam_instance_profile: Optional[str] = None) -> None:
+                 instance_profile_arn: Optional[str] = None) -> None:
         self.image_id: str = image_id.value
         self.ec2_type: str = ec2_type.value
         self.setup_script: Optional[str] = setup_script
@@ -60,7 +60,7 @@ class InstanceTemplate:
         self.network_interface_id: Optional[str] = network_interface_id
         self.instance_name: Optional[str] = instance_name
         self.security_group: Optional[str] = security_group
-        self.iam_instance_profile: Optional[str] = iam_instance_profile
+        self.iam_instance_profile: Optional[str] = instance_profile_arn
 
     @classmethod
     def make_default(cls) -> InstanceTemplate:
