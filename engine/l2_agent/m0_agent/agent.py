@@ -7,7 +7,7 @@ from engine.l2_agent.m1_language import LingualEntity
 from api.classes.language import Entry, DialogueRole
 from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelTypes_OpenAI
 from engine.l2_agent.m1_models import ActionChunk, ActionStream
-from engine.l2_agent.m1_models import FunctCallOption, ActionOptions
+from engine.l2_agent.m1_models import ToolCallOption, ActionOptions
 from engine.l2_agent.m1_protocol import Mandate, Identity, Cores
 
 from .task import TaskQueue, Task
@@ -15,7 +15,7 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_35_4k),
+    def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k),
                        identity : Identity = Identity(core=Cores.goto),
                        show_debug : bool = False):
         super().__init__(role=DialogueRole.agent_role())
@@ -56,7 +56,7 @@ class Agent(LingualEntity):
         self.tool_handler.reset_toolcall()
         action_stream = self.get_next_action_stream(
             custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
-            funct_call_options=FunctCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
+            funct_call_options=ToolCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
             entries=self.get_basic_entries()+[task.get_entry()])
 
 
@@ -79,7 +79,7 @@ class Agent(LingualEntity):
             role = DialogueRole.system_role()
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
-        action_stream = self.get_next_action_stream(funct_call_options=FunctCallOption.make_no_call_option(),
+        action_stream = self.get_next_action_stream(funct_call_options=ToolCallOption.make_no_call_option(),
                                                     entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
         self.handle_stream(action_stream=action_stream)
 
@@ -88,7 +88,7 @@ class Agent(LingualEntity):
     # Actions and context
 
     def get_next_action_stream(self,
-                               funct_call_options: FunctCallOption = FunctCallOption.make_auto_option(),
+                               funct_call_options: ToolCallOption = ToolCallOption.make_auto_option(),
                                custom_tool_docs: Optional[list[dict]] = None,
                                entries: Optional[list[Entry]] = None,
                                max_tokens: Optional[int] = None,
@@ -101,9 +101,8 @@ class Agent(LingualEntity):
         }
 
         if self.show_debug:
-            pass
-            # print(f'Current action stream produced with context:')
-            # self.print_entries(kwargs['entries'])
+            import json
+            json.dumps(kwargs['tool_docs'], indent=4)
 
         try:
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
@@ -113,7 +112,8 @@ class Agent(LingualEntity):
             action_stream = ActionStream.make_empty()
 
         except Exception as e:
-            print(f'[Debug]: An error occured while trying to obtain action stream: {e} Defaulting to empty action')
+            from pyutils import DevLogger
+            DevLogger.print_error(text=f'[Debug]: An error occured while trying to obtain action stream: {e} Defaulting to empty action')
             action_stream = ActionStream.make_empty()
 
         return action_stream

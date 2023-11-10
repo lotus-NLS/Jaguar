@@ -1,6 +1,5 @@
 import math
 import openai
-from openai_function_tokens import estimate_tokens
 from api.classes.language import Entry
 from engine.l3_singletons import CredentialSettings
 
@@ -19,6 +18,9 @@ class OpenAIModel(LLM):
     def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         openai.api_key = CredentialSettings().get_openai_key()
 
+        import json
+        json.dumps(tool_docs, indent=4)
+
         args_dict = {
             'model': self.model_type,
             'messages': entries,
@@ -28,8 +30,9 @@ class OpenAIModel(LLM):
 
         func_call_options = action_options.funct_call_options
         if func_call_options.call_allowed:
-            args_dict['functions'] = tool_docs
-            args_dict['function_call'] = func_call_options.get_openai_syntax()
+
+            args_dict['tools'] = tool_docs
+            args_dict['tool_choice'] = func_call_options.get_openai_syntax()
 
         if not action_options.max_tokens is None:
             args_dict['max_tokens'] = action_options.max_tokens
@@ -37,7 +40,7 @@ class OpenAIModel(LLM):
 
         self._log_request()
         openai_response = openai.ChatCompletion.create(**args_dict)
-        self._log_response(entries, tool_docs, action_options)
+        self._log_response()
 
         return ActionStream(openai_response)
 
@@ -48,39 +51,9 @@ class OpenAIModel(LLM):
     def _log_request():
         print(f'[Debug]: Creating completion request')
 
-
-    # For non stream responses can also obtain exact token usage (see: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb)
-    # exact_prompt_tokens = openai_response['usage']['prompt_tokens']
-    # exact_compl_tokens = openai_response['usage']['completion_tokens']
-    def _log_response(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions):
-        functions = tool_docs if action_options.funct_call_options.call_allowed else None
-        counted_input_tokens = estimate_tokens(messages=entries,
-                                               functions=functions,
-                                               function_call=action_options.funct_call_options.get_openai_syntax())
-
-        cent_costs = self._get_request_cost_cents(num_input_tokens=counted_input_tokens, num_output_tokens=0)
-        print(f"[Debug]: Received response from the model; Estimated {counted_input_tokens} input tokens for {cent_costs} cents cost on input")
-
-
-    def _get_request_cost_cents(self, num_input_tokens : int, num_output_tokens : int):
-        num_input_kt = math.ceil(num_input_tokens/1000.)
-        num_output_kt = math.ceil(num_output_tokens/1000.)
-
-        cost_input_kt = self._get_centcost_per_kt(is_input=True)
-        cost_output_kt = self._get_centcost_per_kt(is_input=False)
-
-        return num_input_kt*cost_input_kt+num_output_kt*cost_output_kt
-
-
-    def _get_centcost_per_kt(self, is_input: bool) -> float:
-        if self.model_type == ModelTypes_OpenAI.gpt_40_8k:
-            return 3 if is_input else 6
-        elif self.model_type == ModelTypes_OpenAI.gpt_35_4k:
-            return 0.15 if is_input else 0.2
-        elif self.model_type == ModelTypes_OpenAI.gpt_35_16k:
-            return 0.3 if is_input else 0.4
-        else:
-            return 0
+    @staticmethod
+    def _log_response():
+        print(f"[Debug]: Received response from the model")
 
 
 class ModelTypes_OpenAI:

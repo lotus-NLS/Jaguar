@@ -1,6 +1,5 @@
 ## LLM
 openai~=0.28.0
-openai-function-tokens
 
 ## GUI
 dearpygui

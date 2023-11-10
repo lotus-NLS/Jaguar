@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from engine.l2_agent import OpenAIModel, LLM, ModelTypes_OpenAI, Agent, FunctCallOption, Identity, Cores
+from engine.l2_agent import OpenAIModel, LLM, ModelTypes_OpenAI, Agent, ToolCallOption, Identity, Cores
 from api.classes.language import Entry
 
 
@@ -33,7 +33,7 @@ class TextAgent(Agent):
 
     def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:
         arg_dict = {
-            'funct_call_options' : FunctCallOption.make_no_call_option(),
+            'funct_call_options' : ToolCallOption.make_no_call_option(),
             'max_tokens' : max_tokens,
             'entries' : entries
         }

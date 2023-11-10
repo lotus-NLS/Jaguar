@@ -4,8 +4,8 @@ from typing import Optional
 
 
 class ActionOptions:
-    def __init__(self, funct_call_options : FunctCallOption, max_tokens : Optional[int] = None, temperature : float = 0.3):
-        self.funct_call_options : FunctCallOption = funct_call_options
+    def __init__(self, funct_call_options : ToolCallOption, max_tokens : Optional[int] = None, temperature : float = 0.3):
+        self.funct_call_options : ToolCallOption = funct_call_options
         self.max_tokens : int = max_tokens
         self.temperature : float = temperature
 
@@ -15,7 +15,7 @@ class ActionOptions:
 
 
 
-class FunctCallOption:
+class ToolCallOption:
     @classmethod
     def make_no_call_option(cls):
         return cls(call_allowed=False)
@@ -35,7 +35,7 @@ class FunctCallOption:
         if self.required_funct_name is None:
             return 'auto'
         else:
-            return {'name' : f'{self.required_funct_name}'}
+            return {"type" : "function", "function" : {'name' : f'{self.required_funct_name}'}}
 
 
 

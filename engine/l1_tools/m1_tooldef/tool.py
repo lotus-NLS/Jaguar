@@ -79,7 +79,7 @@ class Tool(ToolInterface):
     # Get
 
     def get_json_doc(self) -> dict[str, Any]:
-        tool_doc = {
+        function_doc = {
             'name': f'{self.name}',
             'description': f'{self.desc}',
             'parameters': {
@@ -89,16 +89,21 @@ class Tool(ToolInterface):
         }
 
         for arg in self._get_arg_list():
-            tool_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
+            function_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
-        tool_doc['parameters']['required'] = [arg.name for arg in self._get_arg_list() if not arg.is_optional]
+        function_doc['parameters']['required'] = [arg.name for arg in self._get_arg_list() if not arg.is_optional]
 
         if verbose_mode_enabled:
-            print(f'Temp debug: {json.dumps(tool_doc, indent=4)}')
+            print(f'Temp debug: {json.dumps(function_doc, indent=4)}')
 
-        if not self.get_is_json_serializable(tool_doc):
-            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\n'
+        if not self.get_is_json_serializable(function_doc):
+            raise ValueError(f'\n[Error]: Could not serialize object {function_doc}\n'
                              f'Aborting ...')
+
+        tool_doc = {
+            'type' : 'function',
+            'function' : function_doc
+        }
 
         return tool_doc
 
