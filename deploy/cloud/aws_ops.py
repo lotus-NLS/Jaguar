@@ -13,19 +13,11 @@ lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
                                   image_id=ImageID.UBUNTU_2204,
                                   setup_script=setup_script,
                                   key_pair_name='lotus_key',
-                                  instance_name='lotus_from_code',
+                                  instance_name='lotus_from_code_final',
                                   instance_profile_arn='arn:aws:iam::139384887340:instance-profile/lotus_instance',
                                   security_group='sg-04536ba167a51d751')
 cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
-cloud_manager.iam.create_instance_profile(profile_name='lotus_instance',role_name='LotusEC2')
 
-
-# print(cloud_manager.ec2.get_all_instance_ids())
-
-# cloud_manager.create_lambda_iam(role_name='MyLambdaRole4'
-#                                 ,policy_arns=['arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-#                                               'arn:aws:iam::aws:policy/SecretsManagerReadWrite'])
-# cloud_manager.get_iam_roles()
 
 # function_name = "MyGitHubBackupFunction9"
 # role_arn = "arn:aws:iam::139384887340:role/MyLambdaRole4"
@@ -35,13 +27,3 @@ cloud_manager.iam.create_instance_profile(profile_name='lotus_instance',role_nam
 #     module_code = f.read()
 #
 # cloud_manager.lambda_aws.deploy_lambda_function(function_name, role_arn, handler,module_code)
-
-
-# cloud_manager.shutdown_all_instances()
-# print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
-# cloud_manager.start_all_instances()
-# cloud_manager.shutdown_all_instances()
-# cloud_manager.reach_number_of_instances(desired_count=5)
-# cloud_manager.shutdown_all_instances()
-# print(f'Currently running instances: {cloud_manager.get_number_of_running_instances()}')
-# cloud_manager.create_dynamodb_table()
