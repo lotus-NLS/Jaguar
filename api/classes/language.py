@@ -35,8 +35,20 @@ class Flag(Enum):
 
 
 class FlagContainer(Serializable):
+
+    @classmethod
+    def make_default(cls):
+        return cls()
+
     def __init__(self):
         self.mapping : dict[str, bool] = {}
+
+
+    def set(self, flag : Flag, value : bool):
+        self.mapping[flag.value] = value
+
+    # ----------------------------------------------------
+    # get
 
     def get(self, flag : Flag) -> bool:
         if not flag.value in self.mapping:
@@ -44,12 +56,12 @@ class FlagContainer(Serializable):
         else:
             return self.mapping[flag.value]
 
-    def set(self, flag : Flag, value : bool):
-        self.mapping[flag.value] = value
-
-    @classmethod
-    def make_default(cls):
-        return cls()
+    def as_text(self):
+        text = ''
+        for flag in Flag:
+            to_add = flag.value if self.get(flag=flag) else ''
+            text += to_add
+        return text
 
 
 class Entry(Serializable):

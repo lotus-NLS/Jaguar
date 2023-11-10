@@ -16,7 +16,7 @@ def make_new_entry(entry : Entry):
 def handle_engine_data(msg : dict):
     entry_content : str = msg['data']
     new_entry : Entry = Entry.from_serialized_str(s=entry_content)
-    window.console.log(f'Agent entry arrived with content: {new_entry.get_content().__repr__()}')
+    print(f'Agent entry arrived with content: {new_entry.get_content().__repr__()}; Flags: {new_entry.flags.as_text()}')
 
     try:
         last_element = chat_window.children[-1]
