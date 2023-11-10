@@ -76,3 +76,17 @@ class IAM_Manager:
             print(f"An error occurred: {e}")
             return []
 
+    def get_instance_profiles(self) -> list[dict]:
+        try:
+            response = self.client.list_instance_profiles()
+            instance_profiles = response.get('InstanceProfiles', [])
+
+            print(f'Found the following instance profiles:')
+            for profile in instance_profiles:
+                print(f"Profile Name: {profile['InstanceProfileName']}, ARN: {profile['Arn']}, Creation Date: {profile['CreateDate']}")
+
+            return instance_profiles
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []

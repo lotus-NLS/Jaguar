@@ -8,15 +8,17 @@ from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type,
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
-setup_script = get_txt_file_content(location='autorun_scripts/setup.sh')
-lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
-                                  image_id=ImageID.UBUNTU_2204,
-                                  setup_script=setup_script,
-                                  key_pair_name='lotus_key',
-                                  instance_name='lotus_from_code',
-                                  # iam_instance_profile=,
-                                  security_group='sg-04536ba167a51d751')
-cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
+# setup_script = get_txt_file_content(location='autorun_scripts/setup.sh')
+# lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
+#                                   image_id=ImageID.UBUNTU_2204,
+#                                   setup_script=setup_script,
+#                                   key_pair_name='lotus_key',
+#                                   instance_name='lotus_from_code',
+#                                   iam_instance_profile='lotus_instance',
+#                                   security_group='sg-04536ba167a51d751')
+# cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
+
+# cloud_manager.iam.create_instance_profile(profile_name='lotus_instance',role_name='LotusEC2')
 
 
 # cloud_manager.iam.create_iam(role_name='LotusEC2'
@@ -29,7 +31,7 @@ cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
 
 
 
-
+cloud_manager.iam.get_instance_profiles()
 
 
 
