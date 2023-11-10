@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import copy
-
 from pyutils import Countdown
 from .channel_interface import ChannelInterface, SpeakerStaff
 from api.classes.language import Entry

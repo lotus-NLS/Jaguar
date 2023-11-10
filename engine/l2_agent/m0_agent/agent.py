@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from abc import abstractmethod
 from func_timeout import func_timeout, FunctionTimedOut
+from pyutils import DevLogger
 
 from engine.l2_agent.m1_language import LingualEntity
 from api.classes.language import Entry, DialogueRole
@@ -16,8 +17,7 @@ from .tool_handler import ToolHandler
 
 class Agent(LingualEntity):
     def __init__(self, model_type : LLM = OpenAIModel(ModelTypes_OpenAI.gpt_40_8k),
-                       identity : Identity = Identity(core=Cores.goto),
-                       show_debug : bool = False):
+                       identity : Identity = Identity(core=Cores.goto)):
         super().__init__(role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue
@@ -30,9 +30,6 @@ class Agent(LingualEntity):
 
         # Set llm
         self.model : LLM = model_type
-
-        # Determintes if details are logged
-        self.show_debug : bool = show_debug
 
 
     @abstractmethod
@@ -100,10 +97,6 @@ class Agent(LingualEntity):
             'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
         }
 
-        if self.show_debug:
-            import json
-            json.dumps(kwargs['tool_docs'], indent=4)
-
         try:
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
 
@@ -112,7 +105,6 @@ class Agent(LingualEntity):
             action_stream = ActionStream.make_empty()
 
         except Exception as e:
-            from pyutils import DevLogger
             DevLogger.print_error(text=f'[Debug]: An error occured while trying to obtain action stream: {e} Defaulting to empty action')
             action_stream = ActionStream.make_empty()
 

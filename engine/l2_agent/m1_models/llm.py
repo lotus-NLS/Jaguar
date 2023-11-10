@@ -12,19 +12,23 @@ class LLM:
     def __init__(self, model_type: str):
         self.model_type : str = model_type
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
+        self.show_debug : bool = False
+
+
+    def enable_debugging(self):
+        self.show_debug = True
 
     @abstractmethod
     def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         pass
 
 
-    def get_string_tokens(self, the_str: str) -> int:
+    def get_num_tokens(self, the_str: str) -> int:
         return self.tokenizer.get_string_tokens(the_str=the_str)
 
 
     def get_limited_string(self, the_str : str, max_tokens : int) -> str:
         return self.tokenizer.get_limited_string(the_str=the_str,max_tokens=max_tokens)
-
 
 
 class Tokenizer:
@@ -36,7 +40,7 @@ class Tokenizer:
     def get_string_tokens(self, the_str : str) -> int:
         return len(self.encode(the_str))
 
-
     def get_limited_string(self, the_str : str, max_tokens : int) -> str:
         encoded_str = self.encode(the_str)
         return self.decode(encoded_str[:max_tokens])
+

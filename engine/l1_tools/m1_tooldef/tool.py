@@ -15,8 +15,6 @@ from engine.l2_agent import Agent, ToolInterface, ToolArg
 # -> [ERROR] : For reporting encountered errors if any
 # ---------------------------------------------------------
 
-verbose_mode_enabled = False
-
 class Tool(ToolInterface):
     timout_in_sec = 60
 
@@ -92,9 +90,6 @@ class Tool(ToolInterface):
             function_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
 
         function_doc['parameters']['required'] = [arg.name for arg in self._get_arg_list() if not arg.is_optional]
-
-        if verbose_mode_enabled:
-            print(f'Temp debug: {json.dumps(function_doc, indent=4)}')
 
         if not self.get_is_json_serializable(function_doc):
             raise ValueError(f'\n[Error]: Could not serialize object {function_doc}\n'

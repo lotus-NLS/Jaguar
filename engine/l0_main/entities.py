@@ -11,10 +11,11 @@ from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_M
 # ---------------------------------------------------------
 
 class Alpha(Agent):
-    def __init__(self, show_debug : bool = True):
-        super().__init__(show_debug=show_debug)
+    def __init__(self):
+        super().__init__()
         self.setup_tools()
         self.launch()
+        self.model.enable_debugging()
 
     # ---------------------------------------------------
     # Loop
@@ -70,7 +71,7 @@ class Alpha(Agent):
         max_tokens_tool = 1000
 
         def tool_log(msg: str):
-            num_tokens = self.model.get_string_tokens(the_str=msg)
+            num_tokens = self.model.get_num_tokens(the_str=msg)
 
             if num_tokens > max_tokens_tool:
                 msg = self.model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)

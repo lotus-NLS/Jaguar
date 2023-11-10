@@ -1,4 +1,3 @@
-import math
 import openai
 from api.classes.language import Entry
 from engine.l3_singletons import CredentialSettings
@@ -14,12 +13,8 @@ class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type)
 
-
     def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
         openai.api_key = CredentialSettings().get_openai_key()
-
-        import json
-        json.dumps(tool_docs, indent=4)
 
         args_dict = {
             'model': self.model_type,
