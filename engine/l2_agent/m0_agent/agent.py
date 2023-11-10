@@ -63,7 +63,7 @@ class Agent(LingualEntity):
 
 
     def handle_tool_call(self, task : Task):
-        self.tool_handler.execute_tool_call()
+        self.tool_handler.execute_multitool_calls()
 
         if task.skip_feedback:
             return
@@ -122,16 +122,16 @@ class Agent(LingualEntity):
     def handle_chunk(self, chunk : ActionChunk):
         try:
             text_content = chunk.get_text_chunk()
-            tool_chunk = chunk.get_function_chunk()
-            is_msg_stop = text_content is None and tool_chunk is None
+            multitool_chunk = chunk.get_multitool_chunk()
+            is_msg_stop = text_content is None and multitool_chunk is None
 
             if not text_content is None:
                 self.enqueue(msg=text_content)
             elif is_msg_stop:
                 self.enqueue(msg='',final=True)
 
-            if not tool_chunk is None:
-                self.tool_handler.tool_call.update(partial_tool_call=tool_chunk)
+            if not multitool_chunk is None:
+                self.tool_handler.multi_tool_call.update_from_multi(new_multicall=multitool_chunk)
         except:
             print(f'[Debug]: An error occured while trying to parse chunk')
 

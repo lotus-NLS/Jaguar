@@ -3,39 +3,39 @@ from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
 from pyutils import DevLogger
 
-from engine.l2_agent.m1_models import ToolCall
+from engine.l2_agent.m1_models import ToolCall, MultiToolCall
 # ---------------------------------------------------------
 
 
 class ToolHandler:
     def __init__(self):
         self.tool_dict : dict[str,ToolInterface] = {}
-        self.tool_call : Optional[ToolCall] = None
+        self.multi_tool_call : Optional[MultiToolCall] = None
 
     def reset_toolcall(self):
-        self.tool_call = ToolCall.make_empty()
+        self.multi_tool_call = MultiToolCall()
 
     def tool_call_requested(self) -> bool:
-        return not self.tool_call.is_empty
+        return not len(self.multi_tool_call.get_as_list()) == 0
 
-    def execute_tool_call(self):
-        print('[Debug]: Agent requested tool usage')
-        tool_action = self.tool_call
+    def execute_multitool_calls(self):
+        for tool_action in self.multi_tool_call.get_as_list():
+            print('[Debug]: Agent requested tool usage')
 
-        try:
-            tool_action.try_parse_json()
+            try:
+                tool_action.try_parse_json()
 
-        except:
-            print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}'))
+            except:
+                print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}'))
 
-        try:
-            tool_name = tool_action.get_tool_name()
-            tool_args_dict = tool_action.get_arguments()
+            try:
+                tool_name = tool_action.get_tool_name()
+                tool_args_dict = tool_action.get_arguments()
 
-            if tool_name in self.tool_dict:
-                self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-        except:
-            print(DevLogger.get_exception_msg(text=f'An error occured while trying handle tool call'))
+                if tool_name in self.tool_dict:
+                    self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+            except:
+                print(DevLogger.get_exception_msg(text=f'An error occured while trying handle tool call'))
 
     def get_all_tools(self) -> list[ToolInterface]:
         return list(self.tool_dict.values())

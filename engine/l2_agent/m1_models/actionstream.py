@@ -47,23 +47,46 @@ class ActionChunk:
         return text_content
 
 
-    def get_function_chunk(self) -> Optional[ToolCall]:
-        funct_call : Optional[dict] = self.best_response.get('function_call')
+    def get_multitool_chunk(self) -> Optional[MultiToolCall]:
+        tool_calls : Optional[dict] = self.best_response.get('tool_calls')
+        if tool_calls is None:
+            return None
 
-        if funct_call is None:
-            tool_call = None
+        multitool_call = MultiToolCall()
+        for openai_tool_call in tool_calls:
+            index = openai_tool_call.get('index')
+            funct_call = openai_tool_call.get('function')
+
+            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'),index=index)
+            multitool_call.update_from_single(partial_tool_call=tool_call)
+
+        return multitool_call
+
+
+class MultiToolCall:
+    def __init__(self):
+        self.tool_calls : dict[int,ToolCall] = {}
+
+
+    def update_from_multi(self, new_multicall : MultiToolCall):
+        for tool_call in new_multicall.get_as_list():
+            self.update_from_single(partial_tool_call=tool_call)
+
+    def update_from_single(self, partial_tool_call : ToolCall):
+        index = partial_tool_call.index
+        if self.tool_calls.get(index) is None:
+            self.tool_calls[index] = partial_tool_call
         else:
-            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'))
+            self.tool_calls[index].update(partial_tool_call=partial_tool_call)
 
-        return tool_call
+    def get_as_list(self):
+        return self.tool_calls.values()
+
 
 
 class ToolCall:
-    @classmethod
-    def make_empty(cls):
-        return cls(name=None, json_str=None)
-
-    def __init__(self, name : Optional[str], json_str : Optional[str]):
+    def __init__(self, name : Optional[str], json_str : Optional[str], index : int):
+        self.index : int  = index
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
         self._arguments : Optional[dict] = None
