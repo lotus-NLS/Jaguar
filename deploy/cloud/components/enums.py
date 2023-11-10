@@ -64,3 +64,8 @@ class InstanceTemplate:
     def make_default(cls) -> InstanceTemplate:
         new_instance = cls(image_id=ImageID.UBUNTU_2204, ec2_type=EC2Type.T3_MICRO)
         return new_instance
+
+
+class ServiceURL(Enum):
+    LAMBDA = 'lambda.amazonaws.com'
+    EC2 = 'ec2.amazonaws.com'
