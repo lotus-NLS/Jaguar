@@ -1,4 +1,7 @@
+import json
 import tiktoken
+from pyutils import DevLogger
+from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
 from api.classes.language import Entry
@@ -29,6 +32,21 @@ class LLM:
 
     def get_limited_string(self, the_str : str, max_tokens : int) -> str:
         return self.tokenizer.get_limited_string(the_str=the_str,max_tokens=max_tokens)
+
+    # Accurate up to ~10%
+    def get_tokens_estimate(self, entries: list[Entry], tool_docs: Optional[list[dict]] = None) -> Optional[int]:
+        try:
+            token_count = 0
+            the_tools = [] if tool_docs is None else tool_docs
+            for entry in entries:
+                token_count += self.get_num_tokens(the_str=f'{entry}')
+            for tool_docs in the_tools:
+                token_count += self.get_num_tokens(the_str=json.dumps(tool_docs))
+            return token_count
+
+        except Exception as e:
+            DevLogger.print_error(text=f'Failed to estimate token count: {e}')
+            return None
 
 
 class Tokenizer:
