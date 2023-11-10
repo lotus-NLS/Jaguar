@@ -58,13 +58,9 @@ class ModelsOpenAI:
     # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
     # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API
 
-    gpt_35_4k = 'gpt-3.5-turbo-0613'
-    gpt_35_16k = 'gpt-3.5-turbo-1106'
-    gpt_40_8k = 'gpt-4-0613'
-    gpt_40_128k = 'gpt-4-1106-preview'
     gpt_40_std = 'gpt-4'
     gpt_35_std = 'gpt-3.5-turbo'
-
-    @staticmethod
-    def get_test_model():
-        return ModelsOpenAI.gpt_35_4k
+    gpt_35_16k = 'gpt-3.5-turbo-1106'
+    gpt_40_8k = 'gpt-4-1106'
+    gpt_40_128k = 'gpt-4-1106-preview'
+    gpt_40_vision = 'gpt-4-vision-preview'

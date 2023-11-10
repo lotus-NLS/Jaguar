@@ -16,7 +16,7 @@ from .tool_handler import ToolHandler
 # ---------------------------------------------------------
 
 class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelsOpenAI.gpt_40_128k),
+    def __init__(self, model_type : LLM = OpenAIModel(ModelsOpenAI.gpt_35_16k),
                  identity : Identity = Identity(core=Cores.goto)):
         super().__init__(role=DialogueRole.agent_role())
 
