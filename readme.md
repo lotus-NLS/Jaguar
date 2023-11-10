@@ -23,6 +23,7 @@ source venv/bin/activate
 
 Install required packages:
 ```
+export GIT_TOKEN=[access_token]
 pip install -r requirements.txt
 ```
 

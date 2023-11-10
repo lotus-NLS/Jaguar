@@ -24,8 +24,8 @@ selenium~=4.12.0
 beautifulsoup4~=4.12.2
 requests~=2.31.0
 starlette
--e git+https://github.com/Somerandomguy10111/pystuff.git#egg=Browser&subdirectory=browser
--e git+https://github.com/Somerandomguy10111/pystuff.git#egg=pywebdev&subdirectory=pywebdev
+-e "git+https://Somerandomguy10111:${GIT_TOKEN}@github.com/Somerandomguy10111/pystuff.git#egg=browser&subdirectory=browser"
+-e "git+https://Somerandomguy10111:${GIT_TOKEN}@github.com/Somerandomguy10111/pystuff.git#egg=pywebdev&subdirectory=pywebdev"
 
 
 ## MISC
