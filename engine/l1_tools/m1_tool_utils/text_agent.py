@@ -17,18 +17,18 @@ class TextAgent(Agent):
     def react(self, entry : Entry):
         pass
 
-    def __init__(self, identity : Identity, model_type : LLM = OpenAIModel(ModelsOpenAI.gpt_35_4k)):
+    def __init__(self, identity : Identity, model_type : LLM = OpenAIModel(ModelsOpenAI.gpt_35_std)):
         super().__init__(model_type = model_type,identity=identity)
 
     @classmethod
     def make_website_summarization_agent(cls) -> TextAgent:
         return cls(identity=Identity(core=Cores.website_information_retriever),
-                   model_type=OpenAIModel(ModelsOpenAI.gpt_35_4k))
+                   model_type=OpenAIModel(ModelsOpenAI.gpt_35_std))
 
 
     @classmethod
     def make_report_composition_agent(cls) -> TextAgent:
-        return cls(identity=Identity(Cores.report_composer), model_type=OpenAIModel(ModelsOpenAI.gpt_35_4k))
+        return cls(identity=Identity(Cores.report_composer), model_type=OpenAIModel(ModelsOpenAI.gpt_35_std))
 
 
     def get_text_response(self, max_tokens : Optional[int] = None, entries : Optional[list[Entry]] = None) -> str:

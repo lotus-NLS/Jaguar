@@ -1,6 +1,8 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
 from pywebdev import PyWebApp
+from api import Flag
+
 from engine.l2_agent.m1_language import Channel, LingualEntity
 from engine.l3_singletons import LotusSettings, DialogueSettings
 from engine.l2_agent import Agent
@@ -52,16 +54,16 @@ class LotusEngine:
             user_entry = EngineIO().get_user_entry()
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
-            print(f'[Debug]: Flags are {flags.as_text()}')
+            # print(f'[Debug]: Flags are {flags.as_text()}')
 
-            if flags.print_threads:
+            if flags.get(flag=Flag.PRINT_THREADS):
                 CustomThread.print_active_customthreads()
                 continue
 
-            if flags.quit:
+            if flags.get(flag=Flag.QUIT):
                 break
 
-            if flags.reset:
+            if flags.get(flag=Flag.RESET):
                 [bot.clear_log() for bot in self.bots]
                 print(f'[Debug]: Bot logs cleared')
                 continue

@@ -4,11 +4,10 @@ import copy
 from typing import Optional
 from abc import abstractmethod
 
-import pyutils
 from pyutils import DaemonThread
 from queue import Queue
 
-from api.classes.language import Entry, DialogueRole, FlagContainer
+from api.classes.language import Entry, DialogueRole, FlagContainer, Flag
 from .channel import ChannelInterface as Channel
 
 # ----------------------------------------------------
@@ -71,7 +70,7 @@ class LingualEntity:
         else:
             self.current_entry.append_content(to_add=new_entry.get_content())
 
-        if new_entry.flags.is_entry_end:
+        if new_entry.flags.get(flag=Flag.IS_ENTRY_END):
             self.current_entry = None
             DaemonThread(target=self.react, args=(new_entry,)).start()
 

@@ -1,5 +1,5 @@
 from browser import window, document
-from api import Entry, Ends
+from api import Entry, Ends, Flag
 
 # ----------------------------------------------
 
@@ -22,7 +22,7 @@ def handle_engine_data(msg : dict):
     except:
         last_element = None
 
-    if new_entry.flags.is_entry_start or last_element is None:
+    if new_entry.flags.get(Flag.IS_ENTRY_START) or last_element is None:
         make_new_entry(entry=new_entry)
     else:
         last_element.innerHTML += f"{new_entry.get_content()}"

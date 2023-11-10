@@ -1,7 +1,7 @@
 from pyutils import DaemonThread
 import copy
 
-from api.classes.language import Entry, DialogueRole
+from api.classes.language import Entry, DialogueRole, Flag
 from engine.l3_singletons.m0_server import EngineIO
 from engine.l2_agent import LingualEntity
 from engine.l2_agent import Agent, Task
@@ -39,7 +39,7 @@ class Alpha(Agent):
     def react(self, entry: Entry):
         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_is_enqueued():
 
-            required_funct_name = None if not entry.flags.mandate else INITIALIZE_MANDATE.__name__
+            required_funct_name = None if not entry.flags.get(flag=Flag.MANDATE) else INITIALIZE_MANDATE.__name__
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
                                      entries_to_respond_to=entries_to_process,
@@ -95,7 +95,7 @@ class User(LingualEntity):
             return
 
         the_entry = copy.deepcopy(new_entry)
-        the_entry.flags.is_entry_start = self.current_entry is None
+        the_entry.flags.set(flag=Flag.IS_ENTRY_START,value=self.current_entry is None)
 
         EngineIO().post_engine_entry(entry=the_entry)
 

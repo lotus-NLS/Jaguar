@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pyutils import Countdown
 from .channel_interface import ChannelInterface, SpeakerStaff
-from api.classes.language import Entry
+from api.classes.language import Entry, Flag
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------
@@ -50,7 +50,7 @@ class Channel(ChannelInterface):
     # Other
 
     def broadcast(self, entry : Entry):
-        self.try_release_staff() if entry.flags.is_entry_end else None
+        self.try_release_staff() if entry.flags.get(flag=Flag.IS_ENTRY_END) else None
 
         for member in self.members:
             member.process_entry(new_entry=entry)

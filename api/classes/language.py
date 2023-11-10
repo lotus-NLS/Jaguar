@@ -1,6 +1,7 @@
 import json
 from typing import Optional
 import ast
+from enum import Enum
 from .serializable import Serializable
 
 # ----------------------------------------------
@@ -26,58 +27,34 @@ class DialogueRole(str):
         return cls(role_str='system')
 
 
+class Flag(Enum):
+    IS_ENTRY_START = '-s'
+    IS_ENTRY_END = '-e'
+    PRINT_THREADS = '-t'
+    QUIT = '-q'
+    MANDATE = '-m'
+    RESET = '-r'
+
+
 class FlagContainer(Serializable):
-    def __init__(self, is_entry_end: bool = False,
-                 is_entry_start : bool = False,
-                 do_print_threads: bool = False,
-                 do_quit: bool = False,
-                 enforce_mandate: bool = False,
-                 do_reset: bool = False):
-        self.is_entry_end: bool = is_entry_end
-        self.is_entry_start : bool = is_entry_start
-        self.print_threads: bool = do_print_threads
-        self.quit: bool = do_quit
-        self.mandate: bool = enforce_mandate
-        self.reset: bool = do_reset
+    def __init__(self):
+        self.mapping : dict[str, bool] = {}
+
+
+    def get(self, flag : Flag) -> bool:
+        if not flag.value in self.mapping:
+            return False
+        else:
+            return self.mapping[flag.value]
+
+
+    def set(self, flag : Flag, value : bool):
+        self.mapping[flag.value] = value
 
 
     @classmethod
     def make_default(cls):
         return cls()
-
-    def as_text(self):
-        flag_str = ""
-        if self.is_entry_end:
-            flag_str += '-s '
-        if self.is_entry_end:
-            flag_str += '-e '
-        if self.print_threads:
-            flag_str += '-t '
-        if self.quit:
-            flag_str += '-q '
-        if self.mandate:
-            flag_str += '-m '
-        if self.reset:
-            flag_str += '-r '
-        return flag_str.strip()
-
-
-    @classmethod
-    def from_text_specification(cls, flag_str: str):
-        this_container = cls()
-        if '-s' in flag_str:
-            this_container.is_entry_start = True
-        if '-e' in flag_str:
-            this_container.is_entry_end = True
-        if '-t' in flag_str:
-            this_container.print_threads = True
-        if '-q' in flag_str:
-            this_container.quit = True
-        if '-m' in flag_str:
-            this_container.mandate = True
-        if '-r' in flag_str:
-            this_container.reset = True
-        return this_container
 
 
 class Entry(dict, Serializable):
@@ -96,10 +73,9 @@ class Entry(dict, Serializable):
             self['name'] = name if not name is None else role
 
         self._is_processed : bool = True if not role == DialogueRole.user_role() else False
-        self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
 
-        if is_final:
-            self.flags.is_entry_end = True
+        self.flags : FlagContainer = flags if not flags is None else FlagContainer.make_default()
+        self.flags.set(flag=Flag.IS_ENTRY_END,value=is_final)
 
 
     def mark_processed(self):
