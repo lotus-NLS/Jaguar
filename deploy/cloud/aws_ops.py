@@ -1,5 +1,5 @@
 from .manager import CloudManager
-from .enums import AWSRegions
+from deploy.cloud.components.enums import AWSRegions
 
 # ----------------------------------------------
 # EC2 management
@@ -14,7 +14,7 @@ function_name = "MyGitHubBackupFunction9"
 role_arn = "arn:aws:iam::139384887340:role/MyLambdaRole4"
 handler = "backup_repo.backup_github_repo"
 
-with open('/home/daniel/Lotus/deploy/cloud/backup_repo.py') as f:
+with open('/deploy/cloud/components/backup_repo.py') as f:
     module_code = f.read()
 
 cloud_manager.deploy_lambda_function(function_name, role_arn, handler,module_code)

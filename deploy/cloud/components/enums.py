@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import Optional
 
 
 class AWSRegions(Enum):
@@ -41,3 +42,15 @@ class InstanceState(Enum):
     RUNNING = 'instance_running'
     STOPPED = 'instance_stopped'
     # You can add more states as needed
+
+
+class InstanceTemplate:
+    def __init__(self, image_id: AMI, ec2_type: EC2Type, setup_script: str = '') -> None:
+        self.image_id: str = image_id.value
+        self.ec2_type: str = ec2_type.value
+        self.setup_script: Optional[str]  = setup_script
+
+    @classmethod
+    def make_default(cls) -> InstanceTemplate:
+        new_instance = cls(image_id=AMI.UBUNTU_2204, ec2_type=EC2Type.T3_MICRO)
+        return new_instance
