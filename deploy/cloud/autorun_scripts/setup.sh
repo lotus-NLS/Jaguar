@@ -1,9 +1,14 @@
 #!/bin/bash
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt-get install -f
-sudo apt-get update --fix-missing
+#wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#sudo dpkg -i google-chrome-stable_current_amd64.deb
+#sudo apt-get install -f
+#sudo apt-get update --fix-missing
 
+access_token=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text)
+export GIT_TOKEN=access_token
+
+#TODO: Remove
+echo access_token
 
 git clone https://github.com/Somerandomguy10111/Lotus
 git clone https://github.com/Somerandomguy10111/pystuff
