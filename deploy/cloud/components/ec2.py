@@ -21,6 +21,7 @@ class EC2Manger:
                 "MaxCount": num,
                 "InstanceType": template.ec2_type,
             }
+
             if template.setup_script:
                 params["UserData"] = template.setup_script
             if template.key_pair_name:
@@ -49,6 +50,11 @@ class EC2Manger:
                 ]
             if template.security_group:
                 params["SecurityGroupIds"] = [template.security_group]
+
+            if template.iam_instance_profile:
+                params["IamInstanceProfile"] = {
+                    'Arn': template.iam_instance_profile
+                }
 
             response = self.ec2_client.run_instances(**params)
             instance_ids = [inst['InstanceId'] for inst in response['Instances']]

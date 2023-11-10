@@ -1,6 +1,6 @@
 from pyutils import get_txt_file_content
 from deploy.cloud.manager import CloudManager
-from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type, ImageID
+from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type, ImageID, ServiceURL
 
 
 # ----------------------------------------------
@@ -8,16 +8,45 @@ from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type,
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
-setup_script = get_txt_file_content(location='interaction/setup.sh')
+setup_script = get_txt_file_content(location='autorun_scripts/setup.sh')
 lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
                                   image_id=ImageID.UBUNTU_2204,
                                   setup_script=setup_script,
                                   key_pair_name='lotus_key',
-                                  instance_name='lotus_from_code2',
+                                  instance_name='lotus_from_code',
+                                  # iam_instance_profile=,
                                   security_group='sg-04536ba167a51d751')
 cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
 
-print(cloud_manager.ec2.get_all_instance_ids())
+
+# cloud_manager.iam.create_iam(role_name='LotusEC2'
+#                              ,policy_arns=['arn:aws:iam::aws:policy/SecretsManagerReadWrite']
+#                              ,service=ServiceURL.EC2)
+
+
+# cloud_manager.iam.get_iam_roles()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# print(cloud_manager.ec2.get_all_instance_ids())
 
 # cloud_manager.create_lambda_iam(role_name='MyLambdaRole4'
 #                                 ,policy_arns=['arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',

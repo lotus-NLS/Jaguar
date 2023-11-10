@@ -4,12 +4,15 @@
 #sudo apt-get install -f
 #sudo apt-get update --fix-missing
 
+
+
 access_token=$(aws secretsmanager get-secret-value --secret-id github --query 'SecretString' --output text)
 export GIT_TOKEN=access_token
 
 #TODO: Remove
 echo access_token
 
+cd /home/ubuntu
 git clone https://github.com/Somerandomguy10111/Lotus
 git clone https://github.com/Somerandomguy10111/pystuff
 export PYTHONPATH="$(pwd)/Lotus"
