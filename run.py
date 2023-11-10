@@ -20,7 +20,7 @@ class LotusServer:
 
         @self.web_app.route('/lib/<path:filename>')
         def client_lib(filename):
-            clientdir = os.path.join(self.current_dir, 'deploy', 'scripts', 'lib')
+            clientdir = os.path.join(self.current_dir, 'deploy', 'interaction', 'lib')
             return send_from_directory(clientdir, filename)
 
 

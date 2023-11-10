@@ -60,7 +60,7 @@ class EC2Manger:
 
 
     def shutdown_all_instances(self) -> None:
-        instances = self._get_all_instance_ids()
+        instances = self.get_all_instance_ids()
         if instances:
             self.ec2_client.stop_instances(InstanceIds=instances)
             print(f"Stopping instances: {instances}")
@@ -68,7 +68,7 @@ class EC2Manger:
 
 
     def reach_number_of_instances(self, desired_count: int) -> None:
-        instances = self._get_all_instance_ids()
+        instances = self.get_all_instance_ids()
         num_running_instances = len(instances)
 
         self.start_all_instances()
@@ -79,7 +79,7 @@ class EC2Manger:
 
 
     def start_all_instances(self) -> None:
-        instance_ids = self._get_all_instance_ids()
+        instance_ids = self.get_all_instance_ids()
         if instance_ids:
             self.ec2_client.start_instances(InstanceIds=instance_ids)
             print(f"Starting instances: {instance_ids}")
@@ -104,7 +104,7 @@ class EC2Manger:
             return 0
 
 
-    def _get_all_instance_ids(self) -> List[str]:
+    def get_all_instance_ids(self) -> List[str]:
         try:
             response = self.ec2_client.describe_instances()
             instances = [instance['InstanceId'] for reservation in response['Reservations'] for instance in

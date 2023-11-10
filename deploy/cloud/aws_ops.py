@@ -8,15 +8,16 @@ from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type,
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
-setup_script = get_txt_file_content(location='scripts/setup.sh')
-lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
-                                  image_id=ImageID.UBUNTU_2204,
-                                  setup_script=setup_script,
-                                  key_pair_name='lotus_key',
-                                  instance_name='lotus_from_code2',
-                                  security_group='sg-04536ba167a51d751')
-cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
+# setup_script = get_txt_file_content(location='interaction/setup.sh')
+# lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
+#                                   image_id=ImageID.UBUNTU_2204,
+#                                   setup_script=setup_script,
+#                                   key_pair_name='lotus_key',
+#                                   instance_name='lotus_from_code2',
+#                                   security_group='sg-04536ba167a51d751')
+# cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
 
+print(cloud_manager.ec2.get_all_instance_ids())
 
 # cloud_manager.create_lambda_iam(role_name='MyLambdaRole4'
 #                                 ,policy_arns=['arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
