@@ -6,7 +6,6 @@
 # class ConversationTestModule(TestModule):
 #     class RowdyParticipant(ConversationParticipant):
 #         def _reaction_protocol(self, dialogue_line: dict):
-#             role = dialogue_line['role']
 #             if role == DialogueRole.agent():
 #                 self.speak('Actually, leave me alone! Let me talk to another user')
 #

@@ -21,7 +21,7 @@ class OpenAIModel(LLM):
 
         args_dict = {
             'model': self.model_type,
-            'messages': entries,
+            'messages': [entry.as_dict() for entry in entries],
             'temperature': action_options.temperature,
             'stream' : True
         }
