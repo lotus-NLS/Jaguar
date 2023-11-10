@@ -97,7 +97,7 @@ class User(LingualEntity):
         the_entry = copy.deepcopy(new_entry)
         the_entry.flags.set(flag=Flag.IS_ENTRY_START,value=self.current_entry is None)
 
-        print(f'{the_entry.get_content()}'.__repr__())
+        # print(f'{the_entry.get_content()}'.__repr__())
         EngineIO().post_engine_entry(entry=the_entry)
 
 

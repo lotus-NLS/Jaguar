@@ -54,7 +54,7 @@ class LotusEngine:
             user_entry = EngineIO().get_user_entry()
             flags = user_entry.get_flags()
             print(f'[Debug]: The user said {user_entry.get_content()}')
-            # print(f'[Debug]: Flags are {flags.as_text()}')
+            # print(f'[Debug]: Flags are {flags.()}')
 
             if flags.get(flag=Flag.PRINT_THREADS):
                 CustomThread.print_active_customthreads()

@@ -16,15 +16,15 @@ class Client:
     def send_api_msg(self, api_message: APIMessage):
         self._request(endpoint=Ends.user_data,
                       data=json.dumps({"msg_content": api_message.serialize_as_str()}))
-        window.console.log('I sent the msg :)')
+        # print('I sent the message')
 
 
     @staticmethod
-    def on_complete(req):
+    def on_complete(req) -> str:
         if req.status == 200 or req.status == 0:
-            print("Message sent successfully")
+            return "Message sent successfully"
         else:
-            print("Error sending message")
+            return "Error sending message"
 
 
     def _request(self, endpoint : Endpoint, data : str):
