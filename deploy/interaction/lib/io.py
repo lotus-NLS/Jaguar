@@ -13,7 +13,7 @@ class ParagraphConverter:
         self.markdown_content = ""
 
     def add_markdown(self, markdown_text):
-        self.markdown_content += markdown_text + "\n"
+        self.markdown_content += markdown_text
 
     def get(self):
         return self.converter.makeHtml(self.markdown_content)
