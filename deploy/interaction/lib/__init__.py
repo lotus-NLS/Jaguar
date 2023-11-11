@@ -1,2 +1,2 @@
-from .editor import *
+from .io import *
 from .client import *

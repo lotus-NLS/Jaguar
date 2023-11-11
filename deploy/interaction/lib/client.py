@@ -1,12 +1,11 @@
 from browser import ajax
 
-from api import APIMessage
 import json
-
+from api import APIMessage
 from api import Ends, Endpoint
 # ----------------------------------------------
 
-class Client:
+class ClientIO:
     def __init__(self, ip : str, port : int):
         self.ip : str = ip
         self.port : int = port

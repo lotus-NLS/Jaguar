@@ -20,6 +20,5 @@ class LotusWebApp(PyWebApp):
             self.add_button(the_id='Send', value='Send', style=send_button_style)
 
         # Chat Interactivity
-        self.add_python_script(relPath='deploy/interaction/send.py')
-        self.add_python_script(relPath='deploy/interaction/receive.py')
+        self.add_python_script(relPath='deploy/interaction/do_chat.py')
 
