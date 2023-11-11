@@ -1,8 +1,9 @@
 import boto3
-from .enums import AWSRegions
+import inspect
 import io
 import zipfile
 
+from .enums import AWSRegions
 # ----------------------------------------------
 
 class LambdaManager:
@@ -34,6 +35,28 @@ class LambdaManager:
             print(f"An error occurred: {e}")
 
 
+    # def deploy_lambda_function_new(self, lambda_name: str, role_arn: str, handler: str, module_code: str):
+    def deploy_lambda_function_new(self,the_function : callable, role_arn : str):
+        try:
+
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False) as zip_file:
+                zip_file.writestr('pyfunct.py', inspect.getsource(the_function))
+
+            fname = the_function.__name__
+            response = self.lambda_client.create_function(
+                FunctionName=fname,
+                Runtime='python3.10',
+                Role=role_arn,
+                Handler=f'pyfunct.{fname}',
+                Code={'ZipFile': zip_buffer.getvalue()},
+            )
+
+            return response['FunctionArn']
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
     # def schedule_lambda_backup(self, function_arn: str, schedule_expression: str):
     #     try:
     #         rule_response = self.events_client.put_rule(
@@ -50,3 +73,12 @@ class LambdaManager:
     #         print(f"Scheduled Lambda for GitHub backups with rule: {rule_response['RuleArn']}")
     #     except Exception as e:
     #         print(f"An error occurred: {e}")
+
+
+
+
+# from deploy.cloud.autorun_scripts.backup_repo import do_backup
+# import inspect
+# # Extract the source code of the function
+# function_source = inspect.getsource(do_backup)
+# print(function_source)

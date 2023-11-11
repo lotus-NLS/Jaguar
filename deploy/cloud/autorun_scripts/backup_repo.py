@@ -1,12 +1,14 @@
-import boto3
-import json
-import shutil
-from git import Repo
+
 
 # ----------------------------------------------
 
 
-def backup_github_repo(event, context):
+def do_backup(event, context):
+    import boto3
+    import json
+    import shutil
+    from git import Repo
+
     _ = event
     _ = context
 
@@ -40,4 +42,4 @@ def backup_github_repo(event, context):
     print(f'Done')
     return {"message": "Backup completed successfully"}
 
-backup_github_repo(None,None)
+# do_backup(None, None)
