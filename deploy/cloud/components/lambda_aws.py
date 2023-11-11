@@ -35,8 +35,11 @@ class LambdaManager:
             print(f"An error occurred: {e}")
 
 
-    # def deploy_lambda_function_new(self, lambda_name: str, role_arn: str, handler: str, module_code: str):
     def deploy_lambda_function_new(self,the_function : callable, role_arn : str):
+        """
+        Deploys a lambda for an entirely self contained function the_function
+        Necessary imports must be stated within the function body not in the header of the module
+        """
         try:
 
             zip_buffer = io.BytesIO()
@@ -56,6 +59,7 @@ class LambdaManager:
 
         except Exception as e:
             print(f"An error occurred: {e}")
+
 
     # def schedule_lambda_backup(self, function_arn: str, schedule_expression: str):
     #     try:
