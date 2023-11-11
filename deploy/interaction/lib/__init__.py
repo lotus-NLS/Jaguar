@@ -1,2 +1,2 @@
+from .chat import *
 from .io import *
-from .client import *
