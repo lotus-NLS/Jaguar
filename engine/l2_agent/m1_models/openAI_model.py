@@ -61,6 +61,6 @@ class ModelsOpenAI:
     gpt_40_std = 'gpt-4'
     gpt_35_std = 'gpt-3.5-turbo'
     gpt_35_16k = 'gpt-3.5-turbo-1106'
-    gpt_40_8k = 'gpt-4-1106'
+    gpt_40_8k = 'gpt-4-0613	'
     gpt_40_128k = 'gpt-4-1106-preview'
     gpt_40_vision = 'gpt-4-vision-preview'
