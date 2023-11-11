@@ -1,7 +1,7 @@
 import boto3
 import json
 from typing import Optional
-from .enums import AWSRegions, ServiceURL
+from .enums import AWSRegions, Service, Policy
 
 # ----------------------------------------------
 
@@ -11,7 +11,7 @@ class IAM_Manager:
         self.client = boto3.client('iam', region_name=self.region)
 
 
-    def create_iam(self, role_name: str, policy_arns: list[str], service : ServiceURL):
+    def create_iam(self, role_name: str, policy_arns: list[Policy], service : Service):
         try:
             trust_relationship = self.get_trust_relationship(service)
             if trust_relationship is None:
@@ -19,7 +19,7 @@ class IAM_Manager:
 
             self.client.create_role(RoleName=role_name,AssumeRolePolicyDocument=json.dumps(trust_relationship))
             for policy_arn in policy_arns:
-                self.client.attach_role_policy(RoleName=role_name,PolicyArn=policy_arn)
+                self.client.attach_role_policy(RoleName=role_name,PolicyArn=policy_arn.value)
             print(f"IAM Role created: {role_name}")
 
         except Exception as e:
@@ -46,7 +46,7 @@ class IAM_Manager:
     # get
 
     @staticmethod
-    def get_trust_relationship(service : ServiceURL) -> Optional[dict]:
+    def get_trust_relationship(service : Service) -> Optional[dict]:
         statement_header = {
             "Effect": "Allow",
             "Principal": {"Service": service.value},

@@ -51,7 +51,7 @@ class LambdaManager:
                 Handler=f'pyfunct.{fname}',
                 Code={'ZipFile': zip_buffer.getvalue()},
             )
-
+            print(f"Lambda function deployed: {fname}")
             return response['FunctionArn']
 
         except Exception as e:

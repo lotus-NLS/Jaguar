@@ -70,6 +70,10 @@ class InstanceTemplate:
         return new_instance
 
 
-class ServiceURL(Enum):
+class Service(Enum):
     LAMBDA = 'lambda.amazonaws.com'
     EC2 = 'ec2.amazonaws.com'
+
+class Policy(Enum):
+    LAMBDA_BASIC_EXECUTION_ROLE = 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+    SECRETS_MANAGER_READ_WRITE = 'arn:aws:iam::aws:policy/SecretsManagerReadWrite'

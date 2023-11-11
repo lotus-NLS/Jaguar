@@ -1,6 +1,11 @@
-from pyutils import get_txt_file_content
+# from pyutils import get_txt_file_content
 from deploy.cloud.manager import CloudManager
-from deploy.cloud.components.enums import AWSRegions, InstanceTemplate, EC2Type, ImageID, ServiceURL
+from deploy.cloud.components.enums import (AWSRegions,
+                                           # InstanceTemplate,
+                                           # EC2Type,
+                                           # ImageID,
+                                           Service,
+                                           Policy)
 
 
 # ----------------------------------------------
@@ -22,9 +27,7 @@ cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
 
 
-function_name = "MyGitHubBackupFunction9"
-role_arn = "arn:aws:iam::139384887340:role/MyLambdaRole4"
-handler = "backup_repo.backup_github_repo"
+
 
 # with open('/deploy/cloud/components/backup_repo.py') as f:
 #     module_code = f.read()
@@ -35,8 +38,11 @@ handler = "backup_repo.backup_github_repo"
 # cloud_manager.lambda_aws.deploy_lambda_function(function_name, role_arn, handler,module_code)
 # This function should simply take the python function object itself and optionally the role_arn
 # and just work
-# from autorun_scripts.backup_repo import do_backup
-# cloud_manager.lambda_aws.deploy_lambda_function_new(the_function=do_backup,role_arn=role_arn)
-# cloud_manager.iam.create_iam(role_name='BackupLambda',policy_arns=[])
+# cloud_manager.iam.create_iam(role_name='BackupLambda',
+#                              policy_arns=[Policy.LAMBDA_BASIC_EXECUTION_ROLE],
+#                              service=Service.LAMBDA)
+# cloud_manager.iam.get_iam_roles()
 
-cloud_manager.iam.get_iam_roles()
+from autorun_scripts.backup_repo import do_backup
+lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda"
+cloud_manager.lambda_aws.deploy_lambda_function_new(the_function=do_backup,role_arn=lambda_role_arn)
