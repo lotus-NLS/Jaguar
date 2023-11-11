@@ -13,7 +13,7 @@ lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
                                   image_id=ImageID.UBUNTU_2204,
                                   setup_script=setup_script,
                                   key_pair_name='lotus_key',
-                                  instance_name='lotus_from_code_final',
+                                  instance_name='lotus_from_code',
                                   instance_profile_arn='arn:aws:iam::139384887340:instance-profile/lotus_instance',
                                   security_group='sg-04536ba167a51d751')
 cloud_manager.ec2.launch_instances(num=1, template=lotus_instance)
