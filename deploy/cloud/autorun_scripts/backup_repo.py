@@ -1,11 +1,15 @@
-import os
+
 
 
 def do_backup(event, context):
+    import traceback
     import boto3
     import json
     import shutil
-    from git import Repo
+    import requests
+    import zipfile
+    import io
+    import os
     from datetime import datetime
 
     _ = event
@@ -24,20 +28,32 @@ def do_backup(event, context):
 
     # Clone repo
 
-    try:
-        lotus_foldername = 'Lotus'
-        Repo.clone_from(url='https://github.com/Somerandomguy10111/Lotus',
-                        to_path=os.path.join(src_dir,lotus_foldername),
-                        env={'GIT_USERNAME': username, 'GIT_PASSWORD': token})
+    def write_download_content(url : str, fpath : str, headers : dict):
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
 
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
+            zip_ref.extractall(fpath)
+
+    try:
+        lotus_url = 'https://github.com/Somerandomguy10111/Lotus/archive/HEAD.zip'
+        lotus_foldername = 'Lotus'
+        lotus_path = os.path.join(src_dir, lotus_foldername)
+
+        pystuff_url = 'https://github.com/Somerandomguy10111/pystuff/archive/HEAD.zip'
         pystuff_foldername = 'pystuff'
-        Repo.clone_from(url='https://github.com/Somerandomguy10111/pystuff',
-                        to_path=os.path.join(src_dir,pystuff_foldername),
-                        env={'GIT_USERNAME': username, 'GIT_PASSWORD': token})
+        pystuff_path = os.path.join(src_dir, pystuff_foldername)
+
+        auth_headers = {'Authorization': f'token {token}'}
+
+        write_download_content(url=lotus_url,fpath=lotus_path,headers=auth_headers)
+        write_download_content(url=pystuff_url,fpath=pystuff_path,headers=auth_headers)
 
     except Exception as e:
         print(f'Failed to clone repo: {e}')
-        return {"message": "Backup failed"}
+        print(traceback.format_exc())
+        print('Backup failed')
+
 
     # Zip it
     the_format = 'zip'
@@ -52,8 +68,6 @@ def do_backup(event, context):
     s3 = boto3.client('s3')
     s3.upload_file(fname,'thelotusbucket',f'{base_name}_{date_str}.{the_format}')
 
-    print(f'Done')
-    return {"message": "Backup completed successfully"}
+    print('Backup completed sucessfully')
 
-
-do_backup(None, None)
+# do_backup(None, None)

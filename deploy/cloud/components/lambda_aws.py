@@ -4,11 +4,16 @@ import io
 import zipfile
 import os, tempfile, shutil, sys
 import subprocess
+from distutils.dir_util import copy_tree
+
 
 from .enums import AWSRegions
 # ----------------------------------------------
 
 class LambdaManager:
+
+    lambda_filename = 'pyfunct'
+
     def __init__(self, region : AWSRegions):
         self.region : str = region.value
         self.lambda_client = boto3.client('lambda', region_name=self.region)
@@ -64,7 +69,7 @@ class LambdaManager:
                 FunctionName=funct_name,
                 Runtime='python3.10',
                 Role=role_arn,
-                Handler=f'pyfunct.{funct_name}',
+                Handler=f'{LambdaManager.lambda_filename}.{funct_name}',
                 Code={'ZipFile': zip_content},
             )
 
@@ -74,42 +79,62 @@ class LambdaManager:
 
         except Exception as e:
             print(f"An error occurred: {e}")
+            import traceback
+            print(traceback.format_exc())
+
 
     @staticmethod
-    def get_zip(self, the_function : callable):
-        funct_name = the_function.__name__
+    def get_zip(the_function : callable):
         python_src = inspect.getsource(the_function)
 
         with tempfile.TemporaryDirectory() as tmp_dir:
 
-            # make src folder and python script
-            srcdir_name = 'srcdir'
-            os.makedirs(srcdir_name,exist_ok=True)
-            python_file_name = f"{funct_name}.py"
-            python_file_path = os.path.join(tmp_dir,srcdir_name, python_file_name)
-            with open(python_file_path, 'w') as python_file:
-                python_file.write(python_src)
+            def make_subdir(rel_path: str):
+                subdir_path = os.path.join(tmp_dir, rel_path)
+                os.makedirs(subdir_path, exist_ok=True)
 
+            def write_file(rel_path: str, content: str):
+                file_path = os.path.join(tmp_dir, rel_path)
+                with open(file_path, 'w') as file:
+                    file.write(content)
 
-            # setup venv
-            subprocess.run([sys.executable, "-m", "venv", "venv"], check=True)
-            venv_python = os.path.join("venv", "bin", "python")
-            subprocess.run([venv_python, "-m", "pip", "install", "pipreqs"], check=True)
+            def run_subprocess(command: list[str], rel_path: str,**kwargs):
+                subdir_path = os.path.join(tmp_dir, rel_path)
+                subprocess.run(command, cwd=subdir_path, check=True,**kwargs)
 
-            # Install generate requirements and install
-            subprocess.run(["pipreqs", srcdir_name], check=True)
-            command = f"source venv/bin/activate && pip install -r {srcdir_name}/requirements.txt"
-            subprocess.run(command, shell=True, executable='/bin/bash', check=True)
+            # Create src directory and src file
+            src_foldername = 'src'
+            make_subdir(rel_path=src_foldername)
+            write_file(rel_path=f'src/{LambdaManager.lambda_filename}.py', content=python_src)
 
-            # package venv
-            site_packages = os.path.join('venv', 'lib',
-                                         f'python{sys.version_info.major}.{sys.version_info.minor}',
-                                         'site-packages')
+            # Generate venv
+            run_subprocess(command=[sys.executable, "-m", "venv", "venv"],rel_path='')
+            venv_location = os.path.join("venv", "bin", "python")
+            run_subprocess(command=[venv_location, "-m", "pip", "install", "pipreqs"],rel_path='')
 
-            # Copy site-packages contents to the temporary directory
-            shutil.copytree(site_packages, os.path.join(tmp_dir, 'site-packages'), dirs_exist_ok=True)
+            # Install requirements
+            run_subprocess(command=[f"source venv/bin/activate && pipreqs {src_foldername}"],
+                           rel_path='',
+                           shell=True,
+                           executable='/bin/bash')
+            install_requirements = f"source venv/bin/activate && pip install -r {src_foldername}/requirements.txt"
+            run_subprocess(command=[install_requirements],
+                           rel_path='',
+                           shell=True,
+                           executable='/bin/bash')
 
-            zip_path = shutil.make_archive('lambda_package', 'zip', tmp_dir)
+            site_package_location = os.path.join(tmp_dir,'venv', 'lib',
+                                                 f'python{sys.version_info.major}.{sys.version_info.minor}',
+                                                 'site-packages')
+            shutil.copytree(site_package_location,
+                            os.path.join(tmp_dir,src_foldername,'site-packages'),
+                            dirs_exist_ok=True)
+
+            from_directory = site_package_location
+            to_directory = os.path.join(tmp_dir,src_foldername)
+            copy_tree(from_directory, to_directory)
+
+            zip_path = shutil.make_archive(tmp_dir,'lambda_package', 'zip', os.path.join(tmp_dir,src_foldername))
             with open(zip_path, 'rb') as zip_file:
                 zip_content = zip_file.read()
 
