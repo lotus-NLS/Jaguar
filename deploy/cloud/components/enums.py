@@ -1,10 +1,8 @@
 from __future__ import annotations
-
 from enum import Enum
-from typing import Optional
 
-
-
+# ---------------------------------------------------------
+# General
 
 class AWSRegions(Enum):
     US_EAST_1 = 'us-east-1'
@@ -29,6 +27,10 @@ class AWSRegions(Enum):
     ME_SOUTH_1 = 'me-south-1'
 
 
+
+# ---------------------------------------------------------
+# EC2
+
 class EC2Type(Enum):
     T2_MICRO = 't2.micro'
     T2_SMALL = 't2.small'
@@ -43,36 +45,15 @@ class ImageID(Enum):
 class InstanceState(Enum):
     RUNNING = 'instance_running'
     STOPPED = 'instance_stopped'
-    # You can add more states as needed
 
 
-class InstanceTemplate:
-    def __init__(self, image_id: ImageID,
-                 ec2_type: EC2Type,
-                 setup_script: str = '',
-                 key_pair_name: Optional[str] = None,
-                 network_interface_id: Optional[str] = None,
-                 instance_name: Optional[str] = None,
-                 security_group: Optional[str] = None,
-                 instance_profile_arn: Optional[str] = None) -> None:
-        self.image_id: str = image_id.value
-        self.ec2_type: str = ec2_type.value
-        self.setup_script: Optional[str] = setup_script
-        self.key_pair_name: Optional[str] = key_pair_name
-        self.network_interface_id: Optional[str] = network_interface_id
-        self.instance_name: Optional[str] = instance_name
-        self.security_group: Optional[str] = security_group
-        self.iam_instance_profile: Optional[str] = instance_profile_arn
-
-    @classmethod
-    def make_default(cls) -> InstanceTemplate:
-        new_instance = cls(image_id=ImageID.UBUNTU_2204, ec2_type=EC2Type.T3_MICRO)
-        return new_instance
-
+# ---------------------------------------------------------
+# Roles
 
 class Service(Enum):
     LAMBDA = 'lambda.amazonaws.com'
     EC2 = 'ec2.amazonaws.com'
+
 
 class Policy(Enum):
     LAMBDA_BASIC_EXECUTION_ROLE = 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'

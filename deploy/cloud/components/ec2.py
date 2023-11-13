@@ -1,6 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError
-from deploy.cloud.components.enums import AWSRegions, InstanceState, InstanceTemplate
+from deploy.cloud.components.enums import AWSRegions, InstanceState
+from deploy.cloud.components import InstanceTemplate
 from typing import List
 
 # ----------------------------------------------
@@ -14,48 +15,9 @@ class EC2Manger:
     # set
 
     def launch_instances(self, num: int, template: InstanceTemplate = InstanceTemplate.make_default()):
+        params = template.get_params(num=num)
+
         try:
-            params = {
-                "ImageId": template.image_id,
-                "MinCount": num,
-                "MaxCount": num,
-                "InstanceType": template.ec2_type,
-            }
-
-            if template.setup_script:
-                params["UserData"] = template.setup_script
-            if template.key_pair_name:
-                params["KeyName"] = template.key_pair_name
-
-            if template.network_interface_id:
-                params["NetworkInterfaces"] = [
-                    {
-                        'DeviceIndex': 0,
-                        'NetworkInterfaceId': template.network_interface_id,
-                        'AssociatePublicIpAddress': True
-                    }
-                ]
-
-            if template.instance_name:
-                params["TagSpecifications"] = [
-                    {
-                        'ResourceType': 'instance',
-                        'Tags': [
-                            {
-                                'Key': 'Name',
-                                'Value': template.instance_name
-                            }
-                        ]
-                    }
-                ]
-            if template.security_group:
-                params["SecurityGroupIds"] = [template.security_group]
-
-            if template.iam_instance_profile:
-                params["IamInstanceProfile"] = {
-                    'Arn': template.iam_instance_profile
-                }
-
             response = self.ec2_client.run_instances(**params)
             instance_ids = [inst['InstanceId'] for inst in response['Instances']]
             print(f"Launching instances: {instance_ids}")
