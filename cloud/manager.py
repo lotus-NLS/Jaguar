@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from deploy.cloud.components import AWSRegions
-from deploy.cloud.components import EC2Manger, LambdaManager, DatabaseManager, IAM_Manager
+from components import AWSRegions
+from components import EC2Manger, LambdaManager, DatabaseManager, IAM_Manager
 
 # ----------------------------------------------
 

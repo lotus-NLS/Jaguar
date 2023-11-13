@@ -3,7 +3,7 @@ from flask import send_from_directory
 from pyutils import DaemonThread
 
 from engine import LotusEngine
-from deploy import LotusWebApp
+from webapp import LotusWebApp
 
 # ---------------------------------------------------------
 
@@ -15,12 +15,12 @@ class LotusServer:
 
         @self.web_app.route('/api/<path:filename>')
         def api_lib(filename):
-            api_dir = os.path.join(self.current_dir, 'api')
+            api_dir = os.path.join(self.current_dir, '../pystuff/api')
             return send_from_directory(api_dir, filename)
 
         @self.web_app.route('/lib/<path:filename>')
         def client_lib(filename):
-            clientdir = os.path.join(self.current_dir, 'deploy', 'interaction', 'lib')
+            clientdir = os.path.join(self.current_dir, 'cloud', 'interaction', 'lib')
             return send_from_directory(clientdir, filename)
 
 

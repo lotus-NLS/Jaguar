@@ -1,8 +1,9 @@
 import boto3
 from botocore.exceptions import ClientError
-from deploy.cloud.components.enums import AWSRegions, InstanceState
-from deploy.cloud.components import InstanceTemplate
 from typing import List
+
+from .EC2Template import InstanceTemplate
+from  .enums import AWSRegions, InstanceState
 
 # ----------------------------------------------
 

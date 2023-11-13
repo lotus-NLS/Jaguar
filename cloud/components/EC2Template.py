@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from deploy.cloud.components import ImageID, EC2Type
+from .enums import ImageID, EC2Type
 
 
 class InstanceTemplate:

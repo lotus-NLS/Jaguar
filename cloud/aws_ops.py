@@ -1,11 +1,10 @@
 # from pyutils import get_txt_file_content
-from deploy.cloud.manager import CloudManager
-from deploy.cloud.components.enums import (AWSRegions,
+from cloud.manager import CloudManager
+from components import (AWSRegions,
                                            # InstanceTemplate,
                                            # EC2Type,
                                            # ImageID,
-                                           Service,
-                                           Policy)
+                    )
 
 
 # ----------------------------------------------
@@ -25,7 +24,7 @@ cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
 from autorun_scripts.backup_repo import do_backup
 lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda3"
-cloud_manager.lambda_aws.deploy_lambda_function(the_function=do_backup, role_arn=lambda_role_arn)
+cloud_manager.lambda_aws.cloud_lambda_function(the_function=do_backup, role_arn=lambda_role_arn)
 
 # ----------------------------------------------
 # Archive
@@ -42,7 +41,7 @@ cloud_manager.lambda_aws.deploy_lambda_function(the_function=do_backup, role_arn
 #                                   security_group='sg-04536ba167a51d751')
 # cloud_manager.ec2.launch_instanaaaces(num=1, template=lotus_instance)
 # LAMBDAS
-# cloud_manager.lambda_aws.deploy_lambda_function(function_name, role_arn, handler,module_code)
+# cloud_manager.lambda_aws.cloud_lambda_function(function_name, role_arn, handler,module_code)
 # This function should simply take the python function object itself and optionally the role_arn
 # and just work
 # cloud_manager.iam.create_iam(role_name='BackupLambda2',

@@ -1,7 +1,5 @@
 import boto3
 import inspect
-import io
-import zipfile
 import os, tempfile, shutil, sys
 import subprocess
 from distutils.dir_util import copy_tree
@@ -19,9 +17,9 @@ class LambdaManager:
         self.lambda_client = boto3.client('lambda', region_name=self.region)
 
 
-    def deploy_lambda_function(self, the_function : callable, role_arn : str):
+    def cloud_lambda_function(self, the_function : callable, role_arn : str):
         """
-        Deploys a lambda for an entirely self contained function the_function
+        clouds a lambda for an entirely self contained function the_function
         Necessary imports must be stated within the function body not in the header of the module
         """
         try:
@@ -36,7 +34,7 @@ class LambdaManager:
                 Code={'ZipFile': zip_content},
             )
 
-            print(f"Lambda function deployed: {funct_name}")
+            print(f"Lambda function clouded: {funct_name}")
             return response['FunctionArn']
 
 
