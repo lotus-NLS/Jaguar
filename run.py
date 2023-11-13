@@ -37,7 +37,7 @@ class LotusServer:
 
     def launch_web_app(self):
         def do_web_app_run():
-            self.web_app.run(host='0.0.0.0', port=80)
+            self.web_app.run(host='127.0.0.1', port=5000)
         DaemonThread(target=do_web_app_run()).start()
 
 
