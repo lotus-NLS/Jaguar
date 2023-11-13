@@ -15,19 +15,20 @@ def do_backup(event, context):
     _ = event
     _ = context
 
+    os.chdir(path='/tmp')
+
     # Get credentials
     client = boto3.client('secretsmanager')
     secret_value = client.get_secret_value(SecretId='github')
     secret = json.loads(secret_value['SecretString'])
-    username = secret['name']
     token = secret['token']
+
 
     # Make container
     src_dir = 'lotus_src'
     os.makedirs(src_dir, exist_ok=True)
 
     # Clone repo
-
     def write_download_content(url : str, fpath : str, headers : dict):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -62,7 +63,6 @@ def do_backup(event, context):
     shutil.make_archive(base_name=base_name,format=the_format,root_dir=src_dir)
 
     # Upload it
-
     current_date = datetime.now()
     date_str = current_date.strftime("%d_%m_%Y")
     s3 = boto3.client('s3')

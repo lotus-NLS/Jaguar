@@ -13,14 +13,19 @@ from deploy.cloud.components.enums import (AWSRegions,
 
 cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
+# cloud_manager.iam.create_iam(role_name='BackupLambda3',
+#                              policy_arns=[Policy.LAMBDA_BASIC_EXECUTION_ROLE,
+#                                           Policy.SECRETS_MANAGER_READ_WRITE,
+#                                           Policy.S3_FULL_ACCESS],
+#                              service=Service.LAMBDA)
+# cloud_manager.iam.get_iam_roles()
 
 
 
 
 from autorun_scripts.backup_repo import do_backup
-lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda2"
+lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda3"
 cloud_manager.lambda_aws.deploy_lambda_function_new(the_function=do_backup,role_arn=lambda_role_arn)
-
 
 # ----------------------------------------------
 # Archive
