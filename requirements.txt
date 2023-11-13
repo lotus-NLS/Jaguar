@@ -26,7 +26,6 @@ requests~=2.31.0
 starlette
 -e "git+https://Somerandomguy10111:${GIT_TOKEN}@github.com/Somerandomguy10111/pystuff.git#egg=browser&subdirectory=browser"
 -e "git+https://Somerandomguy10111:${GIT_TOKEN}@github.com/Somerandomguy10111/pystuff.git#egg=pywebdev&subdirectory=pywebdev"
--e "git+https://Somerandomguy10111:${GIT_TOKEN}@github.com/Somerandomguy10111/pystuff.git#egg=pyutils&subdirectory=pyutils"
 
 
 ## MISC
