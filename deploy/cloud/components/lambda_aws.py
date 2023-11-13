@@ -134,7 +134,9 @@ class LambdaManager:
             to_directory = os.path.join(tmp_dir,src_foldername)
             copy_tree(from_directory, to_directory)
 
-            zip_path = shutil.make_archive(tmp_dir,'lambda_package', 'zip', os.path.join(tmp_dir,src_foldername))
+            zip_path = shutil.make_archive(base_name=os.path.join(tmp_dir, 'lambda_package'),
+                                           format='zip',
+                                           root_dir=os.path.join(tmp_dir,src_foldername))
             with open(zip_path, 'rb') as zip_file:
                 zip_content = zip_file.read()
 
