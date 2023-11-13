@@ -25,7 +25,7 @@ cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
 from autorun_scripts.backup_repo import do_backup
 lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda3"
-cloud_manager.lambda_aws.deploy_lambda_function_new(the_function=do_backup,role_arn=lambda_role_arn)
+cloud_manager.lambda_aws.deploy_lambda_function(the_function=do_backup, role_arn=lambda_role_arn)
 
 # ----------------------------------------------
 # Archive
