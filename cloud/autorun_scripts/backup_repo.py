@@ -1,6 +1,3 @@
-
-
-
 def do_backup(event, context):
     import traceback
     import boto3
@@ -41,8 +38,8 @@ def do_backup(event, context):
         lotus_foldername = 'Lotus'
         lotus_path = os.path.join(src_dir, lotus_foldername)
 
-        pystuff_url = 'https://github.com/Somerandomguy10111/pystuff/archive/HEAD.zip'
-        pystuff_foldername = 'pystuff'
+        pystuff_url = 'https://github.com/Somerandomguy10111/webapp/archive/HEAD.zip'
+        pystuff_foldername = 'scripts'
         pystuff_path = os.path.join(src_dir, pystuff_foldername)
 
         auth_headers = {'Authorization': f'token {token}'}

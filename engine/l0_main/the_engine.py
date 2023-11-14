@@ -1,6 +1,5 @@
 from typing import Optional
 from pyutils import DevLogger, CustomThread
-from pywebdev import PyWebApp
 from api import Flag
 
 from engine.l2_agent.m1_language import Channel, LingualEntity
@@ -13,42 +12,42 @@ from engine.l0_main.entities import Alpha, User
 
 class LotusEngine:
 
-    @DevLogger.logging_wrapper
-    def __init__(self, web_app : PyWebApp):
+    def __init__(self,ip, port):
         self.user_channel : Channel = Channel()
         self.user : LingualEntity = User()
         self.settings : LotusSettings = LotusSettings()
-        self.IO : EngineIO = EngineIO(web_app=web_app)
+        self.IO : EngineIO = EngineIO(ip,port)
 
         self.bots: Optional[list[Agent]] = None
 
 
-    @DevLogger.logging_wrapper
-    def initialize_agents(self):
-        self.bots = [Alpha()]
-
-
-    @DevLogger.logging_wrapper
-    def launch_communications(self):
-        for participant in [self.user]+self.bots:
-            self.user_channel.add_entity(entity=participant)
-
-
-    @DevLogger.logging_wrapper
     def setup_settings(self, perform_validation : bool = True):
         self.settings.setup(perform_validation=perform_validation)
 
 
-    @DevLogger.logging_wrapper
+    def initialize_agents(self):
+        self.bots = [Alpha()]
+
+
+    def launch_entity_communication(self):
+        for participant in [self.user]+self.bots:
+            self.user_channel.add_entity(entity=participant)
+
+
+    def launch_IO(self):
+        self.IO.launch()
+
+
     def run(self):
-        self.initialize_agents()
-        self.launch_communications()
         self.setup_settings(perform_validation=True)
+        self.initialize_agents()
+        self.launch_entity_communication()
+        self.launch_IO()
 
         print(f'[Debug]: Lotus started')
 
         if DialogueSettings().get_enable_introduction():
-           self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
+            self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
 
         while True:
             user_entry = EngineIO().get_user_entry()
@@ -69,4 +68,3 @@ class LotusEngine:
                 continue
 
             self.user.enqueue(msg=user_entry.get_content(), final=True)
-

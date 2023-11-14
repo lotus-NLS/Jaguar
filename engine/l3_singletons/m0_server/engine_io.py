@@ -1,13 +1,15 @@
-from pyutils import InputWaiter
-from flask import Response, request
 from typing import Optional
+from pyutils import InputWaiter, DaemonThread
+from flask import Response, request
 from queue import Queue
 
-from api import APIMessage, Entry, Ends
-from pywebdev import PyWebApp
+
+from api import APIMessage, Entry, Ends, DefaultNetwork
+from flask import Flask
+from flask_cors import CORS
 # ----------------------------------------------
 
-class EngineIO:
+class EngineIO(Flask):
     _instance = None
     _is_initialized = False
 
@@ -17,22 +19,32 @@ class EngineIO:
 
         return cls._instance
 
-    def __init__(self, web_app : Optional[PyWebApp] = None):
-        if not EngineIO._is_initialized and web_app is None:
-            raise ValueError('Cannot instantiate EngineIO without associated webapp')
-
+    def __init__(self, ip : Optional[str] = None, port : Optional[int] = None):
         if EngineIO._is_initialized:
             return
 
-        self._web_app : PyWebApp = web_app
+        super().__init__(import_name=__name__)
+        CORS(self)
+
+        self.ip : Optional[str] = ip
+        self.port : Optional[int] = port
+
         self._outgoing_entry_queue : Queue[Entry] = Queue()
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
         self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-        self._web_app.route(f'/{Ends.engine_data.identifier}')(self._engine_datastream_handler)
-        self._web_app.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
+        self.route(f'/{Ends.engine_data.identifier}')(self._engine_datastream_handler)
+        self.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
 
         EngineIO._is_initialized = True
+
+
+    def launch(self):
+        def do_run():
+            the_ip = self.ip if not self.ip is None else DefaultNetwork.ip_engine
+            the_port = self.port if not self.port is None else DefaultNetwork.port_engine
+            self.run(host=the_ip, port=the_port)
+        DaemonThread(target=do_run).start()
 
     # ----------------------------------------------
     # Handlers
@@ -44,6 +56,7 @@ class EngineIO:
                 yield f'data: {new_entry.serialize_as_str()}\n\n'
 
         return Response(event_stream(), mimetype='text/event-stream')
+
 
     def _user_data_handler(self) -> str:
         try:

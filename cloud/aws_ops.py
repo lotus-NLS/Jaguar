@@ -31,7 +31,7 @@ cloud_manager.lambda_aws.cloud_lambda_function(the_function=do_backup, role_arn=
 
 
 # EC2 instances
-# setup_script = get_txt_file_content(location='autorun_scripts/setup.sh')
+# setup_script = get_txt_file_content(location='autorun_scripts/setup_engine.sh')
 # lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
 #                                   image_id=ImageID.UBUNTU_2204,
 #                                   setup_script=setup_script,
