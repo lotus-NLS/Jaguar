@@ -99,6 +99,7 @@ class ToolCall:
         self.json_str += partial_tool_call.json_str
 
 
+
     def try_parse_json(self):
         json_str = self.json_str
 
@@ -112,6 +113,13 @@ class ToolCall:
 
     # ---------------------------------------------------
     # Actions
+
+    def __str__(self):
+        try:
+            the_str = str(self.json_str)
+        except:
+            the_str = ''
+        return the_str
 
     def get_tool_name(self) -> str:
         return self.name

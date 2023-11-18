@@ -19,18 +19,18 @@ class ToolHandler:
         return not len(self.multi_tool_call.get_as_list()) == 0
 
     def execute_multitool_calls(self):
-        for tool_action in self.multi_tool_call.get_as_list():
-            print('[Debug]: Agent requested tool usage')
+        for tool_call in self.multi_tool_call.get_as_list():
+            print(f'[Debug]: Agent requested tool usage with args {tool_call}')
 
             try:
-                tool_action.try_parse_json()
+                tool_call.try_parse_json()
 
             except:
-                print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_action.json_str}'))
+                print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_call.json_str}'))
 
             try:
-                tool_name = tool_action.get_tool_name()
-                tool_args_dict = tool_action.get_arguments()
+                tool_name = tool_call.get_tool_name()
+                tool_args_dict = tool_call.get_arguments()
 
                 if tool_name in self.tool_dict:
                     self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
