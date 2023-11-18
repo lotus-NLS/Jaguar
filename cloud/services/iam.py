@@ -5,7 +5,7 @@ from cloud.entities.enums import AWSRegions, Service, Policy
 
 # ----------------------------------------------
 
-class IAMManager:
+class IAMAWS3:
     def __init__(self, region : AWSRegions):
         self.region : str = region.value
         self.client = boto3.client('iam', region_name=self.region)

@@ -7,7 +7,7 @@ from cloud.entities.enums import AWSRegions, InstanceState
 
 # ----------------------------------------------
 
-class EC2Manger:
+class EC2AWS:
     def __init__(self, region : AWSRegions):
         self.region : str = region.value
         self.ec2_client  = boto3.client('ec2', region_name=region.value)

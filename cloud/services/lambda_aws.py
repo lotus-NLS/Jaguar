@@ -8,7 +8,7 @@ from distutils.dir_util import copy_tree
 from cloud.entities.enums import AWSRegions
 # ----------------------------------------------
 
-class LambdaManager:
+class LambdaAWS:
 
     lambda_filename = 'pyfunct'
 
@@ -30,7 +30,7 @@ class LambdaManager:
                 FunctionName=funct_name,
                 Runtime='python3.10',
                 Role=role_arn,
-                Handler=f'{LambdaManager.lambda_filename}.{funct_name}',
+                Handler=f'{LambdaAWS.lambda_filename}.{funct_name}',
                 Code={'ZipFile': zip_content},
             )
 
@@ -66,7 +66,7 @@ class LambdaManager:
             # Create src directory and src file
             src_foldername = 'src'
             make_subdir(rel_path=src_foldername)
-            write_file(rel_path=f'src/{LambdaManager.lambda_filename}.py', content=python_src)
+            write_file(rel_path=f'src/{LambdaAWS.lambda_filename}.py', content=python_src)
 
             # Generate venv
             run_subprocess(command=[sys.executable, "-m", "venv", "venv"],rel_path='')

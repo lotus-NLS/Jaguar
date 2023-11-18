@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from entities import AWSRegions
-from entities import EC2Manger, LambdaManager, DatabaseManager, IAM_Manager
+from services import EC2AWS, LambdaAWS, DatabaseAWS, IAMAWS
 
 # ----------------------------------------------
 
@@ -10,10 +10,10 @@ class CloudManager:
         self.region: str = region.value
 
         # Set managers
-        self.ec2 : EC2Manger = EC2Manger(region=region)
-        self.lambda_aws : LambdaManager = LambdaManager(region=region)
+        self.ec2 : EC2AWS = EC2AWS(region=region)
+        self.lambda_aws : LambdaAWS = LambdaAWS(region=region)
         self.iam : IAM_Manager = IAM_Manager(region=region)
-        self.database : DatabaseManager = DatabaseManager(region=region)
+        self.database : DatabaseAWS = DatabaseAWS(region=region)
 
         # self.elb_client = boto3.client('elbv2', region_name=self.region)
         # self.events_client = boto3.client('events', region_name=self.region)
