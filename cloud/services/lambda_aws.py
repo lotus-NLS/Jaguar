@@ -5,7 +5,7 @@ import subprocess
 from distutils.dir_util import copy_tree
 
 
-from .enums import AWSRegions
+from cloud.entities.enums import AWSRegions
 # ----------------------------------------------
 
 class LambdaManager:

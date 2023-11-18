@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from components import AWSRegions
-from components import EC2Manger, LambdaManager, DatabaseManager, IAM_Manager
+from entities import AWSRegions
+from entities import EC2Manger, LambdaManager, DatabaseManager, IAM_Manager
 
 # ----------------------------------------------
 

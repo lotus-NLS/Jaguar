@@ -1,5 +1,5 @@
 import boto3
-from .enums import AWSRegions
+from cloud.entities.enums import AWSRegions
 
 # ----------------------------------------------
 

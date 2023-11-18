@@ -1,11 +1,11 @@
 import boto3
 import json
 from typing import Optional
-from .enums import AWSRegions, Service, Policy
+from cloud.entities.enums import AWSRegions, Service, Policy
 
 # ----------------------------------------------
 
-class IAM_Manager:
+class IAMManager:
     def __init__(self, region : AWSRegions):
         self.region : str = region.value
         self.client = boto3.client('iam', region_name=self.region)

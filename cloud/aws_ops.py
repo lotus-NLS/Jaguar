@@ -1,10 +1,10 @@
 # from pyutils import get_txt_file_content
 from cloud.manager import CloudManager
-from components import (AWSRegions,
+from entities import (AWSRegions,
                                            # InstanceTemplate,
                                            # EC2Type,
                                            # ImageID,
-                    )
+                      )
 
 
 # ----------------------------------------------
@@ -22,7 +22,7 @@ cloud_manager = CloudManager(region=AWSRegions.EU_NORTH_1)
 
 
 
-from autorun_scripts.backup_repo import do_backup
+from autorun.backup_repo import do_backup
 lambda_role_arn = "arn:aws:iam::139384887340:role/BackupLambda3"
 cloud_manager.lambda_aws.cloud_lambda_function(the_function=do_backup, role_arn=lambda_role_arn)
 
@@ -31,7 +31,7 @@ cloud_manager.lambda_aws.cloud_lambda_function(the_function=do_backup, role_arn=
 
 
 # EC2 instances
-# setup_script = get_txt_file_content(location='autorun_scripts/setup_engine.sh')
+# setup_script = get_txt_file_content(location='autorun/setup_engine.sh')
 # lotus_instance = InstanceTemplate(ec2_type=EC2Type.T3_MICRO,
 #                                   image_id=ImageID.UBUNTU_2204,
 #                                   setup_script=setup_script,
