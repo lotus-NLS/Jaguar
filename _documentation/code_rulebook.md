@@ -89,3 +89,5 @@ from .tool import Tool
 - **Small directories**: The ideal amount of elements in any given source dir, elements being either files or folders, is 2-3
 , 4 is okay too and 5 is the upper limit 
 - **Short Source file length**: Max ~200 loc, Ideally < 120 loc
+- **Use logging**: Use logging instead of print statements
+- **Use enumerate**: Use enumerate instead of range(len(...))
