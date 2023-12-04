@@ -4,7 +4,7 @@ from pyutils import DevLogger
 from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
-from api.classes.language import Entry
+from api import Entry
 
 from .actionstream import ActionStream
 from .options import ActionOptions

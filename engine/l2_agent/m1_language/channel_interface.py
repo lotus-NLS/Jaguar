@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from threading import Lock
 
-from api.classes.language import Entry
+from api import Entry
 from abc import abstractmethod
 # ----------------------------------------------------
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pyutils import Countdown
 from .channel_interface import ChannelInterface, SpeakerStaff
-from api.classes.language import Entry, Flag
+from api import Entry, Flag
 from .lingual_entity import LingualEntity
 
 # ----------------------------------------------------

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from engine.l2_agent import OpenAIModel, LLM, ModelsOpenAI, Agent, ToolCallOption, Identity, Cores
-from api.classes.language import Entry
+from api import Entry
 
 
 # ----------------------------------------------------

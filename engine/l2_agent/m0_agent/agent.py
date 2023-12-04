@@ -4,7 +4,7 @@ from abc import abstractmethod
 from func_timeout import func_timeout, FunctionTimedOut
 from pyutils import DevLogger
 
-from api.classes.language import Entry, DialogueRole
+from api import Entry, DialogueRole
 from engine.l2_agent.m1_language import LingualEntity
 from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelsOpenAI
 from engine.l2_agent.m1_models import ActionChunk, ActionStream

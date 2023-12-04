@@ -1,7 +1,7 @@
 from pyutils import DaemonThread
 import copy
 
-from api.classes.language import Entry, DialogueRole, Flag
+from api import Entry, DialogueRole, Flag
 from engine.l3_singletons.m0_server import EngineIO
 from engine.l2_agent import LingualEntity
 from engine.l2_agent import Agent, Task

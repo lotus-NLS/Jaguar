@@ -1,6 +1,6 @@
 import openai
 from typing import Optional
-from api.classes.language import Entry
+from api import Entry
 from engine.l3_singletons import CredentialSettings
 
 from .actionstream import ActionStream
