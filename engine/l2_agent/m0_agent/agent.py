@@ -3,7 +3,6 @@ from typing import Optional
 from abc import abstractmethod
 import logging
 from func_timeout import func_timeout, FunctionTimedOut
-from pyutils import DevLogger
 
 from api import Entry, DialogueRole
 from engine.l2_agent.m1_language import LingualEntity

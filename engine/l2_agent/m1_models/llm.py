@@ -1,6 +1,5 @@
 import json
-import tiktoken
-from pyutils import DevLogger
+import tiktoken, logging
 from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
@@ -45,7 +44,7 @@ class LLM:
             return token_count
 
         except Exception as e:
-            DevLogger.print_error(text=f'Failed to estimate token count: {e}')
+            logging.error(f'Failed to estimate token count: {e}')
             return None
 
 

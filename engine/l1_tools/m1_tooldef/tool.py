@@ -2,7 +2,6 @@ import traceback
 import logging
 import json
 from typing import Any, Optional
-from pyutils import DevLogger
 from func_timeout import func_timeout, FunctionTimedOut
 
 from engine.l2_agent import Agent, ToolInterface, ToolArg
@@ -146,7 +145,7 @@ class Tool(ToolInterface):
 
 
     def exception_log(self, to_log: str):
-        self._log(DevLogger.get_exception_msg(to_log))
+        self._log(f'[Error]: {to_log}')
 
 
     def update_log(self, to_log: str):
