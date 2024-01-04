@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 create_and_activate_venv() {
   echo "- Creating venv"
   python3 -m venv venv
@@ -8,21 +7,48 @@ create_and_activate_venv() {
   source venv/bin/activate
   echo "- Installing requirements"
   pip install -r requirements.txt --no-cache
+  deactivate
 }
 
-# setup engine
-echo "-> engine setup"
-sudo apt update > /dev/null 2>&1 && sudo apt install python3-venv
-create_and_activate_venv
+setup_required=false
 
-# setup webapp
-echo "-> webapp setup"
-ORIGINAL_DIR=$(pwd)
-cd ~ || exit
-git clone https://github.com/Somerandomguy10111/webapp
-cd webapp || exit
-create_and_activate_venv
+# Check for the '--setup' flag in the script's arguments
+for arg in "$@"
+do
+    if [ "$arg" == "--setup" ]; then
+        setup_required=true
+        break
+    fi
+done
 
-cd "$ORIGINAL_DIR" || exit
+if [ "$setup_required" = true ]; then
+    # setup engine
+    echo "-> engine setup"
+    sudo apt update > /dev/null 2>&1 && sudo apt install -y python3-venv
+    create_and_activate_venv
+
+    # setup app
+    echo "-> webapp setup"
+    ENGINE_DIR=$(pwd)
+    cd ~ || exit
+    git clone https://github.com/Somerandomguy10111/webapp
+    cd app || exit
+    WEBAPP_DIR=$(pwd)
+    create_and_activate_venv
+
+    cd "$ENGINE_DIR" || exit
+fi
 
 
+ENGINE_VENV=$(pwd)/venv/bin/python
+echo "$ENGINE_VENV"
+#export PYTHONPATH="$ENGINE_DIR:$PYTHONPATH"
+source venv/bin/activate && python3 engine/run.py
+#"$ENGINE_VENV" engine/run.py &
+
+
+#WEBAPP_VENV=~/webapp/venv/bin/python
+#export PYTHONPATH="$WEBAPP_DIR:$PYTHONPATH"
+#"$WEBAPP_VENV" ~/webapp/run.py &
+
+wait
