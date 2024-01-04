@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 from typing import Callable
 
 from ._setting import Setting
@@ -58,12 +59,12 @@ class SettingGrouping:
             msg = (f'[Error]: {len(non_valid)} setting(s) in {self.__class__.__name__}'
                    f' failed to validate: {[setting.label for setting in non_valid]}\nRetry validation for those settings? (y/n)')
 
-            print(msg)
+            logging.info(msg)
             user_input = input()
             if user_input == 'y':
                 self.setup()
             else:
-                print(f'Skipping validation')
+                logging.info(f'Skipping settings validation ...')
 
 
     def get_non_validated_settings(self) -> list[Setting]:
@@ -78,9 +79,9 @@ class SettingGrouping:
         for test in self.tests:
             tested_labels_settings = [setting.label for setting in test.checked_settings]
             if test.check_setting_validity():
-                print(f'[Debug]: Functionality test {test.do_check.__name__} for settings {tested_labels_settings} completed successfully')
+                logging.info(f'Functionality test {test.do_check.__name__} for settings {tested_labels_settings} completed successfully')
             else:
-                print(f'[Error]: Functionality test {test.do_check.__name__} failed. Check settings {tested_labels_settings}')
+                logging.error(f'Functionality test {test.do_check.__name__} failed. Check settings {tested_labels_settings}')
 
 
     def pass_all(self):

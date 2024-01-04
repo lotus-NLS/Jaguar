@@ -11,8 +11,8 @@ def get_pdf_file_content(location : str) -> str:
     pdf_reader = PdfReader(pdf_file)
 
     pdf_content = ''
-    for page_num in range(len(pdf_reader.pages)):
-        pdf_content += pdf_reader.pages[page_num].extract_text()
+    for page in pdf_reader.pages:
+        pdf_content += page.extract_text()
 
     # Close the PDF file
     pdf_file.close()

@@ -1,3 +1,5 @@
+import logging
+
 from .CredentialSettings import CredentialSettings
 from .DialogueSettings import DialogueSettings
 
@@ -16,4 +18,4 @@ class LotusSettings:
             self.credential_settings.pass_all()
             self.dialogue_settings.pass_all()
 
-        print(f'[Debug]: Completed setup for all Settings')
+        logging.info(f'Completed setup for all Settings')

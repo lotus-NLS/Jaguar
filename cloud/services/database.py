@@ -1,4 +1,4 @@
-import boto3
+import boto3, logging
 from cloud.entities.enums import AWSRegions
 
 # ----------------------------------------------
@@ -24,14 +24,14 @@ class DatabaseAWS:
             self.wait_for_dynamodb_action(table_name=table_name, waiter_type='table_exists')
 
         except:
-            print(f'An error occurred while creating table {table_name}')
+            logging.error(f'An error occurred while creating table {table_name}')
 
 
     def wait_for_dynamodb_action(self, table_name: str, waiter_type: str) -> None:
         try:
-            print(f"Waiting for '{waiter_type}' action on table '{table_name}'...")
+            logging.info(f"Waiting for '{waiter_type}' action on table '{table_name}'...")
             waiter = self.dynamodb_client.get_waiter(waiter_type)
             waiter.wait(TableName=table_name)
-            print(f"Action '{waiter_type}' completed on table '{table_name}'.")
+            logging.info(f"Action '{waiter_type}' completed on table '{table_name}'.")
         except Exception as e:
-            print(f"An error occurred while waiting for '{waiter_type}' action: {e}")
+            logging.error(f"An error occurred while waiting for '{waiter_type}' action: {e}")

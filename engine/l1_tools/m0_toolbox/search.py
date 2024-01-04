@@ -1,3 +1,4 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from engine.l2_agent.m0_agent.tool_handler import ToolArg
 
@@ -30,9 +31,9 @@ class SEARCH(Tool):
                 self.update_log(f'The following URLs were found: {url_list}')
 
                 site_reports = list(executor.map(self.get_site_report, url_list))
-                print(f'[Debug]: Site reports done')
+                logging.info(f'Site reports done')
 
-            print(f'[Debug]: Requesting summarization')
+            logging.info(f'Requesting summarization')
             self.update_log(f'The following information was obtained from web search:'
                             f'{self.make_composition_report(site_report_list=site_reports)}')
 

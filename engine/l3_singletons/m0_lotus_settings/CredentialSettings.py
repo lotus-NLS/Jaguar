@@ -1,5 +1,5 @@
 from __future__ import annotations
-import openai
+import openai, logging
 import requests
 from func_timeout import func_timeout
 
@@ -66,7 +66,7 @@ class CredentialSettings(SettingGrouping):
 
         finally:
             if not is_successful:
-                print(f'[Error]: Error after test run of openai_api_key: {err_details}')
+                logging.error(f'Error after test run of openai_api_key: {err_details}')
 
             openai.api_key = temp
             return is_successful
@@ -98,5 +98,5 @@ class CredentialSettings(SettingGrouping):
 
         finally:
             if not is_successful:
-                print(f'[Error]: Error after test run of search engine: {err_details}')
+                logging.error(f'[Error]: Error after test run of search engine: {err_details}')
             return is_successful

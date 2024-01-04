@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from abc import abstractmethod
+import logging
 from func_timeout import func_timeout, FunctionTimedOut
 from pyutils import DevLogger
 
@@ -101,11 +102,11 @@ class Agent(LingualEntity):
             action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
 
         except FunctionTimedOut:
-            print(f'[Debug]: Action stream request timed out. Check OpenAI server health or internet connection')
+            logging.info(f'Action stream request timed out. Check OpenAI server health or internet connection')
             action_stream = ActionStream.make_empty()
 
         except Exception as e:
-            DevLogger.print_error(text=f'[Debug]: An error occured while trying to obtain action stream: {e} Defaulting to empty action')
+            logging.error(f'An error occured while trying to obtain action stream: {e} Defaulting to empty action')
             action_stream = ActionStream.make_empty()
 
         return action_stream
@@ -116,7 +117,7 @@ class Agent(LingualEntity):
             for data in action_stream:
                 self.handle_chunk(chunk=data)
         except Exception as e:
-            print(f'[Debug]: An error occured while trying to handle stream: {e}')
+            logging.error(f'An error occured while trying to handle stream: {e}')
 
 
     def handle_chunk(self, chunk : ActionChunk):
@@ -133,7 +134,7 @@ class Agent(LingualEntity):
             if not multitool_chunk is None:
                 self.tool_handler.multi_tool_call.update_from_multi(new_multicall=multitool_chunk)
         except:
-            print(f'[Debug]: An error occured while trying to parse chunk')
+            logging.info(f'An error occured while trying to parse chunk')
 
 
     def get_basic_entries(self) -> list[Entry]:

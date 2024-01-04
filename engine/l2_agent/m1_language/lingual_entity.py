@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import logging
 from typing import Optional
 from abc import abstractmethod
 
@@ -30,7 +31,7 @@ class LingualEntity:
         total_log = ''
         for entry in entries:
             total_log += str(entry)
-        print(total_log)
+        logging.info(total_log)
 
     def clear_log(self):
         self._personal_log = []
@@ -92,7 +93,7 @@ class LingualEntity:
         return self.process_entry_from_info(msg=f'## Internal monologue: {msg}',role=self._role)
 
     def log_tool_msg(self, msg: str, tool_name: str):
-        print(f'[Debug]: Tool {tool_name}: {msg}')
+        logging.info(f'Tool {tool_name}: {msg}')
         return self.process_entry_from_info(msg=msg, role=DialogueRole.tool_role(), name=tool_name)
 
     def log_system_msg(self, msg: str):

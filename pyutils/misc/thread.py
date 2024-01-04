@@ -1,4 +1,4 @@
-import threading
+import threading, logging
 import inspect
 from collections.abc import Iterable
 
@@ -16,10 +16,10 @@ class CustomThread(threading.Thread):
 
     @classmethod
     def print_active_customthreads(cls):
-        print(f'Currently running custom threads:')
+        logging.info(f'Currently running custom threads:')
         for thread in threading.enumerate():
             if isinstance(thread,cls):
-                print(thread.get_full_thread_info())
+                logging.info(thread.get_full_thread_info())
 
 class DaemonThread(CustomThread):
     def __init__(self, target: callable, args: Iterable = ()):

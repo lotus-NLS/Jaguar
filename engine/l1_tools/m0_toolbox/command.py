@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import platform
 
@@ -52,7 +53,7 @@ class Shell:
             shell_session = subprocess.Popen(shell_cmd,stdin=PIPE, stdout=PIPE,stderr=STDOUT, text=True)
 
         except Exception as e:
-            print(f'[Error]: An exception occured while trying to start terminal session using {shell_cmd}: {e}')
+            logging.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')
 
         return shell_session
 

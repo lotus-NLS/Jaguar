@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import logging
+
 from pyutils import get_salvaged_json
 from typing import Optional, Generator, Iterator
 import json
@@ -106,7 +109,7 @@ class ToolCall:
         try:
             tool_args_dict = json.loads(s=json_str)
         except:
-            print(f'[Debug]: Given json string {json_str} is invalid. Attempting to salvage ...')
+            logging.error(f'Given json string {json_str} is invalid. Attempting to salvage ...')
             tool_args_dict = json.loads(s=get_salvaged_json(broken_json=json_str))
 
         self._arguments = tool_args_dict

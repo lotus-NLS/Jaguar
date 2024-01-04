@@ -1,5 +1,8 @@
+
+
+
 def do_backup(event, context):
-    import traceback
+    import logging
     import boto3
     import json
     import shutil
@@ -48,9 +51,8 @@ def do_backup(event, context):
         write_download_content(url=pystuff_url,fpath=pystuff_path,headers=auth_headers)
 
     except Exception as e:
-        print(f'Failed to clone repo: {e}')
-        print(traceback.format_exc())
-        print('Backup failed')
+        logging.error(f'Failed to clone repo: {e}', exc_info=True)
+        logging.error('Backup failed')
 
 
     # Zip it
@@ -65,6 +67,6 @@ def do_backup(event, context):
     s3 = boto3.client('s3')
     s3.upload_file(fname,'thelotusbucket',f'{base_name}_{date_str}.{the_format}')
 
-    print('Backup completed sucessfully')
+    logging.info('Backup completed sucessfully')
 
 # do_backup(None, None)

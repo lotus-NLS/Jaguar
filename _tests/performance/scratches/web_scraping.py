@@ -1,4 +1,4 @@
-import trafilatura
+import trafilatura, logging
 from scrapy import Selector
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -104,26 +104,26 @@ def get_url_text(site_url: str, mode: str, wait_for_load_in_sec: float = 2) -> (
 
 # Fetch and compare
 for url in urls:
-    print(f"\nFetching from URL: {url}\n")
+    logging.info(f"\nFetching from URL: {url}\n")
 
     # Dynamic scraping
     dynamic_text, dynamic_time = get_url_text(url, 'dynamic')
-    print(f"Elapsed Time with Dynamic mode: {dynamic_time} seconds")
-    print(f"Extracted Text with Dynamic mode:\n{dynamic_text}")
+    logging.info(f"Elapsed Time with Dynamic mode: {dynamic_time} seconds")
+    logging.info(f"Extracted Text with Dynamic mode:\n{dynamic_text}")
 
     # Static scraping with BeautifulSoup
     static_bs4_text, bs4_time = get_url_text(url, 'static-bs4')
-    print(f"\nElapsed Time with Static BS4 mode: {bs4_time} seconds")
-    print(f"Extracted Text with Static BS4 mode:\n{static_bs4_text}")
+    logging.info(f"\nElapsed Time with Static BS4 mode: {bs4_time} seconds")
+    logging.info(f"Extracted Text with Static BS4 mode:\n{static_bs4_text}")
 
     # Static scraping with Trafilatura
     static_trafilatura_text, trafilatura_time = get_url_text(url, 'static-trafilatura')
-    print(f"\nElapsed Time with Static Trafilatura mode: {trafilatura_time} seconds")
-    print(f"Extracted Text with Static Trafilatura mode:\n{static_trafilatura_text}")
+    logging.info(f"\nElapsed Time with Static Trafilatura mode: {trafilatura_time} seconds")
+    logging.info(f"Extracted Text with Static Trafilatura mode:\n{static_trafilatura_text}")
 
     # Static scraping with Scrapy
     static_scrapy_text, scrapy_time = get_url_text(url, 'static-scrapy')
-    print(f"\nElapsed Time with Static Scrapy mode: {scrapy_time} seconds")
-    print(f"Extracted Text with Static Scrapy mode:\n{static_scrapy_text}")
+    logging.info(f"\nElapsed Time with Static Scrapy mode: {scrapy_time} seconds")
+    logging.info(f"Extracted Text with Static Scrapy mode:\n{static_scrapy_text}")
 
-    print('-' * 40)
+    logging.info('-' * 40)

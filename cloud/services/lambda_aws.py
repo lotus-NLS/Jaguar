@@ -1,5 +1,5 @@
 import boto3
-import inspect
+import inspect, logging
 import os, tempfile, shutil, sys
 import subprocess
 from distutils.dir_util import copy_tree
@@ -19,7 +19,7 @@ class LambdaAWS:
 
     def cloud_lambda_function(self, the_function : callable, role_arn : str):
         """
-        clouds a lambda for an entirely self contained function the_function
+        Creates a lambda for an entirely self contained function the_function
         Necessary imports must be stated within the function body not in the header of the module
         """
         try:
@@ -34,14 +34,12 @@ class LambdaAWS:
                 Code={'ZipFile': zip_content},
             )
 
-            print(f"Lambda function clouded: {funct_name}")
+            logging.info(f"Lambda function created: {funct_name}")
             return response['FunctionArn']
 
 
         except Exception as e:
-            print(f"An error occurred: {e}")
-            import traceback
-            print(traceback.format_exc())
+            logging.error(f"An error occurred: {e}",exc_info=True)
 
 
     @staticmethod

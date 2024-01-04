@@ -1,4 +1,5 @@
 import openai
+import logging
 from typing import Optional
 from api import Entry
 from engine.l3_singletons import CredentialSettings
@@ -46,11 +47,11 @@ class OpenAIModel(LLM):
 
     @staticmethod
     def _log_request():
-        print(f'[Debug]: Creating completion request')
+        logging.info(f'Creating completion request')
 
     def _log_response(self,entries: list[Entry], tool_docs : Optional[list[dict]] = None):
         tokens_estimate = self.get_tokens_estimate(entries=entries,tool_docs=tool_docs)
-        print(f"[Debug]: Received response from the model; Currently at ~ {tokens_estimate} tokens")
+        logging.info(f"Received response from the model; Currently at ~ {tokens_estimate} tokens")
 
 
 class ModelsOpenAI:

@@ -1,4 +1,4 @@
-import boto3
+import boto3, logging
 import json
 from typing import Optional
 from cloud.entities.enums import AWSRegions, Service, Policy
@@ -20,10 +20,10 @@ class IAMAWS:
             self.client.create_role(RoleName=role_name,AssumeRolePolicyDocument=json.dumps(trust_relationship))
             for policy_arn in policy_arns:
                 self.client.attach_role_policy(RoleName=role_name,PolicyArn=policy_arn.value)
-            print(f"IAM Role created: {role_name}")
+            logging.info(f"IAM Role created: {role_name}")
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
             return None
 
 
@@ -31,15 +31,15 @@ class IAMAWS:
         try:
             response = self.client.create_instance_profile(InstanceProfileName=profile_name)
             instance_profile_arn = response['InstanceProfile']['Arn']
-            print(f"Instance profile created: {profile_name}")
+            logging.info(f"Instance profile created: {profile_name}")
 
             self.client.add_role_to_instance_profile(InstanceProfileName=profile_name,RoleName=role_name)
-            print(f"Role '{role_name}' attached to instance profile '{profile_name}'")
+            logging.info(f"Role '{role_name}' attached to instance profile '{profile_name}'")
 
             return instance_profile_arn
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
             return None
 
     # ----------------------------------------------
@@ -66,14 +66,14 @@ class IAMAWS:
             response = self.client.list_roles()
             roles = response.get('Roles', [])
 
-            print(f'Found the following roles')
+            logging.info(f'Found the following roles')
             for role in roles:
-                print(f"Role Name: {role['RoleName']}, ARN: {role['Arn']}, Creation Date: {role['CreateDate']}")
+                logging.info(f"Role Name: {role['RoleName']}, ARN: {role['Arn']}, Creation Date: {role['CreateDate']}")
 
             return roles
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
             return []
 
     def get_instance_profiles(self) -> list[dict]:
@@ -81,12 +81,12 @@ class IAMAWS:
             response = self.client.list_instance_profiles()
             instance_profiles = response.get('InstanceProfiles', [])
 
-            print(f'Found the following instance profiles:')
+            logging.info(f'Found the following instance profiles:')
             for profile in instance_profiles:
-                print(f"Profile Name: {profile['InstanceProfileName']}, ARN: {profile['Arn']}, Creation Date: {profile['CreateDate']}")
+                logging.info(f"Profile Name: {profile['InstanceProfileName']}, ARN: {profile['Arn']}, Creation Date: {profile['CreateDate']}")
 
             return instance_profiles
 
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
             return []

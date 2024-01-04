@@ -1,7 +1,8 @@
 from __future__ import annotations
+
+import logging
 from abc import ABC, abstractmethod
 from typing import Optional, Callable, Dict, Any, Union
-from pyutils import DevLogger
 
 from engine.l2_agent.m1_models import MultiToolCall
 # ---------------------------------------------------------
@@ -20,13 +21,13 @@ class ToolHandler:
 
     def execute_multitool_calls(self):
         for tool_call in self.multi_tool_call.get_as_list():
-            print(f'[Debug]: Agent requested tool usage with args {tool_call}')
+            logging.info(f'Agent requested tool usage with args {tool_call}')
 
             try:
                 tool_call.try_parse_json()
 
             except:
-                print(DevLogger.get_exception_msg(text=f'An occured while trying to parse tool json str: {tool_call.json_str}'))
+                logging.error(f'An occured while trying to parse tool json str: {tool_call.json_str}')
 
             try:
                 tool_name = tool_call.get_tool_name()
@@ -34,8 +35,8 @@ class ToolHandler:
 
                 if tool_name in self.tool_dict:
                     self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
-            except:
-                print(DevLogger.get_exception_msg(text=f'An error occured while trying handle tool call'))
+            except Exception as e:
+                logging.error(f'An error occured while trying handle tool call: {e}',exc_info=True)
 
     def get_all_tools(self) -> list[ToolInterface]:
         return list(self.tool_dict.values())

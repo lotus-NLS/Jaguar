@@ -1,4 +1,5 @@
 import traceback
+import logging
 import json
 from typing import Any, Optional
 from pyutils import DevLogger
@@ -133,7 +134,7 @@ class Tool(ToolInterface):
             try:
                 self.external_log(to_log)
             except Exception:
-                print(f'[Error]: Failed to log tool message: {to_log}')
+                logging.error(f'Failed to log tool message: {to_log}')
 
 
     def start_log(self, to_log: str):

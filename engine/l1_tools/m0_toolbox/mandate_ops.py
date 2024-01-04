@@ -1,3 +1,4 @@
+import logging
 from pyutils import get_function_args
 from engine.l3_singletons import EngineIO
 from engine.l2_agent import Objective, ToolArg
@@ -35,7 +36,7 @@ class UPDATE_MANDATE(Tool):
         operation(**arg_dict)
 
         if verbose_mode:
-            print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
+            logging.info(f'Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
         if not self.acting_agent.mandate.root_objective.is_active:
             self.acting_agent.mandate.root_objective = None
@@ -84,7 +85,7 @@ class INITIALIZE_MANDATE(Tool):
         self.parse_objectives_lines(lines=objective_lines)
 
         if verbose_mode:
-            print(f'[Debug]: Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
+            logging.info(f'Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
 
     def parse_objectives_lines(self, lines : list[str]):

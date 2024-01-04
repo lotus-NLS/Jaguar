@@ -1,13 +1,19 @@
 
+
+
+
 class TestModule:
     def __init__(self):
         pass
 
-    @staticmethod
-    def test(func : callable):
+
+    def log(self, to_log : str):
+        pass
+
+    def test(self, func : callable):
         def wrapped_func(*args,**kwargs):
-            print(f'--- Starting test {func.__name__} ---')
+            self.log(f'--- Starting test {func.__name__} ---')
             func(*args,**kwargs)
-            print(f'--- Completed test {func.__name__} ---\n')
+            self.log(f'--- Completed test {func.__name__} ---\n')
 
         return wrapped_func

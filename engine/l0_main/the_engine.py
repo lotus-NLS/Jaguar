@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 from pyutils import CustomThread
 from api import Flag
@@ -44,7 +45,7 @@ class LotusEngine:
         self.launch_entity_communication()
         self.launch_IO()
 
-        print(f'[Debug]: Lotus started')
+        logging.info(f'Lotus started')
 
         if DialogueSettings().get_enable_introduction():
             self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
@@ -52,7 +53,7 @@ class LotusEngine:
         while True:
             user_entry = EngineIO().get_user_entry()
             flags = user_entry.get_flags()
-            print(f'[Debug]: The user said {user_entry.get_content()}')
+            logging.info(f'The user said {user_entry.get_content()}')
             # print(f'[Debug]: Flags are {flags.()}')
 
             if flags.get(flag=Flag.PRINT_THREADS):
@@ -64,7 +65,7 @@ class LotusEngine:
 
             if flags.get(flag=Flag.RESET):
                 [bot.clear_log() for bot in self.bots]
-                print(f'[Debug]: Bot logs cleared')
+                logging.info(f'Bot logs cleared')
                 continue
 
             self.user.enqueue(msg=user_entry.get_content(), final=True)
