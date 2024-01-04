@@ -23,16 +23,16 @@ done
 
 if [ "$setup_required" = true ]; then
     # setup engine
-    echo "-> engine setup"
+    echo "-> setting up engine ..."
     sudo apt update > /dev/null 2>&1 && sudo apt install -y python3-venv
     create_and_activate_venv
 
     # setup app
-    echo "-> webapp setup"
+    echo "-> setting up webapp ..."
     ENGINE_DIR=$(pwd)
     cd ~ || exit
     git clone https://github.com/Somerandomguy10111/webapp
-    cd app || exit
+    cd webapp || exit
     WEBAPP_DIR=$(pwd)
     create_and_activate_venv
 
@@ -42,13 +42,12 @@ fi
 
 ENGINE_VENV=$(pwd)/venv/bin/python
 echo "$ENGINE_VENV"
-#export PYTHONPATH="$ENGINE_DIR:$PYTHONPATH"
-source venv/bin/activate && python3 engine/run.py
-#"$ENGINE_VENV" engine/run.py &
+export PYTHONPATH="$ENGINE_DIR:$PYTHONPATH"
+"$ENGINE_VENV" engine/run.py &
 
 
-#WEBAPP_VENV=~/webapp/venv/bin/python
-#export PYTHONPATH="$WEBAPP_DIR:$PYTHONPATH"
-#"$WEBAPP_VENV" ~/webapp/run.py &
+WEBAPP_VENV=~/webapp/venv/bin/python
+export PYTHONPATH="$WEBAPP_DIR:$PYTHONPATH"
+"$WEBAPP_VENV" ~/webapp/run.py &
 
 wait
