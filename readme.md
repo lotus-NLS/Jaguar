@@ -8,31 +8,10 @@ For more information see the "Wiki" section on the [Project management page](htt
   <em> Nelumbo Nucifera the most widely known Lotus Flower</em>
 </p>
 
-## Setup for Ubuntu 22.04
+## Setup and usage for Ubuntu 22.04
 
-Clone repo into home directory:
+Use the launch script in the root of the repo:
 ```
-git clone https://github.com/Somerandomguy10111/Lotus
+bash launch.sh --setup # For first time launch
+bash launch.sh         # Standard launch
 ```
-
-Setup venv:
-```
-python3 -m venv venv
-source venv/bin/activate
-```
-
-Install required packages:
-```
-export GIT_TOKEN=[access_token]
-pip install -r requirements.txt
-```
-
-## Usage
-
-Run the following commands in the root of the repo:
-```
-export PYTHONPATH="$(pwd)"
-source venv/bin/activate
-python3 run.py
-```
-
