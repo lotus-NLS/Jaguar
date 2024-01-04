@@ -1,4 +1,4 @@
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 def get_txt_file_content(location : str) -> str:
     with open(location, 'r') as file:
