@@ -16,7 +16,11 @@ bash launch.sh --setup # For first time launch
 bash launch.sh         # Standard launch
 ```
 
-## Code rulebook
+## Codebase
+
+<details>
+<summary>rulebook</summary>
+
 
 ### I: Implicit contracts: Guarantee/Assume type hints
 
@@ -27,7 +31,6 @@ Arguments: All function arguments must be type hinted.
 - Passing the correct type in arguments is caller responsibility
   - Guarantee in every function call: Passed arguments are of the type they are hinted to be
   - Assume in every function definition: Arguments are of the type they are hinted to be.
-
 
 Returns: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
 
@@ -55,8 +58,6 @@ be upheld at any point after.
   - Modules (Python source file): lowercase w/ snake_case, 
   - functions,  lowercase w/ snake_case 
   - classes, everything else: lowercase w/ snake_case.
-- Plural perfererentially `object_list`, not `objects`.
-- Private attributes should be of the form `_attribute` so that they are properly hidden.
 
 
 ### III: Downward depenency arrangement
@@ -94,9 +95,6 @@ no name collisions occur at runtime
 ```
 from pyutils import check_subdir_namecollsions
 check_subdir_namecollsions()
-
-from .m0_toolbox import *
-from .tool import Tool
 ```
 
 - **Arrange imports by nearness**: First import packages, then own code arranged by how far away nearest common ancestor is
@@ -104,10 +102,22 @@ from .tool import Tool
 
 ### V: Other
 - **kwargs only**: Pass arguments only by keyword
-- **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
 - **Minimal nesting**: Max indentation level === 3
 - **Small directories**: The ideal amount of elements in any given source dir, elements being either files or folders, is 2-3
 , 4 is okay too and 5 is the upper limit 
 - **Short Source file length**: Max ~200 loc, Ideally < 120 loc
 - **Use logging**: Use logging instead of print statements
 - **Use enumerate**: Use enumerate instead of range(len(...))
+
+</details>
+
+<details>
+<summary>styleguide</summary>
+
+
+- Plural perfererentially `object_list`, not `objects`.
+- Private attributes should be of the form `_attribute` so that they are properly hidden.
+- **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
+
+
+</details>
