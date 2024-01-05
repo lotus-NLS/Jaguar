@@ -10,9 +10,38 @@ create_and_activate_venv() {
   deactivate
 }
 
-setup_required=false
+setup_service() {
+    local service_name=$1
+    local working_directory=$2
+    local exec_start=$3
 
-# Check for the '--setup' flag in the script's arguments
+    echo "-> setting up $service_name service ..."
+    echo "[Unit]
+Description=$service_name Flask Server
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=$working_directory
+ExecStart=$exec_start
+Restart=on-failure
+Environment=PYTHONPATH=$working_directory
+
+[Install]
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/"$service_name".service
+}
+
+start_service_in_new_tab() {
+    local service_name=$1
+
+    echo "-> starting $service_name service in a new tab ..."
+    gnome-terminal --tab -- bash -c "sudo systemctl start $service_name.service; exec bash"
+}
+
+#---------------------------------------------------
+
+#check for setup flag
+setup_required=false
 for arg in "$@"
 do
     if [ "$arg" == "--setup" ]; then
@@ -21,33 +50,36 @@ do
     fi
 done
 
+
+
 if [ "$setup_required" = true ]; then
-    # setup engine
+    # setup engine environment
     echo "-> setting up engine ..."
     sudo apt update > /dev/null 2>&1 && sudo apt install -y python3-venv
     create_and_activate_venv
 
-    # setup app
-    echo "-> setting up webapp ..."
     ENGINE_DIR=$(pwd)
+    ENGINE_VENV="$ENGINE_DIR/venv/bin/python"
+
+    # setup engine service
+    setup_service "engine" "$ENGINE_DIR" "$ENGINE_VENV $ENGINE_DIR/engine/run.py"
+
+    # setup webapp environment
+    echo "-> setting up webapp ..."
     cd ~ || exit
     git clone https://github.com/Somerandomguy10111/webapp
     cd webapp || exit
     WEBAPP_DIR=$(pwd)
     create_and_activate_venv
 
+    WEBAPP_VENV="$WEBAPP_DIR/venv/bin/python"
+
+    # setup webapp service
+    setup_service "webapp" "$WEBAPP_DIR" "$WEBAPP_VENV $WEBAPP_DIR/run.py"
+
     cd "$ENGINE_DIR" || exit
 fi
 
-
-ENGINE_VENV=$(pwd)/venv/bin/python
-echo "$ENGINE_VENV"
-export PYTHONPATH="$ENGINE_DIR:$PYTHONPATH"
-"$ENGINE_VENV" engine/run.py &
-
-
-WEBAPP_VENV=~/webapp/venv/bin/python
-export PYTHONPATH="$WEBAPP_DIR:$PYTHONPATH"
-"$WEBAPP_VENV" ~/webapp/run.py &
-
-wait
+# Start services in new tabs
+#start_service_in_new_tab "engine"
+#start_service_in_new_tab "webapp"
