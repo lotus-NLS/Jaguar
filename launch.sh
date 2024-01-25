@@ -71,7 +71,7 @@ if [ "$setup_required" = true ]; then
     # setup webapp environment
     echo "-> setting up webapp ..."
     cd ~ || exit
-    git clone https://github.com/Somerandomguy10111/webapp
+    git clone git@github.com/Somerandomguy10111/webapp
     cd webapp || exit
     WEBAPP_DIR=$(pwd)
     create_and_activate_venv
