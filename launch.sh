@@ -54,7 +54,9 @@ do
 done
 
 
-echo "Please enter the install directory:"
+
+if [ "$setup_required" = true ]; then
+   echo "Please enter the install directory:"
 read install_directory
 if [ -d "$install_directory" ]; then
     echo "Installation directory set to: $install_directory"
@@ -63,7 +65,7 @@ else
     exit 1
 fi
 
-if [ "$setup_required" = true ]; then
+
     # setup engine environment
     echo "-> setting up engine ..."
     cd $install_directory && git clone git@github.com:Somerandomguy10111/lotus
@@ -90,6 +92,7 @@ if [ "$setup_required" = true ]; then
     setup_service "webapp" "$WEBAPP_DIR" "$WEBAPP_VENV $WEBAPP_DIR/run.py"
 
     cd "$ENGINE_DIR" || exit
+    
 fi
 
 # Start services in new tabs
