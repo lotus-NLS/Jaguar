@@ -55,10 +55,19 @@ do
 done
 
 
+echo "Please enter the install directory:"
+read install_directory
+if [ -d "$install_directory" ]; then
+    echo "Installation directory set to: $install_directory"
+else
+    echo "Error: The provided path is not a directory or does not exist."
+    exit 1
+fi
 
 if [ "$setup_required" = true ]; then
     # setup engine environment
     echo "-> setting up engine ..."
+    cd $install_directory && git clone git@github.com:Somerandomguy10111/lotus
     sudo apt update > /dev/null 2>&1 && sudo apt install -y python3-venv
     create_and_activate_venv
 
@@ -70,8 +79,8 @@ if [ "$setup_required" = true ]; then
 
     # setup webapp environment
     echo "-> setting up webapp ..."
-    cd ~ || exit
-    git clone git@github.com/Somerandomguy10111/webapp
+    cd $install_directory || exit
+    git clone git@github.com:Somerandomguy10111/webapp
     cd webapp || exit
     WEBAPP_DIR=$(pwd)
     create_and_activate_venv
