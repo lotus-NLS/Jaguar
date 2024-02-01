@@ -21,7 +21,6 @@ Description=$service_name Flask Server
 After=network.target
 
 [Service]
-User=$USER
 WorkingDirectory=$working_directory
 ExecStart=$exec_start
 Restart=on-failure
