@@ -69,7 +69,7 @@ if [ "$setup_required" = true ]; then
     echo "-> setting up engine ..."
     cd $install_directory && git clone git@github.com:Somerandomguy10111/lotus
     sudo apt update > /dev/null 2>&1 && sudo apt install -y python3-venv
-    create_and_activate_venv
+    cd lotus && create_and_activate_venv
 
     ENGINE_DIR=$(pwd)
     ENGINE_VENV="$ENGINE_DIR/venv/bin/python"
