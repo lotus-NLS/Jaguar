@@ -24,27 +24,19 @@ bash launch.sh         # Standard launch
 
 ### I: Implicit contracts: Guarantee/Assume type hints
 
-#### For Functions
+-For Functions
+	-**Arguments**: All function arguments must be type hinted.
+		- Passing the correct type in arguments is caller responsibility:
+		- **Guarantee in call** and **assume in definition**: Passsed argument conform to type hint
 
-Arguments: All function arguments must be type hinted.
+	-**Returns**: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
+		- Returning the correct type, assuming arguments are of the correct type, is callee responsbility:
+		- Guarantee in every function definition and assume in function call: Function returns object of the hinted type or raises Exception
+		- All functions returns must be type labeled if they return anything but None; Functions without a type hint are impl>
 
-- Passing the correct type in arguments is caller responsibility
-  - Guarantee in every function call: Passed arguments are of the type they are hinted to be
-  - Assume in every function definition: Arguments are of the type they are hinted to be.
-
-Returns: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
-
-- All functions returns must be type labeled if they return anything but None; Functions without a type hint are implicitly understood as returning None
-- Return : Returning the correct type, given correct arguments is responsibility of callee
-  - Guarantee in every function definition: Returns an object of the type it hints or raises Exception
-  - Assume in every function call: Function returns an object of the type it hints or raises Exception
-  
-#### For classes
-All class attributes must be type hinted. Init must guarantee fulfilling the type hints after init finish and that type guaranteed must
-be upheld at any point after.
-
-- Guarantee at any point after `__init__` finished: Every class attribute fulfills its type hint
-- Assume at any point after `__init__`: Every attribute fulfills its type hint at any point after `__init__`.
+- For classes
+	- All class attributes must be type hinted. Init must guarantee fulfilling the type hints after init finish and that type guaranteed must be upheld at any point after
+	- **Guarantee after init complete** and **assume at any point after init complete**: Class attributes conform to init type hint
 
 
 ### II: Naming (see also: [python-naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python))
