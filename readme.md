@@ -24,15 +24,15 @@ bash launch.sh         # Standard launch
 
 ### I: Implicit contracts: Guarantee/Assume type hints
 
--For Functions
-	-**Arguments**: All function arguments must be type hinted.
-		- Passing the correct type in arguments is caller responsibility:
-		- **Guarantee in call** and **assume in definition**: Passsed argument conform to type hint
-
-	-**Returns**: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
-		- Returning the correct type, assuming arguments are of the correct type, is callee responsbility:
-		- Guarantee in every function definition and assume in function call: Function returns object of the hinted type or raises Exception
-		- All functions returns must be type labeled if they return anything but None; Functions without a type hint are impl>
+- For Functions
+  - Arguments**: All function arguments must be type hinted.
+    - Passing the correct type in arguments is caller responsibility:
+    - **Guarantee in call** and **assume in definition**: Passsed argument conform to type hint 
+    
+  - **Returns**: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive). 
+    - Returning the correct type, assuming arguments are of the correct type, is callee responsbility: 
+    - Guarantee in every function definition and assume in function call: Function returns object of the hinted type or raises Exception
+    - All functions returns must be type labeled if they return anything but None; Functions without a type hint are impl>
 
 - For classes
 	- All class attributes must be type hinted. Init must guarantee fulfilling the type hints after init finish and that type guaranteed must be upheld at any point after
