@@ -39,20 +39,21 @@ bash launch.sh         # Standard launch
 	- **Guarantee after init complete** and **assume at any point after init complete**: Class attributes conform to init type hint
 
 
-### II: Naming (see also: [python-naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python))
-- All functions are named as verbs and classes as nouns.
-- Functions that return something are of the format `get_[object]` or if the function initializes and returns the object `create_[object]` or  `make_[object]`
+### II: Naming
+- Stick to pythonic case and spacing conventions (see also: [python-naming-convention](https://github.com/naming-convention/naming-convention-guides/tree/master/python):
+  - source files: lowercase w/ snake_case, 
+  - functions:  lowercase w/ snake_case 
+  - classes: everything else: CamelCase 
+Functions are named as verbs and classes as nouns.
+- Functions that return something are of the format `get_[object]` or if the function initializes and returns the object `create_[object]`, `make_[object]` or `retrieve_[object]`
 - Getter methods/functions i.e. all functions prefixed with `get` do absolutely nothing except return and possibly print debug info
-- Case and spacing conventions:
-  - Modules (Python source file): lowercase w/ snake_case, 
-  - functions,  lowercase w/ snake_case 
-  - classes, everything else: CamelCase
+- Names are searchable and distinguishable, so word trees differ by prefix not by suffix; get_elements() and get_element() both being defined is a recipe for disaster
+- Hungarian notations is only used when the object appears as several types throughout the program
 
+### III: Vertical arrangment
 
-### III: Downward depenency arrangement
-
-- Wherever possible arrange modules so that dependency/reference relation (y depends on x) points downward i.e. if y depends on x then  x is placed below y
-- I.e.: Highest level modules/submodules first then the methods they depend on below; In doing so, minimize the vertical distance between modules
+- Wherever possible, modules are arranged so that dependency/reference relation (y depends on x) points downward i.e. if y depends on x then  x is placed below y
+- I.e.: Highest level modules/submodules first then the methods they depend on below; In doing so also, minimize the vertical distance between modules
 - Apply this both for text within a file and files within a directory
 
 ### IV: Imports
@@ -81,11 +82,12 @@ Stacked imports must be checked for name_collsions, since that can't be detected
 - **small directories**: Each dir ideally contains only 2-4 files/folders; max 5 files/folders
 , 4 is okay too and 5 is the upper limit 
 - **Short Source file length**: Max ~200 loc, Ideally < 120 loc
-- **Short function length**: Max ~30 loc, ideally <= 15 loc
+- **Short functions**: Max ~30 loc, ideally <= 15 loc; Ideally <= 2 args, max ~ 5 args
 - **Pythonic patterns**:
 	- logging package or custom logging functions instead of print
 	- enumerate instead of range(len(...))
 	- use dict and list comprehension in favour of more explicit syntax
+	- make use of @dataclasses for objects that just bundle types
 
 </details>
 
