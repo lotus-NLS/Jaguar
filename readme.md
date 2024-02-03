@@ -34,19 +34,16 @@ Arguments: All function arguments must be type hinted.
 
 Returns: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive).
 
-- All functions returns must be type labeled if they return anything but None
-  - Functions without a type hint are implicitly understood as returning None
-  - Functions that return cannot be explictly type hinted
-
-- Return : Returning the correct type given correct arguments is responsibility of responder (callee)
-  - Guarantee in every function definition: Returns an object of the type it hints.
-  - Assume in every function call: Function returns an object of the type it hints.
+- All functions returns must be type labeled if they return anything but None; Functions without a type hint are implicitly understood as returning None
+- Return : Returning the correct type, given correct arguments is responsibility of callee
+  - Guarantee in every function definition: Returns an object of the type it hints or raises Exception
+  - Assume in every function call: Function returns an object of the type it hints or raises Exception
   
 #### For classes
 All class attributes must be type hinted. Init must guarantee fulfilling the type hints after init finish and that type guaranteed must
 be upheld at any point after.
 
-- Guarantee at any point after `__init__` finished: Every class attribute fulfills its type hint 
+- Guarantee at any point after `__init__` finished: Every class attribute fulfills its type hint
 - Assume at any point after `__init__`: Every attribute fulfills its type hint at any point after `__init__`.
 
 
@@ -57,67 +54,67 @@ be upheld at any point after.
 - Case and spacing conventions:
   - Modules (Python source file): lowercase w/ snake_case, 
   - functions,  lowercase w/ snake_case 
-  - classes, everything else: lowercase w/ snake_case.
+  - classes, everything else: CamelCase
 
 
 ### III: Downward depenency arrangement
 
-- Wherever possible arrange modules so that dependency/reference relation (y depends on x) points downward
-- I.e. : y depends on x == y -> x == x is placed below y
-- I.e.: Highest level modules/submodules first then the methods they depend on below
-- Analogy: Software is a house of cards
-  - The upper level modules 'rest' on the lower level modules, not the other way around
-  - The rest of a house of cards can still stand if you take away its uppermost layer. But if you so much as nudge one
-  of the cards on the lower level the whole thing might collapse. Software works in the same way and their arrangement will reflect that.
+- Wherever possible arrange modules so that dependency/reference relation (y depends on x) points downward i.e. if y depends on x then  x is placed below y
+- I.e.: Highest level modules/submodules first then the methods they depend on below; In doing so, minimize the vertical distance between modules
 - Apply this both for text within a file and files within a directory
 
 ### IV: Imports
-- **Intra-source dir imports**: Like this
+
+- Style
 ```
-from .this_file import that_class
-```
-- **Inter-source dir imports**: Like this
-```
-from [module] import that_class
+from .this_file import that_class ## Intra source-dir imports
+from [module] import that_class   ## Inter source-dir imports using __init__
 ```
 This requires making use of init files to specify which objects from the module to expose
+
 - **Import consolidation**: Consolidate imports from a single module in a single line if possible
-- **Hierachical init files**:
-  - The init file of module without subfolders should import individual symbols from files
-  ```
-  from .run import RUN
-  from .file_io import FILE_IO
-  from .mandate_ops import INITIALIZE_MANDATE, UPDATE_MANDATE
-  from .search import SEARCH
-  ```
-  -The init files of modules with subdirectories should instead import the directories, but check that
-no name collisions occur at runtime
+- **Hierachical __init_**: Source directories are stacked by importing everything:
 ```
+from [source_dir1] import *
+from [source_dir2] import *
 from pyutils import check_subdir_namecollsions
 check_subdir_namecollsions()
 ```
-
-- **Arrange imports by nearness**: First import packages, then own code arranged by how far away nearest common ancestor is
-  - Seperate intra-dir imports by an empty line
+Stacked imports must be checked for name_collsions, since that can't be detected natively by the IDE
+- **Ordering**: First import stdlib/pypi packages, then own code arranged by how far away nearest common ancestor
 
 ### V: Other
 - **kwargs only**: Pass arguments only by keyword
-- **Minimal nesting**: Max indentation level === 3
-- **Small directories**: The ideal amount of elements in any given source dir, elements being either files or folders, is 2-3
+- **minimal nesting**: Max indentation level === 3
+- **small directories**: Each dir ideally contains only 2-4 files/folders; max 5 files/folders
 , 4 is okay too and 5 is the upper limit 
 - **Short Source file length**: Max ~200 loc, Ideally < 120 loc
-- **Use logging**: Use logging instead of print statements
-- **Use enumerate**: Use enumerate instead of range(len(...))
+- **Short function length**: Max ~30 loc, ideally <= 15 loc
+- **Pythonic patterns**:
+	- logging package or custom logging functions instead of print
+	- enumerate instead of range(len(...))
+	- use dict and list comprehension in favour of more explicit syntax
 
 </details>
 
 <details>
-<summary>styleguide</summary>
+<summary>dev guide</summary>
 
-
+### Interface/Implementation segregation
 - Plural perfererentially `object_list`, not `objects`.
 - Private attributes should be of the form `_attribute` so that they are properly hidden.
 - **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
 
 
+### Testing suite
+- 
+
+
+### Architecture
+- Hierachy
+	- Organize the program into levels of hierachy, follwing a stepdown rule: Each function is composed only of statements from the next lower level of abstraction; 
+	- Mixing levels of abstraction should be avoided
+
+
 </details>
+
