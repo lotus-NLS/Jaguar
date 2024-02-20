@@ -21,7 +21,6 @@ class Setting:
         self._is_functional : bool = False
 
 
-
     def get_is_functional(self) -> bool:
         return self._is_functional
 
