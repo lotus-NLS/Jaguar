@@ -43,7 +43,8 @@ bash launch.sh         # Standard launch
   - functions:  lowercase w/ snake_case; use verbs
   - classes: everything else: CamelCase; use nouns
 - Functions that return something are of the format `get_[object]` or if the function initializes and returns the object `create_[object]`, `make_[object]` or `retrieve_[object]`
-- Names are searchable and distinguishable, so let word trees differ by prefix not by suffix; get_elements() and get_element() both being defined is a recipe for disaster
+- Names are searchable and distinguishable, so let word trees differ by prefix not by suffix
+- Plural perfererentially as `object_list`, not `objects`; get_elements() and get_element() both being defined is a recipe for disaster
 - Hungarian notations is only used when the object appears as several types throughout the program
 
 ### III: Vertical arrangment
@@ -71,7 +72,7 @@ from [source_dir2] import *
 
 ### V: Size rules
 - **kwargs only**: Pass arguments only by keyword
-- **minimal nesting**: Max indentation level === 3
+- **minimal nesting**: Max indentation level === 3 (
 - **small directories**: Each dir ideally contains only 2-4 files/folders; max 5 files/folders
 - **short files**: Max ~200 loc, Ideally < 120 loc
 - **short functions**: Max ~30 loc, ideally <= 15 loc; Ideally <= 2 args, max ~ 5 args
@@ -80,23 +81,21 @@ from [source_dir2] import *
 </details>
 
 <details>
-<summary>dev guide</summary>
-
-### Interface/Implementation segregation
-- Plural perfererentially `object_list`, not `objects`.
-- Private attributes should be of the form `_attribute` so that they are properly hidden.
-- **Minimal exposure/Maximal encapsulation**: Keep the API between modules as minimal as possible
-
-
-### Testing suite
-- 
-
+<summary>dev guide</summary> 
 
 ### Architecture
-- Hierachy
-	- Organize the program into levels of hierachy, follwing a stepdown rule: Each function is composed only of statements from the next lower level of abstraction; 
-	- Mixing levels of abstraction should be avoided
+- Decide conciously what constitutes the **interface(API)** and the **implementation** of your modules and seperate them well i.e. seperate the "What?" from the "How?"
+        - **Loose coupling**: Under the constraint of supplying the intended functionality, the module API should be as minimal as possible
+        - **Minimal exposure**": Don't expose what you don't need for the functionality; Attributes and methods not part of the interface should be hidden i.e. of the form `_attribute`
+- Sometimes variables like Settings are needed throughout the entire project. This is only allowed in the form of immutable Singletons:
+        - The variables must be bundled into a Singletons object ([singleton pattern](https://refactoring.guru/design-patterns/singleton/python/example))
+        - The singleton is initialized once by passed arguments or some default behaviour and then never changed
+- **Hierarchy of abstractions**: Organize the program into a hierachy of levels of abstraction, follwing a **stepdown rule**: Each function is ideally composed only of statements from the next lower level of ab>
+Mixing levels of abstraction should be avoided whenever possible
 
+
+### Checkpointing
+- Tests
 
 </details>
 
