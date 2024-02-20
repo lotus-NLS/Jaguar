@@ -81,7 +81,7 @@ from [source_dir2] import *
 </details>
 
 <details>
-<summary>dev guide</summary> 
+<summary>style guide</summary> 
 
 ### Architecture
 - Decide conciously what constitutes the **interface(API)** and the **implementation** of your modules and seperate them well i.e. seperate the "What?" from the "How?"
