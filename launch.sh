@@ -76,7 +76,7 @@ fi
     ENGINE_VENV="$ENGINE_DIR/venv/bin/python"
 
     # setup engine service
-    setup_service "engine" "$ENGINE_DIR" "$ENGINE_VENV $ENGINE_DIR/engine/run.py"
+    setup_service "engine" "$ENGINE_DIR" "$ENGINE_VENV $ENGINE_DIR/run.py"
 
     # setup webapp environment
     echo "-> setting up webapp ..."

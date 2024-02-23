@@ -4,8 +4,8 @@ from typing import Optional
 from api import Entry
 from engine.l3_singletons import CredentialSettings
 
-from .actionstream import ActionStream
-from .options import ActionOptions
+from .action import Action
+from .options import generation_options
 from .llm import LLM
 
 # ---------------------------------------------------------
@@ -15,9 +15,9 @@ class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type)
 
-    def get_action_stream(self, entries: list[Entry],
-                          tool_docs: list[dict],
-                          action_options: ActionOptions) -> ActionStream:
+    def get_action(self, entries: list[Entry],
+                   tool_docs: list[dict],
+                   action_options: generation_options) -> Action:
         openai.api_key = CredentialSettings().get_openai_key()
 
         args_dict = {
@@ -27,7 +27,7 @@ class OpenAIModel(LLM):
             'stream' : True
         }
 
-        func_call_options = action_options.funct_call_options
+        func_call_options = action_options.tool_options
         if func_call_options.call_allowed and tool_docs:
             args_dict['tools'] = tool_docs
             args_dict['tool_choice'] = func_call_options.get_openai_syntax()
@@ -40,7 +40,7 @@ class OpenAIModel(LLM):
         openai_response = openai.ChatCompletion.create(**args_dict)
         self._log_response(entries=entries,tool_docs=tool_docs)
 
-        return ActionStream(openai_response)
+        return Action(openai_response)
 
     # ---------------------------------------------------
     # Logging

@@ -7,8 +7,8 @@ from func_timeout import func_timeout, FunctionTimedOut
 from api import Entry, DialogueRole
 from engine.l2_agent.m1_language import LingualEntity
 from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelsOpenAI
-from engine.l2_agent.m1_models import ActionChunk, ActionStream
-from engine.l2_agent.m1_models import ToolOptions, ActionOptions
+from engine.l2_agent.m1_models import Chunk, Action
+from engine.l2_agent.m1_models import ToolOptions, generation_options
 from engine.l2_agent.m1_protocol import Mandate, Identity, Cores
 
 from .task import TaskQueue, Task
@@ -87,29 +87,29 @@ class Agent(LingualEntity):
                                custom_tool_docs: Optional[list[dict]] = None,
                                entries: Optional[list[Entry]] = None,
                                max_tokens: Optional[int] = None,
-                               temperature: float = 0.3) -> ActionStream:
+                               temperature: float = 0.3) -> Action:
 
         kwargs = {
             'entries': self.get_basic_entries() if entries is None else entries,
             'tool_docs': self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            'action_options': ActionOptions(funct_call_options=tool_options, max_tokens=max_tokens, temperature=temperature)
+            'action_options': generation_options(funct_call_options=tool_options, max_tokens=max_tokens, temperature=temperature)
         }
 
         try:
-            action_stream = func_timeout(timeout=5, func=self.model.get_action_stream, kwargs=kwargs)
+            action_stream = func_timeout(timeout=5, func=self.model.get_action, kwargs=kwargs)
 
         except FunctionTimedOut:
             logging.info(f'Action stream request timed out. Check OpenAI server health or internet connection')
-            action_stream = ActionStream.make_empty()
+            action_stream = Action.make_empty()
 
         except Exception as e:
             logging.error(f'An error occured while trying to obtain action stream: {e} Defaulting to empty action')
-            action_stream = ActionStream.make_empty()
+            action_stream = Action.make_empty()
 
         return action_stream
 
 
-    def handle_stream(self, action_stream : ActionStream):
+    def handle_stream(self, action_stream : Action):
         try:
             for data in action_stream:
                 self.handle_chunk(chunk=data)
@@ -117,7 +117,7 @@ class Agent(LingualEntity):
             logging.error(f'An error occured while trying to handle stream: {e}')
 
 
-    def handle_chunk(self, chunk : ActionChunk):
+    def handle_chunk(self, chunk : Chunk):
         try:
             text_content = chunk.get_text_chunk()
             multitool_chunk = chunk.get_multitool_chunk()

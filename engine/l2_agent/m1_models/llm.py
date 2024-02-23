@@ -5,8 +5,8 @@ from tiktoken import Encoding
 from abc import abstractmethod
 from api import Entry
 
-from .actionstream import ActionStream
-from .options import ActionOptions
+from .action import Action
+from .options import generation_options
 # ---------------------------------------------------------
 
 
@@ -21,7 +21,7 @@ class LLM:
         self.show_debug = True
 
     @abstractmethod
-    def get_action_stream(self, entries: list[Entry], tool_docs: list[dict], action_options: ActionOptions) -> ActionStream:
+    def get_action(self, entries: list[Entry], tool_docs: list[dict], action_options: generation_options) -> Action:
         pass
 
 

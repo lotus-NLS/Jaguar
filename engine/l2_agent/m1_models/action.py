@@ -8,17 +8,16 @@ import json
 from openai.openai_object import OpenAIObject
 # ---------------------------------------------------------
 
-class ActionStream:
-
+class Action:
     @classmethod
-    def make_empty(cls) -> ActionStream:
+    def make_empty(cls) -> Action:
         return cls(openai_generator=None)
 
     def __init__(self, openai_generator : Optional[Generator]):
         self.generator_data : Optional[Generator] = openai_generator
         self.text_content : str = ''
 
-    def __iter__(self) -> Iterator[ActionChunk]:
+    def __iter__(self) -> Iterator[Chunk]:
         return self
 
 
@@ -26,17 +25,17 @@ class ActionStream:
         for chunk in self:
             _ = chunk
 
-    def __next__(self) -> ActionChunk:
+    def __next__(self) -> Chunk:
         if self.generator_data is None:
             raise StopIteration
 
-        action_chunk = ActionChunk(data=self.generator_data.__next__())
+        action_chunk = Chunk(data=self.generator_data.__next__())
         chunk_text = action_chunk.get_text_chunk()
         self.text_content += chunk_text if not chunk_text is None else ''
         return action_chunk
 
 
-class ActionChunk:
+class Chunk:
 
     def __init__(self, data : OpenAIObject):
         self.response_data : OpenAIObject = data

@@ -3,15 +3,15 @@ from typing import Optional
 # ---------------------------------------------------------
 
 
-class ActionOptions:
+class generation_options:
     def __init__(self, funct_call_options : ToolOptions, max_tokens : Optional[int] = None, temperature : float = 0.3):
-        self.funct_call_options : ToolOptions = funct_call_options
+        self.tool_options : ToolOptions = funct_call_options
         self.max_tokens : int = max_tokens
         self.temperature : float = temperature
 
 
     def get_funct_call_allowed(self):
-        return self.funct_call_options.call_allowed
+        return self.tool_options.call_allowed
 
 
 
