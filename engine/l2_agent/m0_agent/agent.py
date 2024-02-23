@@ -8,7 +8,7 @@ from api import Entry, DialogueRole
 from engine.l2_agent.m1_language import LingualEntity
 from engine.l2_agent.m1_models import OpenAIModel, LLM, ModelsOpenAI
 from engine.l2_agent.m1_models import ActionChunk, ActionStream
-from engine.l2_agent.m1_models import ToolCallOption, ActionOptions
+from engine.l2_agent.m1_models import ToolOptions, ActionOptions
 from engine.l2_agent.m1_protocol import Mandate, Identity, Cores
 
 from .task import TaskQueue, Task
@@ -48,12 +48,12 @@ class Agent(LingualEntity):
     # Main routine
 
     def do(self, task : Task):
-        toolname = task.required_funct_name
+        toolname = task.required_func
 
         self.tool_handler.reset_toolcall()
         action_stream = self.get_next_action_stream(
-            custom_tool_docs=None if toolname is None else [self.tool_handler.get_tool_doc(name=toolname)],
-            funct_call_options=ToolCallOption(call_allowed=True, required_funct_name=task.required_funct_name),
+            custom_tool_docs=self.tool_handler.get_tool_doc(name=toolname),
+            tool_options=ToolOptions(allowed=True, required_func=task.required_func),
             entries=self.get_basic_entries()+[task.get_entry()])
 
 
@@ -64,7 +64,6 @@ class Agent(LingualEntity):
 
     def handle_tool_call(self, task : Task):
         self.tool_handler.execute_multitool_calls()
-
         if task.skip_feedback:
             return
 
@@ -76,16 +75,15 @@ class Agent(LingualEntity):
             role = DialogueRole.system_role()
             log_msg = f'Summarize the tool call and evaluate whether an objective has been completed'
 
-        action_stream = self.get_next_action_stream(funct_call_options=ToolCallOption.make_no_call_option(),
-                                                    entries=self.get_basic_entries() + [Entry(role=role, msg=log_msg)])
+        entries = self.get_basic_entries() + [Entry(role=role, msg=log_msg)]
+        action_stream = self.get_next_action_stream(tool_options=ToolOptions.no_call(), entries=entries)
         self.handle_stream(action_stream=action_stream)
 
 
     # ---------------------------------------------------
     # Actions and context
 
-    def get_next_action_stream(self,
-                               funct_call_options: ToolCallOption = ToolCallOption.make_auto_option(),
+    def get_next_action_stream(self, tool_options: ToolOptions = ToolOptions.make_auto_option(),
                                custom_tool_docs: Optional[list[dict]] = None,
                                entries: Optional[list[Entry]] = None,
                                max_tokens: Optional[int] = None,
@@ -94,7 +92,7 @@ class Agent(LingualEntity):
         kwargs = {
             'entries': self.get_basic_entries() if entries is None else entries,
             'tool_docs': self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            'action_options': ActionOptions(funct_call_options=funct_call_options, max_tokens=max_tokens,temperature=temperature)
+            'action_options': ActionOptions(funct_call_options=tool_options, max_tokens=max_tokens, temperature=temperature)
         }
 
         try:

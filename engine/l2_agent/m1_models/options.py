@@ -4,8 +4,8 @@ from typing import Optional
 
 
 class ActionOptions:
-    def __init__(self, funct_call_options : ToolCallOption, max_tokens : Optional[int] = None, temperature : float = 0.3):
-        self.funct_call_options : ToolCallOption = funct_call_options
+    def __init__(self, funct_call_options : ToolOptions, max_tokens : Optional[int] = None, temperature : float = 0.3):
+        self.funct_call_options : ToolOptions = funct_call_options
         self.max_tokens : int = max_tokens
         self.temperature : float = temperature
 
@@ -15,18 +15,18 @@ class ActionOptions:
 
 
 
-class ToolCallOption:
+class ToolOptions:
     @classmethod
-    def make_no_call_option(cls):
-        return cls(call_allowed=False)
+    def no_call(cls):
+        return cls(allowed=False)
 
     @classmethod
     def make_auto_option(cls):
-        return cls(call_allowed=True)
+        return cls(allowed=True)
 
-    def __init__(self, call_allowed : bool = True, required_funct_name : Optional[str] = None):
-        self.call_allowed : bool = call_allowed
-        self.required_funct_name : Optional[str] = required_funct_name
+    def __init__(self, allowed : bool = True, required_func : Optional[str] = None):
+        self.call_allowed : bool = allowed
+        self.required_funct_name : Optional[str] = required_func
 
     def get_openai_syntax(self) -> object:
         if not self.call_allowed:
