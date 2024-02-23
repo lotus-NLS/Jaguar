@@ -3,11 +3,14 @@ import logging
 import openai
 import requests
 from .categories import Categories
+from hollarek.io import ConfigManager
+
 # --------------------------------------------
 
 class LotusSettings:
     def __init__(self, use_local : bool = False):
         self.use_local = use_local
+        self.config_manager = ConfigManager()
 
 
     def get_openai_apikey(self) -> str:
