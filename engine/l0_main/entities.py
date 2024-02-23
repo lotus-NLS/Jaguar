@@ -2,7 +2,7 @@ from pyutils import DaemonThread
 import copy
 
 from api import Entry, DialogueRole, Flag
-from engine.l3_singletons.m0_server import EngineIO
+from engine.l3_singletons.io import EngineIO
 from engine.l2_agent import LingualEntity
 from engine.l2_agent import Agent, Task
 from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool

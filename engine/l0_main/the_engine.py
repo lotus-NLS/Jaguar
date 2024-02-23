@@ -7,7 +7,7 @@ from engine.l2_agent.m1_language import Channel, LingualEntity
 from engine.l3_singletons import LotusSettings, DialogueSettings
 from engine.l2_agent import Agent
 
-from engine.l3_singletons.m0_server.engine_io import EngineIO
+from engine.l3_singletons.io.io import EngineIO
 from engine.l0_main.entities import Alpha, User
 # ---------------------------------------------------------
 
