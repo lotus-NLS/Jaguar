@@ -5,6 +5,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 from enum import Enum
 
+from hollarek.dev import get_logger
 from .tool_arg import ToolArg
 from .tool_exceptions import MissingArgs, InvalidArgValue
 from .toolcall import ToolCall
@@ -22,11 +23,12 @@ class Tool:
     timout_in_sec = 60
 
     def __init__(self, is_public : bool = True):
-        super().__init__()
-        self.name: str = self.__class__.__name__
         self.desc: str = ''
-        self.args_dict: dict[str, ToolArg] = {}
         self.is_public : bool = is_public
+
+        self.args_dict: dict[str, ToolArg] = {}
+        self.content : str = ''
+        self.logger = get_logger(name=self.get_name())
 
 
     def create_arg(self, tool_arg : ToolArg) -> ToolArg:
@@ -37,25 +39,25 @@ class Tool:
     # call
 
     def handle(self, tool_call: ToolCall):
-        self.log(f'Starting tool \"{self.name}\" with args {self.args_dict}', phase=Phase.START)
+        self.log(f'Starting tool \"{self.get_name()}\" with args {self.args_dict}', phase=Phase.START)
         try:
-            self.set_args(tool_call=tool_call)
-            self.log(f'Running tool {self.name}', phase=Phase.START)
+            self._set_args(tool_call=tool_call)
+            self.log(f'Running tool {self.get_name()}', phase=Phase.START)
             func_timeout(timeout=Tool.timout_in_sec, func=self.do)
-            self.log(f'Tool {self.name} completed execution', phase=Phase.FINISH)
+            self.log(f'Tool {self.get_name()} completed execution', phase=Phase.FINISH)
 
         except MissingArgs as e:
             self.log(f'Missing Arguments: {e}',phase=Phase.FAILED)
         except FunctionTimedOut:
-            self.log(f'Tool timed out: {self.name} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
+            self.log(f'Tool timed out: {self.get_name()} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
         except Exception as e:
-            self.log(f'{self.name} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
+            self.log(f'{self.get_name()} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
 
         finally:
             self.log(f'Tool call finished', Phase.FINISH)
 
 
-    def set_args(self, tool_call : ToolCall):
+    def _set_args(self, tool_call : ToolCall):
         for arg in self._get_args():
             arg.val = None
 
@@ -79,12 +81,17 @@ class Tool:
     # ---------------------------------------------------
     # Get
 
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.__name__
+
+
     def get_json_doc(self) -> dict[str, Any]:
         required_arg_names = [arg.name for arg in self._get_args() if not arg.is_optional]
         arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self._get_args()}
 
         function_doc = {
-            'name': f'{self.name}',
+            'name': f'{self.get_name()}',
             'description': f'{self.desc}',
             'parameters': {
                 'type': 'object',
@@ -120,6 +127,10 @@ class Tool:
         except:
             return False
 
-    @staticmethod
-    def log(msg : str, phase : Phase, include_stacktrace: bool = False):
-        print(f'[{phase.value}]:{msg}\nCall stack: {traceback.format_exc()}')
+
+    def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
+        optiona_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
+        to_log = f'[{phase.value}]:{msg}{optiona_call_stack}'
+        self.content += to_log
+        self.logger.log(msg=to_log)
+

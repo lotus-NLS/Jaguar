@@ -3,9 +3,9 @@ import subprocess
 import platform
 
 from subprocess import Popen, STDOUT, PIPE
-from pyutils import DaemonThread
 from threading import Lock
 from typing import Optional
+from pyutils import DaemonThread
 from pyutils import Countdown
 from engine.l1_agent.agent.tool_handler import ToolArg
 
