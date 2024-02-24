@@ -9,7 +9,3 @@ class MissingArgs(ToolException):
 
 class InvalidArgValue(ToolException):
     pass
-
-
-class ToolTimedOut(FunctionTimedOut):
-    pass

@@ -34,7 +34,7 @@ class ToolHandler:
                 tool_args_dict = tool_call.get_arguments()
 
                 if tool_name in self.tool_dict:
-                    self.tool_dict[tool_name].handle_call(args_dict=tool_args_dict)
+                    self.tool_dict[tool_name].handle(args_dict=tool_args_dict)
             except Exception as e:
                 logging.error(f'An error occured while trying handle tool call: {e}',exc_info=True)
 

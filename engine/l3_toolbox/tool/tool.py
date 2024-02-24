@@ -6,7 +6,8 @@ from abc import abstractmethod
 from enum import Enum
 
 from .tool_arg import ToolArg
-from .tool_exceptions import MissingArgs, InvalidArgValue, ToolTimedOut
+from .tool_exceptions import MissingArgs, InvalidArgValue
+from .toolcall import ToolCall
 # ---------------------------------------------------------
 
 class Phase(Enum):
@@ -35,11 +36,11 @@ class Tool:
     # ---------------------------------------------------
     # call
 
-    def handle_call(self, args_dict: dict):
-        self.log(f'Attempting to run {self.name} with args {self.args_dict}'
+    def handle(self, tool_call: ToolCall):
+        self.log(f'Starting tool \"{self.name}\" with args {self.args_dict}', phase=Phase.START)
 
         try:
-            self.set_args(args_dict=args_dict)
+            self.set_args(tool_call=tool_call)
             self.log(f'Running tool {self.name}', phase=Phase.START)
             func_timeout(timeout=Tool.timout_in_sec, func=self.do)
             self.log(f'Tool {self.name} completed execution', phase=Phase.FINISH)
@@ -55,10 +56,11 @@ class Tool:
             self.log(f'Tool call finished', Phase.FINISH)
 
 
-    def set_args(self, args_dict : dict):
+    def set_args(self, tool_call : ToolCall):
         for arg in self._get_args():
             arg.val = None
 
+        args_dict = tool_call.get_args_dict()
         missing_required = not all(arg.name in args_dict for arg in self._get_required_args())
         if missing_required:
             raise MissingArgs(f'Provided dictionary {args_dict} did not cover all required tool arguments')
@@ -66,7 +68,7 @@ class Tool:
         specified_args = [arg for arg in self._get_args() if arg.name in args_dict]
         for arg in specified_args:
             arg.val = args_dict[arg.name]
-            if arg.value_is_valid():
+            if not arg.value_is_valid():
                 raise InvalidArgValue(f'Value {arg.val} is not in valid options {arg.choices} for argument {arg.name}')
         return specified_args
 
