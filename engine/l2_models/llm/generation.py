@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from typing import Optional, Generator, Iterator
-from openai.openai_object import OpenAIObject
+from dataclasses import dataclass
+from abc import abstractmethod
 
-from engine.l2_models import SingleToolCall, MultiToolCall
-from engine.l3_toolbox import Tool
-
+from api import Entry
+from .toolcall import MultiToolCall
 # ---------------------------------------------------------
 
 class Generation:
@@ -25,65 +25,63 @@ class Generation:
         if self.generator is None:
             raise StopIteration
 
-        action_chunk = Chunk(data=self.generator.__next__())
+        action_chunk = self.get_next_chunk(data=self.generator.__next__())
         chunk_text = action_chunk.get_text()
         self.text_content += chunk_text if not chunk_text is None else ''
         return action_chunk
 
+    @abstractmethod
+    def get_next_chunk(self, data : object):
+        pass
+
+
 
 class Chunk:
-    def __init__(self, data : OpenAIObject):
-        self.response_data : OpenAIObject = data
-        self.best_response : Optional[dict]  = self.response_data['choices'][0].get('delta')
+    def __init__(self, data : object):
+        self.data = data
 
-
+    @abstractmethod
     def get_text(self) -> Optional[str]:
-        text_content = None
-        if not self.best_response is None:
-            text_content = self.best_response.get('content')
-        return text_content
+        pass
 
 
+    @abstractmethod
     def get_call(self) -> Optional[MultiToolCall]:
-        tool_calls : Optional[dict] = self.best_response.get('tool_calls')
-        if tool_calls is None:
-            return None
-
-        multitool_call = MultiToolCall()
-        for openai_tool_call in tool_calls:
-            index = openai_tool_call.get('index')
-            funct_call = openai_tool_call.get('function')
-
-            tool_call = SingleToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'), index=index)
-            multitool_call.update(tool_call=tool_call)
-
-        return multitool_call
+        pass
 
 
-class GenerationOptions:
-    def __init__(self, funct_call_options : ToolOptions, max_tokens : Optional[int] = None, temperature : float = 0.3):
-        self.tool_options : ToolOptions = funct_call_options
-        self.max_tokens : int = max_tokens
-        self.temperature : float = temperature
+@dataclass
+class Context:
+    entries : list[Entry]
+    tool_docs : list[dict]
 
-    def get_funct_call_allowed(self):
+
+
+@dataclass
+class Options:
+    tool_options : ToolOptions
+    max_tokens : Optional[int] = None
+    temp : float = 0.3
+
+    def get_call_allowed(self):
         return self.tool_options.call_allowed
 
 
+@dataclass
 class ToolOptions:
+    call_allowed: bool
+    required_tool: Optional[str] = None
+
     @classmethod
     def no_call(cls):
-        return cls(allowed=False)
+        return cls(call_allowed=False)
 
     @classmethod
     def auto(cls):
-        return cls(allowed=True)
+        return cls(call_allowed=True)
 
 
-    def __init__(self, allowed : bool = True, required_tool : Optional[Tool] = None):
-        self.call_allowed : bool = allowed
-        self.required_tool : Optional[str] = required_tool
-
+    def __post_init__(self):
         if not self.call_allowed and self.required_tool:
             raise ValueError('Cannot require a tool call if the call is not allowed')
 
