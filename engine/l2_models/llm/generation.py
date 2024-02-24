@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Optional, Generator, Iterator
 from openai.openai_object import OpenAIObject
 
-from engine.l3_models import SingleToolCall, MultiToolCall
-
+from engine.l2_models import SingleToolCall, MultiToolCall
+from engine.l3_toolbox import Tool
 
 # ---------------------------------------------------------
 
@@ -80,16 +80,19 @@ class ToolOptions:
         return cls(allowed=True)
 
 
-    def __init__(self, allowed : bool = True, required_func : Optional[str] = None):
+    def __init__(self, allowed : bool = True, required_tool : Optional[Tool] = None):
         self.call_allowed : bool = allowed
-        self.required_funct_name : Optional[str] = required_func
+        self.required_tool : Optional[str] = required_tool
+
+        if not self.call_allowed and self.required_tool:
+            raise ValueError('Cannot require a tool call if the call is not allowed')
 
 
     def get_openai_syntax(self) -> object:
         if not self.call_allowed:
             return 'none'
 
-        if self.required_funct_name is None:
+        if self.required_tool is None:
             return 'auto'
         else:
-            return {"type" : "function", "function" : {'name' : f'{self.required_funct_name}'}}
+            return {"type" : "function", "function" : {'name' : f'{self.required_tool}'}}

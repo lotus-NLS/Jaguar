@@ -36,25 +36,24 @@ class OpenAIModel(LLM):
 
 
         self._log_request()
-        openai_response = openai.ChatCompletion.create(**args_dict)
+        openai_generator = openai.ChatCompletion.create(**args_dict)
         self._log_response(entries=entries,tool_docs=tool_docs)
 
-        return Action(openai_response)
+        return Generation(generator=openai_generator)
 
     # ---------------------------------------------------
     # Logging
 
-    @staticmethod
-    def _log_request():
-        logging.info(f'Creating completion request')
+    def _log_request(self):
+        self.log(f'Creating completion request')
 
     def _log_response(self,entries: list[Entry], tool_docs : Optional[list[dict]] = None):
-        tokens_estimate = self.get_tokens_estimate(entries=entries,tool_docs=tool_docs)
-        logging.info(f"Received response from the model; Currently at ~ {tokens_estimate} tokens")
+        tokens_estimate = self.tokenizer.get_tokens_estimate(entries=entries,tool_docs=tool_docs)
+        self.log(f"Received response from the model; Currently at ~ {tokens_estimate} tokens")
 
 
 class ModelsOpenAI(Enum):
-    # The 0613 l3_models support function calling. Earlier l3_models do not.
+    # The 0613 l2_models support function calling. Earlier models do not.
     # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
     # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API
 

@@ -29,8 +29,13 @@ class Tokenizer(Loggable):
     def __init__(self, encoding : Encoding):
         super().__init__()
         self.encoding : encoding = encoding
-        self.encode = encoding.encode
-        self.decode = encoding.decode
+
+    def encode(self, text : str) -> list[int]:
+        return self.encoding.encode(text=text)
+
+    def decode(self, tokens : list[int]) -> str:
+        return self.encoding.decode(tokens=tokens)
+    
 
     def get_token_count(self, the_str: str) -> int:
         return len(self.encode(the_str))
