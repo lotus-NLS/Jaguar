@@ -31,9 +31,10 @@ bash launch.sh         # Standard launch
   - **Returns**: Functions must either return the type they hint at or raise an Error (Returning and raising are mutually exclusive). 
     - **Returning the correct type** , assuming arguments are of the correct type, **is callee responsbility**: 
     - **Guarantee in every function definition** and **assume in function call**: Function returns object of the hinted type or raises Exception
-    - All functions returns must be type labeled if they return anything but None; Functions without a type hint are impl>
+    - All functions returns must be type labeled if they return anything but None; Functions without a type hint are implictiyl assumed to return None
 - For classes
 	- All class attributes must be type hinted. Init must guarantee fulfilling the type hints after init finish and that type guaranteed must be upheld at any point after
+	- Inherited attributes and methods implicitly inherit their type hints and are not type hinted explicitly
 	- **Guarantee after init complete** and **assume at any point after init complete**: Class attributes conform to init type hint
 
 
