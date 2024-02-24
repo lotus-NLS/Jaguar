@@ -38,7 +38,6 @@ class Tool:
 
     def handle(self, tool_call: ToolCall):
         self.log(f'Starting tool \"{self.name}\" with args {self.args_dict}', phase=Phase.START)
-
         try:
             self.set_args(tool_call=tool_call)
             self.log(f'Running tool {self.name}', phase=Phase.START)
@@ -81,27 +80,26 @@ class Tool:
     # Get
 
     def get_json_doc(self) -> dict[str, Any]:
+        required_arg_names = [arg.name for arg in self._get_args() if not arg.is_optional]
+        arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self._get_args()}
+
         function_doc = {
             'name': f'{self.name}',
             'description': f'{self.desc}',
             'parameters': {
                 'type': 'object',
-                'properties': {}
+                'properties': {arg_docs},
+                'required' : required_arg_names
             },
         }
-
-        for arg in self._get_args():
-            function_doc['parameters']['properties'][arg.name] = arg.get_arg_json_doc()
-
-        function_doc['parameters']['required'] = [arg.name for arg in self._get_args() if not arg.is_optional]
-
-        if not self.is_valid_json(function_doc):
-            raise ValueError(f'\n[Error]: Could not serialize object {function_doc}\nAborting ...')
 
         tool_doc = {
             'type' : 'function',
             'function' : function_doc
         }
+
+        if not self.is_valid_json(tool_doc):
+            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\nAborting ...')
 
         return tool_doc
 
