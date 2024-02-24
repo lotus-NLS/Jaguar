@@ -96,7 +96,7 @@ class Agent(LingualEntity):
         }
 
         try:
-            action_stream = func_timeout(timeout=5, func=self.model.get_action, kwargs=kwargs)
+            action_stream = func_timeout(timeout=5, func=self.model.get_generation, kwargs=kwargs)
 
         except FunctionTimedOut:
             logging.info(f'Action stream request timed out. Check OpenAI server health or internet connection')

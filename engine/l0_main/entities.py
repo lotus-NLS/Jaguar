@@ -71,7 +71,7 @@ class Alpha(Agent):
         max_tokens_tool = 1000
 
         def tool_log(msg: str):
-            num_tokens = self.model.get_num_tokens(the_str=msg)
+            num_tokens = self.model.get_token_count(the_str=msg)
 
             if num_tokens > max_tokens_tool:
                 msg = self.model.get_limited_string(the_str=msg, max_tokens=max_tokens_tool)

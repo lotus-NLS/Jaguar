@@ -2,12 +2,11 @@ import openai
 import logging
 from typing import Optional
 from api import Entry
-from engine.l3_singletons import CredentialSettings
 
-from .action import Action
-from .options import generation_options
-from .llm import LLM
-
+from engine.l4_singletons import LotusSettings
+from ..llm import LLM, Generation
+from .. import GenerationOptions
+from enum import Enum
 # ---------------------------------------------------------
 
 
@@ -15,25 +14,25 @@ class OpenAIModel(LLM):
     def __init__(self, model_type : str):
         super().__init__(model_type=model_type)
 
-    def get_action(self, entries: list[Entry],
-                   tool_docs: list[dict],
-                   action_options: generation_options) -> Action:
-        openai.api_key = CredentialSettings().get_openai_key()
+    def get_generation(self, entries: list[Entry],
+                       tool_docs: list[dict],
+                       options: GenerationOptions) -> Generation:
+        openai.api_key = LotusSettings().get_openai_apikey()
 
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict() for entry in entries],
-            'temperature': action_options.temperature,
+            'temperature': options.temperature,
             'stream' : True
         }
 
-        func_call_options = action_options.tool_options
+        func_call_options = options.tool_options
         if func_call_options.call_allowed and tool_docs:
             args_dict['tools'] = tool_docs
             args_dict['tool_choice'] = func_call_options.get_openai_syntax()
 
-        if not action_options.max_tokens is None:
-            args_dict['max_tokens'] = action_options.max_tokens
+        if not options.max_tokens is None:
+            args_dict['max_tokens'] = options.max_tokens
 
 
         self._log_request()
@@ -54,7 +53,7 @@ class OpenAIModel(LLM):
         logging.info(f"Received response from the model; Currently at ~ {tokens_estimate} tokens")
 
 
-class ModelsOpenAI:
+class ModelsOpenAI(Enum):
     # The 0613 l3_models support function calling. Earlier l3_models do not.
     # (06.13.23 is the date of the API updates https://openai.com/blog/function-calling-and-other-api-updates)
     # 'gpt-4' or 'gpt-3.5-turbo' point to the newest version of either model available on the API

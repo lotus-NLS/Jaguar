@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import logging
-from json_repair import repair_json
 from typing import Optional, Generator, Iterator
-import json
 from openai.openai_object import OpenAIObject
-from typing import Union
+
+from engine.l3_models import SingleToolCall, MultiToolCall
+
+
 # ---------------------------------------------------------
 
 class Generation:
@@ -60,68 +60,36 @@ class Chunk:
         return multitool_call
 
 
-class MultiToolCall:
-    def __init__(self):
-        self.tool_calls : dict[int,SingleToolCall] = {}
+class GenerationOptions:
+    def __init__(self, funct_call_options : ToolOptions, max_tokens : Optional[int] = None, temperature : float = 0.3):
+        self.tool_options : ToolOptions = funct_call_options
+        self.max_tokens : int = max_tokens
+        self.temperature : float = temperature
+
+    def get_funct_call_allowed(self):
+        return self.tool_options.call_allowed
 
 
-    def update(self, tool_call : Union[SingleToolCall, MultiToolCall]):
-        if isinstance(tool_call, SingleToolCall):
-            index = tool_call.index
-            if self.tool_calls.get(index) is None:
-                self.tool_calls[index] = tool_call
-            else:
-                self.tool_calls[index].update(partial_tool_call=tool_call)
-        elif isinstance(tool_call, MultiToolCall):
-            for tool_call in tool_call.get_as_list():
-                self.update(tool_call=tool_call)
+class ToolOptions:
+    @classmethod
+    def no_call(cls):
+        return cls(allowed=False)
 
-    def get_as_list(self):
-        return self.tool_calls.values()
+    @classmethod
+    def auto(cls):
+        return cls(allowed=True)
 
 
-
-class SingleToolCall:
-    def __init__(self, name : Optional[str], json_str : Optional[str], index : int):
-        self.index : int  = index
-        self.name : str  = name if not name is None else ''
-        self.json_str : str = json_str if not json_str is None else ''
-        self._arguments : Optional[dict] = None
-        self.is_empty = True
+    def __init__(self, allowed : bool = True, required_func : Optional[str] = None):
+        self.call_allowed : bool = allowed
+        self.required_funct_name : Optional[str] = required_func
 
 
-    def update(self, partial_tool_call : SingleToolCall):
-        self.is_empty = False
-        self.name += partial_tool_call.name
-        self.json_str += partial_tool_call.json_str
+    def get_openai_syntax(self) -> object:
+        if not self.call_allowed:
+            return 'none'
 
-
-
-    def try_parse_json(self):
-        json_str = self.json_str
-
-        try:
-            tool_args_dict = json.loads(s=json_str)
-        except:
-            logging.error(f'Given json string {json_str} is invalid. Attempting to salvage ...')
-            tool_args_dict = json.loads(s=repair_json(json_str=json_str))
-
-        self._arguments = tool_args_dict
-
-    # ---------------------------------------------------
-    # Actions
-
-    def __str__(self):
-        try:
-            the_str = str(self.json_str)
-        except:
-            the_str = ''
-        return the_str
-
-    def get_tool_name(self) -> str:
-        return self.name
-
-    def get_arguments(self) -> dict:
-        return self._arguments
-
-
+        if self.required_funct_name is None:
+            return 'auto'
+        else:
+            return {"type" : "function", "function" : {'name' : f'{self.required_funct_name}'}}
