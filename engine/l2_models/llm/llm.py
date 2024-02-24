@@ -14,6 +14,7 @@ from .generation import Generation, Options, Context
 class ModelType(Enum):
     pass
 
+
 class LLM(Loggable):
     def __init__(self, model: ModelType):
         super().__init__()

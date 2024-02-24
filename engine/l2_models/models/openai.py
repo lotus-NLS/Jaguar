@@ -1,7 +1,6 @@
 from typing import Optional
 
 import openai
-from api import Entry
 from openai.openai_object import OpenAIObject
 
 from engine.l4_singletons import LotusSettings
@@ -22,20 +21,16 @@ class OpenAIModel(LLM):
     def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4):
         super().__init__(model=model_type)
 
+
     def get_generation(self, context : Context, options: Options) -> Generation:
-        self.log(f'Creating completion request')
+        self.log(f'Creating generation request')
+        openai_response = self.get_openai_response(context=context, options=options)
+        self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
 
-        openai.api_key = LotusSettings().get_openai_apikey()
-        args_dict = self.get_args_dict(context=context, options=options)
-        openai_generator = openai.ChatCompletion.create(**args_dict)
-
-        token_count_estimate = self.tokenizer.get_tokens(context=context)
-        self.log(f"Received response from the model; Currently at ~ {token_count_estimate} tokens")
-
-        return Generation(generator=openai_generator)
+        return Generation(generator=openai_response)
 
 
-    def get_args_dict(self, context : Context, options: Options):
+    def get_openai_response(self, context : Context, options: Options):
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict() for entry in context.entries],
@@ -51,8 +46,9 @@ class OpenAIModel(LLM):
         if not options.max_tokens is None:
             args_dict['max_tokens'] = options.max_tokens
 
-        return args_dict
-
+        openai.api_key = LotusSettings().get_openai_apikey()
+        openai_generator = openai.ChatCompletion.create(**args_dict)
+        return openai_generator
 
 
 class OpenAIGeneration(Generation):

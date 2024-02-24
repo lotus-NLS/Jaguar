@@ -47,6 +47,6 @@ class ToolHandler:
         return docs
 
     def get_public_tool_docs(self) -> Optional[list[dict]]:
-        return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_public_tool]
+        return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_public]
 
 
