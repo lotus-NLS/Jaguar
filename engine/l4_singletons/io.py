@@ -1,34 +1,25 @@
 from typing import Optional
 from flask import Response, request
 from queue import Queue
-import threading
-
 from api import Ends, DefaultNetwork, Entry, APIMessage
 from hollarek.events import InputWaiter
 from flask import Flask
 from flask_cors import CORS
+from hollarek.tmpl import Singleton
 # ----------------------------------------------
 
 
-class EngineIO(Flask):
-    _instance = None
-    _is_initialized = False
-
-    def __new__(cls, *args,**kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-
-        return cls._instance
-
+class EngineIO(Flask, Singleton):
     def __init__(self, ip : Optional[str] = None, port : Optional[int] = None):
-        if EngineIO._is_initialized:
+        if EngineIO.is_initialized:
             return
 
-        super().__init__(import_name=__name__)
-        CORS(self)
+        Flask.__init__(self, import_name=__name__)
+        Singleton.__init__(self)
 
-        self.ip : Optional[str] = ip
-        self.port : Optional[int] = port
+        CORS(self)
+        self.ip : str = ip if ip else DefaultNetwork.ip_engine
+        self.port : int = port if port else DefaultNetwork.port_engine
 
         self._outgoing_entry_queue : Queue[Entry] = Queue()
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
@@ -37,18 +28,12 @@ class EngineIO(Flask):
         self.route(f'/{Ends.engine_data.identifier}')(self._engine_datastream_handler)
         self.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
 
-        EngineIO._is_initialized = True
-
 
     def launch(self):
-        def do_run():
-            the_ip = self.ip if not self.ip is None else DefaultNetwork.ip_engine
-            the_port = self.port if not self.port is None else DefaultNetwork.port_engine
-            self.run(host=the_ip, port=the_port)
-        threading.Thread(target=do_run).start()
+        self.run(host=self.ip, port=self.port)
 
     # ----------------------------------------------
-    # Handlers
+    # callbacks
 
     def _engine_datastream_handler(self):
         def event_stream():
