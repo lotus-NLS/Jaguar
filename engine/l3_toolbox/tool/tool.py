@@ -4,8 +4,9 @@ from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 from enum import Enum
-from engine.l3_toolbox.tool.tool_arg import ToolArg
 
+from .tool_arg import ToolArg
+from .tool_exceptions import MissingArgs, InvalidArgValue, ToolTimedOut
 # ---------------------------------------------------------
 
 class Phase(Enum):
@@ -34,34 +35,41 @@ class Tool:
     # Handle
 
     def handle_call(self, args_dict: dict):
-        self.reset_args()
-        self.log(f'Attempting to launch tool {self.name} with args: {args_dict}', phase=Phase.START)
-        includes_required = all([arg.name for arg in self._get_required_args()])
-        if not includes_required:
-            self.log(f'Call failed since provided dictionary {args_dict} did not cover all required tool arguments',
-                     phase=Phase.FAILED)
-            return
 
-        specified_args = [arg for arg in self._get_args() if arg.name in args_dict]
-        for arg in specified_args:
-            arg.val = args_dict[arg.name]
-            if not arg.value_is_valid():
-                self.log(f'Call failed since value {arg.val} is not in valid options {arg.choices} for argument {arg.name}',
-                         phase=Phase.FAILED)
-                return
+        self.log(f'Launching tool {self.name} with args: {args_dict}', phase=Phase.START)
 
         try:
+            self.set_args(args_dict=args_dict)
             self.log(f'Tool {self.name} has been launched', phase=Phase.UPDATE)
             func_timeout(timeout=Tool.timout_in_sec, func=self.do)
             self.log(f'Tool {self.name} completed execution', phase=Phase.FINISH)
 
+        except MissingArgs as e:
+            self.log(f'Missing Arguments: {e}',phase=Phase.FAILED)
         except FunctionTimedOut:
-            self.log(f'The tool {self.name} timed out without completing after {Tool.timout_in_sec} seconds. Aborting ...',
-                     phase=Phase.FINISH)
+            self.log(f'Tool timed out: {self.name} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
+        except Exception as e:
+            self.log(f'{self.name} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
 
-        except Exception:
-            self.log(f'The Tool {self.name} encountered the following error during execution:\n{traceback.format_exc()}\n'
-                f'Aborting ...', phase=Phase.FINISH)
+        finally:
+            self.log(f'Tool call finished', Phase.FINISH)
+
+
+    def set_args(self, args_dict : dict):
+        for arg in self._get_args():
+            arg.val = None
+
+        missing_required = not all(arg.name in args_dict for arg in self._get_required_args())
+        if missing_required:
+            raise MissingArgs(f'Provided dictionary {args_dict} did not cover all required tool arguments')
+
+        specified_args = [arg for arg in self._get_args() if arg.name in args_dict]
+        for arg in specified_args:
+            arg.val = args_dict[arg.name]
+            if arg.value_is_valid():
+                raise InvalidArgValue(f'Value {arg.val} is not in valid options {arg.choices} for argument {arg.name}')
+        return specified_args
+
 
     @abstractmethod
     def do(self):
@@ -96,10 +104,6 @@ class Tool:
         return tool_doc
 
 
-    def reset_args(self):
-        for arg in self._get_args():
-            arg.val = None
-
     def _get_args(self) -> list[ToolArg]:
         return list(self.args_dict.values())
 
@@ -117,5 +121,5 @@ class Tool:
             return False
 
     @staticmethod
-    def log(msg : str, phase : Phase):
-        print(f'[{phase.value}]:{msg}')
+    def log(msg : str, phase : Phase, include_stacktrace: bool = False):
+        print(f'[{phase.value}]:{msg}\nCall stack: {traceback.format_exc()}')
