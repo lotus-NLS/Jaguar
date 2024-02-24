@@ -4,7 +4,6 @@ import json
 from typing import Any, Optional
 from func_timeout import func_timeout, FunctionTimedOut
 
-from engine.l1_agent import Agent, ToolInterface, ToolArg
 
 # ---------------------------------------------------------
 

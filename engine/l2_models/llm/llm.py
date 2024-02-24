@@ -8,15 +8,17 @@ from abc import abstractmethod
 from hollarek.tmpl import Loggable
 from api import Entry
 from .generation import Generation, GenerationOptions
-
+from enum import Enum
 
 # ---------------------------------------------------------
 
+class ModelType(Enum):
+    pass
 
 class LLM(Loggable):
-    def __init__(self, model_type: str):
+    def __init__(self, model: ModelType):
         super().__init__()
-        self.model_type : str = model_type
+        self.model_type : str = model.value
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
@@ -35,7 +37,7 @@ class Tokenizer(Loggable):
 
     def decode(self, tokens : list[int]) -> str:
         return self.encoding.decode(tokens=tokens)
-    
+
 
     def get_token_count(self, the_str: str) -> int:
         return len(self.encode(the_str))
@@ -57,3 +59,4 @@ class Tokenizer(Loggable):
             token_count = None
 
         return token_count
+
