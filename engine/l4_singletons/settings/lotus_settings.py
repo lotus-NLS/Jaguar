@@ -1,46 +1,47 @@
-from func_timeout import func_timeout
-import logging
 import openai
 import requests
 import os
-from hollarek.io import ConfigManager
-from .categories import Categories
+
+from func_timeout import func_timeout
+from hollarek.io import LocalConfigs, AWSConfigs
+from hollarek.tmpl import Loggable, LogLevel
 # --------------------------------------------
 
-class LotusSettings:
-    def __init__(self, use_local : bool = False):
-        self.use_local = use_local
+class LotusSettings(Loggable):
+    def __init__(self, use_local : bool = False, perform_validation : bool = True):
+        super().__init__()
         config_path = os.path.join(os.path.expanduser('~'), '.lotusconfigs')
-        self.config_manager = ConfigManager(config_fpath=config_path)
+        self.configs = LocalConfigs(config_fpath=config_path) if use_local else AWSConfigs(secret_name='lotus_api_keys')
+        if perform_validation:
+            try:
+                self.validate_openai_key()
+                self.validate_search_engine()
+                self.log(f'All Settings validated')
+            except:
+                self.log(f'Error validating settings', level=LogLevel.ERROR)
+
+        self.log(f'Completed setup for all Settings')
 
 
     def get_openai_apikey(self) -> str:
-        return self.get_value(key='openai_apikey', category=Categories.CRED)
+        return self.configs.get(key='openai_api_key')
 
     def get_google_apikey(self) -> str:
-        return self.get_value(key='google_apikey', category=Categories.CRED)
+        return self.configs.get(key='google_api_key')
 
     def get_searchengine_id(self) -> str:
-        return self.get_value(key='searchengine_id', category=Categories.CRED)
+        return self.configs.get(key='search_engine_id')
 
     def get_enable_introduction(self) -> str:
-        return self.get_value(key='enable_introduction', category=Categories.DIALOG)
+        return self.configs.get(key='enable_introduction')
 
-    def get_value(self, key : str, category : Categories) -> str:
-        return self.config_manager.get_value(key=key, category= category)
+    def get(self, key : str) -> str:
+        return self.configs.get(key=key)
 
     # ----------------------------------------------
     # validation
 
-
-    def setup(self, perform_validation = True):
-        if perform_validation:
-            self.test_openai_apikey()
-            self.test_search_engine()
-        logging.info(f'Completed setup for all Settings')
-
-
-    def test_openai_apikey(self) -> bool:
+    def validate_openai_key(self) -> bool:
         temp = openai.api_key
         is_successful = False
         err_details = ''
@@ -57,17 +58,17 @@ class LotusSettings:
             is_successful = True
 
         except Exception as err:
-            err_details = f'Invalid API key or no internet connection\n{err} '
+            err_details = f'{err}'
 
         finally:
             if not is_successful:
-                logging.error(f'Error after test run of openai_api_key: {err_details}')
+                self.log(f'Error after test run of openai_api_key: {err_details}', level=LogLevel.ERROR)
 
             openai.api_key = temp
             return is_successful
 
 
-    def test_search_engine(self) -> bool:
+    def validate_search_engine(self) -> bool:
         is_successful = False
         err_details = ''
         try:
@@ -76,10 +77,12 @@ class LotusSettings:
             params = {
                 'q': 'snails',
                 'key': self.get_google_apikey(),
-                'cx': self.get_google_apikey()
+                'cx': self.get_searchengine_id(),
+                'num' : 5
             }
             response = requests.get(url, params=params)
             response_json = response.json()
+
 
             is_successful = response.status_code == 200
             if 'error' in response_json:
@@ -93,7 +96,7 @@ class LotusSettings:
 
         finally:
             if not is_successful:
-                logging.error(f'[Error]: Error after test run of search engine: {err_details}')
+                self.log(f'Error after test run of search engine: {err_details}', LogLevel.ERROR)
             return is_successful
 
 
