@@ -3,7 +3,7 @@ from pyutils import get_function_args
 from engine.l3_singletons import EngineIO
 from engine.l1_agent import Objective, ToolArg
 
-from engine.l3_toolbox.m1_tooldef.tool import Tool
+from engine.l3_tools.m1_tooldef.tool import Tool
 
 # ---------------------------------------------------------
 

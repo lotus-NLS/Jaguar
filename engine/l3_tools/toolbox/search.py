@@ -2,9 +2,9 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from engine.l1_agent.agent.tool_handler import ToolArg
-from engine.l3_toolbox.m1_tooldef.tool import Tool
-from engine.l3_toolbox.m1_tool_utils.webutils import Webtools, ScrapeMode
-from engine.l3_toolbox.m1_tool_utils.text_agent import TextAgent
+from engine.l3_tools.m1_tooldef.tool import Tool
+from engine.l3_tools.m1_tool_utils.webutils import Webtools, ScrapeMode
+from engine.l3_tools.m1_tool_utils.text_agent import TextAgent
 
 # NOTE : If you should wait or for how long until page elements load is something to be contemplated
 # ---------------------------------------------------------
