@@ -3,9 +3,9 @@ import copy
 
 from api import Entry, DialogueRole, Flag
 from engine.l3_singletons.io import EngineIO
-from engine.l2_agent import LingualEntity
-from engine.l2_agent import Agent, Task
-from engine.l1_tools import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
+from engine.l1_agent import LingualEntity
+from engine.l1_agent import Agent, Task
+from engine.l2_toolbox import COMMAND,FILE_IO,SEARCH, UPDATE_MANDATE, INITIALIZE_MANDATE, Tool
 
 
 # ---------------------------------------------------------
