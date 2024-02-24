@@ -1,11 +1,14 @@
 from typing import Optional
 from flask import Response, request
 from queue import Queue
+import threading
 
-
+from api import Ends, DefaultNetwork, Entry, APIMessage
+from hollarek.events import InputWaiter
 from flask import Flask
 from flask_cors import CORS
 # ----------------------------------------------
+
 
 class EngineIO(Flask):
     _instance = None
@@ -42,7 +45,7 @@ class EngineIO(Flask):
             the_ip = self.ip if not self.ip is None else DefaultNetwork.ip_engine
             the_port = self.port if not self.port is None else DefaultNetwork.port_engine
             self.run(host=the_ip, port=the_port)
-        DaemonThread(target=do_run).start()
+        threading.Thread(target=do_run).start()
 
     # ----------------------------------------------
     # Handlers

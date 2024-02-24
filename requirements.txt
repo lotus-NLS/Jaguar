@@ -15,4 +15,4 @@ trafilatura==1.6.4
 yattag==1.15.2
 
 git+ssh://git@github.com/Somerandomguy10111/hollarek.git
-git+ssh://git@github.com/Somerandomguy10111/webapp.git#subdirectory=api
+git+ssh://git@github.com/Somerandomguy10111/webapp.git#subdirectory=api&egg=api
