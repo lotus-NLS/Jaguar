@@ -1,29 +1,26 @@
-import logging
-from typing import Optional
-from pyutils import CustomThread
-from api import Flag
+# import logging
+# from typing import Optional
+# from pyutils import CustomThread
+# from api import Flag
+#
+# from engine.l1_agent.m1_language import Channel, LingualEntity
+# from engine.l1_agent import Agent
+# from engine.l3_singletons.io.io import EngineIO
 
-from engine.l1_agent.m1_language import Channel, LingualEntity
-from engine.l3_singletons import LotusSettings, DialogueSettings
-from engine.l1_agent import Agent
-
-from engine.l3_singletons.io.io import EngineIO
+from hollarek.tmpl import Loggable
 from engine.l0_main.entities import Alpha, User
+from engine.l4_singletons import LotusSettings
 # ---------------------------------------------------------
 
-class LotusEngine:
+class LotusEngine(Loggable):
 
-    def __init__(self,ip, port):
-        self.user_channel : Channel = Channel()
+    def __init__(self, ip : str, port : int, local : bool = False):
+        super().__init__()
+        self.settings : LotusSettings = LotusSettings(local=local, validate=True)
+
         self.user : LingualEntity = User()
-        self.settings : LotusSettings = LotusSettings()
         self.IO : EngineIO = EngineIO(ip,port)
-
         self.bots: Optional[list[Agent]] = None
-
-
-    def setup_settings(self, perform_validation : bool = True):
-        self.settings.setup(perform_validation=perform_validation)
 
 
     def initialize_agents(self):
@@ -40,14 +37,13 @@ class LotusEngine:
 
 
     def run(self):
-        self.setup_settings(perform_validation=True)
         self.initialize_agents()
         self.launch_entity_communication()
         self.launch_IO()
 
-        logging.info(f'Lotus started')
+        self.log(f'Lotus started')
 
-        if DialogueSettings().get_enable_introduction():
+        if LotusSettings.get_enable_introduction():
             self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
 
         while True:

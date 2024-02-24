@@ -8,15 +8,15 @@ from hollarek.tmpl import Loggable, LogLevel
 # --------------------------------------------
 
 class LotusSettings(Loggable):
-    def __init__(self, use_local : bool = False, perform_validation : bool = True):
+    def __init__(self, local : bool = False, validate : bool = True):
         super().__init__()
         config_path = os.path.join(os.path.expanduser('~'), '.creds' , 'lotusconfigs')
-        if use_local:
+        if local:
             self.configs = LocalConfigs(config_fpath=config_path)
         else:
             self.configs = AWSConfigs(secret_name='lotus_api_keys')
 
-        if perform_validation:
+        if validate:
             try:
                 self.validate_openai_key()
                 self.validate_search_engine()
