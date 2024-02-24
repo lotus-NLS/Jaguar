@@ -16,6 +16,7 @@ class Phase(Enum):
     FAILED = 'FAILED'
     FINISH = 'FINISH'
 
+
 class Tool:
     timout_in_sec = 60
 
@@ -32,15 +33,14 @@ class Tool:
         return tool_arg
 
     # ---------------------------------------------------
-    # Handle
+    # call
 
     def handle_call(self, args_dict: dict):
-
-        self.log(f'Launching tool {self.name} with args: {args_dict}', phase=Phase.START)
+        self.log(f'Attempting to run {self.name} with args {self.args_dict}'
 
         try:
             self.set_args(args_dict=args_dict)
-            self.log(f'Tool {self.name} has been launched', phase=Phase.UPDATE)
+            self.log(f'Running tool {self.name}', phase=Phase.START)
             func_timeout(timeout=Tool.timout_in_sec, func=self.do)
             self.log(f'Tool {self.name} completed execution', phase=Phase.FINISH)
 
