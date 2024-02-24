@@ -58,12 +58,12 @@ class Agent(LingualEntity):
 
 
         self.handle_stream(action_stream=action_stream)
-        if self.tool_handler.tool_call_requested():
+        if self.tool_handler.get_tool_call_requested():
             self.handle_tool_call(task=task)
 
 
     def handle_tool_call(self, task : Task):
-        self.tool_handler.execute_multitool_calls()
+        self.tool_handler.handle_calls()
         if task.skip_feedback:
             return
 

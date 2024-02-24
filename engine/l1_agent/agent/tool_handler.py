@@ -1,52 +1,58 @@
 from __future__ import annotations
-
-import logging
-from abc import ABC, abstractmethod
-from typing import Optional, Callable, Dict, Any, Union
-
-from engine.l1_agent.llm import MultiToolCall
+from typing import Optional
+from engine.l3_toolbox import Tool, ToolCall
 # ---------------------------------------------------------
 
 
 class ToolHandler:
     def __init__(self):
-        self.tool_dict : dict[str,ToolInterface] = {}
-        self.multi_tool_call : Optional[MultiToolCall] = None
+        self.tool_dict : dict[str,Tool] = {}
+        self.tool_calls : list[ToolCall] = []
 
-    def reset_toolcall(self):
-        self.multi_tool_call = MultiToolCall()
 
-    def tool_call_requested(self) -> bool:
-        return not len(self.multi_tool_call.get_as_list()) == 0
-
-    def execute_multitool_calls(self):
-        for tool_call in self.multi_tool_call.get_as_list():
-            logging.info(f'Agent requested tool usage with args {tool_call}')
-
+    def handle_calls(self):
+        for tool_call in self.tool_calls:
             try:
-                tool_call.try_parse_json()
-
+                tool = self.tool_dict[tool_call.name]
+                tool.handle(tool_call=tool_call)
             except:
-                logging.error(f'An occured while trying to parse tool json str: {tool_call.json_str}')
+                self.log(f'No tool found with name {tool_call.name}')
+        self.reset_calls()
 
-            try:
-                tool_name = tool_call.get_tool_name()
-                tool_args_dict = tool_call.get_arguments()
 
-                if tool_name in self.tool_dict:
-                    self.tool_dict[tool_name].handle(args_dict=tool_args_dict)
-            except Exception as e:
-                logging.error(f'An error occured while trying handle tool call: {e}',exc_info=True)
+    def reset_calls(self):
+        self.tool_calls = []
 
-    def get_all_tools(self) -> list[ToolInterface]:
-        return list(self.tool_dict.values())
+
+    def update(self, partial_calls : list[ToolCall]):
+        pass
+
+        # if isinstance(tool_call, ToolCall):
+        #     index = tool_call.index
+        #     if self.tool_calls.get(index) is None:
+        #         self.tool_calls[index] = tool_call
+        #     else:
+        #         self.tool_calls[index].update(partial_call=tool_call)
+        #
+        #
+        # elif isinstance(tool_call, MultiToolCall):
+        #     for tool_call in tool_call.get_as_list():
+        #         self.update(tool_call=tool_call)
+
+    def get_tool_call_requested(self) -> bool:
+        return not len(self.tool_calls) == 0
+
 
     def get_tool_doc(self, name : str) -> Optional[dict]:
         tool = self.tool_dict.get(name)
         docs = tool.get_json_doc() if tool else None
         return docs
 
+
     def get_public_tool_docs(self) -> Optional[list[dict]]:
         return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_public]
 
 
+    @staticmethod
+    def log(msg : str):
+        print(msg)
