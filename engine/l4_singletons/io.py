@@ -25,9 +25,8 @@ class EngineIO(Flask, Singleton):
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
         self._incoming_bool_waiter : InputWaiter = InputWaiter()
 
-        self.route(f'/{Ends.engine_data.identifier}')(self._engine_datastream_handler)
-        self.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._user_data_handler)
-
+        self.route(f'/{Ends.engine_data.identifier}')(self._get_stream)
+        self.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._process_user)
 
     def launch(self):
         self.run(host=self.ip, port=self.port)
@@ -35,7 +34,7 @@ class EngineIO(Flask, Singleton):
     # ----------------------------------------------
     # callbacks
 
-    def _engine_datastream_handler(self):
+    def _get_stream(self):
         def event_stream():
             while True:
                 new_entry = self._outgoing_entry_queue.get()
@@ -44,16 +43,12 @@ class EngineIO(Flask, Singleton):
         return Response(event_stream(), mimetype='text/event-stream')
 
 
-    def _user_data_handler(self) -> str:
+    def _process_user(self) -> str:
         try:
             msg_content = request.get_json()['msg_content']
             lotus_msg = APIMessage.from_serialized_str(s=msg_content)
             if not lotus_msg.get_entry() is None:
                 self._incoming_entry_waiter.write(lotus_msg.get_entry())
-
-            if lotus_msg.get_bool_content() is None:
-                self._incoming_bool_waiter.write(lotus_msg.get_bool_content())
-
             status_msg = 'message ok'
 
         except Exception as e:
@@ -65,16 +60,12 @@ class EngineIO(Flask, Singleton):
     # ----------------------------------------------
     # API
 
-    def post_engine_entry(self, entry : Entry):
+    def send(self, entry : Entry):
         self._outgoing_entry_queue.put(entry)
 
 
-    def get_user_entry(self) -> Entry:
+    def get_entry(self) -> Entry:
         self._incoming_entry_waiter.clear()
         user_entry = self._incoming_entry_waiter.read()
         return user_entry
 
-
-    def get_confirmation(self):
-        self._incoming_bool_waiter.clear()
-        pass

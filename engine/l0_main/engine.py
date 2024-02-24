@@ -47,7 +47,7 @@ class LotusEngine(Loggable):
             self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
 
         while True:
-            user_entry = EngineIO().get_user_entry()
+            user_entry = EngineIO().get_entry()
             flags = user_entry.get_flags()
             logging.info(f'The user said {user_entry.get_content()}')
             # print(f'[Debug]: Flags are {flags.()}')
