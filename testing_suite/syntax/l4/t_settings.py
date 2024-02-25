@@ -29,6 +29,6 @@ class TestLotusSettings(Unittest):
 
 
 if __name__ == "__main__":
-    TestLotusSettings().run_tests()
+    TestLotusSettings().execute_all()
     # settings = LotusSettings()
     # settings.get('openai_api_key')
