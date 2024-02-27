@@ -12,7 +12,6 @@ For more information see the "Wiki" section on the [Project management page](htt
 
 Use the launch script in the root of the repo:
 ```
-bash launch.sh --setup # For first time launch
 bash launch.sh         # Standard launch
 ```
 

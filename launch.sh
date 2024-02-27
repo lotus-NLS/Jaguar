@@ -1,7 +1,4 @@
 #!/bin/bash
-
-
-
 start_service() {
     local service_name=$1
 
@@ -15,7 +12,6 @@ start_service() {
 # Start services in new tabs
 start_service "engine"
 start_service "webapp"
-
 
 echo "Press Enter to exit..."; read -r;
 
