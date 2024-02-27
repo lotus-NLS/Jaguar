@@ -11,12 +11,8 @@ start_service() {
 
 # Start services in new tabs
 start_service "engine"
-start_service "webapp"
-
 echo "Press Enter to exit..."; read -r;
 
 sudo systemctl stop "engine"
-sudo systemctl stop "webapp"
-
 echo "done"
 
