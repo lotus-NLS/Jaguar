@@ -1,10 +1,11 @@
 from typing import Optional
 from flask import Response, request
 from queue import Queue
-from api import Ends, DefaultNetwork, Entry, APIMessage
-from hollarek.events import InputWaiter
 from flask import Flask
 from flask_cors import CORS
+
+from hollarek.events import InputWaiter
+from api import Ends, DefaultNetwork, Entry, APIMessage
 from hollarek.tmpl import Singleton
 # ----------------------------------------------
 
@@ -23,9 +24,6 @@ class EngineIO(Flask, Singleton):
 
         self._outgoing_entry_queue : Queue[Entry] = Queue()
         self._incoming_entry_waiter : InputWaiter = InputWaiter()
-        self._incoming_bool_waiter : InputWaiter = InputWaiter()
-
-        self.route(f'/{Ends.engine_data.identifier}')(self._get_stream)
         self.route(f'/{Ends.user_data.identifier}', methods=[Ends.user_data.get_req_type()])(self._process_user)
 
     def launch(self):

@@ -4,7 +4,7 @@ import os
 
 from func_timeout import func_timeout
 from hollarek.io import LocalConfigs, AWSConfigs
-from hollarek.tmpl import Loggable, LogLevel
+from hollarek.dev.log import Loggable, LogLevel
 # --------------------------------------------
 
 class LotusSettings(Loggable):
