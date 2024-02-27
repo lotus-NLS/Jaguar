@@ -98,7 +98,7 @@ class User(LingualEntity):
         the_entry.flags.set(flag=Flag.IS_ENTRY_START,value=self.current_entry is None)
 
         # print(f'{the_entry.get_content()}'.__repr__())
-        EngineIO().send(entry=the_entry)
+        EngineIO().get_response_stream(entry=the_entry)
 
 
     def react(self, entry : Entry):

@@ -15,13 +15,13 @@ class TestEngineIO(Unittest):
 
     def test_send(self):
         test_entry = Entry(role=DialogueRole.user_role(), msg="Test message")
-        self.engine_io.send(test_entry)
+        self.engine_io.get_response_stream(test_entry)
         self.assertEqual(test_entry, self.engine_io._outgoing_entry_queue.get_nowait())
 
     def test_get_entry(self):
         test_entry = Entry(role=DialogueRole.user_role(), msg="Test message")
         self.engine_io._incoming_entry_waiter.write(test_entry)
-        retrieved_entry = self.engine_io.get_entry()
+        retrieved_entry = self.engine_io.get_response_stream()
         self.assertEqual(test_entry, retrieved_entry)
 
     @patch('flask.Flask.run')
