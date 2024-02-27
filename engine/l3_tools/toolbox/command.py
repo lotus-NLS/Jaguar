@@ -1,15 +1,14 @@
 import logging
 import subprocess
 import platform
+import threading
 
 from subprocess import Popen, STDOUT, PIPE
 from threading import Lock
 from typing import Optional
-from pyutils import DaemonThread
-from pyutils import Countdown
-from engine.l1_agent.agent.tool_handler import ToolArg
 
-from engine.l3_tools.m1_tooldef.tool import Tool
+from hollarek.events import Countdown
+from engine.l3_tools.tool import Tool, ToolArg
 # ---------------------------------------------------------
 
 class COMMAND(Tool):
@@ -18,17 +17,18 @@ class COMMAND(Tool):
     def __init__(self):
         super().__init__()
         self.desc = f'Run commands in the terminal'
-        self.cmd_arg: ToolArg = self.create_arg(name='program_content', dtype=str,desc='The code to execute')
+        new_arg  = ToolArg(name='program_content', dtype=str,desc='The code to execute')
+        self.cmd_arg: ToolArg = self.create_arg(new_arg)
         self.shell = Shell()
 
 
     def do(self):
         try:
             self.shell.execute_command(command=self.cmd_arg.val)
-            self.update_log(self.shell.get_buffer())
+            self.content += self.shell.get_buffer()
 
         except Exception as e:
-            self.exception_log(f'An exception occured during program execution: {e}')
+            raise RuntimeError(f'An exception occured during program execution: {e}')
 
 
 class Shell:
@@ -40,7 +40,7 @@ class Shell:
         self.log_countdown = Countdown(time_to_finish=0.25)
         self.buffer_str : str = ''
 
-        DaemonThread(target=self.listen_stdout).start()
+        threading.Thread(target=self.listen_stdout).start()
 
     # ---------------------------------------------------------
     # Setup
