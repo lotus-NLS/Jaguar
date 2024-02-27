@@ -25,21 +25,14 @@ class Tool:
     def __init__(self, is_public : bool = True):
         self.desc: str = ''
         self.is_public : bool = is_public
-
-        self.args_dict: dict[str, ToolArg] = {}
         self.content : str = ''
         self.logger = get_logger(name=self.get_name())
-
-
-    def create_arg(self, tool_arg : ToolArg) -> ToolArg:
-        self.args_dict[tool_arg.name] = tool_arg
-        return tool_arg
 
     # ---------------------------------------------------
     # call
 
     def handle(self, tool_call: ToolCall):
-        self.log(f'Starting tool \"{self.get_name()}\" with args {self.args_dict}', phase=Phase.START)
+        self.log(f'Starting tool \"{self.get_name()}\" with args {self.get_args_dict()}', phase=Phase.START)
         try:
             self._set_args(tool_call=tool_call)
             self.log(f'Running tool {self.get_name()}', phase=Phase.START)
@@ -52,7 +45,6 @@ class Tool:
             self.log(f'Tool timed out: {self.get_name()} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
         except Exception as e:
             self.log(f'{self.get_name()} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
-
         finally:
             self.log(f'Tool call finished', Phase.FINISH)
 
@@ -80,6 +72,8 @@ class Tool:
 
     # ---------------------------------------------------
     # Get
+
+
 
     @classmethod
     def get_name(cls) -> str:
@@ -111,8 +105,12 @@ class Tool:
         return tool_doc
 
 
+    def get_args_dict(self) -> dict[str, ToolArg]:
+        return {arg.name : arg for arg in self._get_args()}
+
+
     def _get_args(self) -> list[ToolArg]:
-        return list(self.args_dict.values())
+        return [val for name,val in self.__dict__ if isinstance(val, ToolArg)]
 
 
     def _get_required_args(self) -> list[ToolArg]:
@@ -133,4 +131,3 @@ class Tool:
         to_log = f'[{phase.value}]:{msg}{optiona_call_stack}'
         self.content += to_log
         self.logger.log(msg=to_log)
-
