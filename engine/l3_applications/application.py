@@ -1,6 +1,6 @@
 from api import Entry, Speaker, Role
 
-from ..tool import Tool
+from .tool import Tool
 from abc import abstractmethod
 
 # ---------------------------------------------------

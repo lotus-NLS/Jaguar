@@ -5,7 +5,7 @@ from api import Entry, DialogueRole, Flag
 from engine.l3_singletons.io import EngineIO
 from engine.l1_agent import LingualEntity
 from engine.l1_agent import Agent, Task
-from engine.l3_application import Command,FileIO,WebSearch, UpdateMandate, INITIALIZE_MANDATE, Tool
+from engine.l3_applications import Command,FileIO,WebSearch, UpdateMandate, INITIALIZE_MANDATE, Tool
 
 
 # ---------------------------------------------------------
