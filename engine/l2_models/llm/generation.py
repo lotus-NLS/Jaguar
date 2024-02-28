@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from abc import abstractmethod
 
 from api import Entry
-from engine.l3_tools.tool import ToolCall
+from engine.l3_application.tool import ToolCall
 # ---------------------------------------------------------
 
 class Generation:

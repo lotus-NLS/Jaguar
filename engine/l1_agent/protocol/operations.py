@@ -2,7 +2,7 @@ import yaml
 from abc import abstractmethod
 
 from engine.l4_singletons import Query
-from engine.l3_tools.tool import Tool, ToolArg
+from engine.l3_application.tool import Tool, ToolArg
 
 from .mandate import Mandate
 

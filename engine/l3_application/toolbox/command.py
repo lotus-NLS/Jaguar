@@ -8,7 +8,7 @@ from threading import Lock
 from typing import Optional
 
 from hollarek.events import Countdown
-from engine.l3_tools.tool import Tool, ToolArg
+from engine.l3_application.tool import Tool, ToolArg
 from io import StringIO
 # ---------------------------------------------------------
 
@@ -18,13 +18,13 @@ class Command(Tool):
     def __init__(self):
         super().__init__()
         self.desc = f'Run commands in the terminal'
-        self.cmd_arg: ToolArg = ToolArg(name='program_content', desc='The code to execute')
+        self.cmd: ToolArg = ToolArg(name='program_content', desc='The code to execute')
         self.shell = Shell()
 
 
     def do(self):
         try:
-            self.shell.execute_command(command=self.cmd_arg.val)
+            self.shell.execute_command(command=self.cmd.val)
             self.___content_depr___ += self.shell.get_buffer()
 
         except Exception as e:
