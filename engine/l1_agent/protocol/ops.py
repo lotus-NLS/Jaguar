@@ -1,9 +1,11 @@
 import logging
 # from pyutils import get_function_args
-# from engine.l3_singletons import EngineIO
+
+import yaml
 # from engine.l1_agent import Objective, ToolArg
 from abc import abstractmethod
 
+from engine.l4_singletons import EngineIO
 from engine.l3_tools.tool import Tool, ToolArg
 from .mandate import Mandate
 
@@ -12,8 +14,7 @@ from .mandate import Mandate
 
 class MandateTool(Tool):
     def __init__(self, mandate : Mandate):
-        super().__init__()
-        self.desc : str = 'Update and create mandates'
+        super().__init__(has_context=False)
         self.mandate : Mandate = mandate
 
 
@@ -22,11 +23,27 @@ class MandateTool(Tool):
         pass
 
 
-class Initialize(MandateTool):
-    def __init__(self, mandate : Mandate):
+class RequestMandate(MandateTool):
+    def __init__(self, mandate : Mandate, query : Query):
         super().__init__(mandate=mandate)
 
+        self.request_permission = request_permission
+        self.desc = 'Submits a request to the user to sign off on a plan of action'
+        content_desc = ("""Specify your plan of action in a YAML format e.g. like this: 
+                Overall objective:
+                - Sub objective 1
+                - Sub objective 2
+                - Sub objective 3:
+                  - Sub-sub objective 1
+                - Sub objective 4
+                - Sub objective 5:
+                  - Sub-sub objective 2""")
+        self.yaml : ToolArg =  ToolArg(name='objective_specifications', desc=content_desc)
 
+    def do(self):
+        info_dict = yaml.safe_load(self.yaml.val)
+        self.mandate.update(info_dict=info_dict)
+        EngineIO().
 
 
 class MarkDone(MandateTool):
@@ -112,50 +129,3 @@ class INITIALIZE_MANDATE(Tool):
             logging.info(f'Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
 
 
-    def parse_objectives_lines(self, lines : list[str]):
-        stack: list[Objective] = []
-        for line in lines:
-            indent_level, content = get_leading_dashes_count(line), line.lstrip('-')
-
-            if indent_level == 0:
-                new_objective = Objective.make_root(desc=f'{content}')
-                self.acting_agent.mandate.root_objective = new_objective
-            else:
-                stack = stack[:indent_level]
-                new_objective = stack[-1].make_subelement(desc=f'{content}')
-
-            stack.append(new_objective)
-
-
-def is_valid_hierarchy_format(lines: list[str]) -> bool:
-    format_correct = True
-
-    if lines[0].startswith('-'):
-        format_correct = False
-
-    prev_indent_level = 0
-
-    for line in lines[1:]:
-        curr_indent_level = get_leading_dashes_count(line)
-
-        if curr_indent_level > prev_indent_level + 1:
-            format_correct = False
-            break
-
-        if not curr_indent_level > 0:
-            format_correct = False
-            break
-
-        prev_indent_level = curr_indent_level
-
-    return format_correct
-
-
-def get_leading_dashes_count(line: str) -> int:
-    count = 0
-    for char in line:
-        if char == '-':
-            count += 1
-        else:
-            break
-    return count

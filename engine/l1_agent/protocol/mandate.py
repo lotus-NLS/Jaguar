@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-
+import yaml
 from uuid import uuid4
 # ---------------------------------------------------------
 
@@ -28,11 +28,10 @@ class Mandate:
         self._complete = True
 
 
-    def add_subobjective(self, desc : str):
+    def add_subobjective(self, desc : str) -> Mandate:
         new = Mandate(desc=desc, parent=self)
         self._children.append(new)
         return new
-
 
 
     @classmethod
@@ -44,10 +43,16 @@ class Mandate:
     # ----------------------------------------------------
     # get
 
-    def reset(self):
+    def _reset(self):
         self._children = []
         self._complete = False
         self.uuid = self._get_uuid()
+
+    def update(self, info_dict : dict):
+        for item in info_dict:
+            obj = self.add_subobjective(desc=item)
+            obj.update(info_dict=info_dict[item])
+
 
     def _get_uuid(self) -> str:
         while True:

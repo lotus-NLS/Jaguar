@@ -8,6 +8,7 @@ from hollarek.dev import get_logger
 from .arg import ToolArg
 from .toolcall import ToolCall, MissingArgs, InvalidArgValue
 from .. import Phase
+from typing import Optional
 from .context import ToolContext
 
 # ---------------------------------------------------------
@@ -16,9 +17,9 @@ from .context import ToolContext
 class Tool:
     timout_in_sec = 60
 
-    def __init__(self):
+    def __init__(self, has_context : bool = True):
         self.desc: str = ''
-        self.tool_context : ToolContext = ToolContext()
+        self.tool_context : Optional[ToolContext] = ToolContext() if has_context else False
         self.___content_depr___ : str = ''
         self.logger = get_logger(name=self.get_name())
 
@@ -75,6 +76,9 @@ class Tool:
     def get_json_doc(self) -> dict[str, Any]:
         required_arg_names = [arg.name for arg in self._get_args() if not arg.is_optional]
         arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self._get_args()}
+
+        if not self.desc:
+            raise ValueError(f'\n[Error]: Tool {self.get_name()} has no description\nAborting ...')
 
         function_doc = {
             'name': f'{self.get_name()}',
