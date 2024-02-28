@@ -1,8 +1,7 @@
-import logging
 import yaml
 from abc import abstractmethod
 
-from engine.l4_singletons import EngineIO, Query
+from engine.l4_singletons import Query
 from engine.l3_tools.tool import Tool, ToolArg
 
 from .mandate import Mandate
@@ -15,7 +14,6 @@ class MandateTool(Tool):
         super().__init__(has_context=False)
         self.mandate : Mandate = mandate
 
-
     @abstractmethod
     def do(self):
         pass
@@ -25,6 +23,16 @@ class MandateTool(Tool):
         target = self.mandate.get(uuid=uuid)
         if not target:
             raise KeyError(f'No mandate with the given ID: {uuid}')
+
+
+class MandateUpdateTool(MandateTool):
+    def __init__(self, mandate: Mandate):
+        super().__init__(mandate=mandate)
+        self.uuid_arg: ToolArg = ToolArg(name='objective id')
+
+    @abstractmethod
+    def do(self):
+        pass
 
 
 class RequestMandate(MandateTool):
@@ -44,6 +52,7 @@ class RequestMandate(MandateTool):
                   - Sub-sub objective 2""")
         self.yaml : ToolArg =  ToolArg(name='objective_specifications', desc=content_desc)
 
+
     def do(self):
         request_msg = (f'Here is my plan of action for your request:'
                        f'\n{self.yaml.val}\n'
@@ -56,36 +65,31 @@ class RequestMandate(MandateTool):
             raise PermissionError(f'User denied permission to approve suggested plan of action: {self.yaml.val}')
 
 
-class MarkObjectiveDone(MandateTool):
+class MarkObjectiveDone(MandateUpdateTool):
     def __init__(self, mandate : Mandate):
         super().__init__(mandate=mandate)
         self.desc= 'Marks an objective as done'
-        self.uuid_arg : ToolArg = ToolArg(name='objective id')
-
 
     def do(self):
         target = self.get_mandate(uuid=self.uuid_arg.val)
         target.a_complete()
 
 
-class DiscardObjective(MandateTool):
+class DiscardObjective(MandateUpdateTool):
     def __init__(self, mandate : Mandate):
         super().__init__(mandate=mandate)
         self.desc = 'Discard an objective'
-        self.uuid_arg : ToolArg = ToolArg(name='objective id')
 
     def do(self):
         target = self.get_mandate(uuid=self.uuid_arg.val)
         target.a_discard(uuid=self.uuid_arg.val)
 
 
-class AddSubobjective(MandateTool):
+class AddSubobjective(MandateUpdateTool):
     def __init__(self, mandate : Mandate):
         super().__init__(mandate=mandate)
         self.desc = 'Add a subobjective to an existing objective'
-        self.uuid_arg : ToolArg = ToolArg(name='objective id')
         self.desc_arg : ToolArg = ToolArg(name='desc',desc=f'Description of new subobjective')
-
 
     def do(self):
         target = self.get_mandate(uuid=self.uuid_arg.val)
