@@ -5,7 +5,7 @@ from api import Entry, DialogueRole, Flag
 from engine.l3_singletons.io import EngineIO
 from engine.l1_agent import LingualEntity
 from engine.l1_agent import Agent, Task
-from engine.l3_tools import Command,FileIO,SEARCH, UpdateMandate, INITIALIZE_MANDATE, Tool
+from engine.l3_tools import Command,FileIO,WebSearch, UpdateMandate, INITIALIZE_MANDATE, Tool
 
 
 # ---------------------------------------------------------
@@ -53,7 +53,7 @@ class Alpha(Agent):
     # Tool setup
 
     def setup_tools(self):
-        public_tools = [Command.make(), FileIO.make(), SEARCH.make()]
+        public_tools = [Command.make(), FileIO.make(), WebSearch.make()]
         private_tools = [UpdateMandate.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
         all_tools : list[Tool] = public_tools + private_tools
         self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}

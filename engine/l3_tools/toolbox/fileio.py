@@ -17,6 +17,7 @@ class Mode(Enum):
     def modes_as_str_list(cls) -> list[str]:
         return [cls.WRITE.value, cls.READ.value]
 
+
 class FileIO(Tool):
     def __init__(self):
         super().__init__()
