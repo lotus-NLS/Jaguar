@@ -8,7 +8,7 @@ from hollarek.dev import get_logger
 from .arg import ToolArg
 from .toolcall import ToolCall, MissingArgs, InvalidArgValue
 from .. import Phase
-
+from .context import ToolContext
 
 # ---------------------------------------------------------
 
@@ -18,7 +18,8 @@ class Tool:
 
     def __init__(self):
         self.desc: str = ''
-        self.content : str = ''
+        self.tool_context : ToolContext = ToolContext()
+        self.___content_depr___ : str = ''
         self.logger = get_logger(name=self.get_name())
 
     # ---------------------------------------------------
@@ -120,5 +121,5 @@ class Tool:
     def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
         optiona_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
         to_log = f'[{phase.value}]:{msg}{optiona_call_stack}'
-        self.content += to_log
+        self.___content_depr___ += to_log
         self.logger.log(msg=to_log)

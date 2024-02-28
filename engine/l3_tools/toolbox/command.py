@@ -24,7 +24,7 @@ class Command(Tool):
     def do(self):
         try:
             self.shell.execute_command(command=self.cmd_arg.val)
-            self.content += self.shell.get_buffer()
+            self.___content_depr___ += self.shell.get_buffer()
 
         except Exception as e:
             raise RuntimeError(f'An exception occured during program execution: {e}')

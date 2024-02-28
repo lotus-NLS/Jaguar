@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Optional
+from typing import Optional
 
 from uuid import uuid4
 # ---------------------------------------------------------
@@ -11,7 +11,7 @@ class Mandate:
         self._parent = parent
         self.desc: str = f'{desc}'
 
-        self.uuid : str = self.get_uuid()
+        self.uuid : str = self._get_uuid()
         self._complete : bool = False
         self._children : list[Mandate] = []
 
@@ -34,12 +34,6 @@ class Mandate:
         return new
 
 
-    def get_uuid(self):
-        while True:
-            uuid = f'{uuid4()}'[:4]
-            if not uuid in self.all_mandates:
-                self.all_mandates[uuid] = self
-                return uuid
 
     @classmethod
     def mark_done(cls, uuid : str):
@@ -49,6 +43,19 @@ class Mandate:
 
     # ----------------------------------------------------
     # get
+
+    def reset(self):
+        self._children = []
+        self._complete = False
+        self.uuid = self._get_uuid()
+
+    def _get_uuid(self) -> str:
+        while True:
+            uuid = f'{uuid4()}'[:4]
+            if not uuid in self.all_mandates:
+                self.all_mandates[uuid] = self
+                return uuid
+
 
     def _get_parent(self) -> Mandate:
         return self._parent

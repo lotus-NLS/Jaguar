@@ -2,26 +2,42 @@ import logging
 # from pyutils import get_function_args
 # from engine.l3_singletons import EngineIO
 # from engine.l1_agent import Objective, ToolArg
+from abc import abstractmethod
 
-from .mandate import Mandate
 from engine.l3_tools.tool import Tool, ToolArg
+from .mandate import Mandate
+
 # ---------------------------------------------------------
 
 
-class Mandate(Tool):
-    def __init__(self):
+class MandateTool(Tool):
+    def __init__(self, mandate : Mandate):
         super().__init__()
         self.desc : str = 'Update and create mandates'
-        self.actions =
+        self.mandate : Mandate = mandate
+
+
+    @abstractmethod
+    def do(self):
+        pass
+
+
+class Initialize(MandateTool):
+    def __init__(self, mandate : Mandate):
+        super().__init__(mandate=mandate)
 
 
 
 
-class UpdateMandate(Tool):
+class MarkDone(MandateTool):
+    def __init__(self):
+
+
+
+class UpdateMandate(MandateTool):
     def __init__(self):
         super().__init__()
 
-        self.description : str = 'Allows for updating mandates'
         self.objective_uuid_arg: ToolArg = ToolArg(name='objective_id',
                                                    desc='The ID of the objective that you want to update')
 
