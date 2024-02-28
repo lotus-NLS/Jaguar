@@ -3,7 +3,10 @@ import os
 from enum import Enum
 
 from hollarek.io import get_text, TextFileType
-from engine.l3_tools.tool import Tool, ToolArg, Phase
+from engine.l3_tools.tool import Tool, ToolArg
+from engine.l3_tools import Phase
+
+
 # ---------------------------------------------------------
 
 class Mode(Enum):

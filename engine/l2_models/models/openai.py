@@ -5,7 +5,7 @@ from openai.openai_object import OpenAIObject
 
 from engine.l4_singletons import LotusSettings
 from ..llm.llm import LLM, ModelType
-from ..llm.generation import Generation, Chunk, Options, Context
+from ..llm.generation import Generation, Chunk, Options, GenerationContext
 from ..llm.toolcall import MultiToolCall, SingleToolCall
 # ---------------------------------------------------------
 
@@ -22,7 +22,7 @@ class OpenAIModel(LLM):
         super().__init__(model=model_type)
 
 
-    def get_generation(self, context : Context, options: Options) -> Generation:
+    def get_generation(self, context : GenerationContext, options: Options) -> Generation:
         self.log(f'Creating generation request')
         openai_response = self.get_openai_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
@@ -30,7 +30,7 @@ class OpenAIModel(LLM):
         return Generation(generator=openai_response)
 
 
-    def get_openai_response(self, context : Context, options: Options):
+    def get_openai_response(self, context : GenerationContext, options: Options):
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict() for entry in context.entries],
@@ -39,8 +39,8 @@ class OpenAIModel(LLM):
         }
 
         tool_options = options.tool_options
-        if tool_options.call_allowed and context.tool_docs:
-            args_dict['tools'] = context.tool_docs
+        if tool_options.call_allowed and context.docs:
+            args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
 
         if not options.max_tokens is None:

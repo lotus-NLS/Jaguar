@@ -51,9 +51,9 @@ class Chunk:
 
 
 @dataclass
-class Context:
+class GenerationContext:
     entries : list[Entry]
-    tool_docs : list[dict]
+    docs : list[dict]
 
 
 

@@ -3,20 +3,14 @@ import json
 from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
-from enum import Enum
 
 from hollarek.dev import get_logger
-from .tool_arg import ToolArg
-from .tool_exceptions import MissingArgs, InvalidArgValue
-from .toolcall import ToolCall
-# ---------------------------------------------------------
+from .arg import ToolArg
+from .toolcall import ToolCall, MissingArgs, InvalidArgValue
+from .. import Phase
 
-class Phase(Enum):
-    START = 'START'
-    UPDATE = 'UPDATE'
-    EXCEPTION = 'EXCEPTION'
-    FAILED = 'FAILED'
-    FINISH = 'FINISH'
+
+# ---------------------------------------------------------
 
 
 class Tool:
@@ -39,7 +33,7 @@ class Tool:
             self.log(f'Tool {self.get_name()} completed execution', phase=Phase.FINISH)
 
         except MissingArgs as e:
-            self.log(f'Missing Arguments: {e}',phase=Phase.FAILED)
+            self.log(f'Missing Arguments: {e}', phase=Phase.FAILED)
         except FunctionTimedOut:
             self.log(f'Tool timed out: {self.get_name()} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
         except Exception as e:

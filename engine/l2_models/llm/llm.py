@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 from enum import Enum
 from hollarek.tmpl import Loggable
-from .generation import Generation, Options, Context
+from .generation import Generation, Options, GenerationContext
 
 # ---------------------------------------------------------
 
@@ -22,7 +22,7 @@ class LLM(Loggable):
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
-    def get_generation(self, context : Context, options: Options) -> Generation:
+    def get_generation(self, context : GenerationContext, options: Options) -> Generation:
         pass
 
 
@@ -40,10 +40,10 @@ class Tokenizer(Loggable):
         encoded_str = self.encode(the_str)
         return self.decode(encoded_str[:max_tokens])
 
-    def get_tokens(self, context : Context) -> Optional[int]:
+    def get_tokens(self, context : GenerationContext) -> Optional[int]:
         try:
             token_count = 0
-            tool_docs = context.tool_docs
+            tool_docs = context.docs
             the_tools = [] if tool_docs is None else tool_docs
             for entry in context.entries:
                 token_count += self.get_token_count(the_str=f'{entry}')

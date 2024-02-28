@@ -1,7 +1,7 @@
 from __future__ import annotations
-
 import json
-from typing import Optional, Union
+from enum import Enum
+from typing import Optional
 from json_repair import repair_json
 
 # ---------------------------------------------------
@@ -26,3 +26,22 @@ class ToolCall:
             tool_args_dict = json.loads(s=repair_json(json_str=self.json_str))
         return tool_args_dict
 
+
+class ToolException(Exception):
+    pass
+
+
+class MissingArgs(ToolException):
+    pass
+
+
+class InvalidArgValue(ToolException):
+    pass
+
+
+class Phase(Enum):
+    START = 'START'
+    UPDATE = 'UPDATE'
+    EXCEPTION = 'EXCEPTION'
+    FAILED = 'FAILED'
+    FINISH = 'FINISH'
