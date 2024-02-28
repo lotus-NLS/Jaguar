@@ -5,7 +5,7 @@ from enum import Enum
 from hollarek.io import get_text, TextFileType
 from engine.l3_tools.tool import Tool, ToolArg
 from engine.l3_tools import Phase
-
+from hollarek.io.fsys import FsysNode
 
 # ---------------------------------------------------------
 
@@ -20,13 +20,11 @@ class Mode(Enum):
 class FileIO(Tool):
     def __init__(self):
         super().__init__()
-        self.desc = f'Read or write text files based on mode'
-        ftypes = [TextFileType.PDF.value, TextFileType.PLAINTEXT.value]
+        self.desc = f'Read or write plain text or pdfs files'
 
         self.mode_arg : ToolArg = ToolArg(name='mode', choices=Mode.modes_as_str_list())
-        self.fpath_arg = ToolArg(name='fpath', desc='Filepath to be read or written to')
-        self.format_arg = ToolArg(name='file_format', choices=ftypes, desc='For read mode only')
-        self.content_arg = ToolArg(name='content', dtype=str, desc='text to write for write mode only')
+        self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath to be read or written to')
+        self.content_arg : ToolArg = ToolArg(name='content', desc='text to write for write mode only', is_optional=True)
 
 
     def do(self):
@@ -55,8 +53,9 @@ class FileIO(Tool):
         if not os.path.isfile(fpath):
             raise FileNotFoundError(f'There is no file located at given location {fpath}. Aborting ...')
 
-        file_type = TextFileType(self.format_arg.val)
+        suffix = FsysNode(path=fpath).get_suffix()
         self.log(f'Attempting to read file located at {fpath}', phase=Phase.UPDATE)
+        file_type = TextFileType.PDF if suffix == 'pdf' else TextFileType.PLAINTEXT
         file_content = get_text(fpath=fpath,file_type=file_type)
         self.log(f'File content:\n{file_content}', phase=Phase.UPDATE)
 
