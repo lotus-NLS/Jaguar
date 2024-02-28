@@ -9,14 +9,14 @@
 
 from hollarek.tmpl import Loggable
 from engine.l0_main.entities import Alpha, User
-from engine.l4_singletons import LotusSettings
+from engine.l4_singletons import Settings
 # ---------------------------------------------------------
 
 class LotusEngine(Loggable):
 
     def __init__(self, ip : str, port : int, local : bool = False):
         super().__init__()
-        self.settings : LotusSettings = LotusSettings(local=local, validate=True)
+        self.settings : Settings = Settings(local=local, validate=True)
 
         self.user : LingualEntity = User()
         self.IO : EngineIO = EngineIO(ip,port)
@@ -43,7 +43,7 @@ class LotusEngine(Loggable):
 
         self.log(f'Lotus started')
 
-        if LotusSettings.get_enable_introduction():
+        if Settings.get_enable_introduction():
             self.user.enqueue('[Manual inquiry for user]: Who are you and what can you do?',final=True)
 
         while True:

@@ -3,7 +3,7 @@ from typing import Optional
 import openai
 from openai.openai_object import OpenAIObject
 
-from engine.l4_singletons import LotusSettings
+from engine.l4_singletons import Settings
 from ..llm.llm import LLM, ModelType
 from ..llm.generation import Generation, Chunk, Options, GenerationContext
 from ..llm.toolcall import MultiToolCall, SingleToolCall
@@ -46,7 +46,7 @@ class OpenAIModel(LLM):
         if not options.max_tokens is None:
             args_dict['max_tokens'] = options.max_tokens
 
-        openai.api_key = LotusSettings().get_openai_apikey()
+        openai.api_key = Settings().get_openai_apikey()
         openai_generator = openai.ChatCompletion.create(**args_dict)
         return openai_generator
 

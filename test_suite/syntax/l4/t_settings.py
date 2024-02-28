@@ -1,4 +1,4 @@
-from engine.l4_singletons import LotusSettings
+from engine.l4_singletons import Settings
 from hollarek.dev import Unittest
 
 
@@ -9,7 +9,7 @@ class TestLotusSettings(Unittest):
     @classmethod
     def setUpClass(cls):
         # Setup for valid settings
-        cls.valid_settings = LotusSettings(local=True, validate=False)
+        cls.valid_settings = Settings(local=True, validate=False)
 
     def test_local_valid(self):
         self.assertTrue(self.valid_settings.validate_openai_key())

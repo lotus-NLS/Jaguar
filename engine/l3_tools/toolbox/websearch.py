@@ -1,7 +1,7 @@
 from ..tool import Tool, ToolArg, Phase
 
 from hollarek.io.web import SearchEngine, SiteVisitor
-from engine.l4_singletons.lotus_settings import LotusSettings
+from engine.l4_singletons.lotus_settings import Settings
 # ---------------------------------------------------------
 
 class WebSearch(Tool):
@@ -9,8 +9,8 @@ class WebSearch(Tool):
     def __init__(self):
         super().__init__()
         self.desc : str = "Search engine that provides result URLs and descriptions"
-        self.search_engine : SearchEngine = SearchEngine(google_key=LotusSettings().get_google_apikey(),
-                                                         searchengine_id=LotusSettings().get_searchengine_id())
+        self.search_engine : SearchEngine = SearchEngine(google_key=Settings.get_google_apikey(),
+                                                         searchengine_id=Settings.get_searchengine_id())
 
         self.search_term : ToolArg = ToolArg(name='search_term')
         self.num_results : ToolArg = ToolArg(name='number_of_results', is_optional=True)
@@ -51,3 +51,12 @@ class WebSearch(Tool):
     #     except Exception as e:
     #         self.exception_log(f'An error occured while trying to browse for sites and summarize information on query: {e}')
     #
+
+# class Browse(Tool):
+#     def __init__(self):
+#         super().__init__()
+#         self.desc = "Browser that lets you read content on pages specified by url"
+#         self.url_arg : ToolArg = ToolArg(name=f'url')
+#
+#     def do(self):
+#

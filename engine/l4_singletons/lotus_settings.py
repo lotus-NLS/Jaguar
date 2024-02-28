@@ -1,20 +1,27 @@
 import openai
 import requests
 import os
+from typing import Optional
 
 from func_timeout import func_timeout
 from hollarek.io import LocalConfigs, AWSConfigs
-from hollarek.dev.log import Loggable, LogLevel
+from hollarek.tmpl import Singleton
+from hollarek.dev.log import LogLevel
 # --------------------------------------------
 
-class LotusSettings(Loggable):
+class Settings(Singleton):
+    configs : Optional = None
+
     def __init__(self, local : bool = False, validate : bool = True):
+        if self.is_initialized:
+            return
+
         super().__init__()
         config_path = os.path.join(os.path.expanduser('~'), '.creds' , 'lotusconfigs')
         if local:
-            self.configs = LocalConfigs(config_fpath=config_path)
+            Settings.configs = LocalConfigs(config_fpath=config_path)
         else:
-            self.configs = AWSConfigs(secret_name='lotus_api_keys')
+            Settings.configs = AWSConfigs(secret_name='lotus_api_keys')
 
         if validate:
             try:
@@ -26,21 +33,25 @@ class LotusSettings(Loggable):
 
         self.log(f'Completed setup for all Settings')
 
+    @classmethod
+    def get_openai_apikey(cls) -> str:
+        return cls.configs.get('openai_api_key')
 
-    def get_openai_apikey(self) -> str:
-        return self.configs.get(key='openai_api_key')
+    @classmethod
+    def get_google_apikey(cls) -> str:
+        return cls.configs.get('google_api_key')
 
-    def get_google_apikey(self) -> str:
-        return self.configs.get(key='google_api_key')
+    @classmethod
+    def get_searchengine_id(cls) -> str:
+        return cls.configs.get('search_engine_id')
 
-    def get_searchengine_id(self) -> str:
-        return self.configs.get(key='search_engine_id')
+    @classmethod
+    def get_enable_introduction(cls) -> str:
+        return cls.configs.get('enable_introduction')
 
-    def get_enable_introduction(self) -> str:
-        return self.configs.get(key='enable_introduction')
-
-    def get(self, key : str) -> str:
-        return self.configs.get(key=key)
+    @classmethod
+    def get(cls, key: str) -> str:
+        return cls.configs.get(key)
 
     # ----------------------------------------------
     # validation

@@ -1,3 +1,3 @@
-from .lotus_settings import LotusSettings
+from .lotus_settings import Settings
 from .io import EngineIO
 from .io_types import Query
