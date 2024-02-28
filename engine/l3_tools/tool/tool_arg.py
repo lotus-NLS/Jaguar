@@ -2,8 +2,8 @@ from typing import Optional
 
 
 class ToolArg:
-    def __init__(self, name : str, dtype : type, desc : str,
-                       choices : Optional[list] =  None, is_optional : bool = False):
+    def __init__(self, name : str, dtype : type = str, desc : str = '',
+                 choices : Optional[list] =  None, is_optional : bool = False):
         self.name : str = name
         self.dtype : type = dtype
         self.desc : str = desc

@@ -11,14 +11,13 @@ from hollarek.events import Countdown
 from engine.l3_tools.tool import Tool, ToolArg
 # ---------------------------------------------------------
 
-class COMMAND(Tool):
+class Command(Tool):
     os_in_use = platform.system()
 
     def __init__(self):
         super().__init__()
         self.desc = f'Run commands in the terminal'
-        new_arg  = ToolArg(name='program_content', dtype=str,desc='The code to execute')
-        self.cmd_arg: ToolArg = self.create_arg(new_arg)
+        self.cmd_arg: ToolArg = ToolArg(name='program_content', dtype=str,desc='The code to execute')
         self.shell = Shell()
 
 
@@ -47,7 +46,7 @@ class Shell:
 
     @staticmethod
     def get_session() -> Optional[Popen]:
-        shell_cmd = 'cmd.exe' if COMMAND.os_in_use == 'Windows' else '/bin/bash'
+        shell_cmd = 'cmd.exe' if Command.os_in_use == 'Windows' else '/bin/bash'
         shell_session = None
         try:
             shell_session = subprocess.Popen(shell_cmd,stdin=PIPE, stdout=PIPE,stderr=STDOUT, text=True)
