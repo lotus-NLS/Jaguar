@@ -1,12 +1,17 @@
 from typing import Optional
 from flask import Flask
+from abc import abstractmethod
+
 from api import DefaultNetwork, Entry
 from hollarek.tmpl import Singleton
-
-from engine.l4_singletons.io_types import TextStream, Server
-
+from .io_types import ServerResponse
 
 # ----------------------------------------------
+
+class Server:
+    @abstractmethod
+    def get_response(self, entry : Entry) -> ServerResponse:
+        pass
 
 
 class EngineIO(Flask, Singleton):
@@ -22,5 +27,5 @@ class EngineIO(Flask, Singleton):
         self.server : Server = server
 
 
-    def get_response_stream(self, entry : Entry) -> TextStream:
+    def get_response_stream(self, entry : Entry) -> ServerResponse:
         return self.server.get_response(entry=entry)

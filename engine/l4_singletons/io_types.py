@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
-
+from dataclasses import dataclass
 from api import Entry
 
 
@@ -34,8 +34,8 @@ class Query:
     def get_text(self) -> str:
         pass
 
+@dataclass
+class ServerResponse:
+    query : Query
+    text_stream : TextStream
 
-class Server:
-    @abstractmethod
-    def get_response(self, entry : Entry) -> TextStream:
-        pass

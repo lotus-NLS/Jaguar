@@ -1,8 +1,5 @@
 import logging
-# from pyutils import get_function_args
-
 import yaml
-# from engine.l1_agent import Objective, ToolArg
 from abc import abstractmethod
 
 from engine.l4_singletons import EngineIO
@@ -43,7 +40,7 @@ class RequestMandate(MandateTool):
     def do(self):
         info_dict = yaml.safe_load(self.yaml.val)
         self.mandate.update(info_dict=info_dict)
-        EngineIO().
+
 
 
 class MarkDone(MandateTool):
