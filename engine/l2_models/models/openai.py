@@ -60,7 +60,7 @@ class OpenAIGeneration(Generation):
 class OpenAIChunk(Chunk):
     def __init__(self, data : OpenAIObject):
         super().__init__(data=data)
-        self.best_response : Optional[dict]  = data['choices'][0].get('delta')
+        self.best_response : Optional[dict]  = data['choices'][0]._get_descendant('delta')
 
 
     def get_text(self) -> Optional[str]:
@@ -77,10 +77,10 @@ class OpenAIChunk(Chunk):
 
         multitool_call = MultiToolCall()
         for openai_tool_call in tool_calls:
-            index = openai_tool_call.get('index')
-            funct_call = openai_tool_call.get('function')
+            index = openai_tool_call._get_descendant('index')
+            funct_call = openai_tool_call._get_descendant('function')
 
-            tool_call = SingleToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'), index=index)
+            tool_call = SingleToolCall(name=funct_call._get_descendant('name'), json_str=funct_call._get_descendant('arguments'), index=index)
             multitool_call.update(tool_call=tool_call)
 
         return multitool_call

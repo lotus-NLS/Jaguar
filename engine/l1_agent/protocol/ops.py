@@ -2,8 +2,9 @@ import logging
 import yaml
 from abc import abstractmethod
 
-from engine.l4_singletons import EngineIO
+from engine.l4_singletons import EngineIO, Query
 from engine.l3_tools.tool import Tool, ToolArg
+
 from .mandate import Mandate
 
 # ---------------------------------------------------------
@@ -24,7 +25,7 @@ class RequestMandate(MandateTool):
     def __init__(self, mandate : Mandate, query : Query):
         super().__init__(mandate=mandate)
 
-        self.request_permission = request_permission
+        self.query = query
         self.desc = 'Submits a request to the user to sign off on a plan of action'
         content_desc = ("""Specify your plan of action in a YAML format e.g. like this: 
                 Overall objective:
@@ -38,13 +39,32 @@ class RequestMandate(MandateTool):
         self.yaml : ToolArg =  ToolArg(name='objective_specifications', desc=content_desc)
 
     def do(self):
-        info_dict = yaml.safe_load(self.yaml.val)
-        self.mandate.update(info_dict=info_dict)
+        if self.query.get_confirmation():
+            info_dict = yaml.safe_load(self.yaml.val)
+            self.mandate.update(info_dict=info_dict)
 
 
+class MarkObjectiveDone(MandateTool):
+    def __init__(self, mandate : Mandate):
+        super().__init__(mandate=mandate)
+        self.desc= 'Marks an objective as done'
+        self.uuid : ToolArg = ToolArg(name='objective id')
 
-class MarkDone(MandateTool):
-    def __init__(self):
+
+    def do(self):
+        uuid = self.uuid.val
+        if not uuid in self.mandate.all_mandates:
+            raise KeyError(f'No mandate with the given ID: {uuid}')
+        Mandate._get_descendant(uuid=uuid)
+
+
+class DiscardObjective(MandateTool):
+    def __init__(self, mandate : Mandate):
+        super().__init__(mandate=mandate)
+        self.desc = 'Discard an objective'
+        self.uuid : ToolArg = ToolArg(name='objective id')
+
+    def do(self):
 
 
 

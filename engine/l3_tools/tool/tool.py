@@ -20,8 +20,8 @@ class Tool:
     def __init__(self, has_context : bool = True):
         self.desc: str = ''
         self.tool_context : Optional[ToolContext] = ToolContext() if has_context else False
-        self.___content_depr___ : str = ''
         self.logger = get_logger(name=self.get_name())
+        self.___content_depr___ : str = ''
 
     # ---------------------------------------------------
     # call

@@ -91,7 +91,7 @@ class LotusSettings(Loggable):
             is_successful = response.status_code == 200
             if 'error' in response_json:
                 error_info = response_json['error']
-                err_details = f"Google API Error: {error_info.get('message', 'Unknown error')}"
+                err_details = f"Google API Error: {error_info._get_descendant('message', 'Unknown error')}"
             else:
                 err_details = f"Received unexpected status code {response.status_code}"
 

@@ -1,21 +1,18 @@
 from typing import Optional
 
 
-class ToolArg:
-    def __init__(self, name : str, dtype : type = str, desc : str = '',
-                 choices : Optional[list] =  None, is_optional : bool = False):
+class ToolArg(str):
+    def __init__(self, name : str, desc : str = '', choices : Optional[list] =  None, is_optional : bool = False):
         self.name : str = name
-        self.dtype : type = dtype
         self.desc : str = desc
         self.choices: Optional[list[str]] = choices
         self.is_optional : bool = is_optional
 
-        self.val : Optional = None
-
+        self.val: Optional[str] = None
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': self.get_json_type(self.dtype),
+            'type': self.get_json_type(python_type=str),
             'description': f'{self.desc}',
         }
 
