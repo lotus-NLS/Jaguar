@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
 from dataclasses import dataclass
-from api import Entry
+from typing import Optional
 
 
 class TextStream(ABC, Iterator[str]):
@@ -28,7 +28,7 @@ class TextStream(ABC, Iterator[str]):
 
 class Query:
     @abstractmethod
-    def get_confirmation(self) -> bool:
+    def get_confirmation(self, msg : Optional[str]= None) -> bool:
         pass
 
     def get_text(self) -> str:

@@ -20,6 +20,12 @@ class MandateTool(Tool):
     def do(self):
         pass
 
+    def get_mandate(self, uuid : str):
+
+        target = self.mandate.get(uuid=uuid)
+        if not target:
+            raise KeyError(f'No mandate with the given ID: {uuid}')
+
 
 class RequestMandate(MandateTool):
     def __init__(self, mandate : Mandate, query : Query):
@@ -39,110 +45,49 @@ class RequestMandate(MandateTool):
         self.yaml : ToolArg =  ToolArg(name='objective_specifications', desc=content_desc)
 
     def do(self):
-        if self.query.get_confirmation():
+        request_msg = (f'Here is my plan of action for your request:'
+                       f'\n{self.yaml.val}\n'
+                       f'Do you approve? (y/n)')
+
+        if self.query.get_confirmation(msg=request_msg):
             info_dict = yaml.safe_load(self.yaml.val)
-            self.mandate.update(info_dict=info_dict)
+            self.mandate.a_update(info_dict=info_dict)
+        else:
+            raise PermissionError(f'User denied permission to approve suggested plan of action: {self.yaml.val}')
 
 
 class MarkObjectiveDone(MandateTool):
     def __init__(self, mandate : Mandate):
         super().__init__(mandate=mandate)
         self.desc= 'Marks an objective as done'
-        self.uuid : ToolArg = ToolArg(name='objective id')
+        self.uuid_arg : ToolArg = ToolArg(name='objective id')
 
 
     def do(self):
-        uuid = self.uuid.val
-        if not uuid in self.mandate.all_mandates:
-            raise KeyError(f'No mandate with the given ID: {uuid}')
-        Mandate._get_descendant(uuid=uuid)
+        target = self.get_mandate(uuid=self.uuid_arg.val)
+        target.a_complete()
 
 
 class DiscardObjective(MandateTool):
     def __init__(self, mandate : Mandate):
         super().__init__(mandate=mandate)
         self.desc = 'Discard an objective'
-        self.uuid : ToolArg = ToolArg(name='objective id')
+        self.uuid_arg : ToolArg = ToolArg(name='objective id')
 
     def do(self):
+        target = self.get_mandate(uuid=self.uuid_arg.val)
+        target.a_discard(uuid=self.uuid_arg.val)
 
 
-
-class UpdateMandate(MandateTool):
-    def __init__(self):
-        super().__init__()
-
-        self.objective_uuid_arg: ToolArg = ToolArg(name='objective_id',
-                                                   desc='The ID of the objective that you want to update')
-
-        self.desc: ToolArg = ToolArg(name='desc', is_optional=True,
-                                     desc=f'Required for {Objective.make_subelement.__name__}'
-                                                             f'to specify the edited description or description of the new element')
-
-        self.action: ToolArg = ToolArg(name='action', dtype=str,
-                                       available_options=Objective.get_action_names(),
-                                       desc='The type of operation that you want to perform')
-
-    def do(self):
-        objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
-        operation = objective_to_edit.ops_dict[self.action.val]
-        operation_args = get_function_args(func=operation)
-
-        arg_dict = {}
-        if 'desc' in operation_args:
-            arg_dict['desc'] = self.desc.val
-        operation(**arg_dict)
-
-        if verbose_mode:
-            logging.info(f'Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
-
-        if not self.acting_agent.mandate.root_objective.is_active:
-            self.acting_agent.mandate.root_objective = None
-
-
-    def get_objective_by_id(self, objective_id : str):
-        return self.acting_agent.mandate.root_objective.get_objective_by_id(objective_id=objective_id)
-
-
-# ---------------------------------------------------------
-
-
-class INITIALIZE_MANDATE(Tool):
-    def __init__(self):
-        super().__init__()
-        self.desc : str ='Submits a request to the user to sign off on a plan of action'
-
-        self.content_arg : ToolArg =  self.create_arg(name='objective_specifications', dtype=str,
-              desc="""Specify your objectives in this format. Use '-' for every item after the overall objective: 
-                      Overall objective
-                      - Sub objective
-                      - Sub objective
-                      -- Sub-sub objective
-                      - Sub objective
-                      -- Sub-sub objective""")
+class AddSubobjective(MandateTool):
+    def __init__(self, mandate : Mandate):
+        super().__init__(mandate=mandate)
+        self.desc = 'Add a subobjective to an existing objective'
+        self.uuid_arg : ToolArg = ToolArg(name='objective id')
+        self.desc_arg : ToolArg = ToolArg(name='desc',desc=f'Description of new subobjective')
 
 
     def do(self):
-        objective_lines = self.content_arg.val.split('\n')
-        if not is_valid_hierarchy_format(lines=objective_lines):
-            self.semantic_error(f'The given objective specifcations do not fit the required format')
-            return
-
-        init_request_msg = (f'Here is my plan of action for your request:'
-                            f'\n{self.content_arg.val}\n'
-                            f'Do you approve?')
-
-        self.acting_agent.enqueue(msg=f'{init_request_msg} (y/n)')
-        user_approves =  EngineIO().get_confirmation()
-
-        if not user_approves:
-            self.acting_agent.think(f'User denied permission')
-            return
-
-        self.acting_agent.think(f'User confirmed permission')
-        self.parse_objectives_lines(lines=objective_lines)
-
-        if verbose_mode:
-            logging.info(f'Currently acting agent root objective:\n'f'{self.acting_agent.mandate.root_objective}')
-
+        target = self.get_mandate(uuid=self.uuid_arg.val)
+        target.a_add_subobjective(desc=self.desc_arg.val)
 

@@ -18,27 +18,28 @@ class Mandate:
             self.level : int = 0
 
         attr_dict = self.__dict__.items()
-        self.actions =  {name: attr for name, attr in attr_dict if callable(attr) and not name.startswith('_')}
+        self.actions =  {name: attr for name, attr in attr_dict if callable(attr) and name.startswith('a')}
 
 
-    def complete(self):
+    def a_complete(self):
         self.is_complete = True
 
 
-    def discard(self, uuid : str):
+    def a_discard(self, uuid : str):
         self.parent._remove_child(uuid=uuid)
 
 
-    def add_subobjective(self, desc : str) -> Mandate:
+    def a_add_subobjective(self, desc : str) -> Mandate:
         new = Mandate(desc=desc, parent=self)
         self.child_map[new.uuid] = new
         return new
 
 
-    def update(self, info_dict : dict):
+    def a_update(self, info_dict : dict):
         for item in info_dict:
-            obj = self.add_subobjective(desc=item)
-            obj.update(info_dict=info_dict[item])
+            obj = self.a_add_subobjective(desc=item)
+            obj.a_update(info_dict=info_dict[item])
+
 
     def _remove_child(self, uuid : str):
         del self.child_map[uuid]
@@ -47,8 +48,9 @@ class Mandate:
     # repr
 
     def _as_msg(self) -> Optional[str]:
-        conditional_check = 'x' if self.complete() else ' '
-        the_str = f' '*self.level + f'[{conditional_check}]: {self.desc}'
+        the_str = f'You have been granted a mandate for the following plan of action'
+        conditional_check = 'x' if self.a_complete() else ' '
+        the_str += f' '*self.level + f'[{conditional_check}]: {self.desc}'
         for child in list(self.child_map.values()):
             the_str += child._as_msg()
 
@@ -57,7 +59,7 @@ class Mandate:
     # ----------------------------------------------------
     # tree navigation
 
-    def _get_descendant(self, uuid : str) -> Optional[Mandate]:
+    def get(self, uuid : str) -> Optional[Mandate]:
         desc_map = self._get_descendants_map()
         return desc_map.get(uuid)
 

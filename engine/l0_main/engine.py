@@ -52,14 +52,14 @@ class LotusEngine(Loggable):
             logging.info(f'The user said {user_entry.get_content()}')
             # print(f'[Debug]: Flags are {flags.()}')
 
-            if flags._get_descendant(flag=Flag.PRINT_THREADS):
+            if flags._get(flag=Flag.PRINT_THREADS):
                 CustomThread.print_active_customthreads()
                 continue
 
-            if flags._get_descendant(flag=Flag.QUIT):
+            if flags._get(flag=Flag.QUIT):
                 break
 
-            if flags._get_descendant(flag=Flag.RESET):
+            if flags._get(flag=Flag.RESET):
                 [bot.clear_log() for bot in self.bots]
                 logging.info(f'Bot logs cleared')
                 continue
