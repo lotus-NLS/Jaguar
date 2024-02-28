@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from abc import abstractmethod
 
 from api import Entry
-from .toolcall import MultiToolCall
+from engine.l3_tools.tool import ToolCall
 # ---------------------------------------------------------
 
 class Generation:
@@ -46,7 +46,7 @@ class Chunk:
 
 
     @abstractmethod
-    def get_call(self) -> Optional[MultiToolCall]:
+    def get_call(self) -> Optional[ToolCall]:
         pass
 
 
