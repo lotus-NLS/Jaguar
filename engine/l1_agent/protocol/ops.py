@@ -1,38 +1,46 @@
 import logging
-from pyutils import get_function_args
-from engine.l3_singletons import EngineIO
-from engine.l1_agent import Objective, ToolArg
+# from pyutils import get_function_args
+# from engine.l3_singletons import EngineIO
+# from engine.l1_agent import Objective, ToolArg
 
-from engine.l3_tools.m1_tooldef.tool import Tool
-
+from .mandate import Mandate
+from engine.l3_tools.tool import Tool, ToolArg
 # ---------------------------------------------------------
 
-verbose_mode = True
 
-class UPDATE_MANDATE(Tool):
+class Mandate(Tool):
+    def __init__(self):
+        super().__init__()
+        self.desc : str = 'Update and create mandates'
+        self.actions =
+
+
+
+
+class UpdateMandate(Tool):
     def __init__(self):
         super().__init__()
 
-        self.description : str = 'Allows for updating objectives'
-        self.objective_uuid_arg: ToolArg = self.create_arg(name='objective_id', dtype=str,
-                                                           desc='The ID of the objective that you want to update')
+        self.description : str = 'Allows for updating mandates'
+        self.objective_uuid_arg: ToolArg = ToolArg(name='objective_id',
+                                                   desc='The ID of the objective that you want to update')
 
-        self.description_arg: ToolArg = self.create_arg(name='desc', dtype=str, is_optional=True,
-                                                        desc=f'Required for {Objective.make_subelement.__name__}'
+        self.desc: ToolArg = ToolArg(name='desc', is_optional=True,
+                                     desc=f'Required for {Objective.make_subelement.__name__}'
                                                              f'to specify the edited description or description of the new element')
 
-        self.operation_type_arg: ToolArg = self.create_arg(name='action', dtype=str,
-                                                           available_options=Objective.get_action_names(),
-                                                           desc='The type of operation that you want to perform')
+        self.action: ToolArg = ToolArg(name='action', dtype=str,
+                                       available_options=Objective.get_action_names(),
+                                       desc='The type of operation that you want to perform')
 
     def do(self):
         objective_to_edit = self.get_objective_by_id(objective_id=self.objective_uuid_arg.val)
-        operation = objective_to_edit.ops_dict[self.operation_type_arg.val]
+        operation = objective_to_edit.ops_dict[self.action.val]
         operation_args = get_function_args(func=operation)
 
         arg_dict = {}
         if 'desc' in operation_args:
-            arg_dict['desc'] = self.description_arg.val
+            arg_dict['desc'] = self.desc.val
         operation(**arg_dict)
 
         if verbose_mode:

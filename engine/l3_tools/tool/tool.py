@@ -22,9 +22,8 @@ class Phase(Enum):
 class Tool:
     timout_in_sec = 60
 
-    def __init__(self, is_public : bool = True):
+    def __init__(self):
         self.desc: str = ''
-        self.is_public : bool = is_public
         self.content : str = ''
         self.logger = get_logger(name=self.get_name())
 
@@ -72,8 +71,6 @@ class Tool:
 
     # ---------------------------------------------------
     # Get
-
-
 
     @classmethod
     def get_name(cls) -> str:

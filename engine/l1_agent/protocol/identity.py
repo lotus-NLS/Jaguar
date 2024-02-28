@@ -60,3 +60,8 @@ class Cores:
     -> A dialogue mode: This is a back and forth between the user. The user says something, you say something back or call a tool then the user again says something etc. 
     -> A work mode: If a task cannot be performed in a single step, you can ask the user for a mandate, which is a list of objectives you propose and can carry out if approved.
     """
+
+
+mode_msg = ('I am currently in work mode and cannot speak to the user.'
+            'The root objective must be completed or canceled via UPDATE_MANDATE to get back to dialogue mode and converse with the user.'
+            'Once an objective is completed, I will mark it as complete using UPDATE_MANDATE')

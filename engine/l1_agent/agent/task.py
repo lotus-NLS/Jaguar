@@ -44,7 +44,7 @@ class Task:
 
     def get_entry(self) -> Entry:
         if self.is_mandate_task():
-            task_entry = Entry(DialogueRole.system_role(), msg=self.mandate.get_msg())
+            task_entry = Entry(DialogueRole.system_role(), msg=self.mandate._as_msg())
         else:
             task_entry = Entry(DialogueRole.system_role(), msg=f'Please process the following user messages:\n{self.get_unread_as_str()}')
 
