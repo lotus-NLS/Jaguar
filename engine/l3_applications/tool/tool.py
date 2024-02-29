@@ -9,8 +9,6 @@ from .input import ToolCall, ToolArg
 # ---------------------------------------------------------
 
 class Tool:
-    application_name : abstractproperty
-
     def __init__(self, window_map : WindowMap, call_timeout : float = 60):
         self.window_map : WindowMap = window_map
 
@@ -70,6 +68,12 @@ class Tool:
     @classmethod
     def get_name(cls) -> str:
         return cls.__name__
+
+
+    @classmethod
+    @abstractmethod
+    def get_application_name(cls):
+        pass
 
 
     def get_json_doc(self) -> dict[str, Any]:

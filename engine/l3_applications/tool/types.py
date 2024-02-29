@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from engine.l3_applications.application import Tool, Window, ToolArg
-from engine.l3_applications.application.output import WindowMap
+from .tool import Tool, ToolArg
+from .output import WindowMap, Window
 
 
 class OpenTool(Tool):

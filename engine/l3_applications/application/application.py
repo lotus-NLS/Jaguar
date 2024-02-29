@@ -3,7 +3,7 @@ from typing import Optional
 
 from .tool import Tool
 from .output import WindowMap
-from .tool_types import ActionTool, CloseTool
+from .application_tools import ActionTool, CloseTool
 
 # ---------------------------------------------------
 
