@@ -3,8 +3,7 @@ import os
 from enum import Enum
 
 from hollarek.io import get_text, TextFileType
-from engine.l3_applications.tool import Tool, ToolArg
-from engine.l3_applications import Phase
+from ..application import Tool, ToolArg, Phase
 from hollarek.io.fsys import FsysNode
 
 # ---------------------------------------------------------

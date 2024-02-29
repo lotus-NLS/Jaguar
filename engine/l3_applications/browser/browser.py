@@ -1,4 +1,4 @@
-from ..tool import Tool, ToolArg, Phase
+from ..application import Tool, ToolArg, Phase
 
 from hollarek.io.web import SearchEngine, SiteVisitor
 from engine.l4_singletons.lotus_settings import Settings

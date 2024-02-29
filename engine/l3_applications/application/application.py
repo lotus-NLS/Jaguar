@@ -10,6 +10,7 @@ class Window:
         self.name : str = name
         self.content : str = ''
 
+
 class Application:
     def __init__(self):
         self.window_map : dict[int, Window] = {}
@@ -56,4 +57,3 @@ class Application:
 
     def close_window(self, index : int):
         del self.window_map[index]
-
