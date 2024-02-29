@@ -5,22 +5,17 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.dev import get_logger
-from .input import ToolArg
-from .output import MissingArgs, InvalidArgValue
-from . import ToolCall
-from .output import Phase
-
+from .output import Phase, MissingArgs, InvalidArgValue
+from .input import ToolCall, ToolArg
 
 # ---------------------------------------------------------
-
 
 class Tool:
     timout_in_sec = 60
 
-    def __init__(self, has_context : bool = True):
+    def __init__(self):
         self.desc: str = ''
         self.logger = get_logger(name=self.get_name())
-        self.___content_depr___ : str = ''
 
     # ---------------------------------------------------
     # call
@@ -122,7 +117,6 @@ class Tool:
 
 
     def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
-        optiona_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
-        to_log = f'[{phase.value}]:{msg}{optiona_call_stack}'
-        self.___content_depr___ += to_log
+        optional_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
+        to_log = f'[{phase.value}]:{msg}{optional_call_stack}'
         self.logger.log(msg=to_log)

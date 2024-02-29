@@ -2,7 +2,6 @@ import yaml
 from abc import abstractmethod
 
 from engine.l4_singletons import Query
-from engine.l3_applications.tool import Tool, ToolArg
 
 from .mandate import Mandate
 
@@ -11,7 +10,7 @@ from .mandate import Mandate
 
 class MandateTool(Tool):
     def __init__(self, mandate : Mandate):
-        super().__init__(has_context=False)
+        super().__init__()
         self.mandate : Mandate = mandate
 
     @abstractmethod
