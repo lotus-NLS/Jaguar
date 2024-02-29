@@ -2,9 +2,10 @@ from __future__ import annotations
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional
+from abc import ABC, abstractmethod
+
 
 from hollarek.dev.log import Loggable, LogLevel
-
 # ---------------------------------------------------
 
 class Update(Enum):
@@ -27,22 +28,36 @@ class ProgressMsg:
     msg : str
 
 
+class Window(ABC):
+    def __init__(self, name : str):
+        self.name : str = name
+        self.content : str = ''
+
+    @abstractmethod
+    def update(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_context(self) -> str:
+        pass
+
+class WindowMap(dict[int, Window]):
+    pass
+
+
 @dataclass
 class ToolOutput(Loggable):
     tool_name : str
-    result : Optional[str] = None
+    window : Optional[Window] = None
     progress: list[ProgressMsg] = field(default_factory=list)
     exit_status : ExitStatus = ExitStatus.SUCCESS
 
-
-    def as_msg(self) -> str:
+    def get_report(self) -> str:
         log_msg = f'Report on tool {self.tool_name}:\n'
         log_msg += f'Exit status: {self.exit_status.value}'
 
         if not ExitStatus == ExitStatus.SUCCESS:
             log_msg += f'; Reason: {self.get_error_msgs()}'
-        else:
-            log_msg += f'The following content was retrieved:\n\n{self.result}'
         return log_msg
 
 

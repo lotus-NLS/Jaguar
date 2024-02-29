@@ -1,26 +1,22 @@
 from api import Entry, Speaker, Role
+from typing import Optional
 
 from .tool import Tool
-from abc import abstractmethod
-from typing import Any
-from abc import ABC
+from .output import WindowMap
+from .tool_types import ActionTool, CloseTool
+
 # ---------------------------------------------------
-
-class Window(ABC):
-    def __init__(self, name : str):
-        self.name : str = name
-        self.content : str = ''
-
-    @abstractmethod
-    def get_context(self) -> str:
-        pass
 
 
 class Application:
     def __init__(self):
-        self.window_map : dict[int, Window] = {}
-        self.available_tool_map : dict[str, Tool] = {}
-        self.active_tools_map : dict[str, Tool] = {}
+        self.window_map : WindowMap = WindowMap()
+        self.open_tool : Optional[Tool] = None
+        self.action_tools : Optional[list[ActionTool]] = None
+        self.close_tool : CloseTool = CloseTool(window_map=self.window_map)
+
+    # ---------------------------------------------------
+    #  context
 
     def get_context(self) -> Entry:
         context = self.get_header()
@@ -30,6 +26,7 @@ class Application:
         return self.create_entry(msg=context)
 
 
+
     def get_header(self) -> str:
         header_len = 40
         name = self.__class__.__name__
@@ -37,26 +34,30 @@ class Application:
         dashes = '=' * num_dashes
         return  f'{dashes} {name} {dashes}'
 
+    @classmethod
+    def create_entry(cls, msg : str) -> Entry:
+        return Entry(speaker=Speaker(role=Role.TOOL, name=cls.__name__), msg=msg)
 
-    def get_docs(self, active_only = Tool) -> list[dict]:
-        tools = list(self.available_tool_map.values()) if not active_only else list(self.active_tools_map.values())
+    # ---------------------------------------------------
+    # tools
+
+    def get_docs(self, active_only : bool = Tool) -> list[dict]:
+        tools = self.get_tools(active_only=active_only)
         docs = []
         for tool in tools:
             docs += tool.get_json_doc()
         return docs
 
 
-    @classmethod
-    def create_entry(cls, msg : str) -> Entry:
-        return Entry(speaker=Speaker(role=Role.TOOL, name=cls.__name__), msg=msg)
+    def get_tools(self, active_only : bool) -> list[Tool]:
+        tools = []
+        if self.open_tool:
+            tools.append(self.open_tool)
+        if self.action_tools:
+            tools += self.action_tools
+        tools.append(self.close_tool)
+        return [tool for tool in tools if tool.is_active] if active_only else tools
 
 
-    def add_window(self, window: Window):
-        index = 0
-        while index in self.window_map:
-            index += 1
-        self.window_map[index] = window
 
 
-    def close_window(self, index : int):
-        del self.window_map[index]

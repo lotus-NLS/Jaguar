@@ -6,7 +6,7 @@ from enum import Enum
 
 from hollarek.io import get_text, TextFileType
 from hollarek.io.fsys import FsysNode
-from ..application import Tool, ToolArg, Application, Window, Call
+from ..application import Tool, ToolArg, Application, Window, ToolCall
 
 
 # ---------------------------------------------------------
@@ -18,7 +18,7 @@ class TextIO(Application):
         self.active_tools_map = copy.copy(self.available_tool_map)
 
 
-    def handle(self, call : Call):
+    def handle(self, call : ToolCall):
         call.get_args_dict()
 
 

@@ -56,14 +56,14 @@ class ToolArg(str):
         return self.val in self.choices
 
 
-class Call:
+class ToolCall:
     def __init__(self, name : Optional[str], json_str : Optional[str], index : int  = 0):
         self.index : int  = index
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
 
 
-    def update(self, partial_call : Call):
+    def update(self, partial_call : ToolCall):
         self.name += partial_call.name
         self.json_str += partial_call.json_str
 

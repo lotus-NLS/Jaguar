@@ -1,16 +1,20 @@
 import json
 from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
-from abc import abstractmethod
+from abc import abstractmethod, abstractproperty
 
 from hollarek.dev import get_logger
-from .output import MissingArgs, InvalidArgValue, ToolOutput, Update
-from .input import Call, ToolArg
-
+from .output import MissingArgs, InvalidArgValue, ToolOutput, Update, WindowMap
+from .input import ToolCall, ToolArg
 # ---------------------------------------------------------
 
 class Tool:
-    def __init__(self, call_timeout : float = 60):
+    application_name : abstractproperty
+
+    def __init__(self, window_map : WindowMap, call_timeout : float = 60):
+        self.window_map : WindowMap = window_map
+
+        self.is_active : bool = True
         self.desc: str = ''
         self.logger = get_logger(name=self.get_name())
         self.timeout : float = call_timeout
@@ -18,13 +22,13 @@ class Tool:
     # ---------------------------------------------------
     # call
 
-    def handle(self, tool_call: Call) -> ToolOutput:
+    def handle(self, tool_call: ToolCall) -> ToolOutput:
         report = ToolOutput(tool_name=self.get_name())
         report.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', category=Update.START)
         try:
             self._set_args(tool_call=tool_call)
             report.update(msg=f'Running tool {self.get_name()}', category=Update.UPDATE)
-            report.result = func_timeout(timeout=self.timeout, func=self.do)
+            report.value = func_timeout(timeout=self.timeout, func=self.do)
             report.update(msg=f'Tool {self.get_name()} completed execution', category=Update.FINISH)
 
         except MissingArgs as e:
@@ -39,7 +43,7 @@ class Tool:
         return report
 
 
-    def _set_args(self, tool_call : Call):
+    def _set_args(self, tool_call : ToolCall):
         for arg in self.get_args():
             arg.val = None
 
@@ -57,7 +61,7 @@ class Tool:
 
 
     @abstractmethod
-    def do(self) -> str:
+    def do(self):
         pass
 
     # ---------------------------------------------------
@@ -115,4 +119,5 @@ class Tool:
             return True
         except:
             return False
+
 
