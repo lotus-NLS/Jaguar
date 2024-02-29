@@ -11,11 +11,10 @@ from .input import ToolCall, ToolArg
 # ---------------------------------------------------------
 
 class Tool:
-    timout_in_sec = 60
-
-    def __init__(self):
+    def __init__(self, call_timeout : float = 60):
         self.desc: str = ''
         self.logger = get_logger(name=self.get_name())
+        self.timeout : float = call_timeout
 
     # ---------------------------------------------------
     # call
@@ -25,13 +24,13 @@ class Tool:
         try:
             self._set_args(tool_call=tool_call)
             self.log(f'Running tool {self.get_name()}', phase=Phase.START)
-            func_timeout(timeout=Tool.timout_in_sec, func=self.do)
+            func_timeout(timeout=self.timeout, func=self.do)
             self.log(f'Tool {self.get_name()} completed execution', phase=Phase.FINISH)
 
         except MissingArgs as e:
             self.log(f'Missing Arguments: {e}', phase=Phase.FAILED)
         except FunctionTimedOut:
-            self.log(f'Tool timed out: {self.get_name()} timed out without completing after {Tool.timout_in_sec} seconds', phase=Phase.FINISH)
+            self.log(f'Tool timed out: {self.get_name()} timed out without completing after {self.timeout} seconds', phase=Phase.FINISH)
         except Exception as e:
             self.log(f'{self.get_name()} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
         finally:
