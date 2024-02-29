@@ -1,4 +1,3 @@
-# import traceback
 import json
 from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
@@ -25,7 +24,7 @@ class Tool:
         try:
             self._set_args(tool_call=tool_call)
             report.update(msg=f'Running tool {self.get_name()}', category=Update.UPDATE)
-            report.result = func_timeout(timeout=self.timeout, func=self.do)
+            report.result = func_timeout(timeout=self.timeout, func=self.call)
             report.update(msg=f'Tool {self.get_name()} completed execution', category=Update.FINISH)
 
         except MissingArgs as e:
@@ -58,7 +57,7 @@ class Tool:
 
 
     @abstractmethod
-    def do(self):
+    def call(self):
         pass
 
     # ---------------------------------------------------
@@ -117,8 +116,3 @@ class Tool:
         except:
             return False
 
-
-    # def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
-    #     optional_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
-    #     to_log = f'[{phase.value}]:{msg}{optional_call_stack}'
-    #     self.logger.log(msg=to_log)

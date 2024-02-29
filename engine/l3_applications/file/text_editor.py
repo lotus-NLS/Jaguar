@@ -27,7 +27,7 @@ class FileIO(Tool):
         self.content_arg : ToolArg = ToolArg(name='content', desc='text to write for write mode only', is_optional=True)
 
 
-    def do(self):
+    def call(self):
         location = os.path.expanduser(self.fpath_arg.val)
         mode = Mode(self.mode_arg.val)
 

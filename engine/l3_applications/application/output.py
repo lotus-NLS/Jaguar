@@ -3,6 +3,8 @@ from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional
 
+from hollarek.dev.log import Loggable, LogLevel
+
 # ---------------------------------------------------
 
 class Update(Enum):
@@ -26,7 +28,7 @@ class ProgressMsg:
 
 
 @dataclass
-class ToolReport:
+class ToolReport(Loggable):
     tool_name : str
     result : Optional[str] = None
     progress: list[ProgressMsg] = field(default_factory=list)
@@ -54,6 +56,7 @@ class ToolReport:
         if category == Update.FAILED:
             self.exit_status = ExitStatus.FAILED
         self.progress.append(ProgressMsg(update_type=category, msg=msg))
+        self.cls_log(f'[{category.value}]: {msg}', level=LogLevel.INFO)
 
 
 class ToolException(Exception):

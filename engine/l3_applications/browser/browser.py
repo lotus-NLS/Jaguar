@@ -16,7 +16,7 @@ class WebSearch(Tool):
         self.num_results : ToolArg = ToolArg(name='number_of_results', is_optional=True)
 
 
-    def do(self):
+    def call(self):
         kwargs = {}
         try:
             if self.num_results.val:
@@ -38,7 +38,7 @@ class ReadSite(Tool):
         self.url_arg : ToolArg = ToolArg(name=f'url')
 
 
-    def do(self):
+    def call(self):
         site_visitor = SiteVisitor()
         content = site_visitor.get_text(site_url=self.url_arg.val)
         self.log(f'Content found at {self.url_arg.val}:\n{content}', phase=Update.UPDATE)

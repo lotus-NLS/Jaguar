@@ -19,7 +19,7 @@ class Command(Tool):
         self.shell = Shell()
 
 
-    def do(self):
+    def call(self):
         try:
             self.shell.execute_command(command=self.cmd.val)
             self.___content_depr___ += self.shell.get_buffer()
