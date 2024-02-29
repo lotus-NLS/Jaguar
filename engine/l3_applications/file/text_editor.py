@@ -3,7 +3,7 @@ import os
 from enum import Enum
 
 from hollarek.io import get_text, TextFileType
-from ..application import Tool, ToolArg, Phase
+from ..application import Tool, ToolArg, Update
 from hollarek.io.fsys import FsysNode
 
 # ---------------------------------------------------------
@@ -43,10 +43,10 @@ class FileIO(Tool):
         try:
             with open(location, 'w') as file:
                 file.write(content)
-                self.log(f'Suceeded in writing out file', phase=Phase.UPDATE)
+                self.log(f'Suceeded in writing out file', phase=Update.UPDATE)
 
         except Exception:
-            self.log(f'An error occured while trying to write file', phase=Phase.EXCEPTION)
+            self.log(f'An error occured while trying to write file', phase=Update.EXCEPTION)
 
 
     def do_read(self, fpath : str):
@@ -54,9 +54,9 @@ class FileIO(Tool):
             raise FileNotFoundError(f'There is no file located at given location {fpath}. Aborting ...')
 
         suffix = FsysNode(path=fpath).get_suffix()
-        self.log(f'Attempting to read file located at {fpath}', phase=Phase.UPDATE)
+        self.log(f'Attempting to read file located at {fpath}', phase=Update.UPDATE)
         file_type = TextFileType.PDF if suffix == 'pdf' else TextFileType.PLAINTEXT
         file_content = get_text(fpath=fpath,file_type=file_type)
-        self.log(f'File content:\n{file_content}', phase=Phase.UPDATE)
+        self.log(f'File content:\n{file_content}', phase=Update.UPDATE)
 
 

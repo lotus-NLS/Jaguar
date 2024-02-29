@@ -1,3 +1,3 @@
 from .tool import Tool
 from .input import ToolArg, ToolCall
-from .output import Phase
+from .output import Update

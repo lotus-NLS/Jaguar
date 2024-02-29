@@ -1,11 +1,11 @@
-import traceback
+# import traceback
 import json
 from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.dev import get_logger
-from .output import Phase, MissingArgs, InvalidArgValue
+from .output import MissingArgs, InvalidArgValue, ToolReport, Update
 from .input import ToolCall, ToolArg
 
 # ---------------------------------------------------------
@@ -19,22 +19,25 @@ class Tool:
     # ---------------------------------------------------
     # call
 
-    def handle(self, tool_call: ToolCall):
-        self.log(f'Starting tool \"{self.get_name()}\" with args {self.get_args_dict()}', phase=Phase.START)
+    def handle(self, tool_call: ToolCall) -> ToolReport:
+        report = ToolReport(tool_name=self.get_name())
+        report.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', category=Update.START)
         try:
             self._set_args(tool_call=tool_call)
-            self.log(f'Running tool {self.get_name()}', phase=Phase.START)
-            func_timeout(timeout=self.timeout, func=self.do)
-            self.log(f'Tool {self.get_name()} completed execution', phase=Phase.FINISH)
+            report.update(msg=f'Running tool {self.get_name()}', category=Update.UPDATE)
+            report.result = func_timeout(timeout=self.timeout, func=self.do)
+            report.update(msg=f'Tool {self.get_name()} completed execution', category=Update.FINISH)
 
         except MissingArgs as e:
-            self.log(f'Missing Arguments: {e}', phase=Phase.FAILED)
+            report.update(msg=f'Missing Arguments: {e}', category=Update.FAILED)
         except FunctionTimedOut:
-            self.log(f'Tool timed out: {self.get_name()} timed out without completing after {self.timeout} seconds', phase=Phase.FINISH)
+            report.update(msg=f'Timed out without completing after {self.timeout} seconds',category=Update.FAILED)
         except Exception as e:
-            self.log(f'{self.get_name()} encountered an exception during execution: {e}. Aborting ...', phase=Phase.FAILED)
+            report.update(msg=f'Encounteredexception: {e}. Aborting ...',category=Update.EXCEPTION)
         finally:
-            self.log(f'Tool call finished', Phase.FINISH)
+            report.update(msg=f'Tool call finished', category=Update.FINISH)
+
+        return report
 
 
     def _set_args(self, tool_call : ToolCall):
@@ -115,7 +118,7 @@ class Tool:
             return False
 
 
-    def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
-        optional_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
-        to_log = f'[{phase.value}]:{msg}{optional_call_stack}'
-        self.logger.log(msg=to_log)
+    # def log(self, msg : str, phase : Phase, include_call_stack: bool = False):
+    #     optional_call_stack = f'\nCall stack: {traceback.format_exc()}' if include_call_stack else ''
+    #     to_log = f'[{phase.value}]:{msg}{optional_call_stack}'
+    #     self.logger.log(msg=to_log)

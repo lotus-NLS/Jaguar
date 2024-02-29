@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 from typing import Optional
 
 from hollarek.events import Countdown
-from ..application import Tool, ToolArg, Phase
+from ..application import Tool, ToolArg, Update
 from io import StringIO
 # ---------------------------------------------------------
 
