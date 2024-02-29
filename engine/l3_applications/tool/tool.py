@@ -1,7 +1,7 @@
 import json
 from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
-from abc import abstractmethod, abstractproperty
+from abc import abstractmethod
 
 from hollarek.dev import get_logger
 from .output import MissingArgs, InvalidArgValue, ToolOutput, Update, WindowMap
