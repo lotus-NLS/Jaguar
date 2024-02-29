@@ -28,7 +28,7 @@ class ProgressMsg:
 
 
 @dataclass
-class ToolReport(Loggable):
+class ToolOutput(Loggable):
     tool_name : str
     result : Optional[str] = None
     progress: list[ProgressMsg] = field(default_factory=list)

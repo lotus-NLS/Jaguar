@@ -2,23 +2,26 @@ from api import Entry, Speaker, Role
 
 from .tool import Tool
 from abc import abstractmethod
-
+from typing import Any
+from abc import ABC
 # ---------------------------------------------------
 
-class Window:
+class Window(ABC):
     def __init__(self, name : str):
         self.name : str = name
         self.content : str = ''
+
+    @abstractmethod
+    def get_context(self) -> str:
+        pass
 
 
 class Application:
     def __init__(self):
         self.window_map : dict[int, Window] = {}
-        self.available_tools : dict[str, Tool] = {}
-        self.active_tools : dict[str, Tool] = {}
+        self.available_tool_map : dict[str, Tool] = {}
+        self.active_tools_map : dict[str, Tool] = {}
 
-
-    @abstractmethod
     def get_context(self) -> Entry:
         context = self.get_header()
         for index, window in self.window_map.items():
@@ -35,8 +38,8 @@ class Application:
         return  f'{dashes} {name} {dashes}'
 
 
-    def get_tool_docs(self, active_only = Tool):
-        tools = list(self.available_tools.values()) if not active_only else list(self.active_tools.values())
+    def get_docs(self, active_only = Tool) -> list[dict]:
+        tools = list(self.available_tool_map.values()) if not active_only else list(self.active_tools_map.values())
         docs = []
         for tool in tools:
             docs += tool.get_json_doc()

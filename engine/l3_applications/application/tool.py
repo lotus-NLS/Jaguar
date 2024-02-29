@@ -4,8 +4,8 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.dev import get_logger
-from .output import MissingArgs, InvalidArgValue, ToolReport, Update
-from .input import ToolCall, ToolArg
+from .output import MissingArgs, InvalidArgValue, ToolOutput, Update
+from .input import Call, ToolArg
 
 # ---------------------------------------------------------
 
@@ -18,13 +18,13 @@ class Tool:
     # ---------------------------------------------------
     # call
 
-    def handle(self, tool_call: ToolCall) -> ToolReport:
-        report = ToolReport(tool_name=self.get_name())
+    def handle(self, tool_call: Call) -> ToolOutput:
+        report = ToolOutput(tool_name=self.get_name())
         report.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', category=Update.START)
         try:
             self._set_args(tool_call=tool_call)
             report.update(msg=f'Running tool {self.get_name()}', category=Update.UPDATE)
-            report.result = func_timeout(timeout=self.timeout, func=self.call)
+            report.result = func_timeout(timeout=self.timeout, func=self.do)
             report.update(msg=f'Tool {self.get_name()} completed execution', category=Update.FINISH)
 
         except MissingArgs as e:
@@ -39,8 +39,8 @@ class Tool:
         return report
 
 
-    def _set_args(self, tool_call : ToolCall):
-        for arg in self._get_args():
+    def _set_args(self, tool_call : Call):
+        for arg in self.get_args():
             arg.val = None
 
         args_dict = tool_call.get_args_dict()
@@ -48,7 +48,7 @@ class Tool:
         if missing_required:
             raise MissingArgs(f'Provided dictionary {args_dict} did not cover all required tool arguments')
 
-        specified_args = [arg for arg in self._get_args() if arg.name in args_dict]
+        specified_args = [arg for arg in self.get_args() if arg.name in args_dict]
         for arg in specified_args:
             arg.val = args_dict[arg.name]
             if not arg.value_is_valid():
@@ -57,7 +57,7 @@ class Tool:
 
 
     @abstractmethod
-    def call(self):
+    def do(self) -> str:
         pass
 
     # ---------------------------------------------------
@@ -69,8 +69,8 @@ class Tool:
 
 
     def get_json_doc(self) -> dict[str, Any]:
-        required_arg_names = [arg.name for arg in self._get_args() if not arg.is_optional]
-        arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self._get_args()}
+        required_arg_names = [arg.name for arg in self.get_args() if not arg.is_optional]
+        arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self.get_args()}
 
         if not self.desc:
             raise ValueError(f'\n[Error]: Tool {self.get_name()} has no description\nAborting ...')
@@ -97,15 +97,15 @@ class Tool:
 
 
     def get_args_dict(self) -> dict[str, ToolArg]:
-        return {arg.name : arg for arg in self._get_args()}
+        return {arg.name : arg for arg in self.get_args()}
 
 
-    def _get_args(self) -> list[ToolArg]:
+    def get_args(self) -> list[ToolArg]:
         return [val for name,val in self.__dict__ if isinstance(val, ToolArg)]
 
 
     def _get_required_args(self) -> list[ToolArg]:
-        return [arg for arg in self._get_args() if not arg.is_optional]
+        return [arg for arg in self.get_args() if not arg.is_optional]
 
 
     @staticmethod

@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 from typing import Optional
 
 from hollarek.events import Countdown
-from ..application import Tool, ToolArg, Update
+from ..application import Tool, ToolArg
 from io import StringIO
 # ---------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Command(Tool):
         self.shell = Shell()
 
 
-    def call(self):
+    def do(self):
         try:
             self.shell.execute_command(command=self.cmd.val)
             self.___content_depr___ += self.shell.get_buffer()
