@@ -28,7 +28,7 @@ class ProgressMsg:
     msg : str
 
 
-class Window(ABC):
+class Window:
     def __init__(self, name : str):
         self.name : str = name
         self.content : str = ''
@@ -40,6 +40,7 @@ class Window(ABC):
     @abstractmethod
     def get_context(self) -> str:
         pass
+
 
 class WindowMap(dict[int, Window]):
     pass

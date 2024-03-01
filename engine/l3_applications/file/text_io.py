@@ -1,10 +1,11 @@
 from __future__ import annotations
 import os
+from typing import Optional
 
 from hollarek.io import get_text, TextFileType
 from hollarek.io.fsys import FsysNode
-from ..tool import ToolArg, ToolCall, Application, Window, WindowMap
-from ..tool import OpenTool, ActionTool
+from ..tool import ToolArg, ToolCall, Application, Window, WindowMap, OpenTool, ActionTool
+
 
 # ---------------------------------------------------------
 
@@ -18,14 +19,12 @@ class TextIO(Application):
     def create_action_tools(self) -> list[ActionTool]:
         return [Insert(window_map=self.window_map)]
 
-    def handle(self, call : ToolCall):
-        call.get_args_dict()
-
 
 class TextWindow(Window):
     def __init__(self, fpath : str):
         super().__init__(name=os.path.basename(fpath))
         self.fpath : str = fpath
+        self.content : Optional[str] =None
 
 
     def get_context(self) -> str:
@@ -68,7 +67,8 @@ class Read(OpenTool):
         super().__init__(window_map=window_map)
         self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath of text file to be opened')
 
-    def do(self):
+
+    def get_window(self) -> Window:
         fpath = os.path.expanduser(self.fpath_arg.val)
 
         if not os.path.isfile(fpath):
@@ -76,7 +76,10 @@ class Read(OpenTool):
 
         suffix = FsysNode(path=fpath).get_suffix()
         file_type = TextFileType.PDF if suffix == 'pdf' else TextFileType.PLAINTEXT
-        return get_text(fpath=fpath, file_type=file_type)
+
+        new = TextWindow(fpath=fpath)
+        new.content = get_text(fpath=fpath, file_type=file_type)
+        return new
 
 
     def get_desc(self) -> str:

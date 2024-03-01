@@ -6,7 +6,6 @@ from abc import abstractmethod
 from hollarek.dev import get_logger
 from .output import MissingArgs, InvalidArgValue, ToolOutput, Update, WindowMap
 from .input import ToolCall, ToolArg
-from typing import Optional
 # ---------------------------------------------------------
 
 class Tool:

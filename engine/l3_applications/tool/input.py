@@ -58,9 +58,9 @@ class ToolArg(str):
 
 class ToolCall:
     def __init__(self, name : Optional[str], json_str : Optional[str], index : int  = 0):
-        self.index : int  = index
         self.name : str  = name if not name is None else ''
         self.json_str : str = json_str if not json_str is None else ''
+        self.index: int = index
 
 
     def update(self, partial_call : ToolCall):
