@@ -7,7 +7,8 @@ from .output import Window
 
 class OpenTool(Tool):
     def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map, call_timeout=1)
+        super().__init__(call_timeout=1)
+        self.window_map : WindowMap = window_map
 
     def do(self):
         self.add_window(window=self.get_window())
@@ -25,20 +26,26 @@ class OpenTool(Tool):
         pass
 
 
-class ActionTool(Tool, ABC):
+class ActionTool(Tool):
     def __init__(self, window_map : WindowMap, call_timeout : int):
-        super().__init__(window_map=window_map, call_timeout=call_timeout)
+        super().__init__(call_timeout=call_timeout)
         self.index_arg: ToolArg = ToolArg(name='Window index', desc='Window on which to perform action')
+        self.window_map : WindowMap = window_map
 
     def get_window(self):
         index = int(self.index_arg.val)
         return self.window_map.get(index)
 
+    @abstractmethod
+    def do(self):
+        pass
+
 
 class CloseTool(Tool):
     def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map, call_timeout=1)
+        super().__init__(call_timeout=1)
         self.index_arg : ToolArg = ToolArg(name='Window index', desc='Window to close')
+        self.window_map : WindowMap = window_map
 
     def do(self):
         index = int(self.index_arg.val)

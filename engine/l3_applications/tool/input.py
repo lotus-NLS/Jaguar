@@ -4,7 +4,7 @@ from typing import Optional
 from json_repair import repair_json
 
 
-class ToolArg(str):
+class ToolArg:
     def __init__(self, name : str, desc : str = '', choices : Optional[list] =  None, is_optional : bool = False):
         self.name : str = name
         self.desc : str = desc

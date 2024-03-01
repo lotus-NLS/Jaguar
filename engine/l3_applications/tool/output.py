@@ -8,7 +8,7 @@ from abc import abstractmethod
 from hollarek.dev.log import Loggable, LogLevel
 # ---------------------------------------------------
 
-class Update(Enum):
+class Progress(Enum):
     START = 'START'
     UPDATE = 'UPDATE'
     EXCEPTION = 'EXCEPTION'
@@ -24,7 +24,7 @@ class ExitStatus(Enum):
 
 @dataclass
 class ProgressMsg:
-    update_type : Update
+    update_type : Progress
     msg : str
 
 
@@ -63,13 +63,13 @@ class ToolOutput(Loggable):
 
 
     def get_error_msgs(self) -> list[str]:
-        return [update.msg for update in self.progress if update.update_type in [Update.EXCEPTION, Update.FAILED]]
+        return [update.msg for update in self.progress if update.update_type in [Progress.EXCEPTION, Progress.FAILED]]
 
 
-    def update(self, msg : str, category : Update):
-        if category == Update.EXCEPTION:
+    def update(self, msg : str, category : Progress):
+        if category == Progress.EXCEPTION:
             self.exit_status = ExitStatus.EXCPETION
-        if category == Update.FAILED:
+        if category == Progress.FAILED:
             self.exit_status = ExitStatus.FAILED
         self.progress.append(ProgressMsg(update_type=category, msg=msg))
         self.cls_log(f'[{category.value}]: {msg}', level=LogLevel.INFO)

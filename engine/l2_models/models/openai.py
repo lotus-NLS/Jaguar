@@ -77,12 +77,12 @@ class OpenAIChunk(Chunk):
         if tool_calls is None:
             return None
 
-        multitool_call = ToolCall()
+        tool_call = ToolCall()
         for openai_tool_call in tool_calls:
             index = openai_tool_call.get('index')
             funct_call = openai_tool_call.get('function')
 
             tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'), index=index)
-            multitool_call.update(partial_call=tool_call)
+            tool_call.update(partial_call=tool_call)
 
-        return multitool_call
+        return tool_call
