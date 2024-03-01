@@ -4,7 +4,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.dev import get_logger
-from .output import MissingArgs, InvalidArgValue, ToolOutput, Progress
+from .output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
 from .input import ToolCall, ToolArg
 # ---------------------------------------------------------
 
@@ -19,19 +19,19 @@ class Tool:
 
     def handle(self, tool_call: ToolCall) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name())
-        output.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', progress_type=Progress.START)
+        output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=Progress.START)
         try:
             self._set_args(tool_call=tool_call)
-            output.update(msg=f'Running tool {self.get_name()}', progress_type=Progress.UPDATE)
+            output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=Progress.UPDATE)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
-            output.update(msg=f'Tool {self.get_name()} completed execution', progress_type=Progress.FINISH)
+            output.update(msg=f'Tool \"{self.get_name()}\" completed execution', progress_type=Progress.FINISH)
 
-        except MissingArgs as e:
-            output.update(msg=f'Missing Arguments: {e}', progress_type=Progress.FAILED)
+        except ToolException as e:
+            output.update(msg=f'{e.__class__.__name__}: {e}', progress_type=Progress.FAILED)
         except FunctionTimedOut:
             output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=Progress.FAILED)
         except Exception as e:
-            output.update(msg=f'Encounteredexception: {e}. Aborting ...', progress_type=Progress.EXCEPTION)
+            output.update(msg=f'Encounter edexception: {e}. Aborting ...', progress_type=Progress.EXCEPTION)
         finally:
             output.update(msg=f'Tool call finished', progress_type=Progress.FINISH)
 
@@ -43,15 +43,15 @@ class Tool:
             arg.val = None
 
         args_dict = tool_call.get_args_dict()
-        missing_required = not all(arg.name in args_dict for arg in self._get_required_args())
-        if missing_required:
-            raise MissingArgs(f'Provided dictionary {args_dict} did not cover all required tool arguments')
+        missing_args = [arg.name for arg in self._get_required_args() if not arg.name in args_dict]
+        if missing_args:
+            raise MissingArgs(f'Provided dictionary {args_dict} did not cover required args {missing_args}')
 
         specified_args = [arg for arg in self.get_args() if arg.name in args_dict]
         for arg in specified_args:
             arg.val = args_dict[arg.name]
             if not arg.value_is_valid():
-                raise InvalidArgValue(f'Value {arg.val} is not in valid options {arg.choices} for argument {arg.name}')
+                raise InvalidArgValue(f'Argument value \"{arg.val}\" is not in allowed choices \"{arg.choices}\" for argument \"{arg.name}\"')
         return specified_args
 
 
@@ -66,9 +66,9 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-
+    @classmethod
     @abstractmethod
-    def get_desc(self) -> str:
+    def get_desc(cls) -> str:
         pass
 
 

@@ -14,7 +14,7 @@ class Application(Loggable):
         self.window_map : WindowMap = WindowMap()
         self.open_tool : Tool = self.create_open_tool()
         self.action_tools : list[ActionTool] = self.create_action_tools()
-        self.close_tool : CloseTool = CloseTool(window_map=self.window_map)
+        self.close_tool : CloseTool = CloseTool(window_map=self.window_map,call_timeout=0.1)
 
         self.tools : list[Tool] = [self.open_tool] + self.action_tools + [self.close_tool]
         self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.tools}
