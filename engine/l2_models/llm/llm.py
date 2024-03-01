@@ -1,26 +1,22 @@
 from __future__ import annotations
 
-import json, tiktoken
-from typing import Optional
 
 from api import Entry
+import json, tiktoken
+from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
 
 from enum import Enum
 from hollarek.dev.log import Loggable
-from .generation import Generation, Options, GenerationContext
-
-from engine.l4_singletons import Entity, ServerResponse
-
-
+from .generation import Generation, Options, GenerationContext, ToolOptions
 # ---------------------------------------------------------
 
 class ModelType(Enum):
     pass
 
 
-class LLM(Entity):
+class LLM:
     def __init__(self, model_type: ModelType):
         super().__init__()
         self.model_type : str = model_type.value
@@ -30,9 +26,12 @@ class LLM(Entity):
     def get_generation(self, context : GenerationContext, options: Options) -> Generation:
         pass
 
-    @abstractmethod
-    def get_response(self, entry : Entry) -> ServerResponse:
-        pass
+    def get_text_generation(self, entries : list[Entry]) -> Generation:
+        context = GenerationContext(entries=entries, docs=[])
+        options = Options(tool_options=ToolOptions.no_call())
+        return self.get_generation(context=context, options=options)
+
+
 
 class Tokenizer(Loggable):
     def __init__(self, encoding : Encoding):

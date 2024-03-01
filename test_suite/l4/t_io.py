@@ -25,7 +25,7 @@ class MockTextStream(TextStream):
 
 
 class MockEntity(Entity):
-    def get_response(self, entry: Entry) -> ServerResponse:
+    def handle(self, entry: Entry) -> ServerResponse:
         return ServerResponse(user_query=None, text_stream=MockTextStream())
 
 
@@ -49,7 +49,7 @@ class TestEngineIO(Unittest):
         msg = 'Hello, do something'
         print(f'User said: {msg}')
         entry = Entry(msg=msg, speaker=Speaker(role=Role.USER))
-        response = self.app.get_response_stream(entry)
+        response = self.app.handle(entry)
 
         self.assertIsInstance(response, ServerResponse)
         self.assertIsInstance(response.text_stream, TextStream)

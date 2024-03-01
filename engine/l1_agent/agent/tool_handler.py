@@ -2,19 +2,20 @@ from __future__ import annotations
 
 from hollarek.dev.log import Loggable, LogLevel
 from engine.l3_applications import Tool, ToolCall, Application
+from engine.l2_models.llm import Chunk
 # ---------------------------------------------------------
 
 
 class OS(Loggable):
     def __init__(self):
         super().__init__()
-        self.tool_call_dict : dict[int,ToolCall] = {}
+        self.call_map : dict[int,ToolCall] = {}
         self.applications : list[Application] = []
 
 
     def handle_calls(self):
         tools_map = self.get_tools_map()
-        for tool_call in list(self.tool_call_dict.values()):
+        for tool_call in list(self.call_map.values()):
             try:
                 tool = tools_map[tool_call.name]
                 tool.handle(tool_call=tool_call)
@@ -22,34 +23,36 @@ class OS(Loggable):
                 self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
         self.reset_calls()
 
+    def store_info(self, chunk : Chunk):
+        call_content = chunk.get_call()
+        self.update(partial_call=call_content)
+
     # ---------------------------------------------------
     # update
 
     def reset_calls(self):
-        self.tool_call_dict : dict[int,ToolCall] = {}
+        self.call_map : dict[int,ToolCall] = {}
 
 
     def update(self, partial_call : ToolCall):
         the_index = partial_call.index
-
-        call = self.tool_call_dict.get(the_index)
-        if call is None:
-            self.tool_call_dict[the_index] = partial_call
+        if not partial_call.index in self.call_map:
+            self.call_map[the_index] = partial_call
         else:
-            self.tool_call_dict[the_index].update(partial_call=partial_call)
+            self.call_map[the_index].update(partial_call=partial_call)
 
 
     # ---------------------------------------------------
     # get
 
     def get_toolcall_made(self) -> bool:
-        return not len(self.tool_call_dict) == 0
+        return not len(self.call_map) == 0
 
 
-    def get_docs_map(self, active_only : bool = True) -> dict[str, dict]:
-        docs = {}
+    def get_docs(self, active_only : bool = True) -> list[dict]:
+        docs = []
         for app in self.applications:
-            docs.update(app.get_doc_dict(active_only=active_only))
+            docs.append(app.get_doc_dict(active_only=active_only))
         return docs
 
 

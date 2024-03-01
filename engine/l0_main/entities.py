@@ -4,7 +4,8 @@ import copy
 from api import Entry, DialogueRole, Flag
 from engine.l3_singletons.io import EngineIO
 from engine.l1_agent import LingualEntity
-from engine.l1_agent import Agent, Task
+from engine.l1_agent import Agent
+from engine.l4_singletons_io.types import Task
 from engine.l3_applications import Command,FileIO,WebSearch, UpdateMandate, INITIALIZE_MANDATE, Tool
 
 
@@ -33,7 +34,7 @@ class Alpha(Agent):
             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
                 self.task_queue.put(Task(mandate=self.mandate))
                 self.task_queue.put(Task(mandate=self.mandate,
-                                         required_funct_name=UpdateMandate.__name__))
+                                         required=UpdateMandate.__name__))
 
 
     def react(self, entry: Entry):
@@ -42,8 +43,8 @@ class Alpha(Agent):
             required_funct_name = None if not entry.flags.get(flag=Flag.MANDATE) else INITIALIZE_MANDATE.__name__
             entries_to_process = self.get_unread_entries()
             new_dialogue_task = Task(mandate = None,
-                                     entries_to_respond_to=entries_to_process,
-                                     required_funct_name=required_funct_name)
+                                     new_entries=entries_to_process,
+                                     required=required_funct_name)
             self.task_queue.put(new_dialogue_task)
 
             for entry in entries_to_process:
@@ -98,7 +99,7 @@ class User(LingualEntity):
         the_entry.flags.set(flag=Flag.IS_ENTRY_START,value=self.current_entry is None)
 
         # print(f'{the_entry.get_content()}'.__repr__())
-        EngineIO().get_response_stream(entry=the_entry)
+        EngineIO().handle(entry=the_entry)
 
 
     def react(self, entry : Entry):

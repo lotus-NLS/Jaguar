@@ -3,13 +3,13 @@ from abc import abstractmethod
 
 from api import Entry, DefaultNetwork, Socket
 from hollarek.tmpl import Singleton
-from .types import ServerResponse
+from .types import ServerResponse, Task
 
 # ----------------------------------------------
 
 class Entity:
     @abstractmethod
-    def get_response(self, entry : Entry) -> ServerResponse:
+    def handle(self, task : Task) -> ServerResponse:
         pass
 
 
@@ -22,8 +22,8 @@ class EngineIO(Singleton):
         self.entity : entity = entity
         self.app : Flask = app
 
-    def get_response_stream(self, entry : Entry) -> ServerResponse:
-        return self.entity.get_response(entry=entry)
+    def handle(self, task : Task) -> ServerResponse:
+        return self.entity.handle(task=task)
 
 
     def run(self, socket : Socket = DefaultNetwork.engine_socket):

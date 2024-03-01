@@ -1,12 +1,14 @@
 from typing import Optional
 
 import openai
+from api import Entry
 from openai.openai_object import OpenAIObject
 
 from ..llm.llm import LLM, ModelType
 from ..llm.generation import Generation, Chunk, Options, GenerationContext
 from engine.l3_applications.tool import ToolCall
-from engine.l4_singletons import Settings
+from engine.l4_singletons import Settings, ServerResponse
+
 
 # ---------------------------------------------------------
 
@@ -53,7 +55,7 @@ class OpenAIModel(LLM):
 
 
 class OpenAIGeneration(Generation):
-    def get_next_chunk(self, data : OpenAIObject):
+    def _get_next_chunk(self, data : OpenAIObject):
         return OpenAIChunk(data=data)
 
 
