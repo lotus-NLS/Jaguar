@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 
-from .tool import Tool, WindowMap, ToolArg
-from .output import Window
+from .tool import Tool, ToolArg
+from .output import Window, WindowMap
 
 # ---------------------------------------------------
 

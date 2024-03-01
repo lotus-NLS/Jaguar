@@ -4,7 +4,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.dev import get_logger
-from .output import MissingArgs, InvalidArgValue, ToolOutput, Progress, WindowMap
+from .output import MissingArgs, InvalidArgValue, ToolOutput, Progress
 from .input import ToolCall, ToolArg
 # ---------------------------------------------------------
 
@@ -18,24 +18,24 @@ class Tool:
     # call
 
     def handle(self, tool_call: ToolCall) -> ToolOutput:
-        report = ToolOutput(tool_name=self.get_name())
-        report.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', category=Progress.START)
+        output = ToolOutput(tool_name=self.get_name())
+        output.update(msg=f'Starting {self.get_name()} with args {tool_call.get_args_dict()}', progress_type=Progress.START)
         try:
             self._set_args(tool_call=tool_call)
-            report.update(msg=f'Running tool {self.get_name()}', category=Progress.UPDATE)
-            report.value = func_timeout(timeout=self.timeout, func=self.do)
-            report.update(msg=f'Tool {self.get_name()} completed execution', category=Progress.FINISH)
+            output.update(msg=f'Running tool {self.get_name()}', progress_type=Progress.UPDATE)
+            output.value = func_timeout(timeout=self.timeout, func=self.do)
+            output.update(msg=f'Tool {self.get_name()} completed execution', progress_type=Progress.FINISH)
 
         except MissingArgs as e:
-            report.update(msg=f'Missing Arguments: {e}', category=Progress.FAILED)
+            output.update(msg=f'Missing Arguments: {e}', progress_type=Progress.FAILED)
         except FunctionTimedOut:
-            report.update(msg=f'Timed out without completing after {self.timeout} seconds', category=Progress.FAILED)
+            output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=Progress.FAILED)
         except Exception as e:
-            report.update(msg=f'Encounteredexception: {e}. Aborting ...', category=Progress.EXCEPTION)
+            output.update(msg=f'Encounteredexception: {e}. Aborting ...', progress_type=Progress.EXCEPTION)
         finally:
-            report.update(msg=f'Tool call finished', category=Progress.FINISH)
+            output.update(msg=f'Tool call finished', progress_type=Progress.FINISH)
 
-        return report
+        return output
 
 
     def _set_args(self, tool_call : ToolCall):
@@ -105,7 +105,7 @@ class Tool:
 
 
     def get_args(self) -> list[ToolArg]:
-        return [val for name,val in self.__dict__ if isinstance(val, ToolArg)]
+        return [val for name,val in self.__dict__.items() if isinstance(val, ToolArg)]
 
 
     def _get_required_args(self) -> list[ToolArg]:
