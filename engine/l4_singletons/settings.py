@@ -24,12 +24,9 @@ class Settings(Singleton):
             Settings.configs = AWSConfigs(secret_name='lotus_api_keys')
 
         if validate:
-            try:
-                self.validate_openai_key()
-                self.validate_search_engine()
-                self.log(f'All Settings validated')
-            except:
-                self.log(f'Error validating settings', level=LogLevel.ERROR)
+            self.validate_openai_key()
+            self.validate_search_engine()
+            self.log(f'All Settings validated')
 
         self.log(f'Completed setup for all Settings')
 
