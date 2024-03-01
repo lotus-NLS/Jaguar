@@ -1,15 +1,17 @@
 from api import Entry, Speaker, Role
 from abc import abstractmethod
+from typing import Optional
 
+from .input import ToolCall
 from .output import WindowMap, Window
 from .tool import Tool, ToolArg
+from abc import ABC
 # ---------------------------------------------------
 
 
-class OpenTool(Tool):
-    @abstractmethod
-    def do(self) -> Window:
-        pass
+class OpenTool(Tool, ABC):
+    def __init__(self, window_map : WindowMap):
+        super().__init__(window_map=window_map, call_timeout=1)
 
     def add_window(self, window: Window):
         index = 0
@@ -17,29 +19,22 @@ class OpenTool(Tool):
             index += 1
         self.window_map[index] = window
 
-    @classmethod
-    @abstractmethod
-    def get_application_name(cls) -> str:
-        pass
 
-
-class ActionTool(Tool):
-    def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map)
+class ActionTool(Tool, ABC):
+    def __init__(self, window_map : WindowMap, call_timeout : int):
+        super().__init__(window_map=window_map, call_timeout=call_timeout)
         self.index_arg: ToolArg = ToolArg(name='Window index', desc='Window on which to perform action')
 
-    def do(self) -> None:
-        pass
+    def get_window(self) -> Optional[Window]:
+        index = int(self.index_arg.val)
+        return self.window_map.get(index)
 
-    @classmethod
-    @abstractmethod
-    def get_application_name(cls) -> str:
-        pass
+
 
 class CloseTool(Tool):
     def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map)
-        self.index_arg : ToolArg = ToolArg(name='Window index', desc='Index of window to close')
+        super().__init__(window_map=window_map, call_timeout=1)
+        self.index_arg : ToolArg = ToolArg(name='Window index', desc='Window to close')
 
     def do(self):
         index = int(self.index_arg.val)
@@ -47,28 +42,27 @@ class CloseTool(Tool):
             raise ValueError(f'Window index {index} does not exist')
         del self.window_map[index]
 
-    @classmethod
-    @abstractmethod
-    def get_application_name(cls) -> str:
-        pass
+    def get_desc(self) -> str:
+        return f'Close an open window from associated application'
 
 
 class Application:
     def __init__(self):
         self.window_map : WindowMap = WindowMap()
-        self.open_tool : Tool = self.get_open_tool()
-        self.action_tools : list[ActionTool] = self.get_action_tools()
+        self.open_tool : Tool = self.create_open_tool()
+        self.action_tools : list[ActionTool] = self.create_action_tools()
         self.close_tool : CloseTool = CloseTool(window_map=self.window_map)
+
+    @abstractmethod
+    def handle(self, tool_call : ToolCall):
+        pass
 
     # ---------------------------------------------------
     #  context
 
-    @abstractmethod
-    def get_open_tool(self) -> OpenTool:
-        pass
-
-    def get_action_tools(self) -> list[ActionTool]:
-        pass
+    @classmethod
+    def get_name(cls):
+        return cls.__name__
 
 
     def get_context(self) -> Entry:
@@ -94,11 +88,19 @@ class Application:
     # ---------------------------------------------------
     # tools
 
+    @abstractmethod
+    def create_open_tool(self) -> OpenTool:
+        pass
+
+    @abstractmethod
+    def create_action_tools(self) -> list[ActionTool]:
+        pass
+
     def get_docs(self, active_only : bool = Tool) -> list[dict]:
         tools = self.get_tools(active_only=active_only)
         docs = []
         for tool in tools:
-            docs += tool.get_json_doc()
+            docs += tool.get_json_doc(application_name=self.get_name())
         return docs
 
 

@@ -1,22 +1,22 @@
 from __future__ import annotations
-
-import copy
 import os
-from enum import Enum
 
 from hollarek.io import get_text, TextFileType
 from hollarek.io.fsys import FsysNode
-from ..application import Tool, ToolArg, Application, Window, ToolCall
-
+from ..tool import ToolArg, ToolCall, Application, Window, WindowMap
+from ..tool import OpenTool, ActionTool
 
 # ---------------------------------------------------------
 
 class TextIO(Application):
     def __init__(self):
         super().__init__()
-        self.available_tool_map = {tool.get_name() : tool for tool in [Write, Read]}
-        self.active_tools_map = copy.copy(self.available_tool_map)
 
+    def create_open_tool(self) -> OpenTool:
+        return Read(window_map=self.window_map)
+
+    def create_action_tools(self) -> list[ActionTool]:
+        return [Insert(window_map=self.window_map)]
 
     def handle(self, call : ToolCall):
         call.get_args_dict()
@@ -27,6 +27,7 @@ class TextWindow(Window):
         super().__init__(name=os.path.basename(fpath))
         self.fpath : str = fpath
 
+
     def get_context(self) -> str:
         with open(self.fpath, 'r') as f:
             lines = f.readlines()
@@ -34,67 +35,38 @@ class TextWindow(Window):
         return ''.join(numbered_lines)
 
 
-
-class Mode(Enum):
-    WRITE = 'write'
-    READ = 'read'
-
-    @classmethod
-    def modes_as_str_list(cls) -> list[str]:
-        return [cls.WRITE.value, cls.READ.value]
-
-
-class Edit(Tool):
-    def __init__(self, fpath : str):
-        super().__init__(call_timeout=5)
-        self.fpath : str = fpath
-        self.desc = f'Allow for inserting or overwriting individual lins of open text windows'
-
-        self.content_arg : ToolArg = ToolArg(name='content to insert', desc='Content to insert')
-        self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
-        self.do_overwrite : ToolArg = ToolArg(name='Overwrite existing lines', choices=['0','1'], is_optional=True)
-
-
-    def do(self):
-        line, content, overwrite = int(self.line_arg.val), self.content_arg.val, bool(self.do_overwrite.val)
-        self.do_update(line=line, content=content, overwrite=overwrite)
-
-
-    def do_update(self, line: int, content: str, overwrite: bool = False):
-        with open(self.fpath, 'r') as f:
-            lines = f.readlines()
+    def update(self, line: int, content: str):
         if line <= 0:
             raise ValueError("Line number must be a positive integer.")
-        content += '' if content.endswith('\n') else '\n'
+
+        with open(self.fpath, 'r') as f:
+            lines = f.readlines()
         index = line - 1
-        if overwrite and 0 < line <= len(lines):
-            lines[index] = content
-        else:
-            lines.insert(index, content)
+        lines.insert(index, content)
+
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
 
 
-class Write(Tool):
-    def __init__(self):
-        super().__init__()
-        self.desc = f'Writes or overwrites text files with given Content '
-        self.content_arg: ToolArg = ToolArg(name='content', desc='(New) content of file')
-        self.fpath_arg : ToolArg = ToolArg(name='filepath')
+class Insert(ActionTool):
+    def __init__(self, window_map : WindowMap):
+        super().__init__(window_map=window_map, call_timeout=5)
+
+        self.content_arg : ToolArg = ToolArg(name='content to insert', desc='Content to insert')
+        self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
 
     def do(self):
-        fpath = os.path.expanduser(self.fpath_arg.val)
-        content = self.content_arg.val
-        with open(fpath, 'w') as f:
-            f.write(content)
-        return f'Wrote content to {fpath}'
+        window = self.get_window()
+        window.update(line=int(self.line_arg.val), content=self.content_arg.val)
+
+    def get_desc(self) -> str:
+        return f'Allow for inserting or overwriting individual lins of open text windows'
 
 
-class Read(Tool):
-    def __init__(self):
-        super().__init__()
-        self.desc = f'Open plain text or pdfs files'
-        self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath to be read or written to')
+class Read(OpenTool):
+    def __init__(self, window_map : WindowMap):
+        super().__init__(window_map=window_map)
+        self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath of text file to be opened')
 
     def do(self):
         fpath = os.path.expanduser(self.fpath_arg.val)
@@ -107,4 +79,5 @@ class Read(Tool):
         return get_text(fpath=fpath, file_type=file_type)
 
 
-
+    def get_desc(self) -> str:
+        return f'Open plain text or pdfs files'

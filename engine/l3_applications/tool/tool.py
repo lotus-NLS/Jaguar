@@ -6,6 +6,7 @@ from abc import abstractmethod
 from hollarek.dev import get_logger
 from .output import MissingArgs, InvalidArgValue, ToolOutput, Update, WindowMap
 from .input import ToolCall, ToolArg
+from typing import Optional
 # ---------------------------------------------------------
 
 class Tool:
@@ -13,7 +14,6 @@ class Tool:
         self.window_map : WindowMap = window_map
 
         self.is_active : bool = True
-        self.desc: str = ''
         self.logger = get_logger(name=self.get_name())
         self.timeout : float = call_timeout
 
@@ -70,22 +70,21 @@ class Tool:
         return cls.__name__
 
 
-    @classmethod
     @abstractmethod
-    def get_application_name(cls):
+    def get_desc(self) -> str:
         pass
 
 
-    def get_json_doc(self) -> dict[str, Any]:
+    def get_json_doc(self, application_name : str) -> dict[str, Any]:
         required_arg_names = [arg.name for arg in self.get_args() if not arg.is_optional]
         arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self.get_args()}
 
-        if not self.desc:
+        if not self.get_desc():
             raise ValueError(f'\n[Error]: Tool {self.get_name()} has no description\nAborting ...')
 
         function_doc = {
-            'name': f'{self.get_name()}',
-            'description': f'{self.desc}',
+            'name': f'{application_name}:{self.get_name()}',
+            'description': f'{self.get_desc()}; Application: {application_name}',
             'parameters': {
                 'type': 'object',
                 'properties': {arg_docs},
