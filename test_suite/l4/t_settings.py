@@ -1,5 +1,6 @@
 from engine.l4_singletons import Settings
 from hollarek.dev import Unittest
+# --------------------------------------------
 
 
 class TestLotusSettings(Unittest):

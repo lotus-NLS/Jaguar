@@ -24,38 +24,37 @@ class MockTextStream(TextStream):
         raise StopIteration
 
 
-class MockQuery(UserQuery):
-    msg: str
-
-    def get_query_display(self) -> str:
-        return f'{self.msg} (y/n)'
-
-
-class MockServer(Entity):
+class MockEntity(Entity):
     def get_response(self, entry: Entry) -> ServerResponse:
         return ServerResponse(user_query=None, text_stream=MockTextStream())
 
 
 class TestEngineIO(Unittest):
-    def setUp(self):
-        self.server = MockServer()
-        self.app = EngineIO(self.server)
-
     @classmethod
     def setUpClass(cls):
         pass
+
+
+    def setUp(self):
+        EngineIO.reset_instance()
+
+        self.entity = MockEntity()
+        self.app = EngineIO(entity=self.entity)
+
 
     def test_initialization(self):
         self.assertIsNotNone(self.app)
 
     def test_response_stream(self):
-        entry = Entry(msg='Hello, do something', speaker=Speaker(role=Role.USER))
+        msg = 'Hello, do something'
+        print(f'User said: {msg}')
+        entry = Entry(msg=msg, speaker=Speaker(role=Role.USER))
         response = self.app.get_response_stream(entry)
 
         self.assertIsInstance(response, ServerResponse)
-        self.assertIsInstance(response.user_query, MockQuery)
-        self.assertIsInstance(response.text_stream, MockTextStream)
+        self.assertIsInstance(response.text_stream, TextStream)
 
+        print(f'Engine responded: With following text stream')
         for text in response.text_stream:
             print(text)
 
