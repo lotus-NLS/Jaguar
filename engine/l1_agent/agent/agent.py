@@ -4,66 +4,80 @@ from abc import abstractmethod
 import logging
 from func_timeout import func_timeout, FunctionTimedOut
 
-from api import Entry, DialogueRole
-from engine.l1_agent.m1_language import LingualEntity
-from engine.l1_agent.llm import OpenAIModel, LLM, ModelsOpenAI
-from engine.l1_agent.llm import Chunk, Action
-from engine.l1_agent.llm import ToolOptions, generation_options
+from api import Entry, Role
+from engine.l2_models.llm import LLM, GenerationContext, Chunk, ModelType, Options
+from engine.l2_models.models import OpenAIModelType
+
+from engine.l3_applications import Application, ToolCall
+
+# from engine.l1_agent.llm import Chunk, Action
+# from engine.l1_agent.llm import ToolOptions, generation_options
 from engine.l1_agent.protocol import Mandate, Identity, Core
 
 from .task import TaskQueue, Task
-from .tool_handler import ToolHandler
+from .tool_handler import OS
+from ...l2_models import Options, Generation
+from ...l4_singletons import ServerResponse
+
+
 # ---------------------------------------------------------
 
-class Agent(LingualEntity):
-    def __init__(self, model_type : LLM = OpenAIModel(ModelsOpenAI.GPT_4),
-                 identity : Identity = Identity(core=Core.GOTO)):
-        super().__init__(role=DialogueRole.agent_role())
+class Agent(LLM):
+    def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4,
+                       identity : Identity = Identity(core=Core.GOTO)):
+        super().__init__(model_type=model_type)
 
-        # Set identity, mandate and task queue
         self.identity : Identity = identity
-        self.mandate : Mandate = Mandate.make_empty()
         self.task_queue : TaskQueue[Task] = TaskQueue()
+        # self.mandate : Mandate = Mandate.make_empty()
 
         # Set tool handler
-        self.tool_handler : ToolHandler = ToolHandler()
-
-        # Set llm
-        self.model : LLM = model_type
-
-
-    @abstractmethod
-    def launch(self):
-        pass
-
-    @abstractmethod
-    def loop(self):
-        pass
-
-    @abstractmethod
-    def react(self, entry : Entry):
-        pass
+        self.os : OS = OS()
+        self.log : list[Entry] = []
 
     # ---------------------------------------------------
     # Main routine
 
+
+    def get_next(self, options: Options = Options()) -> Generation:
+        context = GenerationContext(docs=self.os)
+
+        kwargs = {
+            'entries': self.get_basic_entries() if not context.entries else context.entries
+            'tool_docs': self.os.get_docs_map() if custom_tool_docs is None else custom_tool_docs,
+            'action_options': Options(to=tool_options, max_tokens=max_tokens, temperature=temperature)
+        }
+
+        try:
+            action_stream = func_timeout(timeout=5, func=super().get_generation(context=context, options=options), kwargs=kwargs)
+
+        except FunctionTimedOut:
+            logging.info(f'Action stream request timed out. Check OpenAI server health or internet connection')
+            action_stream = Generation.make_empty()
+
+        except Exception as e:
+            logging.error(f'An error occured while trying to obtain action stream: {e} Defaulting to empty action')
+            action_stream = Generation.make_empty()
+
+        return action_stream
+
     def do(self, task : Task):
         toolname = task.required_func
 
-        self.tool_handler.reset_toolcall()
+        self.os.reset_toolcall()
         action_stream = self.get_next_action_stream(
-            custom_tool_docs=self.tool_handler.get_tool_doc(name=toolname),
+            custom_tool_docs=self.os.get_tool_doc(name=toolname),
             tool_options=ToolOptions(allowed=True, required_func=task.required_func),
             entries=self.get_basic_entries()+[task.get_entry()])
 
 
         self.handle_stream(action_stream=action_stream)
-        if self.tool_handler.get_tool_call_requested():
+        if self.os.get_toolcall_made():
             self.handle_tool_call(task=task)
 
 
     def handle_tool_call(self, task : Task):
-        self.tool_handler.handle_calls()
+        self.os.handle_calls()
         if task.skip_feedback:
             return
 
@@ -89,24 +103,7 @@ class Agent(LingualEntity):
                                max_tokens: Optional[int] = None,
                                temperature: float = 0.3) -> Action:
 
-        kwargs = {
-            'entries': self.get_basic_entries() if entries is None else entries,
-            'tool_docs': self.tool_handler.get_public_tool_docs() if custom_tool_docs is None else custom_tool_docs,
-            'action_options': generation_options(funct_call_options=tool_options, max_tokens=max_tokens, temperature=temperature)
-        }
 
-        try:
-            action_stream = func_timeout(timeout=5, func=self.model.get_generation, kwargs=kwargs)
-
-        except FunctionTimedOut:
-            logging.info(f'Action stream request timed out. Check OpenAI server health or internet connection')
-            action_stream = Action.make_empty()
-
-        except Exception as e:
-            logging.error(f'An error occured while trying to obtain action stream: {e} Defaulting to empty action')
-            action_stream = Action.make_empty()
-
-        return action_stream
 
 
     def handle_stream(self, action_stream : Action):
@@ -129,7 +126,7 @@ class Agent(LingualEntity):
                 self.enqueue(msg='',final=True)
 
             if not multitool_chunk is None:
-                self.tool_handler.multi_tool_call.update_from_multi(new_multicall=multitool_chunk)
+                self.os.multi_tool_call.update_from_multi(new_multicall=multitool_chunk)
         except:
             logging.info(f'An error occured while trying to parse chunk')
 

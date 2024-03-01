@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json, tiktoken
 from typing import Optional
+
+from api import Entry
 from tiktoken import Encoding
 from abc import abstractmethod
 
@@ -9,22 +11,28 @@ from enum import Enum
 from hollarek.dev.log import Loggable
 from .generation import Generation, Options, GenerationContext
 
+from engine.l4_singletons import Entity, ServerResponse
+
+
 # ---------------------------------------------------------
 
 class ModelType(Enum):
     pass
 
 
-class LLM(Loggable):
-    def __init__(self, model: ModelType):
+class LLM(Entity):
+    def __init__(self, model_type: ModelType):
         super().__init__()
-        self.model_type : str = model.value
+        self.model_type : str = model_type.value
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
     def get_generation(self, context : GenerationContext, options: Options) -> Generation:
         pass
 
+    @abstractmethod
+    def get_response(self, entry : Entry) -> ServerResponse:
+        pass
 
 class Tokenizer(Loggable):
     def __init__(self, encoding : Encoding):

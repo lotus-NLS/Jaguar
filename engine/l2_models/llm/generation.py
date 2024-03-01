@@ -56,17 +56,6 @@ class GenerationContext:
     docs : list[dict]
 
 
-
-@dataclass
-class Options:
-    tool_options : ToolOptions
-    max_tokens : Optional[int] = None
-    temp : float = 0.3
-
-    def get_call_allowed(self):
-        return self.tool_options.call_allowed
-
-
 @dataclass
 class ToolOptions:
     call_allowed: bool
@@ -94,3 +83,13 @@ class ToolOptions:
             return 'auto'
         else:
             return {"type" : "function", "function" : {'name' : f'{self.required_tool}'}}
+
+
+@dataclass
+class Options:
+    tool_options : ToolOptions = ToolOptions.auto()
+    max_tokens : Optional[int] = None
+    temp : float = 0.3
+
+    def get_call_allowed(self):
+        return self.tool_options.call_allowed

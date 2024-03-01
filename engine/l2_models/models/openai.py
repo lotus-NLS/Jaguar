@@ -8,7 +8,6 @@ from ..llm.generation import Generation, Chunk, Options, GenerationContext
 from engine.l3_applications.tool import ToolCall
 from engine.l4_singletons import Settings
 
-
 # ---------------------------------------------------------
 
 
@@ -21,7 +20,7 @@ class OpenAIModelType(ModelType):
 
 class OpenAIModel(LLM):
     def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4):
-        super().__init__(model=model_type)
+        super().__init__(model_type=model_type)
 
 
     def get_generation(self, context : GenerationContext, options: Options) -> Generation:

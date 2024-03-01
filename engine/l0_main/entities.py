@@ -56,7 +56,7 @@ class Alpha(Agent):
         public_tools = [Command.make(), FileIO.make(), WebSearch.make()]
         private_tools = [UpdateMandate.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
         all_tools : list[Tool] = public_tools + private_tools
-        self.tool_handler.tool_dict = {tool.name : tool for tool in all_tools}
+        self.os.tool_dict = {tool.name : tool for tool in all_tools}
 
         for tool in all_tools:
             self.add_tool(tool)

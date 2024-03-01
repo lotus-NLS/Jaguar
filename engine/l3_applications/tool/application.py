@@ -79,10 +79,10 @@ class Application(Loggable):
         return tool_dict
 
 
-    def get_docs(self, active_only : bool = False) -> list[dict]:
+    def get_doc_dict(self, active_only : bool = False) -> dict[str, dict]:
         tools = self.get_tools(active_only=active_only)
-        docs = []
+        docs = {}
         for tool in tools:
-            docs += tool.get_json_doc(application_name=self.get_name())
+            docs[tool.get_name()] = tool.get_json_doc(application_name=self.get_name())
         return docs
 

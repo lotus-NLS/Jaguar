@@ -1,58 +1,60 @@
 from __future__ import annotations
-from typing import Optional
-from engine.l3_applications import Tool, ToolCall
+
+from hollarek.dev.log import Loggable, LogLevel
+from engine.l3_applications import Tool, ToolCall, Application
 # ---------------------------------------------------------
 
 
-class ToolHandler:
+class OS(Loggable):
     def __init__(self):
-        self.tool_dict : dict[str,Tool] = {}
-        self.tool_calls : list[ToolCall] = []
+        super().__init__()
+        self.tool_call_dict : dict[int,ToolCall] = {}
+        self.applications : list[Application] = []
 
 
     def handle_calls(self):
-        for tool_call in self.tool_calls:
+        tools_map = self.get_tools_map()
+        for tool_call in list(self.tool_call_dict.values()):
             try:
-                tool = self.tool_dict[tool_call.name]
+                tool = tools_map[tool_call.name]
                 tool.handle(tool_call=tool_call)
             except:
-                self.log(f'No tool found with name {tool_call.name}')
+                self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
         self.reset_calls()
 
+    # ---------------------------------------------------
+    # update
 
     def reset_calls(self):
-        self.tool_calls = []
+        self.tool_call_dict : dict[int,ToolCall] = {}
 
 
-    def update(self, partial_calls : list[ToolCall]):
-        pass
+    def update(self, partial_call : ToolCall):
+        the_index = partial_call.index
 
-        # if isinstance(tool_call, ToolCall):
-        #     index = tool_call.index
-        #     if self.tool_calls.get(index) is None:
-        #         self.tool_calls[index] = tool_call
-        #     else:
-        #         self.tool_calls[index].update(partial_call=tool_call)
-        #
-        #
-        # elif isinstance(tool_call, MultiToolCall):
-        #     for tool_call in tool_call.get_as_list():
-        #         self.update(tool_call=tool_call)
-
-    def get_tool_call_requested(self) -> bool:
-        return not len(self.tool_calls) == 0
+        call = self.tool_call_dict.get(the_index)
+        if call is None:
+            self.tool_call_dict[the_index] = partial_call
+        else:
+            self.tool_call_dict[the_index].update(partial_call=partial_call)
 
 
-    def get_tool_doc(self, name : str) -> Optional[dict]:
-        tool = self.tool_dict.get(name)
-        docs = tool.get_json_doc() if tool else None
+    # ---------------------------------------------------
+    # get
+
+    def get_toolcall_made(self) -> bool:
+        return not len(self.tool_call_dict) == 0
+
+
+    def get_docs_map(self, active_only : bool = True) -> dict[str, dict]:
+        docs = {}
+        for app in self.applications:
+            docs.update(app.get_doc_dict(active_only=active_only))
         return docs
 
 
-    def get_public_tool_docs(self) -> Optional[list[dict]]:
-        return [tool.get_json_doc() for tool in self.tool_dict.values() if tool.is_public]
-
-
-    @staticmethod
-    def log(msg : str):
-        print(msg)
+    def get_tools_map(self, active_only : bool = True) -> dict[str, Tool]:
+        tools = {}
+        for app in self.applications:
+            tools.update(app.get_tool_dict(active_only=active_only))
+        return tools
