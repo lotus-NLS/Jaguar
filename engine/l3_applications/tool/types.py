@@ -1,5 +1,4 @@
 from abc import abstractmethod, ABC
-from typing import Optional
 
 from .tool import Tool, WindowMap, ToolArg
 from .output import Window
@@ -31,7 +30,7 @@ class ActionTool(Tool, ABC):
         super().__init__(window_map=window_map, call_timeout=call_timeout)
         self.index_arg: ToolArg = ToolArg(name='Window index', desc='Window on which to perform action')
 
-    def get_window(self) -> Optional[Window]:
+    def get_window(self):
         index = int(self.index_arg.val)
         return self.window_map.get(index)
 

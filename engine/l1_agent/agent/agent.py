@@ -9,7 +9,7 @@ from engine.l1_agent.m1_language import LingualEntity
 from engine.l1_agent.llm import OpenAIModel, LLM, ModelsOpenAI
 from engine.l1_agent.llm import Chunk, Action
 from engine.l1_agent.llm import ToolOptions, generation_options
-from engine.l1_agent.protocol import Mandate, Identity, Cores
+from engine.l1_agent.protocol import Mandate, Identity, Core
 
 from .task import TaskQueue, Task
 from .tool_handler import ToolHandler
@@ -17,7 +17,7 @@ from .tool_handler import ToolHandler
 
 class Agent(LingualEntity):
     def __init__(self, model_type : LLM = OpenAIModel(ModelsOpenAI.GPT_4),
-                 identity : Identity = Identity(core=Cores.goto)):
+                 identity : Identity = Identity(core=Core.GOTO)):
         super().__init__(role=DialogueRole.agent_role())
 
         # Set identity, mandate and task queue

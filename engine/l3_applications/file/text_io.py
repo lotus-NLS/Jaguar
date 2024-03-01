@@ -13,6 +13,10 @@ class TextIO(Application):
     def __init__(self):
         super().__init__()
 
+    @classmethod
+    def get_desc(cls):
+        return f'Allow for opening text files (plain text/pdf) and editing plain text files'
+
     def create_open_tool(self) -> OpenTool:
         return Read(window_map=self.window_map)
 
@@ -55,7 +59,9 @@ class Insert(ActionTool):
         self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
 
     def do(self):
-        window = self.get_window()
+        window : TextWindow = self.get_window()
+        if FsysNode(path=window.fpath).get_suffix() == 'pdf':
+            raise ValueError('Cannot edit pdf files')
         window.update(line=int(self.line_arg.val), content=self.content_arg.val)
 
     def get_desc(self) -> str:

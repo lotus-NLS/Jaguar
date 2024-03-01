@@ -1,2 +1,2 @@
 from .mandate import Mandate, Objective
-from .identity import Identity, Cores
+from .identity import Identity, Core

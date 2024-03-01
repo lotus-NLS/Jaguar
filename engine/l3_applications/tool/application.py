@@ -26,6 +26,11 @@ class Application(Loggable):
     def get_name(cls):
         return cls.__name__
 
+    @classmethod
+    @abstractmethod
+    def get_desc(cls):
+        pass
+
 
     def get_context(self) -> Entry:
         context = self.get_header()
@@ -49,6 +54,7 @@ class Application(Loggable):
 
     # ---------------------------------------------------
     # tools
+
 
     @abstractmethod
     def create_open_tool(self) -> OpenTool:
