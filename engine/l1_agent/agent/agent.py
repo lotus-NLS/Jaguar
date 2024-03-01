@@ -7,7 +7,7 @@ from engine.l2_models.models import OpenAIModel
 from engine.l4_singletons import ServerResponse, Entity, Task, TaskQueue
 
 from ..protocol import Identity, Core
-from .tool_handler import OS
+from .os import OS
 # ---------------------------------------------------------
 
 class Agent(Entity):
@@ -61,6 +61,7 @@ class Agent(Entity):
     @classmethod
     def get_speaker(cls) -> Speaker:
         return Speaker(role=Role.AGENT, name=cls.__name__)
+
 
     def get_basic_entries(self) -> list[Entry]:
         basic_entries = [Entry(speaker=Speaker(role=Role.SYSTEM), msg=self.identity.get_str())]

@@ -16,7 +16,7 @@ class ModelType(Enum):
     pass
 
 
-class LLM:
+class LLM(Loggable):
     def __init__(self, model_type: ModelType):
         super().__init__()
         self.model_type : str = model_type.value

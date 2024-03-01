@@ -66,7 +66,7 @@ class Chunk:
 
 
     @abstractmethod
-    def get_call(self) -> Optional[ToolCall]:
+    def get_calls(self) -> list[ToolCall]:
         pass
 
 

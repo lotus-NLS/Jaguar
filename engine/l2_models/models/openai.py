@@ -1,17 +1,15 @@
 from typing import Optional
 
 import openai
-from api import Entry
 from openai.openai_object import OpenAIObject
 
 from ..llm.llm import LLM, ModelType
 from ..llm.generation import Generation, Chunk, Options, GenerationContext
 from engine.l3_applications.tool import ToolCall
-from engine.l4_singletons import Settings, ServerResponse
+from engine.l4_singletons import Settings
 
 
 # ---------------------------------------------------------
-
 
 class OpenAIModelType(ModelType):
     GPT_4 = 'gpt-4'
@@ -73,7 +71,7 @@ class OpenAIChunk(Chunk):
         return text_content
 
 
-    def get_call(self) -> Optional[ToolCall]:
+    def get_calls(self) -> Optional[ToolCall]:
         tool_calls : Optional[dict] = self.best_response.get('tool_calls')
         if tool_calls is None:
             return None

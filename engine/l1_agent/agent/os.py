@@ -23,9 +23,10 @@ class OS(Loggable):
                 self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
         self.reset_calls()
 
+
     def store_info(self, chunk : Chunk):
-        call_content = chunk.get_call()
-        self.update(partial_call=call_content)
+        for call in chunk.get_calls():
+            self.update(partial_call=call)
 
     # ---------------------------------------------------
     # update
