@@ -84,7 +84,7 @@ class Tool:
             'description': f'{self.get_desc()}; Application: {application_name}',
             'parameters': {
                 'type': 'object',
-                'properties': {arg_docs},
+                'properties': arg_docs,
                 'required' : required_arg_names
             },
         }

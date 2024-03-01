@@ -3,8 +3,8 @@ from typing import Optional
 import openai
 from openai.openai_object import OpenAIObject
 
-from ..llm.llm import LLM, ModelType
-from ..llm.generation import Generation, Chunk, Options, GenerationContext
+from ..generation.llm import LLM, ModelType
+from ..generation.generation import Generation, Chunk, Options, GenerationContext
 from engine.l3_applications.tool import ToolCall
 from engine.l4_singletons import Settings
 
