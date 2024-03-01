@@ -22,8 +22,8 @@ class EngineIO(Flask, Singleton):
         Flask.__init__(self, import_name=__name__)
         Singleton.__init__(self)
 
-        self.ip : str = ip if ip else DefaultNetwork.ip_engine
-        self.port : int = port if port else DefaultNetwork.port_engine
+        self.ip : str = ip if ip else DefaultNetwork.engine_socket.ip
+        self.port : int = port if port else DefaultNetwork.engine_socket.port
         self.server : Server = server
 
 

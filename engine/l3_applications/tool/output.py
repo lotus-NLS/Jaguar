@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 
 from hollarek.dev.log import Loggable, LogLevel
