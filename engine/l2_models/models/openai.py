@@ -3,10 +3,12 @@ from typing import Optional
 import openai
 from openai.openai_object import OpenAIObject
 
-from engine.l4_singletons import Settings
 from ..llm.llm import LLM, ModelType
 from ..llm.generation import Generation, Chunk, Options, GenerationContext
-from ..llm.toolcall import MultiToolCall, SingleToolCall
+from engine.l3_applications.tool import ToolCall
+from engine.l4_singletons import Settings
+
+
 # ---------------------------------------------------------
 
 
@@ -60,7 +62,7 @@ class OpenAIGeneration(Generation):
 class OpenAIChunk(Chunk):
     def __init__(self, data : OpenAIObject):
         super().__init__(data=data)
-        self.best_response : Optional[dict]  = data['choices'][0]._get('delta')
+        self.best_response : Optional[dict] = data['choices'][0].get('delta')
 
 
     def get_text(self) -> Optional[str]:
@@ -70,17 +72,17 @@ class OpenAIChunk(Chunk):
         return text_content
 
 
-    def get_call(self) -> Optional[MultiToolCall]:
+    def get_call(self) -> Optional[ToolCall]:
         tool_calls : Optional[dict] = self.best_response.get('tool_calls')
         if tool_calls is None:
             return None
 
-        multitool_call = MultiToolCall()
+        multitool_call = ToolCall()
         for openai_tool_call in tool_calls:
-            index = openai_tool_call._get('index')
-            funct_call = openai_tool_call._get('function')
+            index = openai_tool_call.get('index')
+            funct_call = openai_tool_call.get('function')
 
-            tool_call = SingleToolCall(name=funct_call._get('name'), json_str=funct_call._get('arguments'), index=index)
-            multitool_call.update(tool_call=tool_call)
+            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'), index=index)
+            multitool_call.update(partial_call=tool_call)
 
         return multitool_call
