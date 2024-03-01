@@ -5,7 +5,7 @@ import random
 from api import Entry, Speaker, Role
 from hollarek.dev import Unittest
 from engine.l4_singletons.io.engine_io import EngineIO, Entity
-from engine.l4_singletons.io.types import ServerResponse, TextStream, UserQuery
+from engine.l4_singletons.io.types import ServerResponse, TextStream
 # --------------------------------------------
 
 class MockTextStream(TextStream):
