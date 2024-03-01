@@ -4,7 +4,7 @@ from typing import Optional
 
 from hollarek.io import get_text, TextFileType
 from hollarek.io.fsys import FsysNode
-from ..tool import ToolArg, ToolCall, Application, Window, WindowMap, OpenTool, ActionTool
+from ..tool import ToolArg, Application, Window, WindowMap, OpenTool, ActionTool
 
 
 # ---------------------------------------------------------

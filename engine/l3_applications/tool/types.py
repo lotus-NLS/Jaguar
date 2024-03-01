@@ -31,6 +31,10 @@ class OpenTool(Tool):
         self.window_map[index] = window
 
 
+from typing import TypeVar, Generic
+
+WindowType = TypeVar('WindowType', bound=Window)
+
 
 
 class ActionTool(Tool):
@@ -41,7 +45,7 @@ class ActionTool(Tool):
                                           , choices=[str(index) for index in window_map.keys()])
 
 
-    def get_window(self) -> Window:
+    def get_window(self) -> WindowType:
         index = int(self.index_arg.val)
         return self.window_map.get(index)
 
