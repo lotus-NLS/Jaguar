@@ -3,7 +3,7 @@ import requests
 import os
 from typing import Optional
 
-from func_timeout import func_timeout
+from func_timeout import func_timeout, FunctionTimedOut
 from hollarek.configs import LocalConfigs, AWSConfigs
 from hollarek.templates import Singleton
 from hollarek.logging import LogLevel, get_logger
@@ -58,6 +58,7 @@ class Settings(Singleton):
         temp = openai.api_key
         is_successful = False
         err_details = ''
+        timeout = 5
 
         try:
             openai.api_key = self.get_openai_apikey()
@@ -67,10 +68,12 @@ class Settings(Singleton):
                 'stream' : True
             }
 
-            func_timeout(timeout=5, func=openai.ChatCompletion.create, kwargs=args_dict)
+            func_timeout(timeout=timeout, func=openai.ChatCompletion.create, kwargs=args_dict)
             is_successful = True
 
-        except Exception as err:
+        except FunctionTimedOut:
+            err_details = f'Request to OpenAI servers timed out after {timeout}'
+        except BaseException as err:
             err_details = f'{err}'
 
         finally:

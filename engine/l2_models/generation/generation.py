@@ -29,7 +29,7 @@ class Generation:
         if self.generator is None:
             raise StopIteration
 
-        action_chunk = self._get_next_chunk(data=self.generator.__next__())
+        action_chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
         chunk_text = action_chunk.get_text()
         if chunk_text:
             self.text_queue.put(chunk_text)
@@ -38,7 +38,7 @@ class Generation:
 
 
     @abstractmethod
-    def _get_next_chunk(self, data : object):
+    def _get_next_chunk(self, chunk_data : object):
         pass
 
     def stop(self):

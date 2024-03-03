@@ -11,6 +11,11 @@ from engine.l4_singletons import Settings
 
 # ---------------------------------------------------------
 
+class OpenAIGeneration(Generation):
+    def _get_next_chunk(self, chunk_data : OpenAIObject):
+        return OpenAIChunk(data=chunk_data)
+
+
 class OpenAIModelType(ModelType):
     GPT_4 = 'gpt-4'
     GPT_4_TURBO = 'gpt-4-1106-preview'
@@ -18,17 +23,49 @@ class OpenAIModelType(ModelType):
     GPT_35 = 'gpt-3.5-turbo'
 
 
+class OpenAIChunk(Chunk):
+    def __init__(self, data : OpenAIObject):
+        super().__init__(data=data)
+        self.best_response : Optional[dict] = data['choices'][0].get('delta')
+
+
+    def get_text(self) -> Optional[str]:
+        text_content = None
+        if not self.best_response is None:
+            text_content = self.best_response.get('content')
+        return text_content
+
+
+    def get_calls(self) -> list[ToolCall]:
+        tool_calls : Optional[dict] = self.best_response.get('tool_calls')
+        if tool_calls is None:
+            return []
+
+        call_map : dict[int, ToolCall] = {}
+        for openai_tool_call in tool_calls:
+            index = openai_tool_call.get('index')
+            call = call_map.get(index, ToolCall())
+            new_data = openai_tool_call.get('function')
+            new = ToolCall(name=new_data.get('name'), json_str=new_data.get('arguments'))
+
+            call.update(partial_call=new)
+            if not index in call_map:
+                call_map[index] = call
+
+        return list(call_map.values())
+
+
 class OpenAIModel(LLM):
     def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4):
         super().__init__(model_type=model_type)
 
 
-    def get_generation(self, context : GenerationContext, options: Options) -> Generation:
+    def get_generation(self, context : GenerationContext, options: Options) -> OpenAIGeneration:
         self.log(f'Creating generation request')
         openai_response = self.get_openai_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
 
-        return Generation(generator=openai_response)
+        return OpenAIGeneration(generator=openai_response)
 
 
     def get_openai_response(self, context : GenerationContext, options: Options):
@@ -52,36 +89,6 @@ class OpenAIModel(LLM):
         return openai_generator
 
 
-class OpenAIGeneration(Generation):
-    def _get_next_chunk(self, data : OpenAIObject):
-        return OpenAIChunk(data=data)
 
 
 
-class OpenAIChunk(Chunk):
-    def __init__(self, data : OpenAIObject):
-        super().__init__(data=data)
-        self.best_response : Optional[dict] = data['choices'][0].get('delta')
-
-
-    def get_text(self) -> Optional[str]:
-        text_content = None
-        if not self.best_response is None:
-            text_content = self.best_response.get('content')
-        return text_content
-
-
-    def get_calls(self) -> Optional[ToolCall]:
-        tool_calls : Optional[dict] = self.best_response.get('tool_calls')
-        if tool_calls is None:
-            return None
-
-        tool_call = ToolCall()
-        for openai_tool_call in tool_calls:
-            index = openai_tool_call.get('index')
-            funct_call = openai_tool_call.get('function')
-
-            tool_call = ToolCall(name=funct_call.get('name'), json_str=funct_call.get('arguments'), index=index)
-            tool_call.update(partial_call=tool_call)
-
-        return tool_call

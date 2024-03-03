@@ -80,7 +80,7 @@ class Tool:
             raise ValueError(f'\n[Error]: Tool {self.get_name()} has no description\nAborting ...')
 
         function_doc = {
-            'name': f'{application_name}:{self.get_name()}',
+            'name': f'{application_name}_{self.get_name()}',
             'description': f'{self.get_desc()}; Application: {application_name}',
             'parameters': {
                 'type': 'object',
