@@ -2,14 +2,13 @@ from __future__ import annotations
 import os
 from typing import Optional
 
-from hollarek.io import get_text, TextFileType
-from hollarek.io.fsys import FsysNode
+from hollarek.fileIO.text import TextIO
+from hollarek.fsys import FsysNode
 from ..tool import ToolArg, Application, Window, WindowMap, OpenTool, ActionTool
-
 
 # ---------------------------------------------------------
 
-class TextIO(Application):
+class TextEditor(Application):
     def __init__(self):
         super().__init__()
 
@@ -80,11 +79,8 @@ class Read(OpenTool):
         if not os.path.isfile(fpath):
             raise FileNotFoundError(f'There is no file located at given location {fpath}. Aborting ...')
 
-        suffix = FsysNode(path=fpath).get_suffix()
-        file_type = TextFileType.PDF if suffix == 'pdf' else TextFileType.PLAINTEXT
-
         new = TextWindow(fpath=fpath)
-        new.content = get_text(fpath=fpath, file_type=file_type)
+        new.content = TextIO.read(fpath=fpath)
         return new
 
 

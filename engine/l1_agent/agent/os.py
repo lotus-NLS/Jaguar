@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hollarek.dev.log import Loggable, LogLevel
+from hollarek.logging import Loggable, LogLevel
 from engine.l3_applications import Tool, ToolCall, Application
 from engine.l2_models.generation import Chunk
 # ---------------------------------------------------------

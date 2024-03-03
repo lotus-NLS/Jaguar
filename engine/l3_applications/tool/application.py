@@ -1,6 +1,6 @@
 from api import Entry, Speaker, Role
 from abc import abstractmethod
-from hollarek.dev import Loggable
+from hollarek.logging import Loggable
 
 from .types import OpenTool, ActionTool, CloseTool
 from .output import WindowMap

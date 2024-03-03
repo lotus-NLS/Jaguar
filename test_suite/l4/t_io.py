@@ -3,9 +3,9 @@ import string
 import random
 
 from api import Entry, Speaker, Role
-from hollarek.dev import Unittest
+from hollarek.devtools import Unittest
 from engine.l4_singletons.io.engine_io import EngineIO, Entity
-from engine.l4_singletons.io.types import ServerResponse, TextStream
+from engine.l4_singletons.io.types import ServerResponse, TextStream, Task
 # --------------------------------------------
 
 class MockTextStream(TextStream):
@@ -37,7 +37,6 @@ class TestEngineIO(Unittest):
 
     def setUp(self):
         EngineIO.reset_instance()
-
         self.entity = MockEntity()
         self.app = EngineIO(entity=self.entity)
 
@@ -49,7 +48,8 @@ class TestEngineIO(Unittest):
         msg = 'Hello, do something'
         print(f'User said: {msg}')
         entry = Entry(msg=msg, speaker=Speaker(role=Role.USER))
-        response = self.app.handle(entry)
+        task = Task(new_entries=[entry])
+        response = self.app.handle(task)
 
         self.assertIsInstance(response, ServerResponse)
         self.assertIsInstance(response.text_stream, TextStream)

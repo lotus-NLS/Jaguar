@@ -31,7 +31,7 @@ class OpenTool(Tool):
         self.window_map[index] = window
 
 
-from typing import TypeVar, Generic
+from typing import TypeVar
 
 WindowType = TypeVar('WindowType', bound=Window)
 

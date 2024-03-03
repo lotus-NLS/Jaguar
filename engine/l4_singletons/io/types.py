@@ -7,7 +7,7 @@ from collections.abc import Iterator
 from queue import Queue
 from typing import Optional
 
-from api import Entry, Speaker, Role
+from api import Entry
 # --------------------------------------------
 
 @dataclass

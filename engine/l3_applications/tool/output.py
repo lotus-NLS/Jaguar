@@ -5,7 +5,7 @@ from typing import Optional, Any
 from abc import abstractmethod
 
 
-from hollarek.dev.log import Loggable, LogLevel
+from hollarek.logging import Loggable, LogLevel
 # ---------------------------------------------------
 
 class Progress(Enum):

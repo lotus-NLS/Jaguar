@@ -8,7 +8,7 @@ from tiktoken import Encoding
 from abc import abstractmethod
 
 from enum import Enum
-from hollarek.dev.log import Loggable
+from hollarek.logging import Loggable
 from .generation import Generation, Options, GenerationContext, ToolOptions
 # ---------------------------------------------------------
 

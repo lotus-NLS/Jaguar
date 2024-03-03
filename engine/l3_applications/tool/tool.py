@@ -3,7 +3,7 @@ from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
-from hollarek.dev import get_logger
+from hollarek.logging import get_logger
 from .output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
 from .input import ToolCall, ToolArg
 # ---------------------------------------------------------

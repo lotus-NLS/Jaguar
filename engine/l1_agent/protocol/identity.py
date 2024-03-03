@@ -1,7 +1,7 @@
 from __future__ import annotations
 import platform, distro
 from enum import Enum
-from engine.l3_applications import TextIO
+from engine.l3_applications import TextEditor
 # ----------------------------------------------------
 
 
@@ -41,7 +41,7 @@ class Identity:
     def get_lotus_msg(cls) -> str:
         lotus_msg = (f'Lotus provides an operating system for LLMs which can be operated almost exclusively via text. '
                      f'The following applications are provided to you:')
-        for application in [TextIO]:
+        for application in [TextEditor]:
             lotus_msg += f'- {application.get_name()}: {application.get_desc()}'
         lotus_msg += (f'Each application will provide a tool with which you can open windows of that application'
                       f'and one tool with which you can close windows of that application.'

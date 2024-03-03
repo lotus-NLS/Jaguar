@@ -4,9 +4,9 @@ import os
 from typing import Optional
 
 from func_timeout import func_timeout
-from hollarek.io import LocalConfigs, AWSConfigs
-from hollarek.tmpl import Singleton
-from hollarek.dev.log import LogLevel
+from hollarek.configs import LocalConfigs, AWSConfigs
+from hollarek.templates import Singleton
+from hollarek.logging import LogLevel, get_logger
 # --------------------------------------------
 
 class Settings(Singleton):
@@ -17,6 +17,7 @@ class Settings(Singleton):
             return
 
         super().__init__()
+        self.log = get_logger().log
         config_path = os.path.join(os.path.expanduser('~'), '.creds' , 'lotusconfigs')
         if local:
             Settings.configs = LocalConfigs(config_fpath=config_path)
@@ -26,9 +27,9 @@ class Settings(Singleton):
         if validate:
             self.validate_openai_key()
             self.validate_search_engine()
-            self.log(f'All Settings validated')
+            self.log(msg=f'All Settings validated')
 
-        self.log(f'Completed setup for all Settings')
+        self.log(msg=f'Completed setup for all Settings')
 
     @classmethod
     def get_openai_apikey(cls) -> str:

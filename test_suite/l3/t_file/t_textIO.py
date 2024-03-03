@@ -1,15 +1,15 @@
 import json
 from engine.l3_applications.tool.input import ToolCall
-from engine.l3_applications.file.text_io import TextIO, Read, Insert
+from engine.l3_applications.file.text_io import TextEditor
 import tempfile
-from hollarek.dev.test import Unittest
+from hollarek.devtools import Unittest
 
 
 
 class TestTextIO(Unittest):
     @classmethod
     def setUpClass(cls):
-        cls.app = TextIO()
+        cls.app = TextEditor()
 
     def setUp(self):
         self.temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+', suffix='.txt')

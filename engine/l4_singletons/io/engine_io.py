@@ -1,8 +1,8 @@
 from flask import Flask
 from abc import abstractmethod
 
-from api import Entry, DefaultNetwork, Socket
-from hollarek.tmpl import Singleton
+from hollarek.templates import Singleton
+from api import Network, Socket
 from .types import ServerResponse, Task
 
 # ----------------------------------------------
@@ -26,5 +26,5 @@ class EngineIO(Singleton):
         return self.entity.handle(task=task)
 
 
-    def run(self, socket : Socket = DefaultNetwork.engine_socket):
+    def run(self, socket : Socket = Network().engine_socket):
         self.app.run(port=socket.port, host=socket.ip)
