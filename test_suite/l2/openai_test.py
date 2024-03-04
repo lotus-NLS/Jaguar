@@ -1,11 +1,10 @@
 import time
 
-from devtools import debug
 from hollarek.devtools import Unittest
 from typing import Optional
 
 from engine.l2_models import Options, OpenAIModel, GenerationContext, Generation
-from engine.l3_applications import ToolCall
+from engine.l3_applications import CallMap
 
 
 
@@ -41,20 +40,10 @@ class OpenAITest(Unittest):
         prompts_context = [entry.get_content() for entry in context.entries]
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")
-        call_map : dict[int, ToolCall] = {}
+        call_map : CallMap = CallMap()
         for chunk in generation:
             self.lineprinter.add(chunk.get_text())
-            chunk_call_map = chunk.get_call_map()
-            for index, call in chunk_call_map.items():
-                if not index in call_map:
-                    call_map[index] = call
-                else:
-                    call_map[index].update(partial_call=call)
-
-        print(f'\n-> Generated tool calls')
-        for call in list(call_map.values()):
-            print(f'tool name: {call.name}')
-            debug(call.get_args_dict())
+            call_map.add(chunk.get_call_map())
 
         print()
         time.sleep(0.1)

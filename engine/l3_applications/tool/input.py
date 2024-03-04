@@ -2,7 +2,7 @@ from __future__ import annotations
 import json
 from typing import Optional
 from json_repair import repair_json
-
+from devtools import debug
 
 class ToolArg:
     def __init__(self, name : str, desc : str = '', choices : Optional[list] =  None, is_optional : bool = False):
@@ -72,3 +72,22 @@ class ToolCall:
         except:
             tool_args_dict = json.loads(s=repair_json(json_str=self.json_str))
         return tool_args_dict
+
+
+class CallMap(dict[int, ToolCall]):
+    def add(self, new : CallMap):
+        for index, call in new:
+            call = new[index]
+            if not index in self:
+                self[index] = call
+            else:
+                self[index].update(partial_call=call)
+
+    def get_tool_calls(self) -> list[ToolCall]:
+        return list(self.values())
+
+    def print_info(self):
+        print(f'\n-> Generated tool calls')
+        for call in list(self.values()):
+            print(f'tool name: {call.name}')
+            debug(call.get_args_dict())

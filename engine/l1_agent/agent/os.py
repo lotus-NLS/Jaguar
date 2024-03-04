@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from hollarek.logging import Loggable, LogLevel
-from engine.l3_applications import Tool, ToolCall, Application
+from engine.l3_applications import Tool, Application, CallMap
 from engine.l2_models.generation import Chunk
 # ---------------------------------------------------------
 
@@ -9,7 +9,7 @@ from engine.l2_models.generation import Chunk
 class OS(Loggable):
     def __init__(self):
         super().__init__()
-        self.call_map : dict[int,ToolCall] = {}
+        self.call_map : CallMap = {}
         self.applications : list[Application] = []
 
 
@@ -25,19 +25,12 @@ class OS(Loggable):
 
 
     def store_info(self, chunk : Chunk):
-        chunk_call_map = chunk.get_call_map()
-        for index in chunk_call_map:
-            call = chunk_call_map[index]
-            if not index in self.call_map:
-                self.call_map[index] = call
-            else:
-                self.call_map[index].update(partial_call=call)
+        self.call_map.add(chunk.get_call_map())
     # ---------------------------------------------------
     # update
 
     def reset_calls(self):
-        self.call_map : dict[int,ToolCall] = {}
-
+        self.call_map : CallMap = CallMap()
 
     # ---------------------------------------------------
     # get

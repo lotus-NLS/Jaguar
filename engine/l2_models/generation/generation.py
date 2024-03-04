@@ -5,19 +5,17 @@ from dataclasses import dataclass
 from abc import abstractmethod
 from queue import Queue
 from api import Entry
-from engine.l3_applications.tool import ToolCall
+from hollarek.logging import Loggable, LogLevel
+from engine.l3_applications.tool import CallMap
 from engine.l4_singletons.io import Task
 # ---------------------------------------------------------
 
-class Generation:
+class Generation(Loggable):
     stop_token = '⊥'
 
-    @classmethod
-    def make_empty(cls) -> Generation:
-        return cls(generator=None)
-
-    def __init__(self, generator : Optional[Generator]):
-        self.generator : Optional[Generator] = generator
+    def __init__(self, generator : Generator):
+        super().__init__()
+        self.generator : Generator = generator
         self.text_content : str = ''
         self.text_queue : Queue[str] = Queue()
 
@@ -26,15 +24,12 @@ class Generation:
 
 
     def __next__(self) -> Chunk:
-        if self.generator is None:
-            raise StopIteration
-
-        action_chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
-        chunk_text = action_chunk.get_text()
+        chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
+        chunk_text = chunk.get_text()
         if chunk_text:
             self.text_queue.put(chunk_text)
         self.text_content += chunk_text if not chunk_text is None else ''
-        return action_chunk
+        return chunk
 
 
     @abstractmethod
@@ -50,6 +45,7 @@ class Generation:
             try:
                 retrieved_text = self.text_queue.get(timeout=10)
             except:
+                self.log('No text retrieved', level=LogLevel.ERROR)
                 break
             if retrieved_text == Generation.stop_token:
                 break
@@ -66,7 +62,7 @@ class Chunk:
 
 
     @abstractmethod
-    def get_call_map(self) -> dict[int, ToolCall]:
+    def get_call_map(self) -> CallMap:
         pass
 
 

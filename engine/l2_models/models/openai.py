@@ -5,7 +5,7 @@ from openai.openai_object import OpenAIObject
 
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
-from engine.l3_applications.tool import ToolCall
+from engine.l3_applications.tool import ToolCall, CallMap
 from engine.l4_singletons import Settings
 
 
@@ -35,12 +35,12 @@ class OpenAIChunk(Chunk):
         return text_content
 
 
-    def get_call_map(self) -> dict[int, ToolCall]:
+    def get_call_map(self) -> CallMap:
         tool_calls : Optional[dict] = self.best_response.get('tool_calls')
         if tool_calls is None:
-            return {}
+            return CallMap()
 
-        call_map : dict[int, ToolCall] = {}
+        call_map : CallMap = CallMap()
         for openai_tool_call in tool_calls:
             index = openai_tool_call.get('index')
             call = call_map.get(index, ToolCall())
