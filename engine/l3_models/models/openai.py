@@ -4,8 +4,8 @@ import openai
 from openai.openai_object import OpenAIObject
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
-from engine.l3_applications.tool import ToolCall, CallMap
-from engine.l4_singletons import Settings
+from engine.l4_tools.tool import ToolCall, CallMap
+from engine.l5_singletons import Settings
 
 # ---------------------------------------------------------
 

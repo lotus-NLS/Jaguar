@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import asyncio
 from api import Entry, Role, Speaker
-from engine.l2_models.generation import LLM, GenerationContext, Options, Generation
-from engine.l2_models.models import OpenAIModel
-from engine.l4_singletons import ServerResponse, Entity, Task, TaskQueue
+from engine.l5_singletons import ServerResponse, Entity, Task, TaskQueue
+from engine.l3_models.generation import LLM, GenerationContext, Options, Generation
+from engine.l3_models.models import OpenAIModel
+from engine.l2_os import OS
+from engine.l1_agent.protocol import Identity, Core
 
-from ..protocol import Identity, Core
-from .os import OS
 # ---------------------------------------------------------
 
 class Agent(Entity):

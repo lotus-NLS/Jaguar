@@ -6,8 +6,9 @@ from abc import abstractmethod
 from queue import Queue
 from api import Entry
 from hollarek.logging import Loggable, LogLevel, LogSettings
-from engine.l3_applications.tool import CallMap
-from engine.l4_singletons.io import Task
+from engine.l4_tools import CallMap
+from engine.l5_singletons.io import Task
+
 # ---------------------------------------------------------
 
 class Generation(Loggable):

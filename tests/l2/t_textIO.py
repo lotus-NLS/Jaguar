@@ -1,9 +1,9 @@
 import json
-from engine.l3_applications.tool.input import ToolCall
-from engine.l3_applications.file.text_io import TextEditor
 import tempfile
 from hollarek.devtools import Unittest
 
+from engine.l2_os.file import TextEditor
+from engine.l4_tools import ToolCall
 
 
 class TestTextIO(Unittest):

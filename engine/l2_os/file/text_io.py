@@ -4,7 +4,8 @@ from typing import Optional
 
 from hollarek.fileIO.text import TextIO
 from hollarek.fsys import FsysNode
-from ..tool import ToolArg, Application, Window, WindowMap, OpenTool, ActionTool
+from engine.l4_tools import ToolArg
+from engine.l2_os.application import Application, Window, WindowMap, OpeningTool, InteractionTool
 
 # ---------------------------------------------------------
 
@@ -16,10 +17,10 @@ class TextEditor(Application):
     def get_desc(cls):
         return f'Allow for opening text files (plain text/pdf) and editing plain text files'
 
-    def create_open_tool(self) -> OpenTool:
+    def create_open_tool(self) -> OpeningTool:
         return Read(window_map=self.window_map)
 
-    def create_action_tools(self) -> list[ActionTool]:
+    def create_action_tools(self) -> list[InteractionTool]:
         return [Insert(window_map=self.window_map)]
 
 
@@ -52,7 +53,7 @@ class TextWindow(Window):
             f.writelines(lines)
 
 
-class Read(OpenTool):
+class Read(OpeningTool):
     def __init__(self, window_map : WindowMap):
         super().__init__(window_map=window_map)
         self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath of text file to be opened')
@@ -73,7 +74,7 @@ class Read(OpenTool):
         return f'Open plain text or pdfs files'
 
 
-class Insert(ActionTool):
+class Insert(InteractionTool):
     def __init__(self, window_map : WindowMap):
         super().__init__(window_map=window_map, call_timeout=5)
         self.content_arg : ToolArg = ToolArg(name='content', desc='Content to insert')

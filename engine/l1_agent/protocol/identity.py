@@ -1,7 +1,7 @@
 from __future__ import annotations
 import platform, distro
 from enum import Enum
-from engine.l3_applications import TextEditor
+from engine.l2_os import TextEditor
 # ----------------------------------------------------
 
 

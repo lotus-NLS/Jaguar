@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from hollarek.logging import Loggable, LogLevel
-from engine.l4_tools import Tool, Application, CallMap
+from engine.l4_tools import Tool, CallMap
 from engine.l3_models.generation import Chunk
+from engine.l2_os.application import Application
+
 # ---------------------------------------------------------
 
 
 class OS(Loggable):
     def __init__(self):
         super().__init__()
-        self.call_map : CallMap = {}
+        self.call_map : CallMap = CallMap()
         self.applications : list[Application] = []
 
 

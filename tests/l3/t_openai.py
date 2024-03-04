@@ -1,10 +1,12 @@
 from api import Entry, Speaker, Role
-from engine.l2_models.generation import GenerationContext, Options, ToolOptions
+from engine.l3_models.generation import GenerationContext, Options, ToolOptions
 import threading
 import asyncio
 
-from test_suite.l2.openai_test import OpenAITest
-from test_suite.l2.spoof import Greet, NotifyChef
+from tests.l3.openai_test import OpenAITest
+from tests.l3.spoof import Greet, NotifyChef
+
+
 # ---------------------------------------------------------
 
 

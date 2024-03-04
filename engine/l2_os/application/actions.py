@@ -1,9 +1,8 @@
 from abc import abstractmethod
-
-from ..tool import Tool, ToolArg, ToolCall
 from .window import Window, WindowMap
 from typing import TypeVar
 
+from engine.l4_tools import Tool, ToolArg, ToolCall
 WindowType = TypeVar('WindowType', bound=Window)
 # ---------------------------------------------------
 
