@@ -29,7 +29,7 @@ class LinePrinter:
 
 
 class OpenAITest(Unittest):
-    default_options = Options()
+    default_options = Options(max_tokens=1)
     model = OpenAIModel()
     lineprinter = LinePrinter()
 

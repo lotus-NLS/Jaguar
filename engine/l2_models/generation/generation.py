@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from abc import abstractmethod
 from queue import Queue
 from api import Entry
-from hollarek.logging import Loggable, LogLevel
+from hollarek.logging import Loggable, LogLevel, LogSettings
 from engine.l3_applications.tool import CallMap
 from engine.l4_singletons.io import Task
 # ---------------------------------------------------------
@@ -14,7 +14,7 @@ class Generation(Loggable):
     stop_token = '⊥'
 
     def __init__(self, generator : Generator):
-        super().__init__()
+        super().__init__(settings=LogSettings(include_call_location=True))
         self.generator : Generator = generator
         self.text_content : str = ''
         self.text_queue : Queue[str] = Queue()
@@ -28,6 +28,8 @@ class Generation(Loggable):
         chunk_text = chunk.get_text()
         if chunk_text:
             self.text_queue.put(chunk_text)
+        if chunk.is_final():
+            self.stop()
         self.text_content += chunk_text if not chunk_text is None else ''
         return chunk
 
@@ -38,7 +40,6 @@ class Generation(Loggable):
 
     def stop(self):
         self.text_queue.put(self.stop_token)
-
 
     async def get_text_stream(self):
         while True:
@@ -60,6 +61,10 @@ class Chunk:
     def get_text(self) -> Optional[str]:
         pass
 
+
+    @abstractmethod
+    def is_final(self) -> bool:
+        pass
 
     @abstractmethod
     def get_call_map(self) -> CallMap:

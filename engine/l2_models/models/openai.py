@@ -25,18 +25,22 @@ class OpenAIModelType(ModelType):
 class OpenAIChunk(Chunk):
     def __init__(self, data : OpenAIObject):
         super().__init__(data=data)
-        self.best_response : Optional[dict] = data['choices'][0].get('delta')
-
+        self.data : OpenAIObject = data
+        self.best_choice : Optional[dict] = data['choices'][0]
+        self.delta = self.best_choice.get('delta')
 
     def get_text(self) -> Optional[str]:
         text_content = None
-        if not self.best_response is None:
-            text_content = self.best_response.get('content')
+        if not self.delta is None:
+            text_content = self.delta.get('content')
         return text_content
 
+    def is_final(self) -> bool:
+        finish_reason_present = self.best_choice.get('finish_reason')
+        return finish_reason_present
 
     def get_call_map(self) -> CallMap:
-        tool_calls : Optional[dict] = self.best_response.get('tool_calls')
+        tool_calls : Optional[dict] = self.delta.get('tool_calls')
         if tool_calls is None:
             return CallMap()
 
