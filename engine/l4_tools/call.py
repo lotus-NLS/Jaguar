@@ -1,8 +1,9 @@
 from __future__ import annotations
 import json
-from typing import Optional
+from typing import Optional,Any
 from json_repair import repair_json
-from devtools import debug
+from hollarek.logging import debug
+
 
 class ToolArg:
     def __init__(self, name : str, desc : str = '', choices : Optional[list] =  None, is_optional : bool = False):
@@ -53,6 +54,36 @@ class ToolArg:
 
         return self.val in self.choices
 
+class ToolDoc(dict[str, Any]):
+    @classmethod
+    def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
+        required_arg_names = [arg.name for arg in args if not arg.is_optional]
+        arg_docs = {arg.name: arg.get_arg_json_doc() for arg in args}
+        function_doc = {
+            'name': name,
+            'description': desc,
+            'parameters': {
+                'type': 'object',
+                'properties': arg_docs,
+                'required': required_arg_names
+            },
+        }
+
+        tool_doc = {
+            'type': 'function',
+            'function': function_doc
+        }
+
+        return cls(tool_doc)
+
+
+    def get_is_valid_json(self) -> bool:
+        try:
+            json.dumps(self)
+            return True
+        except:
+            return False
+
 
 class ToolCall:
     def __init__(self, name : Optional[str] = None, json_str : Optional[str] = None, index : int  = 0):
@@ -91,3 +122,4 @@ class CallMap(dict[int, ToolCall]):
         for call in list(self.values()):
             print(f'tool name: {call.name}')
             debug(call.get_args_dict())
+

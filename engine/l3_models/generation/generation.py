@@ -15,7 +15,7 @@ class Generation(Loggable):
     stop_token = '⊥'
 
     def __init__(self, generator : Generator):
-        super().__init__(settings=LogSettings(include_call_location=True))
+        super().__init__(settings=LogSettings(call_location=True))
         self.generator : Generator = generator
         self.text_content : str = ''
         self.text_queue : Queue[str] = Queue()

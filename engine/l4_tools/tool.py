@@ -1,11 +1,9 @@
-import json
-from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.logging import get_logger
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
-from .call import ToolCall, ToolArg
+from .call import ToolCall, ToolArg, ToolDoc
 # ---------------------------------------------------------
 
 class Tool:
@@ -72,32 +70,14 @@ class Tool:
         pass
 
 
-    def get_json_doc(self, application_name : str) -> dict[str, Any]:
-        required_arg_names = [arg.name for arg in self.get_args() if not arg.is_optional]
-        arg_docs = {arg.name : arg.get_arg_json_doc() for arg in self.get_args()}
+    def get_json_doc(self, application_name : str) -> ToolDoc:
+        doc = ToolDoc.from_info(name=f'{application_name}_{self.get_name()}',
+                          desc=f'Application: {application_name}|{self.get_desc()}',
+                          args=self.get_args())
+        if not doc.get_is_valid_json():
+            raise ValueError(f'\n[Error]: Tool {self.get_name()} has invalid json doc\nAborting ...')
 
-        if not self.get_desc():
-            raise ValueError(f'\n[Error]: Tool {self.get_name()} has no description\nAborting ...')
-
-        function_doc = {
-            'name': f'{application_name}_{self.get_name()}',
-            'description': f'{self.get_desc()}; Application: {application_name}',
-            'parameters': {
-                'type': 'object',
-                'properties': arg_docs,
-                'required' : required_arg_names
-            },
-        }
-
-        tool_doc = {
-            'type' : 'function',
-            'function' : function_doc
-        }
-
-        if not self.is_valid_json(tool_doc):
-            raise ValueError(f'\n[Error]: Could not serialize object {tool_doc}\nAborting ...')
-
-        return tool_doc
+        return doc
 
 
     def get_args_dict(self) -> dict[str, ToolArg]:
@@ -110,14 +90,3 @@ class Tool:
 
     def _get_required_args(self) -> list[ToolArg]:
         return [arg for arg in self.get_args() if not arg.is_optional]
-
-
-    @staticmethod
-    def is_valid_json(json_obj: dict) -> bool:
-        try:
-            json.dumps(json_obj)
-            return True
-        except:
-            return False
-
-

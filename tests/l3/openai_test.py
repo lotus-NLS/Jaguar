@@ -7,7 +7,6 @@ from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation
 from engine.l4_tools import CallMap
 
 
-
 class LinePrinter:
     def __init__(self, logger : callable = print):
         self.line : str = ''
@@ -32,6 +31,10 @@ class OpenAITest(Unittest):
     default_options = Options(max_tokens=1)
     model = OpenAIModel()
     lineprinter = LinePrinter()
+
+    @classmethod
+    def setUpClass(cls):
+        pass
 
     def tearDown(self):
         self.lineprinter.reset()

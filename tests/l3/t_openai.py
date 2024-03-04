@@ -12,7 +12,7 @@ from tests.l3.spoof import Greet, NotifyChef
 
 class TestOpenAIText(OpenAITest):
     @classmethod
-    def setup(cls):
+    def setUpClass(cls):
         cls.introduction_request = Entry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         cls.repetition_request = Entry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
 
@@ -39,7 +39,7 @@ class TestOpenAIText(OpenAITest):
 
 class TestOpenAIFunctionCall(OpenAITest):
     @classmethod
-    def setup(cls):
+    def setUpClass(cls):
         cls.greet_tool = Greet()
         cls.welcome_request = Entry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home !')
         cls.chef_notification_request = Entry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
@@ -74,5 +74,4 @@ class TestOpenAIFunctionCall(OpenAITest):
 
 if __name__ == '__main__':
     text_tests = TestOpenAIText()
-    text_tests.setup()
     text_tests.execute_all()

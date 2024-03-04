@@ -4,7 +4,7 @@ from hollarek.logging import Loggable
 
 from .actions import OpeningTool, InteractionTool, CloseTool
 from .actions import WindowMap
-from engine.l4_tools import Tool
+from engine.l4_tools import Tool, ToolDoc
 # ---------------------------------------------------
 
 class Application(Loggable):
@@ -78,7 +78,7 @@ class Application(Loggable):
         return tool_dict
 
 
-    def get_doc_dict(self, active_only : bool = False) -> dict[str, dict]:
+    def get_doc_dict(self, active_only : bool = False) -> dict[str, ToolDoc]:
         tools = self.get_tools(active_only=active_only)
         docs = {}
         for tool in tools:

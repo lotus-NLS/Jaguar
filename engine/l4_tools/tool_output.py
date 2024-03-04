@@ -52,7 +52,7 @@ class ToolOutput(Loggable):
         if progress_type == Progress.FAILED:
             self.exit_status = ExitStatus.FAILED
         self.progress.append(ProgressMsg(progress_type=progress_type, msg=msg))
-        self.cls_log(f'[{progress_type.value}]: {msg}', level=LogLevel.INFO)
+        self.log(f'[{progress_type.value}]: {msg}', level=LogLevel.INFO)
 
 
 class ToolException(Exception):
