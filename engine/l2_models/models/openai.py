@@ -17,10 +17,9 @@ class OpenAIGeneration(Generation):
 
 
 class OpenAIModelType(ModelType):
-    GPT_4 = 'gpt-4'
-    GPT_4_TURBO = 'gpt-4-1106-preview'
-    GPT_4V = 'gpt-4-vision-preview'
-    GPT_35 = 'gpt-3.5-turbo'
+    GPT_4 = 'gpt-4-0125-preview'
+    GPT_4_TURBO = 'gpt-4-turbo-preview'
+    GPT_35 = 'gpt-3.5-turbo-0125'
 
 
 class OpenAIChunk(Chunk):
@@ -36,10 +35,10 @@ class OpenAIChunk(Chunk):
         return text_content
 
 
-    def get_calls(self) -> list[ToolCall]:
+    def get_call_map(self) -> dict[int, ToolCall]:
         tool_calls : Optional[dict] = self.best_response.get('tool_calls')
         if tool_calls is None:
-            return []
+            return {}
 
         call_map : dict[int, ToolCall] = {}
         for openai_tool_call in tool_calls:
@@ -52,11 +51,11 @@ class OpenAIChunk(Chunk):
             if not index in call_map:
                 call_map[index] = call
 
-        return list(call_map.values())
+        return call_map
 
 
 class OpenAIModel(LLM):
-    def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4):
+    def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4_TURBO):
         super().__init__(model_type=model_type)
 
 

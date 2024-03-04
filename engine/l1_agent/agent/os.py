@@ -25,22 +25,18 @@ class OS(Loggable):
 
 
     def store_info(self, chunk : Chunk):
-        for call in chunk.get_calls():
-            self.update(partial_call=call)
-
+        chunk_call_map = chunk.get_call_map()
+        for index in chunk_call_map:
+            call = chunk_call_map[index]
+            if not index in self.call_map:
+                self.call_map[index] = call
+            else:
+                self.call_map[index].update(partial_call=call)
     # ---------------------------------------------------
     # update
 
     def reset_calls(self):
         self.call_map : dict[int,ToolCall] = {}
-
-
-    def update(self, partial_call : ToolCall):
-        the_index = partial_call.index
-        if not partial_call.index in self.call_map:
-            self.call_map[the_index] = partial_call
-        else:
-            self.call_map[the_index].update(partial_call=partial_call)
 
 
     # ---------------------------------------------------
