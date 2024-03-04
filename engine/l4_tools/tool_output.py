@@ -33,6 +33,9 @@ class ToolOutput(Loggable):
     progress: list[ProgressMsg] = field(default_factory=list)
     exit_status : ExitStatus = ExitStatus.SUCCESS
 
+    def __post_init__(self):
+        super().__init__()
+
     def get_report(self) -> str:
         log_msg = f'Report on tool \"{self.tool_name}\":\n'
         log_msg += f'Exit status: {self.exit_status.value}'

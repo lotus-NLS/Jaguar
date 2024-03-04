@@ -107,8 +107,7 @@ class ToolCall:
 
 class CallMap(dict[int, ToolCall]):
     def add(self, new : CallMap):
-        for index, call in new:
-            call = new[index]
+        for index, call in new.items():
             if not index in self:
                 self[index] = call
             else:

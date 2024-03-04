@@ -5,7 +5,8 @@ class Greet(Tool):
     def __init__(self, call_timeout: float = 1):
         super().__init__(call_timeout=call_timeout)
         self.text_arg : ToolArg = ToolArg(name="text",
-                                          desc='This is the text that will be displayed to the guests on the monitor')
+                                          desc='This is the text that will be displayed to the guests on the monitor.'
+                                               'There is only one monitor so you need only call this once')
 
     def do(self):
         print(self.text_arg.val)
