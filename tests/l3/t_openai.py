@@ -41,7 +41,8 @@ class TestOpenAIToolCall(OpenAITest):
     @classmethod
     def setUpClass(cls):
         cls.greet_tool = Greet()
-        cls.welcome_request = Entry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home !')
+        cls.welcome_request = Entry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home!'
+                                                                 'You need only do this once, every guest will see it')
         cls.chef_notification_request = Entry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
 
         application_name = 'display'

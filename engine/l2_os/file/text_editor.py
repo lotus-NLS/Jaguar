@@ -51,6 +51,7 @@ class TextWindow(Window):
 
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
+        print(f'after update, content is: {self.get_context()}')
 
 
 class Read(OpeningTool):
@@ -82,6 +83,7 @@ class Insert(InteractionTool):
 
     def do(self):
         window : TextWindow = self.get_window()
+        print(f'window : {window}')
         window.update(line=int(self.line_arg.val), content=self.content_arg.val)
 
 

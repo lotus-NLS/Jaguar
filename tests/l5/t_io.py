@@ -25,7 +25,7 @@ class MockTextStream(TextStream):
 
 
 class MockEntity(Entity):
-    def handle(self, entry: Entry) -> ServerResponse:
+    def handle(self, task: Task) -> ServerResponse:
         return ServerResponse(user_query=None, text_stream=MockTextStream())
 
 
@@ -38,18 +38,18 @@ class TestEngineIO(Unittest):
     def setUp(self):
         EngineIO.reset_instance()
         self.entity = MockEntity()
-        self.app = EngineIO(entity=self.entity)
+        self.io = EngineIO(entity=self.entity)
 
 
     def test_initialization(self):
-        self.assertIsNotNone(self.app)
+        self.assertIsNotNone(self.io)
 
     def test_response_stream(self):
         msg = 'Hello, do something'
         print(f'User said: {msg}')
         entry = Entry(msg=msg, speaker=Speaker(role=Role.USER))
         task = Task(new_entries=[entry])
-        response = self.app.handle(task)
+        response = self.io.handle(task)
 
         self.assertIsInstance(response, ServerResponse)
         self.assertIsInstance(response.text_stream, TextStream)

@@ -2,12 +2,13 @@ import time
 import json
 
 from engine.l4_tools import Tool, ToolArg, ToolCall
-from hollarek.devtools import Unittest
+from engine.l4_tools.tool_output import MissingArgs
 
 from engine.l4_tools.tool_output import ExitStatus, Progress, ToolOutput
+from hollarek.devtools import Unittest
 
 
-class SimpleTool(Tool):
+class ValidTool(Tool):
     def __init__(self, call_timeout: float = 60):
         super().__init__(call_timeout=call_timeout)
         self.text_arg : ToolArg = ToolArg(name="arg_one")
@@ -39,7 +40,7 @@ class ToolTest(Unittest):
         pass  # Implement if needed for class-wide setup
 
     def setUp(self):
-        self.simple_tool = SimpleTool()
+        self.simple_tool = ValidTool()
         self.invalid_tool = InvalidTool()
         self.valid_args_json = json.dumps({f'{self.simple_tool.text_arg.name}': 'value'})
         self.invalid_args_json = json.dumps({'arg_onee': ''})
@@ -89,7 +90,7 @@ class TestToolOutput(ToolTest):
         tool_call = ToolCall(json_str=self.valid_args_json)
         output = self.simple_tool.handle(tool_call)
         report = output.get_report()
-        self.assertIn("SimpleTool", report, f"Report is {report}, should contain \"SimpleTool\"")
+        self.assertIn(ValidTool.get_name(), report)
         self.assertIn("Exit status: SUCCESS", report, "Report for SimpleTool should indicate success.")
 
 
@@ -110,9 +111,8 @@ class TestToolOutput(ToolTest):
 
         error_msgs = output.get_error_msgs()
 
-        msg = f"Error messages is {error_msgs}, should contain \"Invalid argument\""
-        print(msg)
-        self.assertTrue(any("Missing Arguments" in msg for msg in error_msgs), msg)
+        self.assertTrue(any(f'{MissingArgs.__name__}' in msg for msg in error_msgs),
+                        msg=f'error msgs were {error_msgs}; should contain f{MissingArgs.__name__} ')
 
 
 

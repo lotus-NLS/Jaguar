@@ -1,1 +1,1 @@
-from .text_io import TextEditor
+from .text_editor import TextEditor
