@@ -1,12 +1,14 @@
 from abc import abstractmethod
 
-from . import ToolCall
-from .tool import Tool, ToolArg
-from .output import Window, WindowMap
+from ..tool import Tool, ToolArg, ToolCall
+from .window import Window, WindowMap
+from typing import TypeVar
 
+WindowType = TypeVar('WindowType', bound=Window)
 # ---------------------------------------------------
 
-class OpenTool(Tool):
+
+class OpeningTool(Tool):
     def __init__(self, window_map : WindowMap):
         super().__init__(call_timeout=1)
         self.window_map : WindowMap = window_map
@@ -31,14 +33,8 @@ class OpenTool(Tool):
         self.window_map[index] = window
 
 
-from typing import TypeVar
-
-WindowType = TypeVar('WindowType', bound=Window)
-
-
-
-class ActionTool(Tool):
-    def __init__(self, window_map: WindowMap, call_timeout : float):
+class InteractionTool(Tool):
+    def __init__(self, window_map: WindowMap, call_timeout : float = 20):
         super().__init__(call_timeout=call_timeout)
         self.window_map : WindowMap = window_map
         self.index_arg: ToolArg = ToolArg(name='window_index', desc='Index of window on which to perform action'
@@ -63,7 +59,7 @@ class ActionTool(Tool):
         pass
 
 
-class CloseTool(ActionTool):
+class CloseTool(InteractionTool):
     def __init__(self, window_map : WindowMap, call_timeout : float):
         super().__init__(window_map=window_map, call_timeout=call_timeout)
         self.index_arg.desc = f'Index of window to close'
@@ -78,6 +74,4 @@ class CloseTool(ActionTool):
     @classmethod
     def get_desc(cls) -> str:
         return f'Close an open window from associated application'
-
-
 

@@ -1,10 +1,8 @@
 from __future__ import annotations
+
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional, Any
-from abc import abstractmethod
-
-
 from hollarek.logging import Loggable, LogLevel
 # ---------------------------------------------------
 
@@ -26,24 +24,6 @@ class ExitStatus(Enum):
 class ProgressMsg:
     progress_type : Progress
     msg : str
-
-
-class Window:
-    def __init__(self, name : str):
-        self.name : str = name
-        self.content : str = ''
-
-    @abstractmethod
-    def update(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def get_context(self) -> str:
-        pass
-
-
-class WindowMap(dict[int, Window]):
-    pass
 
 
 @dataclass
@@ -85,6 +65,4 @@ class MissingArgs(ToolException):
 
 class InvalidArgValue(ToolException):
     pass
-
-
 

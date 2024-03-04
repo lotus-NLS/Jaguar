@@ -2,10 +2,9 @@ from api import Entry, Speaker, Role
 from abc import abstractmethod
 from hollarek.logging import Loggable
 
-from .types import OpenTool, ActionTool, CloseTool
-from .output import WindowMap
-from .tool import Tool
-
+from .actions import OpeningTool, InteractionTool, CloseTool
+from .actions import WindowMap
+from ..tool import Tool
 # ---------------------------------------------------
 
 class Application(Loggable):
@@ -13,7 +12,7 @@ class Application(Loggable):
         super().__init__()
         self.window_map : WindowMap = WindowMap()
         self.open_tool : Tool = self.create_open_tool()
-        self.action_tools : list[ActionTool] = self.create_action_tools()
+        self.action_tools : list[InteractionTool] = self.create_action_tools()
         self.close_tool : CloseTool = CloseTool(window_map=self.window_map,call_timeout=0.1)
 
         self.tools : list[Tool] = [self.open_tool] + self.action_tools + [self.close_tool]
@@ -57,11 +56,11 @@ class Application(Loggable):
 
 
     @abstractmethod
-    def create_open_tool(self) -> OpenTool:
+    def create_open_tool(self) -> OpeningTool:
         pass
 
     @abstractmethod
-    def create_action_tools(self) -> list[ActionTool]:
+    def create_action_tools(self) -> list[InteractionTool]:
         pass
 
 

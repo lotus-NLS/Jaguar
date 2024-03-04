@@ -2,25 +2,12 @@ from typing import Optional
 
 import openai
 from openai.openai_object import OpenAIObject
-
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
 from engine.l3_applications.tool import ToolCall, CallMap
 from engine.l4_singletons import Settings
 
-
 # ---------------------------------------------------------
-
-class OpenAIGeneration(Generation):
-    def _get_next_chunk(self, chunk_data : OpenAIObject):
-        return OpenAIChunk(data=chunk_data)
-
-
-class OpenAIModelType(ModelType):
-    GPT_4 = 'gpt-4-0125-preview'
-    GPT_4_TURBO = 'gpt-4-turbo-preview'
-    GPT_35 = 'gpt-3.5-turbo-0125'
-
 
 class OpenAIChunk(Chunk):
     def __init__(self, data : OpenAIObject):
@@ -35,9 +22,11 @@ class OpenAIChunk(Chunk):
             text_content = self.delta.get('content')
         return text_content
 
+
     def is_final(self) -> bool:
         finish_reason_present = self.best_choice.get('finish_reason')
         return finish_reason_present
+
 
     def get_call_map(self) -> CallMap:
         tool_calls : Optional[dict] = self.delta.get('tool_calls')
@@ -56,6 +45,18 @@ class OpenAIChunk(Chunk):
                 call_map[index] = call
 
         return call_map
+
+
+class OpenAIGeneration(Generation):
+    def _get_next_chunk(self, chunk_data : OpenAIObject) -> OpenAIChunk:
+        return OpenAIChunk(data=chunk_data)
+
+
+class OpenAIModelType(ModelType):
+    GPT_4 = 'gpt-4-0125-preview'
+    GPT_4_TURBO = 'gpt-4-turbo-preview'
+    GPT_35 = 'gpt-3.5-turbo-0125'
+
 
 
 class OpenAIModel(LLM):

@@ -38,6 +38,8 @@ class TextWindow(Window):
 
 
     def update(self, line: int, content: str):
+        if FsysNode(path=self.fpath).get_suffix() == 'pdf':
+            raise ValueError('Cannot edit pdf files')
         if line <= 0:
             raise ValueError("Line number must be a positive integer.")
 
@@ -48,23 +50,6 @@ class TextWindow(Window):
 
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
-
-
-class Insert(ActionTool):
-    def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map, call_timeout=5)
-
-        self.content_arg : ToolArg = ToolArg(name='content to insert', desc='Content to insert')
-        self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
-
-    def do(self):
-        window : TextWindow = self.get_window()
-        if FsysNode(path=window.fpath).get_suffix() == 'pdf':
-            raise ValueError('Cannot edit pdf files')
-        window.update(line=int(self.line_arg.val), content=self.content_arg.val)
-
-    def get_desc(self) -> str:
-        return f'Allow for inserting or overwriting individual lins of open text windows'
 
 
 class Read(OpenTool):
@@ -86,3 +71,18 @@ class Read(OpenTool):
 
     def get_desc(self) -> str:
         return f'Open plain text or pdfs files'
+
+
+class Insert(ActionTool):
+    def __init__(self, window_map : WindowMap):
+        super().__init__(window_map=window_map, call_timeout=5)
+        self.content_arg : ToolArg = ToolArg(name='content', desc='Content to insert')
+        self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
+
+    def do(self):
+        window : TextWindow = self.get_window()
+        window.update(line=int(self.line_arg.val), content=self.content_arg.val)
+
+
+    def get_desc(self) -> str:
+        return f'Allow for inserting individual lines of text on open text windows'
