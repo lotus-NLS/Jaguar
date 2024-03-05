@@ -1,7 +1,7 @@
 from engine.l5_singletons import Settings
 from hollarek.devtools import Unittest
+import unittest
 # --------------------------------------------
-
 
 class TestLotusSettings(Unittest):
     def setUp(self):
@@ -41,11 +41,10 @@ class TestLotusSettings(Unittest):
         for val in [x,y]:
             self.assertTrue(val)
 
-    @staticmethod
-    def tearDown(*args, **kwargs):
+    def tearDown(self):
         Settings().configs.reset_instance()
         Settings().reset_instance()
 
 
 if __name__ == "__main__":
-    TestLotusSettings().execute_all()
+    unittest.main()

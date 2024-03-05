@@ -13,7 +13,7 @@ class Settings(Singleton):
     configs : Optional = None
 
     def __init__(self, local : bool = False, validate : bool = True):
-        if self.is_initialized:
+        if self.get_is_initialized():
             return
 
         super().__init__()

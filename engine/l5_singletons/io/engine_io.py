@@ -15,7 +15,7 @@ class Entity:
 
 class EngineIO(Singleton):
     def __init__(self, entity : Entity, app : Flask = Flask(__name__)):
-        if EngineIO.is_initialized:
+        if EngineIO.get_is_initialized():
             return
 
         super().__init__()
