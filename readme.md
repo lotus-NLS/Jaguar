@@ -76,7 +76,7 @@ from [source_dir2] import *
 - **small directories**: Each dir ideally contains only 2-4 files/folders; max 5 files/folders
 - **short files**: Max ~200 loc, Ideally < 120 loc
 - **short functions**: Max ~30 loc, ideally <= 15 loc; Ideally <= 2 args, max ~ 5 args
-
+- **commit messges**: ~ 5 words
 
 </details>
 
