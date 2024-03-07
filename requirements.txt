@@ -9,7 +9,6 @@ openai
 Requests
 Scrapy
 selenium
-setuptools
 tiktoken
 trafilatura
 yattag

@@ -1,7 +1,7 @@
 from typing import Optional
 
 import openai
-from openai.openai_object import OpenAIObject
+
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
 from engine.l4_tools import ToolCall, CallMap
@@ -10,9 +10,9 @@ from engine.l5_singletons import Settings
 # ---------------------------------------------------------
 
 class OpenAIChunk(Chunk):
-    def __init__(self, data : OpenAIObject):
+    def __init__(self, data : dict):
         super().__init__(data=data)
-        self.data : OpenAIObject = data
+        self.data : dict = data
         self.best_choice : Optional[dict] = data['choices'][0]
         self.delta = self.best_choice.get('delta')
 
@@ -48,7 +48,7 @@ class OpenAIChunk(Chunk):
 
 
 class OpenAIGeneration(Generation):
-    def _get_next_chunk(self, chunk_data : OpenAIObject) -> OpenAIChunk:
+    def _get_next_chunk(self, chunk_data : dict) -> OpenAIChunk:
         return OpenAIChunk(data=chunk_data)
 
 

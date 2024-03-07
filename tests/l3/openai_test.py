@@ -5,7 +5,6 @@ from typing import Optional
 
 from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation
 from engine.l4_tools import CallMap
-from hollarek.logging import debug
 
 class LinePrinter:
     def __init__(self, logger : callable = print):
