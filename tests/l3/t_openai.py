@@ -1,6 +1,6 @@
-from api import Entry, Speaker, Role
-from api.language.entry import OpenAIEntry
+from api import Speaker, Role
 from engine.l3_models.generation import GenerationContext, Options, ToolOptions
+from engine.l3_models.models import OpenAIEntry
 import threading
 import asyncio
 from hollarek.devtools.spoof import Spoofer

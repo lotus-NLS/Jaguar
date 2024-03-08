@@ -1,14 +1,18 @@
 from typing import Optional
-
+import base64
 import openai
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall
 from openai import Stream
 
-from ..generation.llm import LLM, ModelType
-from ..generation.generation import Generation, Chunk, Options, GenerationContext
+
+from api import Entry, Speaker
+from api.language.entry import EntryData
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
+from ..generation.llm import LLM, ModelType
+from ..generation.generation import Generation, Chunk, Options, GenerationContext
+
 
 # ---------------------------------------------------------
 
@@ -63,12 +67,50 @@ class OpenAIModelType(ModelType):
 
 
 
+class OpenAIEntry(Entry):
+    def add_msg(self, msg : str):
+        content = self.get_content()
+        if isinstance(content, str):
+            new_content = content + msg
+        else:
+            old_text = content[0]['text']
+            new_text = old_text + msg
+            new_content = {'type': 'text', 'text': f"{new_text} {msg}"}
+        self.data['content'] = new_content
+
+
+    def create_data(self, speaker : Speaker, msg : str, image: Optional[bytes] = None) -> EntryData:
+        name = speaker.name if speaker.name else 'unnamed'
+        role = speaker.role.value
+        if msg and not image:
+            content = msg
+        else:
+            base64_image = base64.b64encode(image).decode('utf-8')
+            text = {
+                "type": "text",
+                "text": f"{msg}"
+            }
+            image = {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
+            }
+            content =  [text, image]
+
+        data = EntryData(role=role, name=name, content=content)
+        return data
+
+
+
 class OpenAIModel(LLM):
     def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4_TURBO):
         super().__init__(model_type=model_type)
 
 
     def get_generation(self, context : GenerationContext, options: Options) -> OpenAIGeneration:
+        for entry in context.entries:
+            if not isinstance(entry, OpenAIEntry):
+                raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
+
         self.log(f'Creating generation request')
         openai_response = self.get_openai_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
@@ -95,8 +137,5 @@ class OpenAIModel(LLM):
         openai.api_key = Settings().get_openai_apikey()
         openai_generator = openai.chat.completions.create(**args_dict)
         return openai_generator
-
-
-
 
 
