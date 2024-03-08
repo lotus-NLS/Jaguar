@@ -10,10 +10,6 @@ class Window:
         self.index : int = index
         self.name : str = name
 
-    @abstractmethod
-    def open(self, uri : str):
-        pass
-
     def get_tabs(self) -> list[Tab]:
         return list(self.tabs.values())
 

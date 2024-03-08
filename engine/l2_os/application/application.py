@@ -19,15 +19,14 @@ class Application:
     def create_actions(self) -> list[Action]:
         pass
 
+    @abstractmethod
+    def add_tab(self, uri : Optional[str]):
+        pass
+
     def open(self, uri : Optional[str]):
         if not self.window:
-            self.window = self.create_window(uri)
-        else:
-            self.window.open(uri)
-
-    @abstractmethod
-    def create_window(self, uri : str) -> Window:
-        pass
+            self.window = Window(index=self.index, name=self.get_name())
+        self.add_tab(uri=uri)
 
     def close(self):
         self.window = None
