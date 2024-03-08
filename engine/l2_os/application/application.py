@@ -2,7 +2,7 @@ from typing import Optional
 from abc import abstractmethod
 from engine.l4_tools import Tool
 
-from .actions import Action
+from .action import Action
 from .window import Window
 
 # ---------------------------------------------------
@@ -41,7 +41,7 @@ class Application:
 
     @classmethod
     @abstractmethod
-    def get_desc(self):
+    def get_desc(cls):
         pass
 
     def is_open(self) -> bool:
