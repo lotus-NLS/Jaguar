@@ -25,9 +25,19 @@ class Settings(Singleton):
             Settings.configs = AWSConfigs(secret_name='lotus_api_keys')
 
         if validate:
-            self.validate_openai_key()
-            self.validate_search_engine()
-            self.log(msg=f'All Settings validated')
+            t1 = self.validate_openai_key
+            t2 = self.validate_search_engine
+
+            v1, v2 = t1(), t2()
+
+            successful_tests = []
+            if v1:
+                successful_tests.append(t1)
+            if v2:
+                successful_tests.append(t2)
+            names= [test.__name__ for test in successful_tests]
+
+            self.log(msg=f'Successfully performed validation {names}')
 
         self.log(msg=f'Completed setup for all Settings')
 
@@ -68,7 +78,7 @@ class Settings(Singleton):
                 'stream' : True
             }
 
-            func_timeout(timeout=timeout, func=openai.ChatCompletion.create, kwargs=args_dict)
+            func_timeout(timeout=timeout, func=openai.chat.completions.create, kwargs=args_dict)
             is_successful = True
 
         except FunctionTimedOut:

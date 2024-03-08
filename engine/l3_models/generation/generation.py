@@ -14,9 +14,9 @@ from engine.l5_singletons.io import Task
 class Generation(Loggable):
     stop_token = '⊥'
 
-    def __init__(self, generator : Generator):
+    def __init__(self, generator : Iterator):
         super().__init__(settings=LogSettings(call_location=True))
-        self.generator : Generator = generator
+        self.generator : Iterator = generator
         self.text_content : str = ''
         self.text_queue : Queue[str] = Queue()
 

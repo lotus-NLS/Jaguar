@@ -1,6 +1,8 @@
 from typing import Optional
 
 import openai
+from openai.types.chat import ChatCompletionChunk
+from openai import Stream
 
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
@@ -72,7 +74,7 @@ class OpenAIModel(LLM):
         return OpenAIGeneration(generator=openai_response)
 
 
-    def get_openai_response(self, context : GenerationContext, options: Options):
+    def get_openai_response(self, context : GenerationContext, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict() for entry in context.entries],
@@ -89,7 +91,7 @@ class OpenAIModel(LLM):
             args_dict['max_tokens'] = options.max_tokens
 
         openai.api_key = Settings().get_openai_apikey()
-        openai_generator = openai.ChatCompletion.create(**args_dict)
+        openai_generator = openai.chat.completions.create(**args_dict)
         return openai_generator
 
 
