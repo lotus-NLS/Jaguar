@@ -97,7 +97,7 @@ if __name__ == '__main__':
     # function_tests.execute_all()
     # from PIL import Image
     #
-    # spoofer = Spoofer()
+    # spoofer = Spoofer()1
     # test_path = spoofer.lend_png()
     # image = Image.open(test_path)
     # image.show()

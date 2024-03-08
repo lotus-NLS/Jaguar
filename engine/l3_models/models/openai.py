@@ -2,6 +2,7 @@ from typing import Optional
 
 import openai
 from openai.types.chat import ChatCompletionChunk
+from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall
 from openai import Stream
 
 from ..generation.llm import LLM, ModelType
@@ -12,36 +13,35 @@ from engine.l5_singletons import Settings
 # ---------------------------------------------------------
 
 class OpenAIChunk(Chunk):
-    def __init__(self, data : dict):
+    def __init__(self, data : ChatCompletionChunk):
         super().__init__(data=data)
-        self.data : dict = data
-        self.best_choice : Optional[dict] = data['choices'][0]
-        self.delta = self.best_choice.get('delta')
+        self.data : ChatCompletionChunk = data
+        self.best_choice : Optional[Choice] = data.choices[0]
+        self.delta : ChoiceDelta = self.best_choice.delta
 
     def get_text(self) -> Optional[str]:
         text_content = None
         if not self.delta is None:
-            text_content = self.delta.get('content')
+            text_content = self.delta.content
         return text_content
 
 
     def is_final(self) -> bool:
-        finish_reason_present = self.best_choice.get('finish_reason')
+        finish_reason_present = not self.best_choice.finish_reason is None
         return finish_reason_present
 
 
     def get_call_map(self) -> CallMap:
-        tool_calls : Optional[dict] = self.delta.get('tool_calls')
-        if tool_calls is None:
+        tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
+        if not tool_calls:
             return CallMap()
 
         call_map : CallMap = CallMap()
         for openai_tool_call in tool_calls:
-            index = openai_tool_call.get('index')
+            index = openai_tool_call.index
             call = call_map.get(index, ToolCall())
-            new_data = openai_tool_call.get('function')
-            new = ToolCall(name=new_data.get('name'), json_str=new_data.get('arguments'))
-
+            new_data = openai_tool_call.function
+            new = ToolCall(name=new_data.name, json_str=new_data.arguments)
             call.update(partial_call=new)
             if not index in call_map:
                 call_map[index] = call
@@ -50,7 +50,7 @@ class OpenAIChunk(Chunk):
 
 
 class OpenAIGeneration(Generation):
-    def _get_next_chunk(self, chunk_data : dict) -> OpenAIChunk:
+    def _get_next_chunk(self, chunk_data : ChatCompletionChunk) -> OpenAIChunk:
         return OpenAIChunk(data=chunk_data)
 
 
