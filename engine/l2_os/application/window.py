@@ -1,7 +1,5 @@
 from abc import abstractmethod
-
 from api import Entry, Speaker, Role
-from engine.l2_os.application.actions import Tabs, Tab
 
 
 class Window:
@@ -30,3 +28,21 @@ class Window:
 
     def create_entry(self, msg : str) -> Entry:
         return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=msg)
+
+
+class Tab:
+    def __init__(self, name : str):
+        self.name : str = name
+        self.content : str = ''
+
+    @abstractmethod
+    def update(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_context(self) -> str:
+        pass
+
+
+class Tabs(dict[int, Tab]):
+    pass

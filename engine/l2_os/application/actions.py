@@ -1,24 +1,7 @@
 from abc import abstractmethod
+
 from engine.l4_tools import Tool, ToolArg, ToolCall, ToolDoc
-
-
-class Tab:
-    def __init__(self, name : str):
-        self.name : str = name
-        self.content : str = ''
-
-    @abstractmethod
-    def update(self, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def get_context(self) -> str:
-        pass
-
-
-class Tabs(dict[int, Tab]):
-    pass
-
+from .window import Tabs, Tab
 
 
 class Action(Tool):

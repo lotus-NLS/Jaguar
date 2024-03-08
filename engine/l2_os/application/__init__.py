@@ -1,3 +1,3 @@
 from .application import  Application
-from .actions import Action, Tabs, Tab
-from .window import Window
+from .actions import Action
+from .window import Window, Tab, Tabs
