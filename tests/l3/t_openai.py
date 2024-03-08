@@ -16,7 +16,7 @@ class TestContextOpenAI(OpenAITest):
     def setUpClass(cls):
         cls.introduction_request = OpenAIEntry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         cls.repetition_request = OpenAIEntry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
-        img_path = Spoofer().lend_png()
+        img_path = Spoofer().lend_jpg()
         with open(img_path, 'rb') as f:
             img_bytes= f.read()
             cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?', image=img_bytes)
@@ -62,7 +62,6 @@ class TestToolCallOpenAI(OpenAITest):
         cls.notify_chef_docs = NotifyChef().get_json_doc(application_name=application_name)
         cls.tool_allowed_options = Options(tool_options=ToolOptions(call_allowed=True))
 
-
     def test_simple_tool_call(self):
         context = GenerationContext(entries=[self.welcome_request], docs=[self.greet_tool_docs])
         generation = self.default_model.get_generation(context, self.tool_allowed_options)
@@ -75,7 +74,6 @@ class TestToolCallOpenAI(OpenAITest):
 
         self.assertTrue(len(callMap.values()) == 2)
 
-
     def test_text_and_function_call(self):
         talk_request = OpenAIEntry(Speaker(role=Role.USER), msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
         context = GenerationContext(entries=[self.welcome_request,talk_request], docs=[self.greet_tool_docs])
@@ -87,13 +85,13 @@ class TestToolCallOpenAI(OpenAITest):
 
 
 if __name__ == '__main__':
-    text_tests = TestContextOpenAI()
-    text_tests.execute_all()
+    # text_tests = TestContextOpenAI()
+    # text_tests.execute_all()
     # function_tests = TestToolCallOpenAI()
     # function_tests.execute_all()
-    # from PIL import Image
-    #
-    # spoofer = Spoofer()1
-    # test_path = spoofer.lend_png()
-    # image = Image.open(test_path)
-    # image.show()
+    from PIL import Image
+
+    spoofer = Spoofer()
+    test_path = spoofer.lend_jpg()
+    image = Image.open(test_path)
+    image.show()
