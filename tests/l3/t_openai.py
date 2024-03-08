@@ -5,6 +5,7 @@ import threading
 import asyncio
 from hollarek.devtools.spoof import Spoofer
 from hollarek.fileIO import ImageIO
+from PIL import Image
 
 
 from tests.l3.openai_test import OpenAITest
@@ -20,7 +21,8 @@ class TestContextOpenAI(OpenAITest):
         cls.repetition_request = OpenAIEntry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
 
         fpath = Spoofer().lend_png()
-        img_content = ImageIO(fpath=fpath).read()
+        img_io = ImageIO(fpath=fpath)
+        img_content = img_io.read()
         cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?',
                                             image=img_content)
 
@@ -97,6 +99,6 @@ if __name__ == '__main__':
     # from PIL import Image
     #
     # spoofer = Spoofer()
-    # test_path = spoofer.lend_jpg()
+    # test_path = spoofer.lend_png()
     # image = Image.open(test_path)
     # image.show()

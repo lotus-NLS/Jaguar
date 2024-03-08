@@ -1,6 +1,7 @@
 from typing import Optional
 import base64
 from PIL.Image import Image as PILImage
+import PIL.Image as Image
 import openai
 import io
 from openai.types.chat import ChatCompletionChunk
@@ -84,25 +85,39 @@ class OpenAIEntry(Entry):
     def create_data(self, speaker : Speaker, msg : str, image: Optional[PILImage] = None) -> EntryData:
         name = speaker.name if speaker.name else 'unnamed'
         role = speaker.role.value
+
         if msg and not image:
             content = msg
         else:
-            buffer = io.BytesIO()
-            image.save(buffer, format=image.format)
-            base64_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            base64_image = self.get_base64(image=image)
             text = {
                 "type": "text",
                 "text": f"{msg}"
             }
             image = {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/{image.format};base64,{base64_image}"}
+                "image_url": {"url": f"data:image/JPEG;base64,{base64_image}"}
             }
             content =  [text, image]
 
         data = EntryData(role=role, name=name, content=content)
         return data
 
+
+    @staticmethod
+    def get_base64(image) -> Optional[str]:
+        if image.mode in ('LA', 'RGBA'):
+            background = Image.new('RGB', image.size, (255, 255, 255))
+            rgb_image = image.convert('RGB') if image.mode == 'RGBA' else image.convert('L').convert('RGB')
+            background.paste(rgb_image, mask=image.split()[-1])
+            image = background
+
+        image.show()
+        buffer = io.BytesIO()
+        image.save(buffer, format=f'JPEG')
+        img_bytes = buffer.getvalue()
+        base64_image = base64.b64encode(img_bytes).decode('utf-8')
+        return base64_image
 
 
 class OpenAIModel(LLM):
