@@ -51,7 +51,6 @@ class Close(MetaTool):
             application.close()
 
 
-
 class Open(MetaTool):
     def __init__(self, application_map: dict[int, Application]):
         super().__init__(application_map=application_map)
@@ -70,4 +69,4 @@ class Open(MetaTool):
 
     def do(self):
         application = self.get_application()
-        application.open(uri=self.uri_arg.val)
+        application.open(path=self.uri_arg.val)

@@ -1,14 +1,20 @@
 from abc import abstractmethod
 from api import Entry, Speaker, Role
-
+from PIL.Image import Image as PILImage
+from typing import Optional
+# from hollarek.fsys import URI
 
 class Tab:
-    def __init__(self, name : str):
-        self.name : str = name
-        self.content : str = ''
+    def __init__(self, path : str):
+        uri = URI(path=path)
+
+        self.name : str = uri.get_name()
+        self.path : str = uri.get_path()
+        self.text_content : str = ''
+        self.image_content : Optional[PILImage] = None
 
     @abstractmethod
-    def update(self, *args, **kwargs):
+    def open(self):
         pass
 
     @abstractmethod
@@ -22,19 +28,28 @@ class Window:
         self.index : int = index
         self.name : str = name
 
-    def get_tabs(self) -> list[Tab]:
-        return list(self.tabs.values())
+    def add_tab(self, tab : Tab):
+        index = 0
+        while self.tabs.get(index):
+            index += 1
+        self.tabs[index] = tab
+
 
     def close_tab(self, index):
         del self.tabs[index]
+
+    # ---------------------------------------------------
+    # do
+
+    def get_tabs(self) -> list[Tab]:
+        return list(self.tabs.values())
 
     def get_context(self) -> Entry:
         context = self.get_header()
         for index, tab in self.tabs.items():
             context += f'--- {tab.name} ---'
-            context += tab.content
-        return self.create_entry(msg=context)
-
+            context += tab.text_content
+        return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=context)
 
     def get_header(self) -> str:
         header_len = 40
@@ -43,6 +58,24 @@ class Window:
         dashes = '=' * num_dashes
         return  f'{dashes} {basic_info} {dashes}'
 
-    def create_entry(self, msg : str) -> Entry:
-        return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=msg)
 
+from urllib.parse import urlparse
+from pathlib import Path
+
+
+class URI:
+    def __init__(self, path: str):
+        self.type = None
+        self.path = path
+        parsed = urlparse(path)
+        is_url = parsed.scheme and parsed.netloc
+        self.wrapper = parsed if is_url else Path(path)
+
+    def get_path(self) -> str:
+        return self.path
+
+    def get_name(self) -> str:
+        if isinstance(self.wrapper, Path):
+            return self.wrapper.name
+        else:
+            return self.wrapper.path.split('/')[-1]
