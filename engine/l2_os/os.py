@@ -61,7 +61,7 @@ class Close(Tool):
     def __init__(self, application_map : dict[int,Application]):
         super().__init__()
         self.application_map : dict[int, Application] = application_map
-        self.window_arg : ToolArg = ToolArg(name='window_index', desc='Index of window to close'
+        self.window_arg : ToolArg = ToolArg(name='window_index', desc='Index of window/application to close'
                                            ,choices=self.get_window_indices())
         self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close')
 

@@ -5,13 +5,12 @@ from engine.l4_tools import Tool
 from .actions import Action
 from .window import Window
 
-
 # ---------------------------------------------------
 
-
 class Application:
-    def __init__(self):
+    def __init__(self, index : int):
         super().__init__()
+        self.index = index
         self.window : Optional[Window] = None
         self.actions : list[Action] = self.create_actions()
         self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}

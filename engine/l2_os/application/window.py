@@ -5,8 +5,9 @@ from engine.l2_os.application.actions import Tabs, Tab
 
 
 class Window:
-    def __init__(self, name : str):
+    def __init__(self, index : int, name : str):
         self.tabs: Tabs = Tabs()
+        self.index : int = index
         self.name : str = name
 
     @abstractmethod
@@ -26,10 +27,10 @@ class Window:
 
     def get_header(self) -> str:
         header_len = 40
-        name = self.__class__.__name__
-        num_dashes = max(header_len - len(name), 0)
+        basic_info = f'{self.name}; Window number : {self.index}'
+        num_dashes = max(header_len - len(basic_info), 0)
         dashes = '=' * num_dashes
-        return  f'{dashes} {name} {dashes}'
+        return  f'{dashes} {basic_info} {dashes}'
 
     def create_entry(self, msg : str) -> Entry:
         return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=msg)
