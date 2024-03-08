@@ -5,7 +5,9 @@ from typing import Optional
 from hollarek.fileIO.text import TextIO
 from hollarek.fsys import FsysNode
 from engine.l4_tools import ToolArg
-from engine.l2_os.application import Application, Window, WindowMap, OpeningTool, InteractionTool
+from engine.l2_os.application import Application, OpeningTool, Action
+from engine.l2_os import Tab, Tabs
+
 
 # ---------------------------------------------------------
 
@@ -18,13 +20,13 @@ class TextEditor(Application):
         return f'Allow for opening text files (plain text/pdf) and editing plain text files'
 
     def create_open_tool(self) -> OpeningTool:
-        return Read(window_map=self.window_map)
+        return Read(window_map=self.window)
 
-    def create_action_tools(self) -> list[InteractionTool]:
-        return [Insert(window_map=self.window_map)]
+    def create_actions(self) -> list[Action]:
+        return [Insert(tabs=self.window)]
 
 
-class TextWindow(Window):
+class TextWindow(Tab):
     def __init__(self, fpath : str):
         super().__init__(name=os.path.basename(fpath))
         self.fpath : str = fpath
@@ -55,12 +57,12 @@ class TextWindow(Window):
 
 
 class Read(OpeningTool):
-    def __init__(self, window_map : WindowMap):
+    def __init__(self, window_map : Tabs):
         super().__init__(window_map=window_map)
         self.fpath_arg : ToolArg = ToolArg(name='fpath', desc='Filepath of text file to be opened')
 
 
-    def get_window(self) -> Window:
+    def get_window(self) -> Tab:
         fpath = os.path.expanduser(self.fpath_arg.val)
 
         if not os.path.isfile(fpath):
@@ -75,9 +77,9 @@ class Read(OpeningTool):
         return f'Open plain text or pdfs files'
 
 
-class Insert(InteractionTool):
-    def __init__(self, window_map : WindowMap):
-        super().__init__(window_map=window_map, call_timeout=5)
+class Insert(Action):
+    def __init__(self, tabs : Tabs):
+        super().__init__(tabs=tabs, call_timeout=5)
         self.content_arg : ToolArg = ToolArg(name='content', desc='Content to insert')
         self.line_arg : ToolArg = ToolArg(name='Line number', desc='Line number where content will be inserted')
 

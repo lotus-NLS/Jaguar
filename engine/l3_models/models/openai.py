@@ -1,21 +1,17 @@
-from typing import Optional
 import base64
-from PIL.Image import Image as PILImage
-import PIL.Image as Image
 import openai
 import io
-from openai.types.chat import ChatCompletionChunk
-from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall
+from typing import Optional
+from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 from openai import Stream
+from PIL.Image import Image as PILImage
+import PIL.Image as Image
 
-
-from api import Entry, Speaker
-from api.language.entry import EntryData
+from api import Entry, Speaker, EntryData
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
 from ..generation.llm import LLM, ModelType
 from ..generation.generation import Generation, Chunk, Options, GenerationContext
-
 
 # ---------------------------------------------------------
 
@@ -69,7 +65,6 @@ class OpenAIModelType(ModelType):
     GPT_35 = 'gpt-3.5-turbo-0125'
 
 
-
 class OpenAIEntry(Entry):
     def add_msg(self, msg : str):
         content = self.get_content()
@@ -85,11 +80,11 @@ class OpenAIEntry(Entry):
     def create_data(self, speaker : Speaker, msg : str, image: Optional[PILImage] = None) -> EntryData:
         name = speaker.name if speaker.name else 'unnamed'
         role = speaker.role.value
+        base64_image = self.get_base64(image=image)
 
         if msg and not image:
             content = msg
         else:
-            base64_image = self.get_base64(image=image)
             text = {
                 "type": "text",
                 "text": f"{msg}"

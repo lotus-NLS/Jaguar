@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Generator, Iterator
+from typing import Optional, Iterator
 from dataclasses import dataclass
 from abc import abstractmethod
 from queue import Queue

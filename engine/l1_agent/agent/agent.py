@@ -40,7 +40,7 @@ class Agent(Entity):
     def process(self, generation : Generation, do_feedback : bool = True):
         for chunk in generation:
             self.os.store_info(chunk=chunk)
-        if self.os.get_toolcall_made():
+        if self.os.toolcall_made():
             self.os.handle_calls()
             if do_feedback:
                 self.send_feedback(generation=generation)

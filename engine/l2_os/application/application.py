@@ -1,22 +1,41 @@
-from api import Entry, Speaker, Role
+from typing import Optional
 from abc import abstractmethod
-from hollarek.logging import Loggable
 
-from .actions import OpeningTool, InteractionTool, CloseTool
-from .actions import WindowMap
-from engine.l4_tools import Tool, ToolDoc
+from engine.l4_tools import Tool
+from .actions import Action
+from .window import Window
+
+
 # ---------------------------------------------------
 
-class Application(Loggable):
+
+class Application:
     def __init__(self):
         super().__init__()
-        self.window_map : WindowMap = WindowMap()
-        self.open_tool : Tool = self.create_open_tool()
-        self.action_tools : list[InteractionTool] = self.create_action_tools()
-        self.close_tool : CloseTool = CloseTool(window_map=self.window_map,call_timeout=0.1)
+        self.window : Optional[Window] = None
+        self.actions : list[Action] = self.create_actions()
+        self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}
 
-        self.tools : list[Tool] = [self.open_tool] + self.action_tools + [self.close_tool]
-        self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.tools}
+    @abstractmethod
+    def create_actions(self) -> list[Action]:
+        pass
+
+    def open(self, uri : Optional[str]):
+        if not self.window:
+            self.window = self.create_window(uri)
+        else:
+            self.window.open(uri)
+
+    @abstractmethod
+    def create_window(self, uri : str) -> Window:
+        pass
+
+    def close(self):
+        self.window = None
+        self.actions = self.create_actions()
+
+    def close_tab(self, tab_index : int):
+        del self.window.tabs[tab_index]
 
     # ---------------------------------------------------
     #  context
@@ -30,58 +49,11 @@ class Application(Loggable):
     def get_desc(cls):
         pass
 
-
-    def get_context(self) -> Entry:
-        context = self.get_header()
-        for index, window in self.window_map.items():
-            context += f'--- {window.name} ---'
-            context += window.content
-        return self.create_entry(msg=context)
-
-
-    def get_header(self) -> str:
-        header_len = 40
-        name = self.__class__.__name__
-        num_dashes = max(header_len - len(name), 0)
-        dashes = '=' * num_dashes
-        return  f'{dashes} {name} {dashes}'
-
-
-    @classmethod
-    def create_entry(cls, msg : str) -> Entry:
-        return Entry(speaker=Speaker(role=Role.TOOL, name=cls.__name__), msg=msg)
+    def is_active(self) -> bool:
+        return self.window is not None
 
     # ---------------------------------------------------
     # tools
 
-
-    @abstractmethod
-    def create_open_tool(self) -> OpeningTool:
-        pass
-
-    @abstractmethod
-    def create_action_tools(self) -> list[InteractionTool]:
-        pass
-
-
-    def get_tools(self, active_only : bool) -> list[Tool]:
-        tools = self.tools
-        if active_only:
-            tools = [tool for tool in tools if tool.is_active]
-        return tools
-
-
-    def get_tool_dict(self, active_only : bool = False):
-        tool_dict = self.tool_dict
-        if active_only:
-            tool_dict = {name : tool for (name, tool) in tool_dict.items() if tool.is_active}
-        return tool_dict
-
-
-    def get_doc_dict(self, active_only : bool = False) -> dict[str, ToolDoc]:
-        tools = self.get_tools(active_only=active_only)
-        docs = {}
-        for tool in tools:
-            docs[tool.get_name()] = tool.get_json_doc(application_name=self.get_name())
-        return docs
-
+    def get_actions(self, active_only : bool= False) -> list[Action]:
+        return [action for action in self.actions if action.is_active or not active_only]

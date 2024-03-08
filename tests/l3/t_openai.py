@@ -5,7 +5,6 @@ import threading
 import asyncio
 from hollarek.devtools.spoof import Spoofer
 from hollarek.fileIO import ImageIO
-from PIL import Image
 
 
 from tests.l3.openai_test import OpenAITest
@@ -64,8 +63,8 @@ class TestToolCallOpenAI(OpenAITest):
         cls.chef_notification_request = OpenAIEntry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
 
         application_name = 'display'
-        cls.greet_tool_docs = Greet().get_json_doc(application_name=application_name)
-        cls.notify_chef_docs = NotifyChef().get_json_doc(application_name=application_name)
+        cls.greet_tool_docs = Greet().get_doc(app_name=application_name)
+        cls.notify_chef_docs = NotifyChef().get_doc(app_name=application_name)
         cls.tool_allowed_options = Options(tool_options=ToolOptions(call_allowed=True))
 
 

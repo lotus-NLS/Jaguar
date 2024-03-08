@@ -4,6 +4,7 @@ from abc import abstractmethod
 from hollarek.logging import get_logger
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
 from .call import ToolCall, ToolArg, ToolDoc
+from typing import Optional
 # ---------------------------------------------------------
 
 class Tool:
@@ -41,7 +42,8 @@ class Tool:
             arg.val = None
 
         args_dict = tool_call.get_args_dict()
-        missing_args = [arg.name for arg in self._get_required_args() if not arg.name in args_dict]
+        required_args = [arg for arg in self.get_args() if not arg.is_optional]
+        missing_args = [arg.name for arg in required_args if not arg.name in args_dict]
         if missing_args:
             raise MissingArgs(f'Provided dictionary {args_dict} did not cover required args {missing_args}')
 
@@ -70,23 +72,17 @@ class Tool:
         pass
 
 
-    def get_json_doc(self, application_name : str) -> ToolDoc:
-        doc = ToolDoc.from_info(name=f'{application_name}_{self.get_name()}',
-                          desc=f'Application: {application_name}|{self.get_desc()}',
-                          args=self.get_args())
+    def get_doc(self, app_name : Optional[str] = None) -> ToolDoc:
+        name = f'{app_name}_{self.get_name()}'
+        desc = f'Application: {app_name}|{self.get_desc()}' if app_name else self.get_desc()
+        doc = ToolDoc.from_info(name=name, desc=desc, args=self.get_args())
         if not doc.get_is_valid_json():
             raise ValueError(f'\n[Error]: Tool {self.get_name()} has invalid json doc\nAborting ...')
 
         return doc
 
-
     def get_args_dict(self) -> dict[str, ToolArg]:
         return {arg.name : arg for arg in self.get_args()}
 
-
     def get_args(self) -> list[ToolArg]:
         return [val for name,val in self.__dict__.items() if isinstance(val, ToolArg)]
-
-
-    def _get_required_args(self) -> list[ToolArg]:
-        return [arg for arg in self.get_args() if not arg.is_optional]
