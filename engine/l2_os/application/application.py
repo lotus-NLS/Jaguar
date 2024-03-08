@@ -32,7 +32,7 @@ class Application:
     #  actions
 
     def create_actions(self) -> list[Action]:
-        action_factory = ActionFactory(cls=self.tab_type, app_name=self.get_name())
+        action_factory = ActionFactory(cls=self.tab_type, tab_map=self.window.tab_map)
         return action_factory.get_actions()
 
     def get_actions(self, active_only : bool= False) -> list[Action]:
@@ -52,11 +52,11 @@ class Application:
         pass
 
     def is_open(self) -> bool:
-        return len(self.window.tabs) != 0
+        return len(self.window.tab_map) != 0
 
 
 import inspect
-from hollarek.logging import Loggable, LogSettings, LogLevel
+from hollarek.logging import Loggable, LogSettings
 # ---------------------------------------------------------
 
 @dataclass
@@ -66,42 +66,54 @@ class Argument:
 
 
 class ActionFactory(Loggable):
-    def __init__(self, cls : type[Tab], app_name : str):
+    def __init__(self, cls : type[Tab], tab_map : dict[int, Tab]):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
-        self.app_name : str = app_name
+        self.tab_map : dict[int, Tab] =  tab_map
         self.methods : list[callable] = get_methods(cls=self.cls)
 
     # ---------------------------------------------------------
     # loop
 
     def get_actions(self) -> list[Action]:
+        actions = []
         for method in self.methods:
             name = method.__name__
             if name in [Tab.get_context.__name__, Tab.open.__name__]:
                 continue
-            args = get_args(method)
+            actions.append(self.create_action(mthd=method))
+        return actions
 
 
-    def create_action(self, name : str, args : list[Argument]):
+    def create_action(self, mthd : callable) -> Action:
+        tab_map = self.tab_map
+        args = get_args(func=mthd)
+
+        class NewAction(Action):
+            def __init__(self):
+                super().__init__(tab_map=tab_map)
+                self.args: list[ToolArg] = [to_tool_arg(arg) for arg in args]
+
+            @classmethod
+            def get_name(cls) -> str:
+                return f'{mthd.__name__}'
+
+            def do(self):
+                kwargs = {name : arg.get_value() for name,arg in self.get_args()}
+                mthd(**kwargs)
+
+            def get_desc(self) -> str:
+                return f'Allows for operating {self.get_name()}'
+
+            def get_args(self) -> list[ToolArg]:
+                return self.args
+
+        return NewAction()
 
 
-    @staticmethod
-    def to_tool_arg(argument : Argument):
-        return ToolArg(name=argument.name, dtype=argument.dtype)
 
-    # @staticmethod
-    # def get_value(user_input : str, arg_type : type, arg_name : str):
-    #     if arg_type == bool:
-    #         if user_input not in ['0', '1']:
-    #             raise ValueError(f"For argument '{arg_name}', please enter '0' for False or '1' for True.")
-    #         val = bool(int(user_input))
-    #     else:
-    #         try:
-    #             val = arg_type(user_input)
-    #         except ValueError:
-    #             raise ValueError(f"Invalid input type for '{arg_name}'. Expected a value of type {arg_type.__name__}.")
-    #     return val
+def to_tool_arg(argument : Argument):
+    return ToolArg(name=argument.name, dtype=argument.dtype)
 
 
 
@@ -126,13 +138,3 @@ def get_args(func: callable) -> list[Argument]:
             args.append(Argument(dtype=arg_type, name=arg_name))
     return args
 
-
-class NewAction(Action):
-    def __init__(self):
-        self.args :
-
-    def do(self):
-        pass
-
-    def get_desc(self) -> str:
-        return f''

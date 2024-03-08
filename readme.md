@@ -51,7 +51,7 @@ bash launch.sh         # Standard launch
 
 - Wherever possible, modules are arranged so that dependency/reference relation (y depends on x) points downward i.e. if y depends on x then  x is placed below y
 - I.e.: Highest level modules/submodules first then the methods they depend on below; In doing so also, minimize the vertical distance between modules
-- Apply this both for text within a file and files within a directory
+- Apply self both for text within a file and files within a directory
 
 ### IV: Imports
 

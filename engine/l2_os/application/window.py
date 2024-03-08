@@ -27,29 +27,29 @@ class Tab:
 
 class Window:
     def __init__(self, index : int, name : str):
-        self.tabs : dict[int, Tab] = {}
+        self.tab_map : dict[int, Tab] = {}
         self.index : int = index
         self.name : str = name
 
     def add_tab(self, tab : Tab):
         index = 0
-        while self.tabs.get(index):
+        while self.tab_map.get(index):
             index += 1
-        self.tabs[index] = tab
+        self.tab_map[index] = tab
 
 
     def close_tab(self, index):
-        del self.tabs[index]
+        del self.tab_map[index]
 
     # ---------------------------------------------------
     # do
 
     def get_tabs(self) -> list[Tab]:
-        return list(self.tabs.values())
+        return list(self.tab_map.values())
 
     def get_context(self) -> Entry:
         context = self.get_header()
-        for index, tab in self.tabs.items():
+        for index, tab in self.tab_map.items():
             context += f'--- {tab.name} ---'
             context += tab.text_content
         return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=context)

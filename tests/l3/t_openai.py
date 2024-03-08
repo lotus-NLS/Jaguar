@@ -22,7 +22,7 @@ class TestContextOpenAI(OpenAITest):
         fpath = Spoofer().lend_png()
         img_io = ImageIO(fpath=fpath)
         img_content = img_io.read()
-        cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?',
+        cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in self image?',
                                             image=img_content)
 
 
@@ -59,7 +59,7 @@ class TestToolCallOpenAI(OpenAITest):
     def setUpClass(cls):
         cls.greet_tool = Greet()
         cls.welcome_request = OpenAIEntry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home!'
-                                                                 'You need only do this once, every guest will see it')
+                                                                 'You need only do self once, every guest will see it')
         cls.chef_notification_request = OpenAIEntry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
 
         application_name = 'display'
