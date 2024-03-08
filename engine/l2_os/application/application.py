@@ -70,15 +70,15 @@ class ActionFactory(Loggable):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
         self.app_name : str = app_name
-        self.methods_dict : dict[int, callable] = get_methods_map(cls=self.cls)
+        self.methods : list[callable] = get_methods(cls=self.cls)
 
     # ---------------------------------------------------------
     # loop
 
-    # def get_actions(self) -> list[Action]:
-    #     class
-
-
+    def get_actions(self) -> list[Action]:
+        for method in self.methods:
+            if method.__name__ == Tab.get_context.__name__:
+                continue
 
 
     @staticmethod
@@ -94,11 +94,6 @@ class ActionFactory(Loggable):
                 raise ValueError(f"Invalid input type for '{arg_name}'. Expected a value of type {arg_type.__name__}.")
         return val
 
-
-
-def get_methods_map(cls) -> dict[int, callable]:
-    public_methods_names = get_methods(cls, public_only=True)
-    return {i + 1: getattr(cls, name) for i, name in enumerate(public_methods_names)}
 
 
 def get_methods(cls, public_only = False) -> list[callable]:

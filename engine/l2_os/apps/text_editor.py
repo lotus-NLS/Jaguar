@@ -25,20 +25,20 @@ class TextEditor(Application):
         return []
 
 
-class TextTab(Tab):
-    def __init__(self, fpath : str):
-        super().__init__(name=os.path.basename(fpath))
-        self.fpath : str = fpath
-        self.content : Optional[str] =None
+# class TextTab(Tab):
+#     def __init__(self, fpath : str):
+#         super().__init__(name=os.path.basename(fpath))
+#         self.fpath : str = fpath
+#         self.content : Optional[str] =None
 
 
-    def get_context(self, app_name : str) -> Entry:
-        with open(self.fpath, 'r') as f:
-            lines = f.readlines()
-        numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
-        msg = ''.join(numbered_lines)
-        entry = Entry(speaker=Speaker.get_tool(name=app_name), msg=msg)
-        return entry
+    # def get_context(self, app_name : str) -> Entry:
+    #     with open(self.fpath, 'r') as f:
+    #         lines = f.readlines()
+    #     numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
+    #     msg = ''.join(numbered_lines)
+    #     entry = Entry(speaker=Speaker.get_tool(name=app_name), msg=msg)
+    #     return entry
 
 
     # def update(self, line: int, content: str):

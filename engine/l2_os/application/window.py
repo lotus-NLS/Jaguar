@@ -17,9 +17,12 @@ class Tab:
     def open(self):
         pass
 
-    @abstractmethod
     def get_context(self, app_name : str) -> Entry:
-        pass
+        kwargs = {}
+        if self.image_content:
+            kwargs['image'] = self.image_content
+        return Entry(speaker=Speaker.get_tool(name=app_name), **kwargs)
+
 
 
 class Window:
