@@ -1,13 +1,9 @@
-import base64
 import openai
-import io
 from typing import Optional
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 from openai import Stream
-from PIL.Image import Image as PILImage
-import PIL.Image as Image
 
-from api import Entry, Speaker, EntryData
+from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
 from ..generation.llm import LLM, ModelType
@@ -86,7 +82,7 @@ class OpenAIModel(LLM):
     def get_openai_response(self, context : GenerationContext, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self.model_type,
-            'messages': [entry.as_dict() for entry in context.entries],
+            'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
             'temperature': options.temp,
             'stream' : True
         }

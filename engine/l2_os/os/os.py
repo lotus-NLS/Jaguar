@@ -41,7 +41,7 @@ class OS(Loggable):
     def get_tool_map(self) -> dict[str, Tool]:
         return {tool.get_name() : tool for tool in self.get_tools()}
 
-    def get_tool_docs(self) -> list[ToolDoc]:
+    def get_docs(self) -> list[ToolDoc]:
         return [tool.get_doc() for tool in self.get_tools()]
 
     def get_tools(self) -> list[Tool]:

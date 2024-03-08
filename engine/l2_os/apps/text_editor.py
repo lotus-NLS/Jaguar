@@ -1,28 +1,28 @@
 from __future__ import annotations
-import os
-from typing import Optional
-from api import Entry, Speaker
-
-from hollarek.fileIO.text import TextIO
-from hollarek.fsys import FsysNode
-
-from engine.l2_os import Window
-from engine.l4_tools import ToolArg
-from engine.l2_os.application import Application, Action, Tab
+# import os
+# from typing import Optional
+# from api import Entry, Speaker
+#
+# from hollarek.fileIO.text import TextIO
+# from hollarek.fsys import FsysNode
+#
+# from engine.l2_os import Window
+# from engine.l4_tools import ToolArg
+# from engine.l2_os.application import Application, Action, Tab
 
 
 # ---------------------------------------------------------
 
-class TextEditor(Application):
-    def create_window(self, uri: str) -> Window:
-        return Window(index=self.index, name=self.get_name())
-
-    @classmethod
-    def get_desc(self):
-        return f'Allow for opening text files (plain text/pdf) and editing plain text files'
-
-    def create_actions(self) -> list[Action]:
-        return []
+# class TextEditor(Application):
+#     def create_window(self, uri: str) -> Window:
+#         return Window(index=self.index, name=self.get_name())
+#
+#     @classmethod
+#     def get_desc(self):
+#         return f'Allow for opening text files (plain text/pdf) and editing plain text files'
+#
+#     def create_actions(self) -> list[Action]:
+#         return []
 
 
 # class TextTab(Tab):

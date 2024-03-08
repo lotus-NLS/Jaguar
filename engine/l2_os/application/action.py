@@ -1,4 +1,4 @@
-from engine.l4_tools import Tool, ToolArg, ToolCall, ToolDoc
+from engine.l4_tools import Tool, ToolArg, ToolCall
 from .window import Tab
 from abc import ABC, abstractmethod
 # ---------------------------------------------------------
