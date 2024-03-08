@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 from typing import Optional
+from api import Entry, Speaker
 
 from hollarek.fileIO.text import TextIO
 from hollarek.fsys import FsysNode
@@ -31,27 +32,29 @@ class TextTab(Tab):
         self.content : Optional[str] =None
 
 
-    def get_context(self) -> str:
+    def get_context(self, app_name : str) -> Entry:
         with open(self.fpath, 'r') as f:
             lines = f.readlines()
         numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
-        return ''.join(numbered_lines)
+        msg = ''.join(numbered_lines)
+        entry = Entry(speaker=Speaker.get_tool(name=app_name), msg=msg)
+        return entry
 
 
-    def update(self, line: int, content: str):
-        if FsysNode(path=self.fpath).get_suffix() == 'pdf':
-            raise ValueError('Cannot edit pdf files')
-        if line <= 0:
-            raise ValueError("Line number must be a positive integer.")
-
-        with open(self.fpath, 'r') as f:
-            lines = f.readlines()
-        index = line - 1
-        lines.insert(index, content)
-
-        with open(self.fpath, 'w') as f:
-            f.writelines(lines)
-        print(f'after update, content is: {self.get_context()}')
+    # def update(self, line: int, content: str):
+    #     if FsysNode(path=self.fpath).get_suffix() == 'pdf':
+    #         raise ValueError('Cannot edit pdf files')
+    #     if line <= 0:
+    #         raise ValueError("Line number must be a positive integer.")
+    #
+    #     with open(self.fpath, 'r') as f:
+    #         lines = f.readlines()
+    #     index = line - 1
+    #     lines.insert(index, content)
+    #
+    #     with open(self.fpath, 'w') as f:
+    #         f.writelines(lines)
+    #     print(f'after update, content is: {self.get_context()}')
 
 #
 # class Read(Action):

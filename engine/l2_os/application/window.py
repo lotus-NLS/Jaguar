@@ -40,7 +40,7 @@ class Tab:
         pass
 
     @abstractmethod
-    def get_context(self) -> str:
+    def get_context(self, app_name : str) -> Entry:
         pass
 
 

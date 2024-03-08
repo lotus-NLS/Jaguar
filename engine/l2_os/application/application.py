@@ -1,7 +1,7 @@
 from typing import Optional
 from abc import abstractmethod
-
 from engine.l4_tools import Tool
+
 from .actions import Action
 from .window import Window
 
