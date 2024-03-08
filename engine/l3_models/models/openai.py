@@ -54,9 +54,11 @@ class OpenAIGeneration(Generation):
         return OpenAIChunk(data=chunk_data)
 
 
+
 class OpenAIModelType(ModelType):
     GPT_4 = 'gpt-4-0125-preview'
     GPT_4_TURBO = 'gpt-4-turbo-preview'
+    GPT_4V = 'gpt-4-vision-preview'
     GPT_35 = 'gpt-3.5-turbo-0125'
 
 

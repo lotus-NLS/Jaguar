@@ -19,16 +19,17 @@ class TestContextOpenAI(OpenAITest):
         img_path = Spoofer().lend_png()
         with open(img_path, 'rb') as f:
             img_bytes= f.read()
-        cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?', image=img_bytes)
+            cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?', image=img_bytes)
 
-    def test_chunk_text(self):
+
+    def test_text_chunks(self):
         context = GenerationContext(entries=[self.introduction_request], docs=[])
-        generation = self.model.get_generation(context, self.default_options)
+        generation = self.default_model.get_generation(context, self.default_options)
         self.get_result(context, generation)
 
     def test_text_stream(self):
         context = GenerationContext(entries=[self.introduction_request], docs=[])
-        generation = self.model.get_generation(context, self.default_options)
+        generation = self.default_model.get_generation(context, self.default_options)
 
         def exhaust():
             for chunk in generation:
@@ -43,7 +44,7 @@ class TestContextOpenAI(OpenAITest):
 
     def test_image_context(self):
         context = GenerationContext(entries=[self.image_OpenAIEntry], docs=[])
-        generation = self.model.get_generation(context, self.default_options)
+        generation = self.vision_model.get_generation(context, self.vision_options)
         self.get_result(context, generation)
 
 
@@ -64,12 +65,12 @@ class TestToolCallOpenAI(OpenAITest):
 
     def test_simple_tool_call(self):
         context = GenerationContext(entries=[self.welcome_request], docs=[self.greet_tool_docs])
-        generation = self.model.get_generation(context, self.tool_allowed_options)
+        generation = self.default_model.get_generation(context, self.tool_allowed_options)
         self.get_result(context, generation)
 
     def test_multi_tool_call(self):
         context = GenerationContext(entries=[self.welcome_request, self.chef_notification_request], docs=[self.greet_tool_docs, self.notify_chef_docs])
-        generation = self.model.get_generation(context, self.tool_allowed_options)
+        generation = self.default_model.get_generation(context, self.tool_allowed_options)
         text, callMap = self.get_result(context, generation)
 
         self.assertTrue(len(callMap.values()) == 2)
@@ -78,16 +79,11 @@ class TestToolCallOpenAI(OpenAITest):
     def test_text_and_function_call(self):
         talk_request = OpenAIEntry(Speaker(role=Role.USER), msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
         context = GenerationContext(entries=[self.welcome_request,talk_request], docs=[self.greet_tool_docs])
-        generation = self.model.get_generation(context, self.tool_allowed_options)
+        generation = self.default_model.get_generation(context, self.tool_allowed_options)
         text, callmap = self.get_result(context=context, generation=generation)
 
         self.assertTrue(text)
         self.assertTrue(len(callmap.values())== 1)
-    #
-    # def test_remembers_tool_output(self):
-    #     context = GenerationContext(entries=[self.greet_request, self.repetition], docs=[self.greet_tool_docs])
-    #     generation = self.model.get_generation(context, self.tool_allowed_options)
-    #     self._print_generation_chunks(generation)
 
 
 if __name__ == '__main__':

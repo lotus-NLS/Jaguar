@@ -3,7 +3,7 @@ import time
 from hollarek.devtools import Unittest
 from typing import Optional
 
-from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation
+from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation, OpenAIModelType
 from engine.l4_tools import CallMap
 
 class LinePrinter:
@@ -29,8 +29,10 @@ class LinePrinter:
 
 
 class OpenAITest(Unittest):
-    default_options = Options(max_tokens=1)
-    model = OpenAIModel()
+    default_options = Options(max_tokens=10)
+    vision_options = Options()
+    default_model = OpenAIModel()
+    vision_model = OpenAIModel(OpenAIModelType.GPT_4V)
     lineprinter = LinePrinter()
 
     @classmethod
@@ -49,8 +51,10 @@ class OpenAITest(Unittest):
         for chunk in generation:
             self.lineprinter.add(chunk.get_text())
             call_map.add(chunk.get_call_map())
+        print()
 
-        call_map.print_info()
+        if call_map:
+            call_map.print_info()
         time.sleep(0.1)
 
         return self.lineprinter.total_text, call_map
