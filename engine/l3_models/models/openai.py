@@ -1,6 +1,8 @@
 from typing import Optional
 import base64
+from PIL.Image import Image as PILImage
 import openai
+import io
 from openai.types.chat import ChatCompletionChunk
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall
 from openai import Stream
@@ -79,20 +81,22 @@ class OpenAIEntry(Entry):
         self.data['content'] = new_content
 
 
-    def create_data(self, speaker : Speaker, msg : str, image: Optional[bytes] = None) -> EntryData:
+    def create_data(self, speaker : Speaker, msg : str, image: Optional[PILImage] = None) -> EntryData:
         name = speaker.name if speaker.name else 'unnamed'
         role = speaker.role.value
         if msg and not image:
             content = msg
         else:
-            base64_image = base64.b64encode(image).decode('utf-8')
+            buffer = io.BytesIO()
+            image.save(buffer, format=image.format)
+            base64_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
             text = {
                 "type": "text",
                 "text": f"{msg}"
             }
             image = {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
+                "image_url": {"url": f"data:image/{image.format};base64,{base64_image}"}
             }
             content =  [text, image]
 
@@ -137,5 +141,4 @@ class OpenAIModel(LLM):
         openai.api_key = Settings().get_openai_apikey()
         openai_generator = openai.chat.completions.create(**args_dict)
         return openai_generator
-
 

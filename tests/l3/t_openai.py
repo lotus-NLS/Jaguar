@@ -4,6 +4,8 @@ from engine.l3_models.models import OpenAIEntry
 import threading
 import asyncio
 from hollarek.devtools.spoof import Spoofer
+from hollarek.fileIO import ImageIO
+
 
 from tests.l3.openai_test import OpenAITest
 from tests.l3.spoof import Greet, NotifyChef
@@ -16,16 +18,18 @@ class TestContextOpenAI(OpenAITest):
     def setUpClass(cls):
         cls.introduction_request = OpenAIEntry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         cls.repetition_request = OpenAIEntry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
-        img_path = Spoofer().lend_jpg()
-        with open(img_path, 'rb') as f:
-            img_bytes= f.read()
-            cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?', image=img_bytes)
+
+        fpath = Spoofer().lend_png()
+        img_content = ImageIO(fpath=fpath).read()
+        cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in this image?',
+                                            image=img_content)
 
 
     def test_text_chunks(self):
         context = GenerationContext(entries=[self.introduction_request], docs=[])
         generation = self.default_model.get_generation(context, self.default_options)
         self.get_result(context, generation)
+
 
     def test_text_stream(self):
         context = GenerationContext(entries=[self.introduction_request], docs=[])
@@ -62,6 +66,7 @@ class TestToolCallOpenAI(OpenAITest):
         cls.notify_chef_docs = NotifyChef().get_json_doc(application_name=application_name)
         cls.tool_allowed_options = Options(tool_options=ToolOptions(call_allowed=True))
 
+
     def test_simple_tool_call(self):
         context = GenerationContext(entries=[self.welcome_request], docs=[self.greet_tool_docs])
         generation = self.default_model.get_generation(context, self.tool_allowed_options)
@@ -85,13 +90,13 @@ class TestToolCallOpenAI(OpenAITest):
 
 
 if __name__ == '__main__':
-    # text_tests = TestContextOpenAI()
-    # text_tests.execute_all()
+    text_tests = TestContextOpenAI()
+    text_tests.execute_all()
     # function_tests = TestToolCallOpenAI()
     # function_tests.execute_all()
-    from PIL import Image
-
-    spoofer = Spoofer()
-    test_path = spoofer.lend_jpg()
-    image = Image.open(test_path)
-    image.show()
+    # from PIL import Image
+    #
+    # spoofer = Spoofer()
+    # test_path = spoofer.lend_jpg()
+    # image = Image.open(test_path)
+    # image.show()
