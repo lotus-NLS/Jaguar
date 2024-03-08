@@ -12,8 +12,6 @@ class Tool:
         self.is_active : bool = True
         self.logger = get_logger(name=self.get_name())
         self.timeout : float = call_timeout
-        self.args : list[ToolArg] = self.create_args()
-        self.args_dict = {arg.name : arg for arg in self.args}
 
     # ---------------------------------------------------
     # call
@@ -40,16 +38,16 @@ class Tool:
 
 
     def _set_args(self, tool_call : ToolCall):
-        for arg in self.args:
+        for arg in self.get_args():
             arg.val = None
 
         args_dict = tool_call.get_args_dict()
-        required_args = [arg for arg in self.args if not arg.is_optional]
+        required_args = [arg for arg in self.get_args() if not arg.is_optional]
         missing_args = [arg.name for arg in required_args if not arg.name in args_dict]
         if missing_args:
             raise MissingArgs(f'Provided dictionary {args_dict} did not cover required args {missing_args}')
 
-        specified_args = [arg for arg in self.args if arg.name in args_dict]
+        specified_args = [arg for arg in self.get_args() if arg.name in args_dict]
         for arg in specified_args:
             arg.val = args_dict[arg.name]
             if not arg.value_is_valid():
@@ -67,7 +65,7 @@ class Tool:
     def get_doc(self, app_name : Optional[str] = None) -> ToolDoc:
         name = f'{app_name}_{self.get_name()}'
         desc = f'Application: {app_name}|{self.get_desc()}' if app_name else self.get_desc()
-        doc = ToolDoc.from_info(name=name, desc=desc, args=self.args)
+        doc = ToolDoc.from_info(name=name, desc=desc, args=self.get_args())
         if not doc.get_is_valid_json():
             raise ValueError(f'\n[Error]: Tool {self.get_name()} has invalid json doc\nAborting ...')
 
@@ -77,15 +75,9 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-    @classmethod
     @abstractmethod
-    def get_desc(cls) -> str:
+    def get_desc(self) -> str:
         pass
 
-    @classmethod
-    @abstractmethod
-    def create_args(cls) -> list[ToolArg]:
-        pass
-
-    def get_arg_val(self, name : str) -> Optional[str]:
-        return self.args_dict.get(name).val
+    def get_args(self) -> list[ToolArg]:
+        return [attr for attr in self.__class__.__dict__.values() if isinstance(attr, ToolArg)]

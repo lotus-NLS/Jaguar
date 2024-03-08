@@ -18,7 +18,7 @@ class TextEditor(Application):
         return Window(index=self.index, name=self.get_name())
 
     @classmethod
-    def get_desc(cls):
+    def get_desc(self):
         return f'Allow for opening text files (plain text/pdf) and editing plain text files'
 
     def create_actions(self) -> list[Action]:

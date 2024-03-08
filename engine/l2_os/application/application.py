@@ -32,9 +32,6 @@ class Application:
         self.window = None
         self.actions = self.create_actions()
 
-    def close_tab(self, tab_index : int):
-        del self.window.tabs[tab_index]
-
     # ---------------------------------------------------
     #  context
 
@@ -44,10 +41,10 @@ class Application:
 
     @classmethod
     @abstractmethod
-    def get_desc(cls):
+    def get_desc(self):
         pass
 
-    def is_active(self) -> bool:
+    def is_open(self) -> bool:
         return self.window is not None
 
     # ---------------------------------------------------

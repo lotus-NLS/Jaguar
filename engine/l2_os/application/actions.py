@@ -28,8 +28,7 @@ class Action(Tool):
     def do(self):
         pass
 
-    @classmethod
     @abstractmethod
-    def get_desc(cls) -> str:
+    def get_desc(self) -> str:
         pass
 
