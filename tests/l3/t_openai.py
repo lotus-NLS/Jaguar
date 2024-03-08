@@ -1,6 +1,6 @@
 from api import Speaker, Role
 from engine.l3_models.generation import GenerationContext, Options, ToolOptions
-from engine.l3_models.models import OpenAIEntry
+from engine.l3_models.models import Entry
 import threading
 import asyncio
 from hollarek.devtools.spoof import Spoofer
@@ -16,13 +16,13 @@ from tests.l3.spoof import Greet, NotifyChef
 class TestContextOpenAI(OpenAITest):
     @classmethod
     def setUpClass(cls):
-        cls.introduction_request = OpenAIEntry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
-        cls.repetition_request = OpenAIEntry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
+        cls.introduction_request = Entry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
+        cls.repetition_request = Entry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
 
         fpath = Spoofer().lend_png()
         img_io = ImageIO(fpath=fpath)
         img_content = img_io.read()
-        cls.image_OpenAIEntry = OpenAIEntry(speaker=Speaker.get_user(), msg = f'Can you describe whats in self image?',
+        cls.image_Entry = Entry(speaker=Speaker.get_user(), msg = f'Can you describe whats in self image?',
                                             image=img_content)
 
 
@@ -48,7 +48,7 @@ class TestContextOpenAI(OpenAITest):
         asyncio.run(print_stream())
 
     def test_image_context(self):
-        context = GenerationContext(entries=[self.image_OpenAIEntry], docs=[])
+        context = GenerationContext(entries=[self.image_Entry], docs=[])
         generation = self.vision_model.get_generation(context, self.vision_options)
         self.get_result(context, generation)
 
@@ -58,9 +58,9 @@ class TestToolCallOpenAI(OpenAITest):
     @classmethod
     def setUpClass(cls):
         cls.greet_tool = Greet()
-        cls.welcome_request = OpenAIEntry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home!'
+        cls.welcome_request = Entry(Speaker(role=Role.USER), msg='##Automated message: Please greet our eight guests and welcome them to our home!'
                                                                  'You need only do self once, every guest will see it')
-        cls.chef_notification_request = OpenAIEntry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
+        cls.chef_notification_request = Entry(Speaker(role=Role.USER), msg='Also please notify the chef that we need food for eight people')
 
         application_name = 'display'
         cls.greet_tool_docs = Greet().get_doc(app_name=application_name)
@@ -81,7 +81,7 @@ class TestToolCallOpenAI(OpenAITest):
         self.assertTrue(len(callMap.values()) == 2)
 
     def test_text_and_function_call(self):
-        talk_request = OpenAIEntry(Speaker(role=Role.USER), msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
+        talk_request = Entry(Speaker(role=Role.USER), msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
         context = GenerationContext(entries=[self.welcome_request,talk_request], docs=[self.greet_tool_docs])
         generation = self.default_model.get_generation(context, self.tool_allowed_options)
         text, callmap = self.get_result(context=context, generation=generation)

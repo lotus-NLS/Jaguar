@@ -65,55 +65,6 @@ class OpenAIModelType(ModelType):
     GPT_35 = 'gpt-3.5-turbo-0125'
 
 
-class OpenAIEntry(Entry):
-    def add_msg(self, msg : str):
-        content = self.get_content()
-        if isinstance(content, str):
-            new_content = content + msg
-        else:
-            old_text = content[0]['text']
-            new_text = old_text + msg
-            new_content = {'type': 'text', 'text': f"{new_text} {msg}"}
-        self.data['content'] = new_content
-
-
-    def create_data(self, speaker : Speaker, msg : str, image: Optional[PILImage] = None) -> EntryData:
-        name = speaker.name if speaker.name else 'unnamed'
-        role = speaker.role.value
-        base64_image = self.get_base64(image=image)
-
-        if msg and not image:
-            content = msg
-        else:
-            text = {
-                "type": "text",
-                "text": f"{msg}"
-            }
-            image = {
-                "type": "image_url",
-                "image_url": {"url": f"data:image/JPEG;base64,{base64_image}"}
-            }
-            content =  [text, image]
-
-        data = EntryData(role=role, name=name, content=content)
-        return data
-
-
-    @staticmethod
-    def get_base64(image) -> Optional[str]:
-        if image.mode in ('LA', 'RGBA'):
-            background = Image.new('RGB', image.size, (255, 255, 255))
-            rgb_image = image.convert('RGB') if image.mode == 'RGBA' else image.convert('L').convert('RGB')
-            background.paste(rgb_image, mask=image.split()[-1])
-            image = background
-
-        image.show()
-        buffer = io.BytesIO()
-        image.save(buffer, format=f'JPEG')
-        img_bytes = buffer.getvalue()
-        base64_image = base64.b64encode(img_bytes).decode('utf-8')
-        return base64_image
-
 
 class OpenAIModel(LLM):
     def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4_TURBO):
@@ -122,7 +73,7 @@ class OpenAIModel(LLM):
 
     def get_generation(self, context : GenerationContext, options: Options) -> OpenAIGeneration:
         for entry in context.entries:
-            if not isinstance(entry, OpenAIEntry):
+            if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
         self.log(f'Creating generation request')

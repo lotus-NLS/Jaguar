@@ -1,1 +1,1 @@
-from .openai import OpenAIModel, OpenAIModelType, OpenAIEntry
+from .openai import OpenAIModel, OpenAIModelType, Entry
