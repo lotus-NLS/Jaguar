@@ -77,22 +77,31 @@ class ActionFactory(Loggable):
 
     def get_actions(self) -> list[Action]:
         for method in self.methods:
-            if method.__name__ == Tab.get_context.__name__:
+            name = method.__name__
+            if name in [Tab.get_context.__name__, Tab.open.__name__]:
                 continue
+            args = get_args(method)
+
+
+    def create_action(self, name : str, args : list[Argument]):
 
 
     @staticmethod
-    def get_value(user_input : str, arg_type : type, arg_name : str):
-        if arg_type == bool:
-            if user_input not in ['0', '1']:
-                raise ValueError(f"For argument '{arg_name}', please enter '0' for False or '1' for True.")
-            val = bool(int(user_input))
-        else:
-            try:
-                val = arg_type(user_input)
-            except ValueError:
-                raise ValueError(f"Invalid input type for '{arg_name}'. Expected a value of type {arg_type.__name__}.")
-        return val
+    def to_tool_arg(argument : Argument):
+        return ToolArg(name=argument.name, dtype=argument.dtype)
+
+    # @staticmethod
+    # def get_value(user_input : str, arg_type : type, arg_name : str):
+    #     if arg_type == bool:
+    #         if user_input not in ['0', '1']:
+    #             raise ValueError(f"For argument '{arg_name}', please enter '0' for False or '1' for True.")
+    #         val = bool(int(user_input))
+    #     else:
+    #         try:
+    #             val = arg_type(user_input)
+    #         except ValueError:
+    #             raise ValueError(f"Invalid input type for '{arg_name}'. Expected a value of type {arg_type.__name__}.")
+    #     return val
 
 
 
@@ -117,4 +126,13 @@ def get_args(func: callable) -> list[Argument]:
             args.append(Argument(dtype=arg_type, name=arg_name))
     return args
 
-#
+
+class NewAction(Action):
+    def __init__(self):
+        self.args :
+
+    def do(self):
+        pass
+
+    def get_desc(self) -> str:
+        return f''

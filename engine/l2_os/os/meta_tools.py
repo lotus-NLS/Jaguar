@@ -13,7 +13,7 @@ class MetaTool(Tool):
         self.application_arg: ToolArg = ToolArg(name='window_index', desc='Index of window/application to close')
 
     def get_application(self) -> Application:
-        index = int(self.application_arg.val)
+        index = int(self.application_arg.input)
         if index not in self.map:
             raise ValueError(f'Window index {index} does not exist')
         return self.map[index]
@@ -43,7 +43,7 @@ class Close(MetaTool):
     # do
 
     def do(self):
-        tab_index = int(self.tab_arg.val) if self.tab_arg.val else None
+        tab_index = int(self.tab_arg.input) if self.tab_arg.input else None
         application = self.get_application()
         if tab_index:
             application.window.close_tab(tab_index)
@@ -69,4 +69,4 @@ class Open(MetaTool):
 
     def do(self):
         application = self.get_application()
-        application.open(path=self.uri_arg.val)
+        application.open(path=self.uri_arg.input)

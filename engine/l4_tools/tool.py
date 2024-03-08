@@ -39,7 +39,7 @@ class Tool:
 
     def _set_args(self, tool_call : ToolCall):
         for arg in self.get_args():
-            arg.val = None
+            arg.input = None
 
         args_dict = tool_call.get_args_dict()
         required_args = [arg for arg in self.get_args() if not arg.is_optional]
@@ -49,9 +49,9 @@ class Tool:
 
         specified_args = [arg for arg in self.get_args() if arg.name in args_dict]
         for arg in specified_args:
-            arg.val = args_dict[arg.name]
-            if not arg.value_is_valid():
-                raise InvalidArgValue(f'Argument value \"{arg.val}\" is not in allowed choices \"{arg.choices}\" for argument \"{arg.name}\"')
+            arg.input = args_dict[arg.name]
+            if not arg.input_is_valid():
+                raise InvalidArgValue(f'Argument value \"{arg.input}\" is not in allowed choices \"{arg.choices}\" for argument \"{arg.name}\"')
         return specified_args
 
 

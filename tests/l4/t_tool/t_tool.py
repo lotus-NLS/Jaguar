@@ -16,7 +16,7 @@ class ValidTool(Tool):
 
     def do(self):
         time.sleep(0.1)
-        msg = f"SimpleTool says: {self.text_arg.val}"
+        msg = f"SimpleTool says: {self.text_arg.input}"
         print(msg)
         return msg
 

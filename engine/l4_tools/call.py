@@ -6,13 +6,29 @@ from hollarek.logging import debug
 
 
 class ToolArg:
-    def __init__(self, name : str, desc : str = '', choices : Optional[list] =  None, is_optional : bool = False):
+    type_mapping : dict[type, str] = {
+        int: "number",
+        float: "number",
+        str: "string",
+        bool: "boolean",
+        dict: "object"
+    }
+
+
+    def __init__(self, name : str, desc : str = '', dtype : type = str,
+                       choices : Optional[list] =  None, is_optional : bool = False):
         self.name : str = name
         self.desc : str = desc
-        self.choices: Optional[list[str]] = choices
         self.is_optional : bool = is_optional
+        self.dtype : type = dtype
+        self.choices: Optional[list[str]] = choices if not self.dtype == bool else ['0', '1']
 
-        self.val: Optional[str] = None
+        if not dtype in self.get_supported_types():
+            raise TypeError(f"Unsupported type '{dtype.__name__}' for argument '{name}'."
+                            f" Supported types are {self.get_supported_types()}")
+
+        self.input: Optional[str] = None
+
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
@@ -25,34 +41,31 @@ class ToolArg:
 
         return arg_doc
 
-    @staticmethod
-    def get_json_type(python_type) -> Optional[str]:
-        # The 'array' type corresponding to dict and list, seem to break something on OpenAI end,
-        # hence why I didn't include them; See logs (@ https://www.notion.so/pyWrite0-3-a53c1b16ef3646df9c141a144f8197a2)
 
-        default_type = 'string'
-        type_mapping = {
-            int: "number",
-            float: "number",
-            str: "string",
-            bool: "boolean",
-            type(None): "null",
-            dict: "object"
-        }
-
-        if python_type in type_mapping:
-            json_type = type_mapping[python_type]
-        else:
-            json_type = default_type
-
+    def get_json_type(self, python_type : type) -> str:
+        json_type = self.type_mapping.get(python_type)
         return json_type
 
 
-    def value_is_valid(self) -> bool:
+    def get_value(self) -> Optional[Any]:
+        if self.input is None:
+            return None
+        try:
+            val = self.dtype(self.input)
+        except ValueError:
+            raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}.")
+        return val
+
+
+    def input_is_valid(self) -> bool:
         if self.choices is None:
             return True
 
-        return self.val in self.choices
+        return self.input in self.choices
+
+    def get_supported_types(self) -> list[type]:
+        return list(self.type_mapping.keys())
+
 
 class ToolDoc(dict[str, Any]):
     @classmethod
