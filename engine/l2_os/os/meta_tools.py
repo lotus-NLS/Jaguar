@@ -10,7 +10,7 @@ class MetaTool(Tool):
     def __init__(self, application_map : dict[int,Application]):
         super().__init__()
         self.map: dict[int, Application] = application_map
-        self.application_arg: ToolArg = ToolArg(name='window_index', desc='Index of window/application to close')
+        self.application_arg: ToolArg = ToolArg(name='application_index', desc='Index of window/application to close')
 
     def get_application(self) -> Application:
         index = int(self.application_arg.input)
@@ -31,7 +31,7 @@ class MetaTool(Tool):
 class Close(MetaTool):
     def __init__(self, application_map : dict[int,Application]):
         super().__init__(application_map=application_map)
-        self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close')
+        self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close', is_optional=Tool)
 
     def get_desc(self) -> str:
         return f'Close an open window from associated application'
@@ -54,7 +54,6 @@ class Close(MetaTool):
 class Open(MetaTool):
     def __init__(self, application_map: dict[int, Application]):
         super().__init__(application_map=application_map)
-        self.index_arg : ToolArg = ToolArg(name='application_index', desc='Index of application to open')
         self.uri_arg : ToolArg = ToolArg(name='uri', desc='URI argument')
 
     def get_desc(self) -> str:

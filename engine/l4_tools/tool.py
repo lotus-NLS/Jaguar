@@ -63,7 +63,7 @@ class Tool:
     # Get
 
     def get_doc(self, app_name : Optional[str] = None) -> ToolDoc:
-        name = f'{app_name}_{self.get_name()}'
+        name = f'{app_name}_{self.get_name()}' if app_name else self.get_name()
         desc = f'Application: {app_name}|{self.get_desc()}' if app_name else self.get_desc()
         doc = ToolDoc.from_info(name=name, desc=desc, args=self.get_args())
         if not doc.get_is_valid_json():

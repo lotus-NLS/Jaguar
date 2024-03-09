@@ -14,7 +14,9 @@ class OS(Loggable):
         for j, workspace_type in enumerate(workspace_types):
             self.app_map[j] = Application(index=j, workspace_type=workspace_type)
 
-        self.meta_tools : list[Tool] = [Open(self.app_map), Close(self.app_map)]
+        self.open : Tool = Open(self.app_map)
+        self.close : Tool = Close(self.app_map)
+        self.meta_tools : list[Tool] = [self.open, self.close]
 
     # ---------------------------------------------------
     # call updates
@@ -42,3 +44,4 @@ class OS(Loggable):
         active_applications = [app for app in self.app_map.values() if app.is_open()]
         for app in active_applications:
             tools += app.get_actions()
+        return tools

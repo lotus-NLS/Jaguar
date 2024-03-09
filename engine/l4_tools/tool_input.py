@@ -92,6 +92,8 @@ class ToolDoc(dict[str, Any]):
 
         return cls(tool_doc)
 
+    def get_tool_name(self):
+        return self['function']['name']
 
     def get_is_valid_json(self) -> bool:
         try:
