@@ -13,4 +13,3 @@ tiktoken
 trafilatura
 yattag
 git+ssh://git@github.com/Somerandomguy10111/hollarek.git#egg=hollarek
-git+ssh://git@github.com/Somerandomguy10111/webapp.git#subdirectory=api&egg=api

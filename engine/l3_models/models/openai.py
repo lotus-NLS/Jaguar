@@ -41,7 +41,7 @@ class OpenAIChunk(Chunk):
             call = call_map.get(index, ToolCall())
             new_data = openai_tool_call.function
             new = ToolCall(name=new_data.name, json_str=new_data.arguments)
-            call.update(partial_call=new)
+            call.add(partial_call=new)
             if not index in call_map:
                 call_map[index] = call
 

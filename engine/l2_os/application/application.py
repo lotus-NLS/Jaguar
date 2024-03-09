@@ -2,10 +2,10 @@ from typing import Optional
 from abc import abstractmethod
 from engine.l4_tools import Tool, ToolArg
 
-from dataclasses import dataclass
 from .action import Action
 from .window import Window, Tab
-
+from hollarek.logging import Loggable, LogSettings
+from hollarek.devtools import ModuleInspector
 # ---------------------------------------------------
 
 class Application:
@@ -55,22 +55,13 @@ class Application:
         return len(self.window.tab_map) != 0
 
 
-import inspect
-from hollarek.logging import Loggable, LogSettings
-# ---------------------------------------------------------
-
-@dataclass
-class Argument:
-    name : str
-    dtype : type
-
 
 class ActionFactory(Loggable):
     def __init__(self, cls : type[Tab], tab_map : dict[int, Tab]):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
         self.tab_map : dict[int, Tab] =  tab_map
-        self.methods : list[callable] = get_methods(cls=self.cls)
+        self.methods : list[callable] = ModuleInspector.get_methods(cls=self.cls)
 
     # ---------------------------------------------------------
     # loop
@@ -87,7 +78,7 @@ class ActionFactory(Loggable):
 
     def create_action(self, mthd : callable) -> Action:
         tab_map = self.tab_map
-        args = get_args(func=mthd)
+        args = ModuleInspector.get_args(func=mthd)
 
         class NewAction(Action):
             def __init__(self):
@@ -109,32 +100,3 @@ class ActionFactory(Loggable):
                 return self.args
 
         return NewAction()
-
-
-
-def to_tool_arg(argument : Argument):
-    return ToolArg(name=argument.name, dtype=argument.dtype)
-
-
-
-def get_methods(cls, public_only = False) -> list[callable]:
-    if public_only:
-        attr_filter = lambda attr : callable(getattr(cls, attr)) and not attr.startswith("_")
-    else:
-        attr_filter = lambda attr : callable(getattr(cls, attr))
-    public_methods = [method for method in dir(cls) if attr_filter(method)]
-    return public_methods
-
-
-def get_args(func: callable) -> list[Argument]:
-    args = []
-    spec = inspect.getfullargspec(func)
-    annotations = spec.annotations
-    start_index = 1 if spec.args and spec.args[0] in ['self', 'cls'] else 0
-
-    for arg_name in spec.args[start_index:]:
-        arg_type = annotations.get(arg_name)
-        if arg_type:
-            args.append(Argument(dtype=arg_type, name=arg_name))
-    return args
-
