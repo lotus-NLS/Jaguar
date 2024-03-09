@@ -5,22 +5,28 @@ from .action import Action
 from .window import Window, Tab
 from hollarek.logging import Loggable, LogSettings
 from hollarek.devtools import ModuleInspector
+from dataclasses import dataclass
 # ---------------------------------------------------
 
-class Application:
-    def __init__(self, index : int, tab_type : type[Tab], desc : str = ''):
-        super().__init__()
-        self.index = index
-        self.tab_type : type[Tab] = tab_type
-        self.get_desc = lambda : desc
 
-        self.window : Window = Window(index=index, app_name=self.get_name())
+
+@dataclass
+class Application:
+    index: int
+    tab_type: type[Tab]
+    desc: str = ''
+    max_tabs: Optional[int] = None
+
+    def __post_init__(self):
+        self.window : Window = Window(index=self.index, app_name=self.get_name())
         self.actions : list[Action] = self.create_actions()
         self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}
 
     def open(self, uri : Optional[str]):
-        if not self.window:
-            self.window = Window(index=self.index, app_name=self.get_name())
+        if self.max_tabs:
+            if len(self.window.tab_map) == self.max_tabs:
+                raise ValueError(f'Cannot open more than {self.max_tabs} tab(s)')
+
         new_tab = self.tab_type(uri=uri)
         self.window.add_tab(new_tab)
 
