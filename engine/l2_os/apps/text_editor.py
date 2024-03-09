@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
-from api import Entry, Speaker
+
+from PIL.Image import Image as PILImage
 from hollarek.fsys import FsysNode
 
 from engine.l2_os.application import Tab
@@ -13,17 +14,19 @@ class TextTab(Tab):
         self.fpath : str = uri
         self.content : Optional[str] =None
 
-
-    def get_entry(self, app_name : str) -> Entry:
+    def get_text(self) -> Optional[str]:
         with open(self.fpath, 'r') as f:
             lines = f.readlines()
         numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
         msg = ''.join(numbered_lines)
-        entry = Entry(speaker=Speaker.get_tool(name=app_name), msg=msg)
-        return entry
+        return msg
 
 
-    def update(self, line: int, content: str):
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+
+    def insert(self, line: int, content: str):
         if FsysNode(path=self.fpath).get_suffix() == 'pdf':
             raise ValueError('Cannot edit pdf files')
         if line <= 0:
@@ -36,4 +39,3 @@ class TextTab(Tab):
 
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
-        print(f'after update, content is: {self.get_entry()}')

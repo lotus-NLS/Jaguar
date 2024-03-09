@@ -17,7 +17,7 @@ class Tab:
         pass
 
     @abstractmethod
-    def get_image3(self) -> Optional[PILImage]:
+    def get_image(self) -> Optional[PILImage]:
         pass
 
     def get_entry(self, tab_index : int, app_name : str) -> Entry:
