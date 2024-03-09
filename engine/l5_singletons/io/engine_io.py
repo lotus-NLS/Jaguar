@@ -2,13 +2,14 @@ from flask import Flask
 from PIL.Image import Image as PILImage
 from abc import abstractmethod
 
+from hollarek.logging import Loggable
 from hollarek.templates import Singleton
 from api import Network, Socket
 from .types import Response, Task
 from typing import Optional
 # ----------------------------------------------
 
-class Handler:
+class Handler(Loggable):
     @abstractmethod
     def handle(self, task : Task) -> Response:
         pass

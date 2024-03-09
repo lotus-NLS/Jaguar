@@ -25,6 +25,7 @@ class LLM(Loggable):
         self.model_type : str = model_type.value
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
+
     @abstractmethod
     def get_generation(self, context : Context, options: Options) -> Generation:
         pass

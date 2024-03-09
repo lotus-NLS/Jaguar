@@ -74,13 +74,13 @@ class OpenAIModel(LLM):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
         self.log(f'Creating generation request')
-        openai_response = self.get_openai_response(context=context, options=options)
+        openai_response = self.get_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
 
         return OpenAIGeneration(generator=openai_response)
 
 
-    def get_openai_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
+    def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],

@@ -43,6 +43,20 @@ class QueryType(Enum):
 class TextStream(Iterator[str], ABC):
     pass
 
+class FailedTextStream(TextStream):
+    def __init__(self, message: str = "Response failed"):
+        self.message = message
+        self.has_been_read = False
+
+    def __next__(self) -> str:
+        if self.has_been_read:
+            raise StopIteration
+        self.has_been_read = True
+        return self.message
+
+    def __iter__(self) -> Iterator[str]:
+        return self
+
 @dataclass
 class Response:
     text_stream : Optional[TextStream]
@@ -51,6 +65,10 @@ class Response:
     def __post_init__(self):
         if self.user_query is None and self.text_stream is None:
             raise ValueError('At least one of user_query or text_stream must be provided')
+
+    @classmethod
+    def failed(cls):
+        return cls(text_stream=FailedTextStream(), user_query=None)
 
 
 class TaskQueue(Queue):

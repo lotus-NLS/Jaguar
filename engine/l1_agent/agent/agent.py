@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+from hollarek.logging import LogLevel
 
 from api import Entry, Role, Speaker
 from engine.l5_singletons import Response, Handler, Task, TaskQueue
@@ -29,9 +30,13 @@ class Agent(Handler):
     def handle(self, task: Task) -> Response:
         for entry in task.new_entries:
             self.memory.add_entry(entry=entry)
-        generation = self.get_next(options=Options.from_task(task=task))
-        response = Response(text_stream=generation.get_text_stream())
-        threading.Thread(target=self.process,args=(generation,)).start()
+        try:
+            generation = self.get_next(options=Options.from_task(task=task))
+            response = Response(text_stream=generation.get_text_stream())
+            threading.Thread(target=self.process,args=(generation,)).start()
+        except Exception as e:
+            self.log(f'Error in getting generation: {e}', level=LogLevel.ERROR)
+            response = Response.failed()
         return response
 
 
