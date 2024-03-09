@@ -10,6 +10,9 @@ class Identity:
         self.core : Core = core
         self.os_information : str = self.get_detailed_os_info()
 
+    @classmethod
+    def GOTO(cls):
+        return cls(core=Core.GOTO)
 
     def get_str(self) -> str:
         msg = f'{self.core.value}\n'

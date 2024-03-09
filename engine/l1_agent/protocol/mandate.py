@@ -86,3 +86,45 @@ class Mandate:
             uuid = f'{uuid4()}'[:4]
             if not desc_map.get(uuid):
                 return uuid
+
+#     def react(self, entry: Entry):
+#         if entry.get_role() == DialogueRole.user_role() and not self.task_queue.dialogue_task_is_enqueued():
+#
+#             required_funct_name = None if not entry.flags.get(flag=Flag.MANDATE) else INITIALIZE_MANDATE.__name__
+#             entries_to_process = self.get_unread_entries()
+#             new_dialogue_task = Task(mandate = None,
+#                                      new_entries=entries_to_process,
+#                                      required=required_funct_name)
+#             self.task_queue.put(new_dialogue_task)
+#
+#             for entry in entries_to_process:
+#                 entry.mark_processed()
+
+
+#
+#
+#     def loop(self):
+#         while True:
+#             active_task : Task = self.task_queue.get()
+#             self.do(task=active_task)
+#
+#             if self.mandate.is_active() and not self.task_queue.get_work_task_present():
+#                 self.task_queue.put(Task(mandate=self.mandate))
+#                 self.task_queue.put(Task(mandate=self.mandate,
+#                                          required=UpdateMandate.__name__))
+#
+
+
+
+#
+#     # ---------------------------------------------------
+#     # Tool setup
+#
+#     def setup_tools(self):
+#         public_tools = [Command.make(), FileIO.make(), WebSearch.make()]
+#         private_tools = [UpdateMandate.make(is_public_tool=False), INITIALIZE_MANDATE.make(is_public_tool=False)]
+#         all_tools : list[Tool] = public_tools + private_tools
+#         self.os.tool_dict = {tool.name : tool for tool in all_tools}
+#
+#         for tool in all_tools:
+#             self.add_tool(tool)

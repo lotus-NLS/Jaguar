@@ -7,12 +7,12 @@ from engine.l4_tools import CallMap
 from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, Host, TextEditor
-from engine.l1_agent.protocol import Identity, Core
+from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
 
 class Agent(Entity):
-    def __init__(self, model : LLM = OpenAIModel(), identity : Identity = Identity(core=Core.GOTO)):
+    def __init__(self, model : LLM = OpenAIModel(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context
         self.identity : Identity = identity
