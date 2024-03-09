@@ -1,5 +1,4 @@
 from typing import Optional
-from abc import abstractmethod
 from engine.l4_tools import Tool, ToolArg
 
 from .action import Action
@@ -9,10 +8,11 @@ from hollarek.devtools import ModuleInspector
 # ---------------------------------------------------
 
 class Application:
-    def __init__(self, index : int, tab_type : type[Tab]):
+    def __init__(self, index : int, tab_type : type[Tab], desc : str = ''):
         super().__init__()
         self.index = index
         self.tab_type : type[Tab] = tab_type
+        self.get_desc = lambda : desc
 
         self.window : Window = Window(index=index, name=self.get_name())
         self.actions : list[Action] = self.create_actions()
@@ -25,8 +25,7 @@ class Application:
         self.window.add_tab(new_tab)
 
     def close(self):
-        self.window = None
-        self.actions = self.create_actions()
+        self.window.close_all()
 
     # ---------------------------------------------------
     #  actions
@@ -45,11 +44,6 @@ class Application:
     @classmethod
     def get_name(cls):
         return cls.__name__
-
-    @classmethod
-    @abstractmethod
-    def get_desc(cls):
-        pass
 
     def is_open(self) -> bool:
         return len(self.window.tab_map) != 0
@@ -83,7 +77,7 @@ class ActionFactory(Loggable):
         class NewAction(Action):
             def __init__(self):
                 super().__init__(tab_map=tab_map)
-                self.args: list[ToolArg] = [to_tool_arg(arg) for arg in args]
+                self.args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
             @classmethod
             def get_name(cls) -> str:

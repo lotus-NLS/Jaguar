@@ -37,8 +37,10 @@ class Window:
             index += 1
         self.tab_map[index] = tab
 
+    def close_all(self):
+        self.tab_map = {}
 
-    def close_tab(self, index):
+    def close_tab(self, index : int):
         del self.tab_map[index]
 
     # ---------------------------------------------------
