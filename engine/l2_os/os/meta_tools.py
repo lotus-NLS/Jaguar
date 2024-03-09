@@ -31,7 +31,7 @@ class MetaTool(Tool):
 class Close(MetaTool):
     def __init__(self, application_map : dict[int,Application]):
         super().__init__(application_map=application_map)
-        self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close', is_optional=Tool)
+        self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close', is_optional=True)
 
     def get_desc(self) -> str:
         return f'Close an open window from associated application'

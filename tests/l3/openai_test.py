@@ -2,7 +2,7 @@ import time
 from typing import Optional
 
 from hollarek.devtools import Unittest
-from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation, OpenAIModelType
+from engine.l3_models import Options, OpenAIModel, Context, Generation, OpenAIModelType
 from engine.l4_tools import CallMap
 from tests.spoofs import SpoofEntries, SpoofToolDocs
 
@@ -46,7 +46,7 @@ class OpenAITest(Unittest):
     def tearDown(self):
         self.lineprinter.reset()
 
-    def get_result(self, context : GenerationContext, generation : Generation) -> (str, CallMap):
+    def get_result(self, context : Context, generation : Generation) -> (str, CallMap):
         prompts_context = [entry.get_msg() for entry in context.entries]
         call_map : CallMap = CallMap()
 

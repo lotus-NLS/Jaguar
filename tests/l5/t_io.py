@@ -4,7 +4,7 @@ from api import Entry, Speaker, Role
 from hollarek.devtools import Unittest
 from tests.spoofs import MockEntity
 
-from engine.l5_singletons.io.engine_io import EngineIO, Handler
+from engine.l5_singletons.io.engine_io import EngineIO
 from engine.l5_singletons.io.types import Response, TextStream, Task
 # --------------------------------------------
 

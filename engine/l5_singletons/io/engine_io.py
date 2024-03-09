@@ -3,7 +3,7 @@ from PIL.Image import Image as PILImage
 from abc import abstractmethod
 
 from hollarek.templates import Singleton
-from api import Network, Socket, Entry
+from api import Network, Socket
 from .types import Response, Task
 from typing import Optional
 # ----------------------------------------------

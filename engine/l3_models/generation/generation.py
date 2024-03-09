@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from typing import Optional, Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import abstractmethod
 from queue import Queue
 from api import Entry
 from hollarek.logging import Loggable, LogLevel, LogSettings
 from engine.l4_tools import CallMap
-from engine.l5_singletons.io import Task
 
 # ---------------------------------------------------------
 
@@ -18,29 +17,58 @@ class Generation(Loggable):
         super().__init__(settings=LogSettings(call_location=True))
         self.generator : Iterator = generator
         self.text_content : str = ''
+        self.call_map = CallMap()
         self.text_queue : Queue[str] = Queue()
-
-    def __iter__(self) -> Iterator[Chunk]:
-        return self
-
-
-    def __next__(self) -> Chunk:
-        chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
-        chunk_text = chunk.get_text()
-        if chunk_text:
-            self.text_queue.put(chunk_text)
-        if chunk.is_final():
-            self.stop()
-        self.text_content += chunk_text if not chunk_text is None else ''
-        return chunk
-
+        self.is_done : bool = False
 
     @abstractmethod
     def _get_next_chunk(self, chunk_data : object):
         pass
 
+    def exhaust(self):
+        for _ in self:
+            pass
+
+
+    def __iter__(self) -> Iterator[Chunk]:
+        return self
+
+    def __next__(self) -> Chunk:
+        chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
+        self.add_text(chunk)
+        self.add_calls(chunk)
+
+        if chunk.is_final():
+            self.stop()
+
+        return chunk
+
+    def add_text(self, chunk: Chunk):
+        text = chunk.get_text()
+        if not text is None:
+            self.text_content += text
+            self.text_queue.put(text)
+
+    def add_calls(self, chunk : Chunk):
+        self.call_map.update(chunk.get_call_map())
+
+
     def stop(self):
+        self.is_done = True
         self.text_queue.put(self.stop_token)
+
+    # ---------------------------------------------------------
+    # get
+
+    def get_call_map(self):
+        if not self.is_done:
+            raise ValueError('Generation is not done yet')
+        return self.call_map
+
+    def get_text(self) -> str:
+        if not self.is_done:
+            raise ValueError('Generation is not done yet')
+        return self.text_content
 
     def get_text_stream(self):
         while True:
@@ -73,49 +101,15 @@ class Chunk:
 
 
 @dataclass
-class GenerationContext:
-    entries : list[Entry]
-    docs : list[dict]
+class Context:
+    entries: list[Entry] = field(default_factory=list)
+    docs: list[dict] = field(default_factory=list)
 
+    def add_entry(self, entry : Entry):
+        self.entries.append(entry)
 
-@dataclass
-class ToolOptions:
-    call_allowed: bool
-    required_tool_name: Optional[str] = None
+    def reset(self):
+        self.entries = []
 
-    @classmethod
-    def no_call(cls):
-        return cls(call_allowed=False)
-
-    @classmethod
-    def auto(cls):
-        return cls(call_allowed=True)
-
-
-    def __post_init__(self):
-        if not self.call_allowed and self.required_tool_name:
-            raise ValueError('Cannot require a tool call if the call is not allowed')
-
-
-    def get_openai_syntax(self) -> object:
-        if not self.call_allowed:
-            return 'none'
-
-        if self.required_tool_name is None:
-            return 'auto'
-        else:
-            return {"type" : "function", "function" : {'name' : f'{self.required_tool_name}'}}
-
-
-@dataclass
-class Options:
-    tool_options : ToolOptions = ToolOptions.auto()
-    max_tokens : Optional[int] = None
-    temp : float = 0.3
-
-    @classmethod
-    def from_task(cls, task : Task):
-        return cls(tool_options=ToolOptions(call_allowed=True, required_tool_name=task.required_tool_name))
-
-    def get_call_allowed(self):
-        return self.tool_options.call_allowed
+    def __iadd__(self, other):
+        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)

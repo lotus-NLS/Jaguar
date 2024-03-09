@@ -7,7 +7,9 @@ from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
 from ..generation.llm import LLM, ModelType
-from ..generation.generation import Generation, Chunk, Options, GenerationContext
+from ..generation.generation import Generation, Chunk, Context
+from .. import Options
+
 
 # ---------------------------------------------------------
 
@@ -68,7 +70,7 @@ class OpenAIModel(LLM):
         super().__init__(model_type=model_type)
 
 
-    def get_generation(self, context : GenerationContext, options: Options) -> OpenAIGeneration:
+    def get_generation(self, context : Context, options: Options) -> OpenAIGeneration:
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
@@ -80,7 +82,7 @@ class OpenAIModel(LLM):
         return OpenAIGeneration(generator=openai_response)
 
 
-    def get_openai_response(self, context : GenerationContext, options: Options) -> Stream[ChatCompletionChunk]:
+    def get_openai_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self.model_type,
             'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],

@@ -23,14 +23,20 @@ class Entry(Dillable):
     image : Optional[PILImage] = None
     flags : Optional[Flags] = None
 
+
+
     def add_msg(self, msg : str):
         self.msg += msg
 
-    def join(self, entry : Entry):
-        self.msg += entry.msg
-        new_img = entry.get_image()
+    def __iadd__(self, other : Entry) -> Entry:
+        if not isinstance(other, Entry):
+            raise ValueError(f'Entry can only be added to another Entry. Got {type(other)}')
+
+        self.msg += other.msg
+        new_img = other.get_image()
         if new_img:
             self.image = new_img
+        return self
 
     # ----------------------------------------------------
     # get

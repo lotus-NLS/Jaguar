@@ -9,7 +9,10 @@ from abc import abstractmethod
 
 from enum import Enum
 from hollarek.logging import Loggable
-from .generation import Generation, Options, GenerationContext, ToolOptions
+from .generation import Generation, Context
+from .. import ToolOptions, Options
+
+
 # ---------------------------------------------------------
 
 class ModelType(Enum):
@@ -23,11 +26,11 @@ class LLM(Loggable):
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
 
     @abstractmethod
-    def get_generation(self, context : GenerationContext, options: Options) -> Generation:
+    def get_generation(self, context : Context, options: Options) -> Generation:
         pass
 
     def get_text_generation(self, entries : list[Entry]) -> Generation:
-        context = GenerationContext(entries=entries, docs=[])
+        context = Context(entries=entries, docs=[])
         options = Options(tool_options=ToolOptions.no_call())
         return self.get_generation(context=context, options=options)
 
@@ -47,7 +50,7 @@ class Tokenizer(Loggable):
         encoded_str = self.encode(the_str)
         return self.decode(encoded_str[:max_tokens])
 
-    def get_tokens(self, context : GenerationContext) -> Optional[int]:
+    def get_tokens(self, context : Context) -> Optional[int]:
         try:
             token_count = 0
             tool_docs = context.docs

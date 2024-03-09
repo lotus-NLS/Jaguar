@@ -4,10 +4,9 @@ import threading
 
 from api import Entry, Role, Speaker
 from engine.l5_singletons import Response, Handler, Task, TaskQueue
-from engine.l4_tools import CallMap
-from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
+from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, Host, TextEditor
+from engine.l2_os import OS, TextEditor
 from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
@@ -17,12 +16,11 @@ class Agent(Handler):
         super().__init__()
         # context
         self.identity : Identity = identity
-        self.log: list[Entry] = []
+        self.context: Context = Context()
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
         self.os : OS = OS(workspace_types=[TextEditor])
-        self.call_map : CallMap = CallMap()
         self.model: LLM = model
 
     # ---------------------------------------------------
@@ -36,18 +34,19 @@ class Agent(Handler):
 
 
     def get_next(self, options: Options = Options()) -> Generation:
-        context = GenerationContext(docs=self.os.get_docs(), entries=self.get_basic_entries())
+        context = Context(docs=self.os.get_docs(), entries=self.get_basic_entries())
         return self.model.get_generation(context=context, options=options)
 
 
     def process(self, generation : Generation, do_feedback : bool = True):
-        for chunk in generation:
-            self.store_info(chunk=chunk)
-        if not self.call_map.is_empty():
-            self.os.handle_calls(call_map=self.call_map)
+        generation.exhaust()
+        entry = Entry.as_agent(msg=generation.get_text())
+        self.context.add_entry(entry=entry)
+        call_map = generation.get_call_map()
+        if not call_map.is_empty():
+            self.os.handle_calls(call_map=call_map)
             if do_feedback:
                 self.send_feedback(generation=generation)
-        generation.stop()
 
 
     def send_feedback(self, generation : Generation):
@@ -67,9 +66,7 @@ class Agent(Handler):
 
     def get_basic_entries(self) -> list[Entry]:
         basic_entries = [Entry(speaker=Speaker(role=Role.SYSTEM), msg=self.identity.get_str())]
-        basic_entries += self.log
+        basic_entries += self.context
 
         return basic_entries
 
-    def store_info(self, chunk : Chunk):
-        self.call_map.add(chunk.get_call_map())
