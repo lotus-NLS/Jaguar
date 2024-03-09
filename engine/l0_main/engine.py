@@ -8,16 +8,17 @@
 # from engine.l3_singletons.io.io import EngineIO
 
 from hollarek.logging import Loggable
-from engine.l5_singletons import Settings
+from engine.l5_singletons import Settings, EngineIO
+from .entities import ConsoleUser
 # ---------------------------------------------------------
 
 class LotusEngine(Loggable):
-    def __init__(self, ip : str, port : int, local : bool = False):
+    def __init__(self, local : bool = True):
         super().__init__()
         self.settings : Settings = Settings(local=local, validate=True)
 
-        self.user = User()
-        self.IO : EngineIO = EngineIO(ip,port)
+        self.user :  = User()
+        self.io : EngineIO = EngineIO(ip,port)
         self.bots: Optional[list[Agent]] = None
 
 

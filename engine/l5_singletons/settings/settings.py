@@ -28,16 +28,18 @@ class Settings(Singleton):
             t1 = self.validate_openai_key
             t2 = self.validate_search_engine
 
-            v1, v2 = t1(), t2()
-
             successful_tests = []
-            if v1:
-                successful_tests.append(t1)
-            if v2:
-                successful_tests.append(t2)
-            names= [test.__name__ for test in successful_tests]
+            failed_tests = []
+            for test in [t1, t2]:
+                if not test():
+                    failed_tests.append(test.__name__)
+                else:
+                    successful_tests.append(test.__name__)
 
-            self.log(msg=f'Successfully performed validation {names}')
+            if failed_tests:
+                raise ValueError(f'Validation failed for {failed_tests}')
+
+            self.log(msg=f'Successfully performed validations {successful_tests}')
 
         self.log(msg=f'Completed setup for all Settings')
 
