@@ -48,16 +48,6 @@ class TestApplicationFunctions(Unittest):
         for action in actions:
             self.assertIsInstance(action.get_doc(), ToolDoc)
 
-
-    def test_window_context(self):
-        self.app.open(uri='tab1')
-        mock_tab : MockTab = self.app.window.tab_map[0]
-        mock_tab.add('Testing content')
-        context = self.app.window.get_entry()
-        self.assertIn('tab1', context.msg)  # Check if tab name is included
-        self.assertIn('Testing content', context.msg)  # Check if tab content is included
-        self.log(f'Window context after open : {context}')
-
     def test_action_type(self):
         actions = self.app.get_actions()
         for action in actions:

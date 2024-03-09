@@ -1,13 +1,15 @@
 from abc import abstractmethod
-from api import Entry, Speaker, Role
+from api import Entry, Speaker
 from PIL.Image import Image as PILImage
 from typing import Optional
-# from hollarek.fsys import URI
+from urllib.parse import urlparse
+from pathlib import Path
+
+# ---------------------------------------------------------
 
 class Tab:
     def __init__(self, uri : str):
-        uri = URI(path=uri)
-        uri_name = uri.get_name()
+        uri_name = URI(path=uri).get_name()
 
         self.name : str = uri_name if uri_name else 'unnamed tab'
         self.path : str = uri
@@ -80,15 +82,13 @@ class Window:
         return  f'{dashes} {basic_info} {dashes}'
 
 
-from urllib.parse import urlparse
-from pathlib import Path
-
 class URI:
     def __init__(self, path: str):
-        self.type = None
-        self.path = path
+        super().__init__()
         parsed = urlparse(path)
-        is_url = parsed.scheme and parsed.netloc
+        is_url = bool(parsed.scheme and parsed.netloc)
+        self.type = 'URL' if is_url else 'Path'
+        self.path = path
         self.wrapper = parsed if is_url else Path(path)
 
     def get_path(self) -> str:
@@ -98,4 +98,8 @@ class URI:
         if isinstance(self.wrapper, Path):
             return self.wrapper.name
         else:
-            return self.wrapper.path.split('/')[-1]
+            return self.wrapper.path.split('/')[-1] if self.wrapper.path else ''
+
+
+if __name__ == "__main__":
+    print(URI('C:\\Users\\User\\Documents\\report.txt').get_name())

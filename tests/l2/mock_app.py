@@ -1,8 +1,7 @@
 from typing import Optional
-
 from PIL.Image import Image as PILImage
-
 from engine.l2_os import Tab
+# ---------------------------------------------------------
 
 class MockTab(Tab):
     def __init__(self, uri: str):
