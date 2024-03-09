@@ -1,5 +1,5 @@
 from typing import Optional, Callable
-from engine.l4_tools import Tool, ToolArg
+from engine.l4_tools import Tool, ToolArg, ToolDoc
 
 from .action import Action
 from .window import Window, Workspace
@@ -16,8 +16,8 @@ class Application:
     max_tabs: Optional[int] = None
 
     def __post_init__(self):
+        self.get_name = lambda : self.workspace_type.__name__
         self.window : Window = Window(index=self.index, app_name=self.get_name())
-
 
         action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.tab_map)
         self.actions : list[Action] = action_factory.get_actions()
@@ -41,17 +41,11 @@ class Application:
     def get_actions(self, active_only : bool= False) -> list[Action]:
         return [action for action in self.actions if action.is_active or not active_only]
 
-
-    # ---------------------------------------------------
-    # documentation
-
-    @classmethod
-    def get_name(cls):
-        return cls.__name__
+    def get_docs(self, active_only : bool = False) -> list[ToolDoc]:
+        return [action.get_doc(self.get_name()) for action in self.get_actions(active_only=active_only)]
 
     def is_open(self) -> bool:
         return len(self.window.tab_map) != 0
-
 
 
 class ActionFactory(Loggable):

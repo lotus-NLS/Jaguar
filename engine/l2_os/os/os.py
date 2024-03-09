@@ -37,7 +37,12 @@ class OS(Loggable):
         return {tool.get_name() : tool for tool in self.get_tools()}
 
     def get_docs(self) -> list[ToolDoc]:
-        return [tool.get_doc() for tool in self.get_tools()]
+        docs = [tool.get_doc() for tool in self.meta_tools]
+        active_applications = [app for app in self.app_map.values() if app.is_open()]
+        for app in active_applications:
+            docs += app.get_docs()
+        return docs
+
 
     def get_tools(self) -> list[Tool]:
         tools = self.meta_tools
