@@ -41,7 +41,7 @@ class Agent(Handler):
 
 
     def get_next(self, options: Options = Options()) -> Generation:
-        context = self.get_context()
+        context = self.get_active_context()
         return self.model.get_generation(context=context, options=options)
 
 
@@ -59,7 +59,7 @@ class Agent(Handler):
     def send_feedback(self, generation : Generation):
         log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
         feedback_entry = Entry.as_system(msg=log_msg)
-        new_generation = self.model.get_text_generation(entries=self.get_context().entries + [feedback_entry])
+        new_generation = self.model.get_text_generation(entries=self.get_active_context().entries + [feedback_entry])
         for chunk in new_generation:
             text = chunk.get_text()
             generation.text_queue.put(text)
@@ -71,7 +71,8 @@ class Agent(Handler):
     def as_speaker(cls) -> Speaker:
         return Speaker(role=Role.AGENT, name=cls.__name__)
 
-    def get_context(self) -> Context:
+
+    def get_active_context(self) -> Context:
         context = Context()
         system_prompt = Entry.as_system(msg=self.identity.get_str())
         context.add_entry(system_prompt)

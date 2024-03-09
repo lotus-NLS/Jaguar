@@ -66,9 +66,6 @@ class ToolArg:
     def input_is_valid(self) -> bool:
         if self.choices is None:
             return True
-        debug(self.choices)
-        debug(self.input)
-
         return self.input in self.choices
 
 

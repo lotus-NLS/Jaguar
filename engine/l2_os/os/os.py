@@ -34,9 +34,15 @@ class OS(Loggable):
     # ---------------------------------------------------
     # get
 
-
     def get_context(self) -> Context:
-        entries = [app.window.get_entry() for app in self.app_map.values() if app.is_open()]
+        open_apps = [app for app in self.app_map.values() if app.is_open()]
+        entries = []
+        for app in open_apps:
+            try:
+                entry = app.window.get_entry()
+                entries.append(entry)
+            except:
+                self.log(f'Error in getting entry for app \"{app.get_name()}\"', level=LogLevel.ERROR)
         docs = self._get_docs()
         return Context(entries=entries, docs=docs)
 

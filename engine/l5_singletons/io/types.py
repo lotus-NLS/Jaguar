@@ -40,8 +40,10 @@ class QueryType(Enum):
     STRING = "STRING"
     BOOLEAN = "BOOLEAN"
 
+
 class TextStream(Iterator[str], ABC):
     pass
+
 
 class FailedTextStream(TextStream):
     def __init__(self, message: str = "Response failed"):
@@ -56,6 +58,7 @@ class FailedTextStream(TextStream):
 
     def __iter__(self) -> Iterator[str]:
         return self
+
 
 @dataclass
 class Response:
