@@ -20,7 +20,7 @@ class Agent(Handler):
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[Host, TextEditor])
+        self.os : OS = OS(workspace_types=[TextEditor])
         self.call_map : CallMap = CallMap()
         self.model: LLM = model
 
