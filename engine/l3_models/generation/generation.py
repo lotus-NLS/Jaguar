@@ -42,7 +42,7 @@ class Generation(Loggable):
     def stop(self):
         self.text_queue.put(self.stop_token)
 
-    async def get_text_stream(self):
+    def get_text_stream(self):
         while True:
             try:
                 retrieved_text = self.text_queue.get(timeout=10)

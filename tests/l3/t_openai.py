@@ -1,6 +1,5 @@
 from engine.l3_models.generation import GenerationContext
 import threading
-import asyncio
 
 from tests.l3.openai_test import OpenAITest
 
@@ -22,11 +21,11 @@ class TestContextOpenAI(OpenAITest):
 
         threading.Thread(target=exhaust).start()
 
-        async def print_stream():
-            async for text in generation.get_text_stream():
+        def print_stream():
+            for text in generation.get_text_stream():
                 self.lineprinter.add(msg=text)
 
-        asyncio.run(print_stream())
+        print_stream()
 
     def test_image_context(self):
         context = GenerationContext(entries=[self.entry_spoofs.image_entry], docs=[])

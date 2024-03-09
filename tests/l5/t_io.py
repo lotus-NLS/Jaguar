@@ -5,7 +5,7 @@ from hollarek.devtools import Unittest
 from tests.spoofs import MockEntity
 
 from engine.l5_singletons.io.engine_io import EngineIO, Handler
-from engine.l5_singletons.io.types import ServerResponse, TextStream, Task
+from engine.l5_singletons.io.types import Response, TextStream, Task
 # --------------------------------------------
 
 
@@ -32,7 +32,7 @@ class TestEngineIO(Unittest):
         task = Task(new_entries=[entry])
         response = self.io.handle(task)
 
-        self.assertIsInstance(response, ServerResponse)
+        self.assertIsInstance(response, Response)
         self.assertIsInstance(response.text_stream, TextStream)
 
         print(f'Engine responded: With following text stream')

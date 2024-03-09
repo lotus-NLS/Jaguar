@@ -1,35 +1,38 @@
 from hollarek.logging import Loggable
 from engine.l5_singletons import Settings, EngineIO
-from .entities import ConsoleUser, User
+from .entities import ConsoleUser
 from engine.l1_agent import Agent
 # ---------------------------------------------------------
 
+
 class LotusEngine(Loggable):
-    def __init__(self, local : bool = True, on_console : bool = True):
+    def __init__(self, use_local : bool = True):
         super().__init__()
-        self.settings : Settings = Settings(local=local, validate=True)
 
-
+        self.settings : Settings = Settings(local=use_local, validate=True)
         self.handler: Agent = Agent()
         self.io: EngineIO = EngineIO(handler=self.handler)
-        self.launch(on_console)
+
 
     def launch(self, on_console : bool):
         self.log(f'Lotus started')
         if on_console:
-            self.launch_console()
+            self._launch_console()
         else:
             raise NotImplementedError('Webapp not yet implemented')
 
 
     @staticmethod
-    def launch_console():
+    def _launch_console():
         user = ConsoleUser()
         while True:
             user_input = input()
             if user_input == 'exit':
                 break
-            user.send(msg=user_input)
+            response = user.send(msg=user_input)
+            for text in response.text_stream:
+                print(text, end='')
+
 
 
             # if flags.get(flag=Flag.PRINT_THREADS):

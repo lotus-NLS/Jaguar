@@ -2,7 +2,7 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.types import ServerResponse, TextStream, Task
+from engine.l5_singletons.io.types import Response, TextStream, Task
 from engine.l5_singletons.io.engine_io import Handler
 
 
@@ -23,6 +23,6 @@ class MockTextStream(TextStream):
 
 
 class MockEntity(Handler):
-    def handle(self, task: Task) -> ServerResponse:
-        return ServerResponse(user_query=None, text_stream=MockTextStream())
+    def handle(self, task: Task) -> Response:
+        return Response(user_query=None, text_stream=MockTextStream())
 

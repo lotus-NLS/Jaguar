@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import asyncio
+import threading
+
 from api import Entry, Role, Speaker
-from engine.l5_singletons import ServerResponse, Handler, Task, TaskQueue
+from engine.l5_singletons import Response, Handler, Task, TaskQueue
 from engine.l4_tools import CallMap
 from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
 from engine.l3_models import OpenAIModel
@@ -27,14 +28,14 @@ class Agent(Handler):
     # ---------------------------------------------------
     # Main routine
 
-    async def handle(self, task: Task) -> ServerResponse:
-        generation = await self.get_next(options=Options.from_task(task=task))
-        response = ServerResponse(text_stream=await generation.get_text_stream())
-        await asyncio.create_task(self.process(generation=generation))
+    def handle(self, task: Task) -> Response:
+        generation = self.get_next(options=Options.from_task(task=task))
+        response = Response(text_stream=generation.get_text_stream())
+        threading.Thread(target=self.process,args=(generation,)).start()
         return response
 
 
-    async def get_next(self, options: Options = Options()) -> Generation:
+    def get_next(self, options: Options = Options()) -> Generation:
         context = GenerationContext(docs=self.os.get_docs(), entries=self.get_basic_entries())
         return self.model.get_generation(context=context, options=options)
 

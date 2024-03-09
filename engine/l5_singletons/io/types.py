@@ -44,7 +44,7 @@ class TextStream(Iterator[str], ABC):
     pass
 
 @dataclass
-class ServerResponse:
+class Response:
     text_stream : Optional[TextStream]
     user_query: Optional[UserQuery] = None
 

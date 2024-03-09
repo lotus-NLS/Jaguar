@@ -4,13 +4,13 @@ from abc import abstractmethod
 
 from hollarek.templates import Singleton
 from api import Network, Socket, Entry
-from .types import ServerResponse, Task
+from .types import Response, Task
 from typing import Optional
 # ----------------------------------------------
 
 class Handler:
     @abstractmethod
-    def handle(self, task : Task) -> ServerResponse:
+    def handle(self, task : Task) -> Response:
         pass
 
 
@@ -19,7 +19,7 @@ class User:
         self.io : EngineIO = EngineIO()
 
     @abstractmethod
-    def send(self, msg : str, image : Optional[PILImage] = None) -> ServerResponse:
+    def send(self, msg : str, image : Optional[PILImage] = None) -> Response:
         pass
 
 
@@ -34,8 +34,8 @@ class EngineIO(Singleton):
         self.entity : handler = handler
         self.app : Flask = Flask(__name__)
 
-    def handle(self, task : Task) -> ServerResponse:
-        return self.entity.handle(task=task)
+    def handle(self, task : Task) -> Response:
+        return  self.entity.handle(task=task)
 
     def run(self, socket : Socket = Network().engine_socket):
         self.app.run(port=socket.port, host=socket.ip)

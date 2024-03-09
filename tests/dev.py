@@ -1,10 +1,6 @@
-# from engine import LotusEngine
-#
-# # ----------------------------------------------
-#
-# ip = '127.0.0.1'
-# port = 5001
-#
-# the_engine = LotusEngine(ip=ip, port=port, local=True)
-# the_engine.run()
-# input('Press any key to quit')
+from engine import LotusEngine
+
+# ----------------------------------------------
+
+the_engine = LotusEngine(use_local=True)
+the_engine.launch(on_console=True)
