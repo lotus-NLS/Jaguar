@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from .flags import Flags
 from .speaker import Speaker
 from .._serialization import Dillable
-from hollarek.logging import Color, add_color
 # ----------------------------------------------
 
 class APIType(Enum):

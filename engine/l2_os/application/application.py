@@ -71,27 +71,29 @@ class ActionFactory(Loggable):
         return actions
 
 
-    def create_action(self, mthd : callable) -> Action:
+    def create_action(self, mthd : Callable) -> Action:
         tab_map = self.tab_map
         args = ModuleInspector.get_args(func=mthd)
 
         class NewAction(Action):
             def __init__(self):
                 super().__init__(tab_map=tab_map)
-                self.args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
+                self.mthd_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
             @classmethod
             def get_name(cls) -> str:
                 return f'{mthd.__name__}'
 
             def do(self):
-                kwargs = {name : arg.get_value() for name,arg in self.get_args()}
-                mthd(**kwargs)
+                kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
+                print(f'kwargs are {kwargs}')
+                tab = self.get_tab()
+                mthd(tab,**kwargs)
 
             def get_desc(self) -> str:
                 return f'Allows for operating {self.get_name()}'
 
             def get_args(self) -> list[ToolArg]:
-                return self.args
+                return self.mthd_args + [self.index_arg]
 
         return NewAction()

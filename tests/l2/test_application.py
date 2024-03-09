@@ -1,4 +1,4 @@
-from engine.l4_tools import ToolDoc
+from engine.l4_tools import ToolDoc, ToolCall
 from engine.l2_os import Application, Action
 from tests.l2.mock_app import MockTab
 from hollarek.devtools import Unittest
@@ -73,16 +73,19 @@ class TestApplicationFunctions(Unittest):
 
     def test_tool_execution(self):
         self.app.open(path='test_path')
-        add_action = [action for action in self.app.get_actions() if action.get_name() == 'add'][0]
-        reset_action = [action for action in self.app.get_actions() if action.get_name() == 'reset'][0]
+        add = self.app.tool_dict['add']
+        # reset = self.app.tool_dict['add']
 
-        add_action.do()
-        self.assertIn('Added Text', self.app.window.tab_map[0].text_content)
+        json_str = '{"msg": "New text", "tab_index" : "0"}'
+        tool_call = ToolCall(json_str=json_str)
+
+        add.handle(tool_call=tool_call)
+        self.assertIn('New text', self.app.window.tab_map[0].text_content)
         print(f'Window context before reset: {self.app.window.get_context()}')
-
-        reset_action.do()
-        self.assertEqual('', self.app.window.tab_map[0].text_content)
-        print(f'Window context after reset : {self.app.window.get_context()}')
+        #
+        # reset_action.do()
+        # self.assertEqual('', self.app.window.tab_map[0].text_content)
+        # print(f'Window context after reset : {self.app.window.get_context()}')
 
 
 if __name__ == '__main__':

@@ -17,6 +17,9 @@ class Action(Tool, ABC):
     def get_desc(self) -> str:
         pass
 
+    def get_tab(self):
+        return self.tab_map[int(self.index_arg.get_value())]
+
     def _set_args(self, tool_call : ToolCall):
         self.index_arg.choices = [str(index) for index in self.tab_map.keys()]
         super()._set_args(tool_call=tool_call)
