@@ -37,7 +37,7 @@ class Close(MetaTool):
         return f'Close an open window from associated application'
 
     def get_choices(self):
-        return [index for index, app in self.map.items() if app.is_open()]
+        return [str(index) for index, app in self.map.items() if app.is_open()]
 
     # ---------------------------------------------------
     # do
@@ -61,7 +61,7 @@ class Open(MetaTool):
         return f'Opens an application: \n{info_map}'
 
     def get_choices(self):
-        return [index for index, app in self.map.items() if not app.is_open()]
+        return [str(index) for index, app in self.map.items() if not app.is_open()]
 
     # ---------------------------------------------------
     # do

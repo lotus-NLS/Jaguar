@@ -66,6 +66,8 @@ class ToolArg:
     def input_is_valid(self) -> bool:
         if self.choices is None:
             return True
+        debug(self.choices)
+        debug(self.input)
 
         return self.input in self.choices
 
@@ -113,11 +115,18 @@ class ToolCall:
         self.name += partial_call.name
         self.json_str += partial_call.json_str
 
-    def get_args_dict(self):
+
+    def get_args_dict(self) -> dict:
+        def as_string_decoder(pair: dict) -> dict:
+            return {k: str(v) if v is not None else 'null' for k, v in pair.items()}
+
+        def load(s) -> dict:
+            return json.loads(s=s, object_hook=as_string_decoder)
+
         try:
-            tool_args_dict = json.loads(s=self.json_str)
+            tool_args_dict = load(s=self.json_str)
         except:
-            tool_args_dict = json.loads(s=repair_json(json_str=self.json_str))
+            tool_args_dict = load(s=repair_json(json_str=self.json_str))
         return tool_args_dict
 
 

@@ -50,7 +50,8 @@ class Generation(Loggable):
             self.text_queue.put(text)
 
     def add_calls(self, chunk : Chunk):
-        self.call_map.update(chunk.get_call_map())
+        chunk_call_map = chunk.get_call_map()
+        self.call_map.add(chunk_call_map)
 
 
     def stop(self):
