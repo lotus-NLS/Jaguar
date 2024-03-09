@@ -1,8 +1,9 @@
+from engine.l4_tools import ToolDoc
 from tests.l2.mock_app import MockTab
 from engine.l2_os import Application
 from hollarek.devtools import Unittest
 
-class TestApplication(Unittest):
+class TestApplicationOpenClose(Unittest):
 
     def setUp(self):
         self.app = Application(index=0, tab_type=MockTab, desc='Test application')
@@ -30,11 +31,49 @@ class TestApplication(Unittest):
         self.app.window.close_tab(0)
         self.assertEqual(len(self.app.window.tab_map), initial_tab_count - 1)
 
-    def test_application_actions(self):
+
+class TestApplicationFunctions(Unittest):
+    def setUp(self):
+        self.app = Application(index=0, tab_type=MockTab, desc='Test application')
+
+
+    def test_tool_generation(self):
         self.app.open(path='some_path')
+        self.assertIn('add', [action.get_name() for action in self.app.get_actions()])
+        self.assertIn('reset', [action.get_name() for action in self.app.get_actions()])
+
+
+    def test_tool_docs(self):
         actions = self.app.get_actions()
-        self.assertIsInstance(actions, list)  # Check that actions are listed
-        self.assertGreater(len(actions), 0)  # Check that there are actions available
+        for action in actions:
+            self.assertIsInstance(action.get_doc(), ToolDoc)
+
+
+    def test_window_context(self):
+        self.app.open(path='tab1')
+        self.app.window.tab_map[0].add('Testing content')
+        context = self.app.window.get_context()
+        context.print()
+        self.assertIn('tab1', context.msg)  # Check if tab name is included
+        self.assertIn('Testing content', context.msg)  # Check if tab content is included
+        self.log(f'Window context after open : {context}')
+
+
+
+    def test_tool_execution(self):
+        self.app.open(path='test_path')
+        add_action = [action for action in self.app.get_actions() if action.get_name() == 'add'][0]
+        reset_action = [action for action in self.app.get_actions() if action.get_name() == 'reset'][0]
+
+        add_action.do()
+        self.assertIn('Added Text', self.app.window.tab_map[0].text_content)
+        print(f'Window context before reset: {self.app.window.get_context()}')
+
+        reset_action.do()
+        self.assertEqual('', self.app.window.tab_map[0].text_content)
+        print(f'Window context after reset : {self.app.window.get_context()}')
+
 
 if __name__ == '__main__':
-    TestApplication.execute_all()
+    # TestApplicationOpenClose.execute_all()
+    TestApplicationFunctions.execute_all()

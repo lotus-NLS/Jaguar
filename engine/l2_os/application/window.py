@@ -7,9 +7,10 @@ from typing import Optional
 class Tab:
     def __init__(self, path : str):
         uri = URI(path=path)
+        uri_name = uri.get_name()
 
-        self.name : str = uri.get_name()
-        self.path : str = uri.get_path()
+        self.name : str = uri_name if uri_name else 'unnamed tab'
+        self.path : str = path
         self.text_content : str = ''
         self.image_content : Optional[PILImage] = None
 
@@ -26,10 +27,10 @@ class Tab:
 
 
 class Window:
-    def __init__(self, index : int, name : str):
+    def __init__(self, index : int, app_name : str):
         self.tab_map : dict[int, Tab] = {}
         self.index : int = index
-        self.name : str = name
+        self.app_name : str = app_name
 
     def add_tab(self, tab : Tab):
         index = 0
@@ -49,16 +50,25 @@ class Window:
     def get_tabs(self) -> list[Tab]:
         return list(self.tab_map.values())
 
-    def get_context(self) -> Entry:
-        context = self.get_header()
-        for index, tab in self.tab_map.items():
-            context += f'--- {tab.name} ---'
-            context += tab.text_content
-        return Entry(speaker=Speaker(role=Role.TOOL, name=self.name), msg=context)
 
-    def get_header(self) -> str:
-        header_len = 40
-        basic_info = f'{self.name}; Window number : {self.index}'
+    def get_context(self) -> Entry:
+        text = f'\n{self.get_window_header()}'
+        def get_tab_header(msg : str = ''):
+            max_tab_len = 20
+            num_dashes = max(max_tab_len-len(msg),0)
+            dashes = '-' * int(num_dashes/2)
+            return f'\n{dashes}{msg}{dashes}'
+
+        for index, tab in self.tab_map.items():
+            text += get_tab_header(msg=f' {tab.name} ')
+            text += f'\n{tab.text_content}'
+            text += get_tab_header(msg='')
+        return Entry(speaker=Speaker(role=Role.TOOL, name=self.app_name), msg=text)
+
+
+    def get_window_header(self) -> str:
+        header_len = 60
+        basic_info = f'Application: \"{self.app_name}\" Window number : {self.index}'
         num_dashes = max(header_len - len(basic_info), 0)
         dashes = '=' * num_dashes
         return  f'{dashes} {basic_info} {dashes}'
@@ -66,7 +76,6 @@ class Window:
 
 from urllib.parse import urlparse
 from pathlib import Path
-
 
 class URI:
     def __init__(self, path: str):

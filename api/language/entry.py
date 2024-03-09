@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from .flags import Flags
 from .speaker import Speaker
 from .._serialization import Dillable
-
+from hollarek.logging import Color, add_color
 # ----------------------------------------------
 
 class APIType(Enum):
@@ -63,8 +63,12 @@ class Entry(Dillable):
     def get_name(self) -> str:
         return self.speaker.name
 
-    def __str__(self):
-        return f'{self.get_role()}:{self.get_msg()}\n'
+    def print(self):
+        speaker_msg = f'{self.get_name()}({self.get_role()})'
+        speaker_msg = add_color(msg=speaker_msg,color=Color.CYAN)
+        as_str = speaker_msg + f':{self.get_msg()}'
+
+        print(as_str)
 
     # ----------------------------------------------------
     # get

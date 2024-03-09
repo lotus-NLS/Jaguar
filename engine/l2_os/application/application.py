@@ -14,13 +14,13 @@ class Application:
         self.tab_type : type[Tab] = tab_type
         self.get_desc = lambda : desc
 
-        self.window : Window = Window(index=index, name=self.get_name())
+        self.window : Window = Window(index=index, app_name=self.get_name())
         self.actions : list[Action] = self.create_actions()
         self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}
 
     def open(self, path : Optional[str]):
         if not self.window:
-            self.window = Window(index=self.index, name=self.get_name())
+            self.window = Window(index=self.index, app_name=self.get_name())
         new_tab = self.tab_type(path=path)
         self.window.add_tab(new_tab)
 
