@@ -1,9 +1,8 @@
 from __future__ import annotations
 from typing import Optional
-
 from PIL.Image import Image as PILImage
-from hollarek.fsys import FsysNode
 
+from hollarek.fsys import FsysNode
 from engine.l2_os.application import Tab
 
 # ---------------------------------------------------------

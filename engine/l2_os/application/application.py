@@ -8,8 +8,6 @@ from hollarek.devtools import ModuleInspector
 from dataclasses import dataclass
 # ---------------------------------------------------
 
-
-
 @dataclass
 class Application:
     index: int
