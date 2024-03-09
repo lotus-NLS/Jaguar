@@ -69,4 +69,4 @@ class Open(MetaTool):
 
     def do(self):
         application = self.get_application()
-        application.open(path=self.uri_arg.input)
+        application.open(uri=self.uri_arg.input)

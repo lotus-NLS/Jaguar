@@ -28,21 +28,11 @@ class Entry(Dillable):
     def add_msg(self, msg : str):
         self.msg += msg
 
-    @classmethod
-    def get_user(cls, msg : str, name : str = '') -> Entry:
-        return cls(speaker=Speaker.get_user(name=name), msg=msg)
-
-    @classmethod
-    def get_system(cls, msg : str) -> Entry:
-        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg)
-
-    @classmethod
-    def get_agent(cls, msg : str, name : str = '') -> Entry:
-        return cls(speaker=Speaker.get_agent(name=name), msg=msg)
-
-    @classmethod
-    def get_tool(cls, msg : str, name : str) -> Entry:
-        return cls(speaker=Speaker.get_tool(name=name), msg=msg)
+    def join(self, entry : Entry):
+        self.msg += entry.msg
+        new_img = entry.get_image()
+        if new_img:
+            self.image = new_img
 
     # ----------------------------------------------------
     # get
@@ -61,6 +51,9 @@ class Entry(Dillable):
 
     def get_name(self) -> str:
         return self.speaker.name
+
+    def get_image(self) -> Optional[PILImage]:
+        return self.image
 
     def print(self):
         print(self)
@@ -116,3 +109,22 @@ class Entry(Dillable):
         image.save(buffer, format=f'JPEG')
         img_bytes = buffer.getvalue()
         return img_bytes
+
+    # ----------------------------------------------------
+    # convenience methdos
+
+    @classmethod
+    def get_user(cls, msg : str, name : str = '') -> Entry:
+        return cls(speaker=Speaker.get_user(name=name), msg=msg)
+
+    @classmethod
+    def get_system(cls, msg : str) -> Entry:
+        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg)
+
+    @classmethod
+    def get_agent(cls, msg : str, name : str = '') -> Entry:
+        return cls(speaker=Speaker.get_agent(name=name), msg=msg)
+
+    @classmethod
+    def tool(cls, msg : str, name : str) -> Entry:
+        return cls(speaker=Speaker.get_tool(name=name), msg=msg)

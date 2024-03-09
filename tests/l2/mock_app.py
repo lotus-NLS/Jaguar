@@ -1,8 +1,8 @@
 from engine.l2_os import Tab
 
 class MockTab(Tab):
-    def __init__(self, path: str):
-        super().__init__(path)
+    def __init__(self, uri: str):
+        super().__init__(uri)
         self.text_content = 'Initial'
 
     def add(self, msg: str):
@@ -13,6 +13,3 @@ class MockTab(Tab):
 
     def open(self):
         pass  # Implement if necessary for your tests
-
-    def get_context(self, app_name: str) -> str:
-        return f'{app_name}: {self.text_content}'

@@ -8,7 +8,6 @@ from engine.l2_os.application import Application
 
 # ---------------------------------------------------------
 
-
 class OS(Loggable):
     def __init__(self):
         super().__init__()

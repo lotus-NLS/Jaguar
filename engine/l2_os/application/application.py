@@ -18,10 +18,10 @@ class Application:
         self.actions : list[Action] = self.create_actions()
         self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}
 
-    def open(self, path : Optional[str]):
+    def open(self, uri : Optional[str]):
         if not self.window:
             self.window = Window(index=self.index, app_name=self.get_name())
-        new_tab = self.tab_type(path=path)
+        new_tab = self.tab_type(uri=uri)
         self.window.add_tab(new_tab)
 
     def close(self):
@@ -64,7 +64,7 @@ class ActionFactory(Loggable):
         actions = []
         for method in self.methods:
             name = method.__name__
-            excluded_method_names = [Tab.get_context.__name__, Tab.open.__name__, Tab.__init__.__name__]
+            excluded_method_names = [Tab.get_entry.__name__, Tab.open.__name__, Tab.__init__.__name__]
             if name in excluded_method_names:
                 continue
             actions.append(self.create_action(mthd=method))

@@ -5,25 +5,32 @@ from typing import Optional
 # from hollarek.fsys import URI
 
 class Tab:
-    def __init__(self, path : str):
-        uri = URI(path=path)
+    def __init__(self, uri : str):
+        uri = URI(path=uri)
         uri_name = uri.get_name()
 
         self.name : str = uri_name if uri_name else 'unnamed tab'
-        self.path : str = path
+        self.path : str = uri
         self.text_content : str = ''
         self.image_content : Optional[PILImage] = None
 
-    @abstractmethod
-    def open(self):
-        pass
 
-    def get_context(self, app_name : str) -> Entry:
+    def get_entry(self, tab_index : int, app_name : str) -> Entry:
         kwargs = {}
         if self.image_content:
             kwargs['image'] = self.image_content
-        return Entry(speaker=Speaker.get_tool(name=app_name), **kwargs)
+        msg = self.get_tab_header(msg=f' Tab {tab_index}: {self.name} ')
+        msg += self.text_content
+        msg += self.get_tab_header()
 
+        return Entry(speaker=Speaker.get_tool(name=app_name), msg=msg, **kwargs)
+
+    @staticmethod
+    def get_tab_header(msg: str = ''):
+        max_tab_len = 20
+        num_dashes = max(max_tab_len - len(msg), 0)
+        dashes = '-' * int(num_dashes / 2)
+        return f'\n{dashes}{msg}{dashes}'
 
 
 class Window:
@@ -51,19 +58,12 @@ class Window:
         return list(self.tab_map.values())
 
 
-    def get_context(self) -> Entry:
-        text = f'\n{self.get_window_header()}'
-        def get_tab_header(msg : str = ''):
-            max_tab_len = 20
-            num_dashes = max(max_tab_len-len(msg),0)
-            dashes = '-' * int(num_dashes/2)
-            return f'\n{dashes}{msg}{dashes}'
-
+    def get_entry(self) -> Entry:
+        entry = Entry.tool(name=self.app_name, msg=f'\n{self.get_window_header()}')
         for index, tab in self.tab_map.items():
-            text += get_tab_header(msg=f' {tab.name} ')
-            text += f'\n{tab.text_content}'
-            text += get_tab_header(msg='')
-        return Entry(speaker=Speaker(role=Role.TOOL, name=self.app_name), msg=text)
+            tab_entry = tab.get_entry(tab_index=index, app_name=self.app_name)
+            entry.join(tab_entry)
+        return entry
 
 
     def get_window_header(self) -> str:

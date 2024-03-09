@@ -14,19 +14,19 @@ class TestApplicationOpenClose(Unittest):
         self.assertFalse(self.app.is_open())
 
     def test_open_application(self):
-        self.app.open(path='some_path')
+        self.app.open(uri='some_path')
         self.assertTrue(self.app.is_open())
         self.assertIsInstance(self.app.window.tab_map[0], MockTab)
 
     def test_close_application(self):
-        self.app.open(path='some_path')
+        self.app.open(uri='some_path')
         self.app.close()
         self.assertFalse(self.app.is_open())
         self.assertTrue(len(self.app.window.get_tabs()) == 0)
 
     def test_close_individual_tabs(self):
-        self.app.open(path='tab1')
-        self.app.open(path='tab2')
+        self.app.open(uri='tab1')
+        self.app.open(uri='tab2')
         initial_tab_count = len(self.app.window.tab_map)
         self.app.window.close_tab(0)
         self.assertEqual(len(self.app.window.tab_map), initial_tab_count - 1)
@@ -38,7 +38,7 @@ class TestApplicationFunctions(Unittest):
 
 
     def test_tool_generation(self):
-        self.app.open(path='some_path')
+        self.app.open(uri='some_path')
         self.assertIn('add', [action.get_name() for action in self.app.get_actions()])
         self.assertIn('reset', [action.get_name() for action in self.app.get_actions()])
 
@@ -50,10 +50,10 @@ class TestApplicationFunctions(Unittest):
 
 
     def test_window_context(self):
-        self.app.open(path='tab1')
+        self.app.open(uri='tab1')
         mock_tab : MockTab = self.app.window.tab_map[0]
         mock_tab.add('Testing content')
-        context = self.app.window.get_context()
+        context = self.app.window.get_entry()
         self.assertIn('tab1', context.msg)  # Check if tab name is included
         self.assertIn('Testing content', context.msg)  # Check if tab content is included
         self.log(f'Window context after open : {context}')
@@ -64,7 +64,7 @@ class TestApplicationFunctions(Unittest):
             self.assertIsInstance(action, Action)
 
     def test_num_actions(self):
-        self.app.open(path='test_path')
+        self.app.open(uri='test_path')
         actions = self.app.get_actions()
         actions_info = [action.get_name() for action in actions]
         self.log(f'Actions are : {actions_info}')
@@ -72,7 +72,7 @@ class TestApplicationFunctions(Unittest):
 
 
     def test_tool_execution(self):
-        self.app.open(path='test_path')
+        self.app.open(uri='test_path')
         add = self.app.tool_dict['add']
         reset = self.app.tool_dict['reset']
 
@@ -81,13 +81,13 @@ class TestApplicationFunctions(Unittest):
 
         add.handle(tool_call=tool_call)
         self.assertIn('New text', self.app.window.tab_map[0].text_content)
-        self.log(f'Window context before reset: {self.app.window.get_context()}')
+        self.log(f'Window context before reset: {self.app.window.get_entry()}')
 
         reset_json_str = '{"tab_index" : "0"}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.handle(tool_call)
         self.assertEqual('', self.app.window.tab_map[0].text_content)
-        self.log(f'Window context after reset : {self.app.window.get_context()}')
+        self.log(f'Window context after reset : {self.app.window.get_entry()}')
 
 
 if __name__ == '__main__':
