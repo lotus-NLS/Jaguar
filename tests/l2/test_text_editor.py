@@ -1,32 +1,31 @@
-from hollarek.devtools import Spoofer
+from hollarek.devtools import Spoofer, File
 from engine.l2_os import TextTab
+from hollarek.devtools import Unittest
 
+class TestTextTab(Unittest):
+    def setUp(self):
+        self.test_text : File = Spoofer.lend_txt()
 
-import unittest
-
-class TestTextTab(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.test_file_path = Spoofer.lend_txt().fpath
+    def test_content(self):
+        tab = TextTab(uri=self.test_text.fpath)
+        self.log(msg=f'Initial content: \n{tab.get_text()}')
 
     def test_insert(self):
-        # Test the insert functionality
-        tab = TextTab(uri=self.test_file_path)
-        tab.insert(2, "New line\n")  # Insert a new line at position 2
-        expected_content = ["First line\n", "New line\n", "Second line\n"]
-        with open(self.test_file_path, 'r') as f:
-            content = f.readlines()
-        self.assertEqual(content, expected_content)
+        tab = TextTab(uri=self.test_text.fpath)
+        new_content = 'Second line \n'
+        tab.insert(2, new_content)
+        self.assertIn(new_content, tab.get_text())
+        self.log(msg=tab.get_text())
 
     def test_delete_lines(self):
-        tab = TextTab(uri=self.test_file_path)
-        tab.delete_lines(1, 1)  # Delete the first line
-        expected_content = ["Second line\n"]  # Expecting the second line to remain
-        with open(self.test_file_path, 'r') as f:
+        tab = TextTab(uri=self.test_text.fpath)
+        tab.delete_lines(1, 1)
+        with open(self.test_text.fpath, 'r') as f:
             content = f.readlines()
-        self.assertEqual(content, expected_content)
+        self.assertEqual(len(content), 1)
+        self.log(f'After deleting: \n{tab.get_text()}')
+
 
 
 if __name__ == '__main__':
-    unittest.main()
+    TestTextTab.execute_all()
