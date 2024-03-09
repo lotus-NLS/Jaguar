@@ -1,15 +1,13 @@
 from __future__ import annotations
 from typing import Optional
 from enum import Enum
-import base64
-import io
 
 from PIL.Image import Image as PILImage
-from PIL import Image
+from hollarek.templates import Dillable
+from hollarek.fileIO import ImageConverter, ImageFormat
 from dataclasses import dataclass
 from .flags import Flags
 from .speaker import Speaker
-from .._serialization import Dillable
 # ----------------------------------------------
 
 class APIType(Enum):
@@ -74,8 +72,8 @@ class Entry(Dillable):
         if not self.image:
             content = self.msg
         else:
-            img_bytes = self.get_bytes(image=self.image)
-            base64_image = self.get_base64(byte_content=img_bytes)
+            jpg_img = ImageConverter.convert(self.image, target_format=ImageFormat.JPEG)
+            base64_image = ImageConverter.as_base64_str(jpg_img)
             text = {
                 "type": "text",
                 "text": f"{self.msg}"
@@ -88,27 +86,6 @@ class Entry(Dillable):
 
         data['content'] = content
         return data
-
-
-    @staticmethod
-    def get_base64(byte_content : bytes):
-        base64_content = base64.b64encode(byte_content).decode('utf-8')
-        return base64_content
-
-
-    @staticmethod
-    def get_bytes(image) -> bytes:
-        if image.mode in ('LA', 'RGBA'):
-            background = Image.new('RGB', image.size, (255, 255, 255))
-            rgb_image = image.convert('RGB') if image.mode == 'RGBA' else image.convert('L').convert('RGB')
-            background.paste(rgb_image, mask=image.split()[-1])
-            image = background
-
-        image.show()
-        buffer = io.BytesIO()
-        image.save(buffer, format=f'JPEG')
-        img_bytes = buffer.getvalue()
-        return img_bytes
 
     # ----------------------------------------------------
     # convenience methdos

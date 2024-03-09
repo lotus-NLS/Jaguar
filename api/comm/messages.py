@@ -1,8 +1,8 @@
 from typing import Optional
 from dataclasses import dataclass
 
+from hollarek.templates import Dillable
 from ..language.entry import Entry
-from .._serialization import Dillable
 
 # ----------------------------------------------
 # Classes
