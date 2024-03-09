@@ -2,16 +2,19 @@ from __future__ import annotations
 from hollarek.logging import Loggable, LogLevel
 
 from engine.l4_tools import Tool, CallMap, ToolDoc
-from engine.l2_os.application import Application, Tab
+from engine.l2_os.application import Application, Workspace
 from .meta_tools import Close, Open
 
 # ---------------------------------------------------------
 
 class OS(Loggable):
-    def __init__(self, tabs : list[Tab]):
+    def __init__(self, workspace_types : list[type[Workspace]]):
         super().__init__()
-        self.application_map = {j :  Application(index=j, tab_type=tab_type) for j, tab_type in enumerate(tabs)}
-        self.meta_tools : list[Tool] = [Open(self.application_map), Close(self.application_map)]
+        self.app_map = {}
+        for j, workspace_type in enumerate(workspace_types):
+            self.app_map[j] = Application(index=j, workspace_type=workspace_type)
+
+        self.meta_tools : list[Tool] = [Open(self.app_map), Close(self.app_map)]
 
     # ---------------------------------------------------
     # call updates
@@ -36,6 +39,6 @@ class OS(Loggable):
 
     def get_tools(self) -> list[Tool]:
         tools = self.meta_tools
-        active_applications = [app for app in self.application_map.values() if app.is_open()]
+        active_applications = [app for app in self.app_map.values() if app.is_open()]
         for app in active_applications:
             tools += app.get_actions()

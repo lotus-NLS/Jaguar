@@ -1,12 +1,12 @@
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from engine.l2_os.application import Tab
+from engine.l2_os.application import Workspace
 from hollarek.hardware import TextMouse, Keyboard, Display, Grid
 
 # ---------------------------------------------------
 
-class HostTab(Tab):
+class HostWorkspace(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
         self.input_grid = Grid(20,20)

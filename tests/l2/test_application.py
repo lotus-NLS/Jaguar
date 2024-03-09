@@ -6,7 +6,7 @@ from hollarek.devtools import Unittest
 class TestApplicationOpenClose(Unittest):
 
     def setUp(self):
-        self.app = Application(index=0, tab_type=MockTab, desc='Test application')
+        self.app = Application(index=0, workspace_type=MockTab, desc='Test application')
 
     def test_basic_properties(self):
         self.assertEqual(self.app.get_name(), 'Application')
@@ -34,7 +34,7 @@ class TestApplicationOpenClose(Unittest):
 
 class TestApplicationFunctions(Unittest):
     def setUp(self):
-        self.app = Application(index=0, tab_type=MockTab, desc='Test application')
+        self.app = Application(index=0, workspace_type=MockTab, desc='Test application')
 
 
     def test_tool_generation(self):

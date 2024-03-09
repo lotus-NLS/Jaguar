@@ -7,7 +7,7 @@ from pathlib import Path
 
 # ---------------------------------------------------------
 
-class Tab:
+class Workspace:
     def __init__(self, uri : str):
         uri_name = URI(path=uri).get_name()
 
@@ -43,11 +43,11 @@ class Tab:
 
 class Window:
     def __init__(self, index : int, app_name : str):
-        self.tab_map : dict[int, Tab] = {}
+        self.tab_map : dict[int, Workspace] = {}
         self.index : int = index
         self.app_name : str = app_name
 
-    def add_tab(self, tab : Tab):
+    def add_tab(self, tab : Workspace):
         index = 0
         while self.tab_map.get(index):
             index += 1
@@ -62,7 +62,7 @@ class Window:
     # ---------------------------------------------------
     # do
 
-    def get_tabs(self) -> list[Tab]:
+    def get_tabs(self) -> list[Workspace]:
         return list(self.tab_map.values())
 
 

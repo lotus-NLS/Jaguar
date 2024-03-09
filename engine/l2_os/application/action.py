@@ -1,12 +1,12 @@
 from engine.l4_tools import Tool, ToolArg, ToolCall
-from .window import Tab
+from .window import Workspace
 from abc import ABC, abstractmethod
 # ---------------------------------------------------------
 
 class Action(Tool, ABC):
-    def __init__(self, tab_map: dict[int,Tab], call_timeout : float = 20):
+    def __init__(self, tab_map: dict[int,Workspace], call_timeout : float = 20):
         super().__init__(call_timeout=call_timeout)
-        self.tab_map : dict[int,Tab] = tab_map
+        self.tab_map : dict[int,Workspace] = tab_map
         self.index_arg: ToolArg = ToolArg(name='tab_index')
 
     @abstractmethod

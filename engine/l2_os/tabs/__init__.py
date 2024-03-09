@@ -1,2 +1,2 @@
-from .text_editor import TextTab
-from .host_control import HostTab
+from .text_editor import TextWorkspace
+from .host_control import HostWorkspace

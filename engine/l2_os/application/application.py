@@ -2,7 +2,7 @@ from typing import Optional, Callable
 from engine.l4_tools import Tool, ToolArg
 
 from .action import Action
-from .window import Window, Tab
+from .window import Window, Workspace
 from hollarek.logging import Loggable, LogSettings
 from hollarek.devtools import ModuleInspector
 from dataclasses import dataclass
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 @dataclass
 class Application:
     index: int
-    tab_type: type[Tab]
+    workspace_type: type[Workspace]
     desc: str = ''
     max_tabs: Optional[int] = None
 
@@ -25,7 +25,7 @@ class Application:
             if len(self.window.tab_map) == self.max_tabs:
                 raise ValueError(f'Cannot open more than {self.max_tabs} tab(s)')
 
-        new_tab = self.tab_type(uri=uri)
+        new_tab = self.workspace_type(uri=uri)
         self.window.add_tab(new_tab)
 
     def close(self):
@@ -35,7 +35,7 @@ class Application:
     #  actions
 
     def create_actions(self) -> list[Action]:
-        action_factory = ActionFactory(cls=self.tab_type, tab_map=self.window.tab_map)
+        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.tab_map)
         return action_factory.get_actions()
 
     def get_actions(self, active_only : bool= False) -> list[Action]:
@@ -55,10 +55,10 @@ class Application:
 
 
 class ActionFactory(Loggable):
-    def __init__(self, cls : type[Tab], tab_map : dict[int, Tab]):
+    def __init__(self, cls : type[Workspace], tab_map : dict[int, Workspace]):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
-        self.tab_map : dict[int, Tab] =  tab_map
+        self.tab_map : dict[int, Workspace] =  tab_map
         self.methods : list[Callable] = ModuleInspector.get_methods(cls=self.cls)
 
     # ---------------------------------------------------------
@@ -67,7 +67,7 @@ class ActionFactory(Loggable):
     def get_actions(self) -> list[Action]:
         actions = []
         for method in self.methods:
-            excluded_methods = [Tab.get_entry, Tab.__init__, Tab.get_text, Tab.get_text, Tab.get_image]
+            excluded_methods = [Workspace.get_entry, Workspace.__init__, Workspace.get_text, Workspace.get_text, Workspace.get_image]
             excluded_method_names = [mthd.__name__ for mthd in excluded_methods]
             if method.__name__ in excluded_method_names:
                 continue

@@ -3,11 +3,11 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 
 from hollarek.fsys import FsysNode
-from engine.l2_os.application import Tab
+from engine.l2_os.application import Workspace
 
 # ---------------------------------------------------------
 
-class TextTab(Tab):
+class TextWorkspace(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
         self.fpath : str = uri

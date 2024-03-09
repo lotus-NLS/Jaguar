@@ -1,9 +1,9 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
-from engine.l2_os import Tab
+from engine.l2_os import Workspace
 # ---------------------------------------------------------
 
-class MockTab(Tab):
+class MockTab(Workspace):
     def __init__(self, uri: str):
         super().__init__(uri)
         self.text_content = 'Initial'
