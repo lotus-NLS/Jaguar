@@ -39,3 +39,16 @@ class TextTab(Tab):
 
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
+
+
+    def delete_lines(self, start_line: int, end_line: int):
+        if FsysNode(path=self.fpath).get_suffix().lower() == 'pdf':
+            raise ValueError('Cannot edit pdf files')
+        if start_line <= 0 or end_line < start_line:
+            raise ValueError("Invalid line range.")
+
+        with open(self.fpath, 'r') as f:
+            lines = f.readlines()
+        del lines[start_line - 1:end_line]
+        with open(self.fpath, 'w') as f:
+            f.writelines(lines)
