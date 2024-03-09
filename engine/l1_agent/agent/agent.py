@@ -16,7 +16,7 @@ class Agent(Handler):
         super().__init__()
         # context
         self.identity : Identity = identity
-        self.context: Context = Context()
+        self.memory: Context = Context()
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
@@ -27,6 +27,8 @@ class Agent(Handler):
     # Main routine
 
     def handle(self, task: Task) -> Response:
+        for entry in task.new_entries:
+            self.memory.add_entry(entry=entry)
         generation = self.get_next(options=Options.from_task(task=task))
         response = Response(text_stream=generation.get_text_stream())
         threading.Thread(target=self.process,args=(generation,)).start()
@@ -34,14 +36,14 @@ class Agent(Handler):
 
 
     def get_next(self, options: Options = Options()) -> Generation:
-        context = Context(docs=self.os.get_docs(), entries=self.get_basic_entries())
+        context = self.get_context()
         return self.model.get_generation(context=context, options=options)
 
 
     def process(self, generation : Generation, do_feedback : bool = True):
         generation.exhaust()
-        entry = Entry.as_agent(msg=generation.get_text())
-        self.context.add_entry(entry=entry)
+        response_entry = Entry.as_agent(msg=generation.get_text())
+        self.memory.add_entry(entry=response_entry)
         call_map = generation.get_call_map()
         if not call_map.is_empty():
             self.os.handle_calls(call_map=call_map)
@@ -52,7 +54,7 @@ class Agent(Handler):
     def send_feedback(self, generation : Generation):
         log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
         feedback_entry = Entry.as_system(msg=log_msg)
-        new_generation = self.model.get_text_generation(entries=self.get_basic_entries() + [feedback_entry])
+        new_generation = self.model.get_text_generation(entries=self.get_context().entries + [feedback_entry])
         for chunk in new_generation:
             text = chunk.get_text()
             generation.text_queue.put(text)
@@ -64,9 +66,12 @@ class Agent(Handler):
     def as_speaker(cls) -> Speaker:
         return Speaker(role=Role.AGENT, name=cls.__name__)
 
-    def get_basic_entries(self) -> list[Entry]:
-        basic_entries = [Entry(speaker=Speaker(role=Role.SYSTEM), msg=self.identity.get_str())]
-        basic_entries += self.context
+    def get_context(self) -> Context:
+        context = Context()
+        system_prompt = Entry.as_system(msg=self.identity.get_str())
+        context.add_entry(system_prompt)
 
-        return basic_entries
+        context += self.os.get_context()
+        context += self.memory
 
+        return context

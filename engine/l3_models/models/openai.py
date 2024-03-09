@@ -6,10 +6,8 @@ from openai import Stream
 from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
-from ..generation.llm import LLM, ModelType
-from ..generation.generation import Generation, Chunk, Context
-from .. import Options
-
+from engine.l3_models.generation import LLM, ModelType
+from engine.l3_models.generation import Generation, Chunk, Context, Options
 
 # ---------------------------------------------------------
 

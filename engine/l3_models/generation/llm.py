@@ -10,7 +10,7 @@ from abc import abstractmethod
 from enum import Enum
 from hollarek.logging import Loggable
 from .generation import Generation, Context
-from .. import ToolOptions, Options
+from .options import ToolOptions, Options
 
 
 # ---------------------------------------------------------

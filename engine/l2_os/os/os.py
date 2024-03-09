@@ -2,6 +2,7 @@ from __future__ import annotations
 from hollarek.logging import Loggable, LogLevel
 
 from engine.l4_tools import Tool, CallMap, ToolDoc
+from engine.l3_models import Context
 from engine.l2_os.application import Application, Workspace
 from .meta_tools import Close, Open
 
@@ -22,7 +23,7 @@ class OS(Loggable):
     # call updates
 
     def handle_calls(self, call_map : CallMap):
-        tools_map = self.get_tool_map()
+        tools_map = {tool.get_name() : tool for tool in self.get_tools()}
         for tool_call in list(call_map.values()):
             try:
                 tool = tools_map[tool_call.name]
@@ -33,15 +34,11 @@ class OS(Loggable):
     # ---------------------------------------------------
     # get
 
-    def get_tool_map(self) -> dict[str, Tool]:
-        return {tool.get_name() : tool for tool in self.get_tools()}
 
-    def get_docs(self) -> list[ToolDoc]:
-        docs = [tool.get_doc() for tool in self.meta_tools]
-        active_applications = [app for app in self.app_map.values() if app.is_open()]
-        for app in active_applications:
-            docs += app.get_docs()
-        return docs
+    def get_context(self) -> Context:
+        entries = [app.window.get_entry() for app in self.app_map.values() if app.is_open()]
+        docs = self._get_docs()
+        return Context(entries=entries, docs=docs)
 
 
     def get_tools(self) -> list[Tool]:
@@ -50,3 +47,13 @@ class OS(Loggable):
         for app in active_applications:
             tools += app.get_actions()
         return tools
+
+
+    def _get_docs(self) -> list[ToolDoc]:
+        docs = [tool.get_doc() for tool in self.meta_tools]
+        active_applications = [app for app in self.app_map.values() if app.is_open()]
+        for app in active_applications:
+            docs += app.get_docs()
+        return docs
+
+

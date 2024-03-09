@@ -24,9 +24,9 @@ class TestOpenClose(Unittest):
 
 
     def test_metatools_found(self):
-        tool_map = self.os_system.get_tool_map()
-        self.assertIn('Open', tool_map)
-        self.assertIn('Close', tool_map)
+        tool_names = [tool.get_name() for tool in self.os_system.get_tools()]
+        self.assertIn('Open', tool_names)
+        self.assertIn('Close', tool_names)
 
 
 
@@ -42,7 +42,7 @@ class TestTools(Unittest):
         self.open_tool.handle(tool_call=open_call)
 
     def test_docs(self):
-        docs = self.os_system.get_docs()
+        docs = self.os_system._get_docs()
         self.assertTrue(len(docs) == 4)
 
         tool_first_names = ['Open', 'Close', f'{TextEditor.insert.__name__}', f'{TextEditor.delete_lines.__name__}']
