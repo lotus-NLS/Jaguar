@@ -1,12 +1,13 @@
 import time
-
-from hollarek.devtools import Unittest
 from typing import Optional
 
+from hollarek.devtools import Unittest
 from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation, OpenAIModelType
 from engine.l4_tools import CallMap
-
 from tests.spoofs import SpoofEntries, SpoofToolDocs
+
+# ---------------------------------------------------------
+
 
 class LinePrinter:
     def __init__(self, logger : callable = print):

@@ -63,11 +63,3 @@ class TestToolCallOpenAI(OpenAITest):
 if __name__ == '__main__':
     TestContextOpenAI.execute_all()
     TestToolCallOpenAI.execute_all()
-    # function_tests = TestToolCallOpenAI()
-    # function_tests.execute_all()
-    # from PIL import Image
-    #
-    # spoofer = Spoofer()
-    # test_path = spoofer.lend_png()
-    # image = Image.open(test_path)
-    # image.show()

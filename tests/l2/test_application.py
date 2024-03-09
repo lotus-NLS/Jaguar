@@ -1,6 +1,6 @@
 from engine.l4_tools import ToolDoc, ToolCall
 from engine.l2_os import Application, Action
-from tests.l2.mock_app import MockTab
+from tests.spoofs import MockTab
 from hollarek.devtools import Unittest
 
 class TestApplicationOpenClose(Unittest):
@@ -10,7 +10,7 @@ class TestApplicationOpenClose(Unittest):
 
     def test_basic_properties(self):
         self.assertEqual(self.app.get_name(), 'Application')
-        self.assertIsInstance(self.app.get_desc(), str)
+        self.assertIsInstance(self.app.desc, str)
         self.assertFalse(self.app.is_open())
 
     def test_open_application(self):
@@ -37,13 +37,12 @@ class TestApplicationFunctions(Unittest):
         self.app = Application(index=0, workspace_type=MockTab, desc='Test application')
 
 
-    def test_tool_generation(self):
+    def test_action_generation(self):
         self.app.open(uri='some_path')
         self.assertIn('add', [action.get_name() for action in self.app.get_actions()])
         self.assertIn('reset', [action.get_name() for action in self.app.get_actions()])
 
-
-    def test_tool_docs(self):
+    def test_action_docs(self):
         actions = self.app.get_actions()
         for action in actions:
             self.assertIsInstance(action.get_doc(), ToolDoc)
@@ -52,6 +51,7 @@ class TestApplicationFunctions(Unittest):
         actions = self.app.get_actions()
         for action in actions:
             self.assertIsInstance(action, Action)
+
 
     def test_num_actions(self):
         self.app.open(uri='test_path')
