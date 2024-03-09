@@ -80,13 +80,13 @@ class TestApplicationFunctions(Unittest):
         tool_call = ToolCall(json_str=add_json_str)
 
         add.handle(tool_call=tool_call)
-        self.assertIn('New text', self.app.window.tab_map[0].text_content)
+        self.assertIn('New text', self.app.window.tab_map[0].get_text())
         self.log(f'Window context before reset: {self.app.window.get_entry()}')
 
         reset_json_str = '{"tab_index" : "0"}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.handle(tool_call)
-        self.assertEqual('', self.app.window.tab_map[0].text_content)
+        self.assertEqual('', self.app.window.tab_map[0].get_text())
         self.log(f'Window context after reset : {self.app.window.get_entry()}')
 
 

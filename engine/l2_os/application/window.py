@@ -13,7 +13,7 @@ class Tab:
         self.path : str = uri
 
     @abstractmethod
-    def get_text(self) -> Optional[str]:
+    def get_text(self) -> str:
         pass
 
     @abstractmethod

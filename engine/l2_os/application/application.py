@@ -63,9 +63,9 @@ class ActionFactory(Loggable):
     def get_actions(self) -> list[Action]:
         actions = []
         for method in self.methods:
-            name = method.__name__
-            excluded_method_names = [Tab.get_entry.__name__, Tab.open.__name__, Tab.__init__.__name__]
-            if name in excluded_method_names:
+            excluded_methods = [Tab.get_entry, Tab.__init__, Tab.get_text, Tab.get_text, Tab.get_image]
+            excluded_method_names = [mthd.__name__ for mthd in excluded_methods]
+            if method.__name__ in excluded_method_names:
                 continue
             actions.append(self.create_action(mthd=method))
         return actions
