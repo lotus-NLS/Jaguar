@@ -3,6 +3,8 @@ from engine.l2_os import Application, Action
 from tests.spoofs import MockTab
 from hollarek.devtools import Unittest
 
+# ---------------------------------------------------------
+
 class TestApplicationOpenClose(Unittest):
 
     def setUp(self):

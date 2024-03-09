@@ -1,7 +1,9 @@
 from engine.l4_tools import Tool, ToolArg
-from hollarek.devtools import SpoofFiles
+from hollarek.devtools import FileSpoofer
 from hollarek.fileIO import ImageIO
 from api import Entry
+
+# ---------------------------------------------------------
 
 class Greet(Tool):
     def __init__(self, call_timeout: float = 1):
@@ -35,7 +37,7 @@ class SpoofEntries:
             msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         self.repetition_request = Entry.as_user(msg='Can you please repeat what I said above in its entirety?')
 
-        fpath = SpoofFiles.lend_png().fpath  # Assuming SpoofFiles and ImageIO are defined elsewhere
+        fpath = FileSpoofer.lend_png().fpath  # Assuming SpoofFiles and ImageIO are defined elsewhere
         img_io = ImageIO(fpath=fpath)
         img_content = img_io.read()
         self.image_entry = Entry.as_user(msg='Can you describe what\'s in this image?', image=img_content)

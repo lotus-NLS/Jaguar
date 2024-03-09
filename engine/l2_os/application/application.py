@@ -17,8 +17,12 @@ class Application:
 
     def __post_init__(self):
         self.window : Window = Window(index=self.index, app_name=self.get_name())
-        self.actions : list[Action] = self.create_actions()
-        self.tool_dict : dict[str, Tool] = {tool.get_name() : tool for tool in self.actions}
+
+
+        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.tab_map)
+        self.actions : list[Action] = action_factory.get_actions()
+        self.tool_dict: dict[str, Tool] = {tool.get_name(): tool for tool in self.actions}
+
 
     def open(self, uri : Optional[str]):
         if self.max_tabs:
@@ -33,10 +37,6 @@ class Application:
 
     # ---------------------------------------------------
     #  actions
-
-    def create_actions(self) -> list[Action]:
-        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.tab_map)
-        return action_factory.get_actions()
 
     def get_actions(self, active_only : bool= False) -> list[Action]:
         return [action for action in self.actions if action.is_active or not active_only]

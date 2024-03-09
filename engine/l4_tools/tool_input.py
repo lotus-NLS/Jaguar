@@ -138,3 +138,4 @@ class CallMap(dict[int, ToolCall]):
 
     def is_empty(self) -> bool:
         return len(self) == 0
+
