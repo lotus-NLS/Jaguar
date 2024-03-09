@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Callable
 from engine.l4_tools import Tool, ToolArg
 
 from .action import Action
@@ -55,7 +55,7 @@ class ActionFactory(Loggable):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
         self.tab_map : dict[int, Tab] =  tab_map
-        self.methods : list[callable] = ModuleInspector.get_methods(cls=self.cls)
+        self.methods : list[Callable] = ModuleInspector.get_methods(cls=self.cls)
 
     # ---------------------------------------------------------
     # loop
@@ -64,7 +64,8 @@ class ActionFactory(Loggable):
         actions = []
         for method in self.methods:
             name = method.__name__
-            if name in [Tab.get_context.__name__, Tab.open.__name__]:
+            excluded_method_names = [Tab.get_context.__name__, Tab.open.__name__, Tab.__init__.__name__]
+            if name in excluded_method_names:
                 continue
             actions.append(self.create_action(mthd=method))
         return actions

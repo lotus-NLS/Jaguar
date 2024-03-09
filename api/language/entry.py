@@ -63,9 +63,11 @@ class Entry(Dillable):
     def get_name(self) -> str:
         return self.speaker.name
 
+    def print(self):
+        print(self)
+
     def __str__(self):
-        speaker_msg = f'{self.get_name()}({self.get_role()})'
-        speaker_msg = add_color(msg=speaker_msg,color=Color.CYAN)
+        speaker_msg = f'\n{self.get_name()}({self.get_role()})'
         as_str = speaker_msg + f':{self.get_msg()}'
         return as_str
 

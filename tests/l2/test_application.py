@@ -1,6 +1,6 @@
 from engine.l4_tools import ToolDoc
+from engine.l2_os import Application, Action
 from tests.l2.mock_app import MockTab
-from engine.l2_os import Application
 from hollarek.devtools import Unittest
 
 class TestApplicationOpenClose(Unittest):
@@ -51,13 +51,24 @@ class TestApplicationFunctions(Unittest):
 
     def test_window_context(self):
         self.app.open(path='tab1')
-        self.app.window.tab_map[0].add('Testing content')
+        mock_tab : MockTab = self.app.window.tab_map[0]
+        mock_tab.add('Testing content')
         context = self.app.window.get_context()
-        context.print()
         self.assertIn('tab1', context.msg)  # Check if tab name is included
         self.assertIn('Testing content', context.msg)  # Check if tab content is included
         self.log(f'Window context after open : {context}')
 
+    def test_action_type(self):
+        actions = self.app.get_actions()
+        for action in actions:
+            self.assertIsInstance(action, Action)
+
+    def test_num_actions(self):
+        self.app.open(path='test_path')
+        actions = self.app.get_actions()
+        actions_info = [action.get_name() for action in actions]
+        self.log(f'Actions are : {actions_info}')
+        self.assertEqual(2, len(actions))
 
 
     def test_tool_execution(self):
