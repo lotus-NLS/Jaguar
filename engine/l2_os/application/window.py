@@ -11,16 +11,22 @@ class Tab:
 
         self.name : str = uri_name if uri_name else 'unnamed tab'
         self.path : str = uri
-        self.text_content : str = ''
-        self.image_content : Optional[PILImage] = None
 
+    @abstractmethod
+    def get_text(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
+    def get_image3(self) -> Optional[PILImage]:
+        pass
 
     def get_entry(self, tab_index : int, app_name : str) -> Entry:
         kwargs = {}
-        if self.image_content:
-            kwargs['image'] = self.image_content
+        image = self.get_image()
+        if image:
+            kwargs['image'] = image
         msg = self.get_tab_header(msg=f' Tab {tab_index}: {self.name} ')
-        msg += self.text_content
+        msg += self.get_text()
         msg += self.get_tab_header()
 
         return Entry(speaker=Speaker.get_tool(name=app_name), msg=msg, **kwargs)
