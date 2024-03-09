@@ -74,18 +74,20 @@ class TestApplicationFunctions(Unittest):
     def test_tool_execution(self):
         self.app.open(path='test_path')
         add = self.app.tool_dict['add']
-        # reset = self.app.tool_dict['add']
+        reset = self.app.tool_dict['reset']
 
-        json_str = '{"msg": "New text", "tab_index" : "0"}'
-        tool_call = ToolCall(json_str=json_str)
+        add_json_str = '{"msg": "New text", "tab_index" : "0"}'
+        tool_call = ToolCall(json_str=add_json_str)
 
         add.handle(tool_call=tool_call)
         self.assertIn('New text', self.app.window.tab_map[0].text_content)
-        print(f'Window context before reset: {self.app.window.get_context()}')
-        #
-        # reset_action.do()
-        # self.assertEqual('', self.app.window.tab_map[0].text_content)
-        # print(f'Window context after reset : {self.app.window.get_context()}')
+        self.log(f'Window context before reset: {self.app.window.get_context()}')
+
+        reset_json_str = '{"tab_index" : "0"}'
+        tool_call = ToolCall(json_str=reset_json_str)
+        reset.handle(tool_call)
+        self.assertEqual('', self.app.window.tab_map[0].text_content)
+        self.log(f'Window context after reset : {self.app.window.get_context()}')
 
 
 if __name__ == '__main__':

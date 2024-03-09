@@ -86,7 +86,7 @@ class ActionFactory(Loggable):
 
             def do(self):
                 kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
-                print(f'kwargs are {kwargs}')
+                # print(f'kwargs are {kwargs}')
                 tab = self.get_tab()
                 mthd(tab,**kwargs)
 

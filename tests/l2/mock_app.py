@@ -1,5 +1,4 @@
-import unittest
-from engine.l2_os import Tab, Application
+from engine.l2_os import Tab
 
 class MockTab(Tab):
     def __init__(self, path: str):
