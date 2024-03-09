@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from api import Entry, Role, Speaker
-from engine.l5_singletons import ServerResponse, Entity, Task, TaskQueue
+from engine.l5_singletons import ServerResponse, Handler, Task, TaskQueue
 from engine.l4_tools import CallMap
 from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
 from engine.l3_models import OpenAIModel
@@ -11,7 +11,7 @@ from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
 
-class Agent(Entity):
+class Agent(Handler):
     def __init__(self, model : LLM = OpenAIModel(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context

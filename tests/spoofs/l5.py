@@ -3,7 +3,7 @@ import string
 import random
 
 from engine.l5_singletons.io.types import ServerResponse, TextStream, Task
-from engine.l5_singletons.io.engine_io import Entity
+from engine.l5_singletons.io.engine_io import Handler
 
 
 class MockTextStream(TextStream):
@@ -22,7 +22,7 @@ class MockTextStream(TextStream):
         raise StopIteration
 
 
-class MockEntity(Entity):
+class MockEntity(Handler):
     def handle(self, task: Task) -> ServerResponse:
         return ServerResponse(user_query=None, text_stream=MockTextStream())
 
