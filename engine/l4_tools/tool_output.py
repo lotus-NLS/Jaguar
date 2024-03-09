@@ -17,7 +17,7 @@ class Progress(Enum):
 class ExitStatus(Enum):
     SUCCESS = 'SUCCESS'
     FAILED = 'FAILED'
-    EXCPETION = 'EXCEPTION'
+    EXCEPTION = 'EXCEPTION'
 
 
 @dataclass
@@ -51,7 +51,7 @@ class ToolOutput(Loggable):
 
     def update(self, msg : str, progress_type : Progress):
         if progress_type == Progress.EXCEPTION:
-            self.exit_status = ExitStatus.EXCPETION
+            self.exit_status = ExitStatus.EXCEPTION
         if progress_type == Progress.FAILED:
             self.exit_status = ExitStatus.FAILED
         self.progress.append(ProgressMsg(progress_type=progress_type, msg=msg))

@@ -80,4 +80,4 @@ class Tool:
         pass
 
     def get_args(self) -> list[ToolArg]:
-        return [attr for attr in self.__class__.__dict__.values() if isinstance(attr, ToolArg)]
+        return [attr for attr in self.__dict__.values() if isinstance(attr, ToolArg)]

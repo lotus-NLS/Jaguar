@@ -15,9 +15,6 @@ from tests.l3.spoof import Greet, NotifyChef
 class TestContextOpenAI(OpenAITest):
     @classmethod
     def setUpClass(cls):
-        cls.introduction_request = Entry(Speaker.get_user(),msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
-        cls.repetition_request = Entry(Speaker.get_user(),msg='Can you please repeat what I said above in its entirety?')
-
         fpath = Spoofer.lend_png().fpath
         img_io = ImageIO(fpath=fpath)
         img_content = img_io.read()
