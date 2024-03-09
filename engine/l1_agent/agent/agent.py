@@ -6,7 +6,7 @@ from engine.l5_singletons import ServerResponse, Entity, Task, TaskQueue
 from engine.l4_tools import CallMap
 from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, HostWorkspace, TextWorkspace
+from engine.l2_os import OS, Host, TextEditor
 from engine.l1_agent.protocol import Identity, Core
 
 # ---------------------------------------------------------
@@ -20,7 +20,7 @@ class Agent(Entity):
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[HostWorkspace, TextWorkspace])
+        self.os : OS = OS(workspace_types=[Host, TextEditor])
         self.call_map : CallMap = CallMap()
         self.model: LLM = model
 

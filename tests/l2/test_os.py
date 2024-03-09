@@ -1,13 +1,13 @@
 import json
 from engine.l4_tools import Tool, ToolCall
-from engine.l2_os import OS, TextWorkspace
+from engine.l2_os import OS, TextEditor
 from hollarek.devtools import Unittest, FileSpoofer
 
-class TestMetaTools(Unittest):
+class TestOpenClose(Unittest):
     def setUp(self):
         self.test_txt = FileSpoofer.lend_txt()
 
-        self.os_system = OS(workspace_types=[TextWorkspace])
+        self.os_system = OS(workspace_types=[TextEditor])
         self.open_tool = self.os_system.open
         self.text_app = self.os_system.app_map[0]
         open_call_dict = { 'application_index' : 0, 'uri' : self.test_txt.fpath}
@@ -29,11 +29,12 @@ class TestMetaTools(Unittest):
         self.assertIn('Close', tool_map)
 
 
-class TestActions(Unittest):
+
+class TestTools(Unittest):
     def setUp(self):
         self.test_txt = FileSpoofer.lend_txt()
 
-        self.os_system = OS(workspace_types=[TextWorkspace])
+        self.os_system = OS(workspace_types=[TextEditor])
         self.open_tool = self.os_system.open
         self.text_app = self.os_system.app_map[0]
         open_call_dict = {'application_index': 0, 'uri': self.test_txt.fpath}
@@ -43,12 +44,16 @@ class TestActions(Unittest):
     def test_docs(self):
         docs = self.os_system.get_docs()
         self.assertTrue(len(docs) == 4)
-        tool_names = []
+
+        tool_first_names = ['Open', 'Close', f'{TextEditor.insert.__name__}', f'{TextEditor.delete_lines.__name__}']
+
+        found_full_names = []
         for doc in docs:
-            tool_name = doc.get_tool_name()
-            tool_names.append(tool_name)
-            self.assertTrue(tool_name in ['Open', 'Close',f'{TextWorkspace.insert.__name__}', f'{TextWorkspace.delete_lines.__name__}'])
-        self.log(tool_names)
+            full_name = doc.get_tool_name()
+            found_full_names.append(full_name)
+            name_found = any([name in full_name for name in tool_first_names])
+            self.assertTrue(name_found)
+        self.log(f'Full names : {found_full_names}')
 
 
     def test_tools(self):
@@ -58,4 +63,6 @@ class TestActions(Unittest):
             self.assertIsInstance(tool, Tool)
 
 if __name__ == '__main__':
-    TestMetaTools.execute_all()
+    TestOpenClose.execute_all()
+    TestTools.execute_all()
+

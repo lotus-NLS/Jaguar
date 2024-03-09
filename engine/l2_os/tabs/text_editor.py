@@ -7,7 +7,7 @@ from engine.l2_os.application import Workspace
 
 # ---------------------------------------------------------
 
-class TextWorkspace(Workspace):
+class TextEditor(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
         self.fpath : str = uri
