@@ -6,6 +6,8 @@ from typing import Optional
 from engine.l3_models import Options, OpenAIModel, GenerationContext, Generation, OpenAIModelType
 from engine.l4_tools import CallMap
 
+from tests.spoofs import SpoofEntries, SpoofToolDocs
+
 class LinePrinter:
     def __init__(self, logger : callable = print):
         self.line : str = ''
@@ -29,15 +31,16 @@ class LinePrinter:
 
 
 class OpenAITest(Unittest):
-    default_options = Options(max_tokens=10)
-    vision_options = Options()
+    text_options = Options(max_tokens=10)
+    default_options = Options()
     default_model = OpenAIModel()
     vision_model = OpenAIModel(OpenAIModelType.GPT_4V)
     lineprinter = LinePrinter()
 
     @classmethod
     def setUpClass(cls):
-        pass
+        cls.entry_spoofs = SpoofEntries()
+        cls.doc_spoof = SpoofToolDocs()
 
     def tearDown(self):
         self.lineprinter.reset()

@@ -1,10 +1,10 @@
-from hollarek.devtools import Spoofer, File
+from hollarek.devtools import SpoofFiles, File
 from engine.l2_os import TextWorkspace
 from hollarek.devtools import Unittest
 
 class TestTextTab(Unittest):
     def setUp(self):
-        self.test_text : File = Spoofer.lend_txt()
+        self.test_text : File = SpoofFiles.lend_txt()
 
     def test_content(self):
         tab = TextWorkspace(uri=self.test_text.fpath)

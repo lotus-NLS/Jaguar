@@ -39,6 +39,7 @@ class OpenAIChunk(Chunk):
         for openai_tool_call in tool_calls:
             index = openai_tool_call.index
             call = call_map.get(index, ToolCall())
+
             new_data = openai_tool_call.function
             new = ToolCall(name=new_data.name, json_str=new_data.arguments)
             call.add(partial_call=new)

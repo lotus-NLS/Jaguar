@@ -1,4 +1,6 @@
 from engine.l4_tools import Tool, ToolArg
+from hollarek.devtools import SpoofFiles
+from hollarek.fileIO import ImageIO
 from api import Entry
 
 class Greet(Tool):
@@ -27,7 +29,24 @@ class NotifyChef(Tool):
         return "This tool will notify the chec of the number of guests that we need to prepare food for"
 
 
-
 class SpoofEntries:
-    introduction_request = Entry.as_user(msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
-    repetition_request = Entry.as_user(msg='Can you please repeat what I said above in its entirety?')
+    def __init__(self):
+        self.introduction_request = Entry.as_user(
+            msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
+        self.repetition_request = Entry.as_user(msg='Can you please repeat what I said above in its entirety?')
+
+        fpath = SpoofFiles.lend_png().fpath  # Assuming SpoofFiles and ImageIO are defined elsewhere
+        img_io = ImageIO(fpath=fpath)
+        img_content = img_io.read()
+        self.image_entry = Entry.as_user(msg='Can you describe what\'s in this image?', image=img_content)
+
+        self.welcome_request = Entry.as_user(msg='## Automated message: Please greet our eight guests and welcome them to our home! You need only do this once, every guest will see it.')
+        self.chef_notification_request = Entry.as_user(msg='Also please notify the chef that we need food for eight people.')
+        self.write_text_entries_request = Entry.as_user(msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
+
+
+class SpoofToolDocs:
+    def __init__(self):
+        self.application_name = 'display'
+        self.greet_tool_docs = Greet().get_doc(app_name=self.application_name)
+        self.notify_chef_docs = NotifyChef().get_doc(app_name=self.application_name)

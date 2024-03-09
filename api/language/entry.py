@@ -89,19 +89,18 @@ class Entry(Dillable):
 
     # ----------------------------------------------------
     # convenience methdos
+    @classmethod
+    def as_user(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_user(name=name), msg=msg, image=image)
 
     @classmethod
-    def as_user(cls, msg : str, name : str = '') -> Entry:
-        return cls(speaker=Speaker.get_user(name=name), msg=msg)
+    def as_system(cls, msg: str, image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg, image=image)
 
     @classmethod
-    def as_system(cls, msg : str) -> Entry:
-        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg)
+    def as_agent(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_agent(name=name), msg=msg, image=image)
 
     @classmethod
-    def as_agent(cls, msg : str, name : str = '') -> Entry:
-        return cls(speaker=Speaker.get_agent(name=name), msg=msg)
-
-    @classmethod
-    def as_tool(cls, msg : str, name : str) -> Entry:
-        return cls(speaker=Speaker.get_tool(name=name), msg=msg)
+    def as_tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_tool(name=name), msg=msg, image=image)

@@ -100,11 +100,12 @@ class ToolDoc(dict[str, Any]):
         except:
             return False
 
-@dataclass
+
 class ToolCall:
-    name : str = ''
-    json_str : str = ''
-    index : int = 0
+    def __init__(self, name : str = '', json_str : str = '', index : int = 0):
+        self.name : str = name if name else ''
+        self.json_str : str = json_str if json_str else ''
+        self.index : int = index
 
     def add(self, partial_call : ToolCall):
         self.name += partial_call.name
