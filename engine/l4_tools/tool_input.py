@@ -10,17 +10,31 @@ from dataclasses import dataclass
 @dataclass
 class ToolArg:
     name : str
-    desc : str
-    is_optional: bool
+    desc: str = ''
     dtype : type =  str
+    is_optional: bool = False
     choices : Optional[list[str]] = None
     input : Optional[str] = None
 
     def __post_init__(self):
         self.choices = self.choices if not self.dtype == bool else ['0', '1']
-        if not self.dtype in get_supported_types():
+        self.to_json_type: dict[type, str] = {
+            int: "number",
+            float: "number",
+            str: "string",
+            bool: "boolean",
+            dict: "object"}
+
+        if not self.dtype in self.get_supported_types():
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {get_supported_types()}")
+                            f"Supported types are {self.get_supported_types()}")
+
+    def get_json_type(self,python_type: type) -> Optional[str]:
+        json_type = self.to_json_type.get(python_type)
+        return json_type
+
+    def get_supported_types(self) -> list[type]:
+        return list(self.to_json_type.keys())
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
@@ -29,7 +43,7 @@ class ToolArg:
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': get_json_type(python_type=str),
+            'type': self.get_json_type(python_type=str),
             'description': f'{self.desc}',
         }
 
@@ -86,18 +100,15 @@ class ToolDoc(dict[str, Any]):
         except:
             return False
 
-
+@dataclass
 class ToolCall:
-    def __init__(self, name : Optional[str] = None, json_str : Optional[str] = None, index : int  = 0):
-        self.name : str  = name if not name is None else ''
-        self.json_str : str = json_str if not json_str is None else ''
-        self.index: int = index
-
+    name : str = ''
+    json_str : str = ''
+    index : int = 0
 
     def add(self, partial_call : ToolCall):
         self.name += partial_call.name
         self.json_str += partial_call.json_str
-
 
     def get_args_dict(self):
         try:
@@ -123,22 +134,3 @@ class CallMap(dict[int, ToolCall]):
         for call in list(self.values()):
             print(f'tool name: {call.name}')
             debug(call.get_args_dict())
-
-
-
-def get_json_type(python_type : type) -> Optional[str]:
-    json_type = python_to_json_type.get(python_type)
-    return json_type
-
-def get_supported_types() -> list[type]:
-    return list(python_to_json_type.keys())
-
-python_to_json_type : dict[type, str] = {
-    int: "number",
-    float: "number",
-    str: "string",
-    bool: "boolean",
-    dict: "object"
-}
-
-

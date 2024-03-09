@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from hollarek.logging import get_logger
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
-from .call import ToolCall, ToolArg, ToolDoc
+from .tool_input import ToolCall, ToolArg, ToolDoc
 from typing import Optional
 # ---------------------------------------------------------
 
