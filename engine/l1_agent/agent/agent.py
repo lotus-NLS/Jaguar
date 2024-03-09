@@ -3,9 +3,10 @@ from __future__ import annotations
 import asyncio
 from api import Entry, Role, Speaker
 from engine.l5_singletons import ServerResponse, Entity, Task, TaskQueue
-from engine.l3_models.generation import LLM, GenerationContext, Options, Generation
-from engine.l3_models.models import OpenAIModel
-from engine.l2_os import OS
+from engine.l4_tools import CallMap
+from engine.l3_models import LLM, GenerationContext, Options, Generation, Chunk
+from engine.l3_models import OpenAIModel
+from engine.l2_os import OS, HostWorkspace, TextWorkspace
 from engine.l1_agent.protocol import Identity, Core
 
 # ---------------------------------------------------------
@@ -19,7 +20,8 @@ class Agent(Entity):
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS()
+        self.os : OS = OS(workspace_types=[HostWorkspace, TextWorkspace])
+        self.call_map : CallMap = CallMap()
         self.model: LLM = model
 
     # ---------------------------------------------------
@@ -39,9 +41,9 @@ class Agent(Entity):
 
     def process(self, generation : Generation, do_feedback : bool = True):
         for chunk in generation:
-            self.os.store_info(chunk=chunk)
-        if self.os.toolcall_made():
-            self.os.handle_calls()
+            self.store_info(chunk=chunk)
+        if not self.call_map.is_empty():
+            self.os.handle_calls(call_map=self.call_map)
             if do_feedback:
                 self.send_feedback(generation=generation)
         generation.stop()
@@ -49,7 +51,7 @@ class Agent(Entity):
 
     def send_feedback(self, generation : Generation):
         log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
-        feedback_entry = Entry(Speaker(role=Role.SYSTEM), msg=log_msg)
+        feedback_entry = Entry.as_system(msg=log_msg)
         new_generation = self.model.get_text_generation(entries=self.get_basic_entries() + [feedback_entry])
         for chunk in new_generation:
             text = chunk.get_text()
@@ -59,12 +61,14 @@ class Agent(Entity):
     # Actions and context
 
     @classmethod
-    def get_speaker(cls) -> Speaker:
+    def as_speaker(cls) -> Speaker:
         return Speaker(role=Role.AGENT, name=cls.__name__)
-
 
     def get_basic_entries(self) -> list[Entry]:
         basic_entries = [Entry(speaker=Speaker(role=Role.SYSTEM), msg=self.identity.get_str())]
         basic_entries += self.log
 
         return basic_entries
+
+    def store_info(self, chunk : Chunk):
+        self.call_map.add(chunk.get_call_map())

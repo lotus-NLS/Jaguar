@@ -114,17 +114,17 @@ class Entry(Dillable):
     # convenience methdos
 
     @classmethod
-    def get_user(cls, msg : str, name : str = '') -> Entry:
+    def as_user(cls, msg : str, name : str = '') -> Entry:
         return cls(speaker=Speaker.get_user(name=name), msg=msg)
 
     @classmethod
-    def get_system(cls, msg : str) -> Entry:
+    def as_system(cls, msg : str) -> Entry:
         return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg)
 
     @classmethod
-    def get_agent(cls, msg : str, name : str = '') -> Entry:
+    def as_agent(cls, msg : str, name : str = '') -> Entry:
         return cls(speaker=Speaker.get_agent(name=name), msg=msg)
 
     @classmethod
-    def tool(cls, msg : str, name : str) -> Entry:
+    def as_tool(cls, msg : str, name : str) -> Entry:
         return cls(speaker=Speaker.get_tool(name=name), msg=msg)

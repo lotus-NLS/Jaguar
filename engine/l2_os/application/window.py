@@ -67,7 +67,7 @@ class Window:
 
 
     def get_entry(self) -> Entry:
-        entry = Entry.tool(name=self.app_name, msg=f'\n{self.get_window_header()}')
+        entry = Entry.as_tool(name=self.app_name, msg=f'\n{self.get_window_header()}')
         for index, tab in self.tab_map.items():
             tab_entry = tab.get_entry(tab_index=index, app_name=self.app_name)
             entry.join(tab_entry)
