@@ -6,7 +6,7 @@ from hollarek.hardware import TextMouse, Keyboard, Display, Grid
 
 # ---------------------------------------------------
 
-class Host(Tab):
+class HostTab(Tab):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
         self.input_grid = Grid(20,20)

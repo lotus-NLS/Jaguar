@@ -134,3 +134,6 @@ class CallMap(dict[int, ToolCall]):
         for call in list(self.values()):
             print(f'tool name: {call.name}')
             debug(call.get_args_dict())
+
+    def is_empty(self) -> bool:
+        return len(self) == 0
