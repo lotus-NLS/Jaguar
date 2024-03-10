@@ -18,7 +18,6 @@ class Generation(Loggable):
         self.generator : Iterator = generator
         self.text_content : str = ''
         self.call_map = CallMap()
-        self.text_queue : Queue[str] = Queue()
         self.is_done : bool = False
 
     @abstractmethod
@@ -28,7 +27,6 @@ class Generation(Loggable):
     def exhaust(self):
         for _ in self:
             pass
-
 
     def __iter__(self) -> Iterator[Chunk]:
         return self
@@ -47,7 +45,6 @@ class Generation(Loggable):
         text = chunk.get_text()
         if not text is None:
             self.text_content += text
-            self.text_queue.put(text)
 
     def add_calls(self, chunk : Chunk):
         chunk_call_map = chunk.get_call_map()
@@ -56,7 +53,6 @@ class Generation(Loggable):
 
     def stop(self):
         self.is_done = True
-        self.text_queue.put(self.stop_token)
 
     # ---------------------------------------------------------
     # get
@@ -71,16 +67,6 @@ class Generation(Loggable):
             raise ValueError('Generation is not done yet')
         return self.text_content
 
-    def get_text_stream(self):
-        while True:
-            try:
-                retrieved_text = self.text_queue.get(timeout=10)
-            except:
-                self.log('No text retrieved', level=LogLevel.ERROR)
-                break
-            if retrieved_text == Generation.stop_token:
-                break
-            yield retrieved_text
 
 
 class Chunk:

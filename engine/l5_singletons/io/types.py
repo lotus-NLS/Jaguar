@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import Enum
+from hollarek.logging import Loggable, LogLevel
+import queue
 from collections.abc import Iterator
 from queue import Queue
 from typing import Optional
@@ -10,68 +9,100 @@ from typing import Optional
 from api import Entry
 # --------------------------------------------
 
-@dataclass
-class UserResponse:
-    msg : Optional[str] = None
-    decision : Optional[bool] = None
-
-    def __post_init__(self):
-        if self.msg is None and self.decision is None:
-            raise ValueError('At least one of msg or decision must be provided')
-
-
-@dataclass
-class UserQuery:
-    msg : str
-    query_type : QueryType
-
-    @abstractmethod
-    def get_query_display(self):
-        pass
-
-    def send_response(self, user_response : UserResponse):
-        pass
-
-    def get_response(self) -> UserResponse:
-        pass
-
-
-class QueryType(Enum):
-    STRING = "STRING"
-    BOOLEAN = "BOOLEAN"
-
-
-class TextStream(Iterator[str], ABC):
-    pass
+# @dataclass
+# class UserResponse:
+#     msg : Optional[str] = None
+#     decision : Optional[bool] = None
+#
+#     def __post_init__(self):
+#         if self.msg is None and self.decision is None:
+#             raise ValueError('At least one of msg or decision must be provided')
+#
+#
+# @dataclass
+# class UserQuery:
+#     msg : str
+#     query_type : QueryType
+#
+#     @abstractmethod
+#     def get_query_display(self):
+#         pass
+#
+#     def send_response(self, user_response : UserResponse):
+#         pass
+#
+#     def get_response(self) -> UserResponse:
+#         pass
+#
+#
+# class QueryType(Enum):
+#     STRING = "STRING"
 
 
-class FailedTextStream(TextStream):
-    def __init__(self, message: str = "Response failed"):
-        self.message = message
-        self.has_been_read = False
 
-    def __next__(self) -> str:
-        if self.has_been_read:
-            raise StopIteration
-        self.has_been_read = True
-        return self.message
+class TextPipeline(Queue):
+    def _init(self, maxsize):
+        super().__init__(maxsize)
 
-    def __iter__(self) -> Iterator[str]:
-        return self
+    def put(self, item : str, *args, **kwargs):
+        if not isinstance(item, str):
+            raise TypeError("Only strings are allowed in the TextQueue.")
+        super().put(item, *args, **kwargs)
+
+    def get(self, *args, **kwargs) -> str:
+        item = super().get(*args, **kwargs)
+        if not isinstance(item, str):
+            raise TypeError("Only strings should be in the TextQueue, found: {}".format(type(item)))
+        return item
+
+    def stop(self):
+        self.put(Response.stop_token)
 
 
-@dataclass
-class Response:
-    text_stream : Optional[TextStream]
-    user_query: Optional[UserQuery] = None
+# class FailedTextStream(TextStream):
+#     def __init__(self, message: str = "Response failed"):
+#         self.message = message
+#         self.has_been_read = False
+#
+#     def __next__(self) -> str:
+#         if self.has_been_read:
+#             raise StopIteration
+#         self.has_been_read = True
+#         return self.message
+#
+#     def __iter__(self) -> Iterator[str]:
+#         return self
 
-    def __post_init__(self):
-        if self.user_query is None and self.text_stream is None:
-            raise ValueError('At least one of user_query or text_stream must be provided')
+
+
+class Response(Loggable):
+    stop_token = '⊥'
+
+    def __init__(self, text_queue : Queue[str]):
+        super().__init__()
+        self.text_queue : TextPipeline = text_queue
+
+    def get_text_stream(self) -> Iterator[str]:
+        timeout = 10
+        while True:
+            try:
+                text = self.text_queue.get(timeout=timeout)
+            except queue.Empty:
+                self.log(f'Text queue timed out after {timeout}s', level=LogLevel.WARNING)
+                break
+            except Exception as e:
+                self.log(f'Error in getting text from queue: {e}', level=LogLevel.ERROR)
+                break
+            if text == self.stop_token:
+                break
+            if not text:
+                continue
+            yield text
+
 
     @classmethod
     def failed(cls):
-        return cls(text_stream=FailedTextStream(), user_query=None)
+        pass
 
 
 class TaskQueue(Queue):

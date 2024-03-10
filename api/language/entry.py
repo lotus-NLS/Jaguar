@@ -95,7 +95,8 @@ class Entry(Dillable):
         return data
 
     # ----------------------------------------------------
-    # convenience methdos
+    # convenience methods
+
     @classmethod
     def as_user(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
         return cls(speaker=Speaker.get_user(name=name), msg=msg, image=image)
