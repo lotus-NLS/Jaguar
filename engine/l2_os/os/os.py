@@ -23,6 +23,9 @@ class OS(Loggable):
     # call updates
 
     def handle_calls(self, call_map : CallMap):
+        if call_map.is_empty():
+            return
+
         tools_map = {tool.get_name() : tool for tool in self.get_tools()}
         for tool_call in list(call_map.values()):
             try:

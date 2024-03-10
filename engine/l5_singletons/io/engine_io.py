@@ -36,7 +36,7 @@ class EngineIO(Singleton):
         self.app : Flask = Flask(__name__)
 
     def handle(self, task : Task) -> Response:
-        return  self.entity.handle(task=task)
+        return self.entity.handle(task=task)
 
     def run(self, socket : Socket = Network().engine_socket):
         self.app.run(port=socket.port, host=socket.ip)

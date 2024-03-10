@@ -47,16 +47,14 @@ class Agent(Handler):
         return self.model.get_generation(context=context, options=options)
 
 
-    def process(self, generation : Generation, pipeline : TextPipeline, do_feedback : bool = True):
+    def process(self, generation : Generation, pipeline : TextPipeline, with_report : bool = True):
         for chunk in generation:
             pipeline.put(chunk.get_text())
         response_entry = Entry.as_agent(msg=generation.get_text())
         self.memory.add_entry(entry=response_entry)
-        call_map = generation.get_call_map()
-        if not call_map.is_empty():
-            self.os.handle_calls(call_map=call_map)
-            if do_feedback:
-                self.send_feedback(pipeline=pipeline)
+        self.os.handle_calls(call_map=generation.get_call_map())
+        if with_report:
+            self.send_feedback(pipeline=pipeline)
         pipeline.stop()
 
 

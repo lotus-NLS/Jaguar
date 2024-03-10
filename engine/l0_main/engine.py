@@ -30,7 +30,7 @@ class LotusEngine(Loggable):
             if user_input == 'exit':
                 break
             response = user.send(msg=user_input)
-            for text in response.primary_stream:
+            for text in response.get_text_stream():
                 print(text, end='')
 
 

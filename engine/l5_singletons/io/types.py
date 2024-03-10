@@ -41,18 +41,15 @@ from api import Entry
 
 
 class TextPipeline(Queue):
-    def _init(self, maxsize):
-        super().__init__(maxsize)
-
-    def put(self, item : str, *args, **kwargs):
-        if not isinstance(item, str):
-            raise TypeError("Only strings are allowed in the TextQueue.")
-        super().put(item, *args, **kwargs)
+    def put(self, msg : Optional[str], *args, **kwargs):
+        if msg is None:
+            return
+        if not isinstance(msg, str):
+            raise TypeError("Can only put strings inTextQueue.")
+        super().put(msg, *args, **kwargs)
 
     def get(self, *args, **kwargs) -> str:
         item = super().get(*args, **kwargs)
-        if not isinstance(item, str):
-            raise TypeError("Only strings should be in the TextQueue, found: {}".format(type(item)))
         return item
 
     def stop(self):
@@ -101,8 +98,11 @@ class Response(Loggable):
 
 
     @classmethod
-    def failed(cls):
-        pass
+    def failed(cls, msg : Optional[str] = None):
+        pipeline : TextPipeline = TextPipeline()
+        pipeline.put(msg)
+        pipeline.stop()
+        return cls(text_queue=pipeline)
 
 
 class TaskQueue(Queue):
