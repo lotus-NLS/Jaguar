@@ -42,7 +42,7 @@ class Application:
         return [action for action in self.actions if action.is_active or not active_only]
 
     def get_docs(self, active_only : bool = False) -> list[ToolDoc]:
-        return [action.get_doc(self.get_name()) for action in self.get_actions(active_only=active_only)]
+        return [action.get_doc() for action in self.get_actions(active_only=active_only)]
 
     def is_open(self) -> bool:
         return len(self.window.tab_map) != 0
@@ -80,7 +80,7 @@ class ActionFactory(Loggable):
 
             @classmethod
             def get_name(cls) -> str:
-                return f'{mthd.__name__}'
+                return f'{self.cls.__name__}_{mthd.__name__}'
 
             def do(self):
                 kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}

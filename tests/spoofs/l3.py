@@ -50,5 +50,5 @@ class SpoofEntries:
 class SpoofToolDocs:
     def __init__(self):
         self.application_name = 'display'
-        self.greet_tool_docs = Greet().get_doc(app_name=self.application_name)
-        self.notify_chef_docs = NotifyChef().get_doc(app_name=self.application_name)
+        self.greet_tool_docs = Greet().get_doc()
+        self.notify_chef_docs = NotifyChef().get_doc()
