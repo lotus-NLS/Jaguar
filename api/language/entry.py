@@ -7,7 +7,7 @@ from hollarek.templates import Dillable
 from hollarek.fileIO import ImageConverter, ImageFormat
 from dataclasses import dataclass
 from .flags import Flags
-from .speaker import Speaker
+from .speaker import Speaker, Role
 # ----------------------------------------------
 
 class APIType(Enum):
@@ -72,8 +72,9 @@ class Entry(Dillable):
     # get
 
     def get_openai_data(self) -> dict:
-        data = {'name': self.speaker.name if self.speaker.name else 'unnamed',
-                'role': self.speaker.role.value}
+        data = {'role': self.speaker.role.value}
+        if self.speaker.role == Role.TOOL:
+            data['name'] = self.speaker.name if self.speaker.name else 'unnamed'
 
         if not self.image:
             content = self.msg
