@@ -47,3 +47,7 @@ class Options:
 
     def get_call_allowed(self):
         return self.tool_options.call_allowed
+
+    @classmethod
+    def text_only(cls, max_tokens : Optional[int] = None, temp : float = 0.3):
+        return cls(tool_options=ToolOptions.no_call(), max_tokens=max_tokens, temp=temp)
