@@ -6,23 +6,24 @@ from engine.l5_singletons.io.types import Response, Pipe, Task
 from engine.l5_singletons.io.engine_io import Handler
 
 
-class MockTextStream(Pipe):
+class MockPipe(Pipe):
     def __init__(self, str_len: int = 10, msg_count: int = 5):
+        super().__init__()
         self.length = str_len
         self.count = msg_count
         self.current = 0
 
-    def __iter__(self) -> MockTextStream:
-        return self
-
-    def __next__(self) -> str:
+    def get(self) -> str:
         if self.current < self.count:
             self.current += 1
-            return ''.join(random.choices(string.ascii_lowercase, k=self.length))
-        raise StopIteration
+            msg = ''.join(random.choices(string.ascii_lowercase, k=self.length))
+            self.put(msg)
+        else:
+            self.stop()
+        return super().get()
 
 
 class MockEntity(Handler):
     def handle(self, task: Task) -> Response:
-        return Response(user_query=None, primary_stream=MockTextStream())
+        return Response(text_queue=MockPipe())
 

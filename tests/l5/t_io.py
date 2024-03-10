@@ -33,12 +33,9 @@ class TestEngineIO(Unittest):
         response = self.io.handle(task)
 
         self.assertIsInstance(response, Response)
-        self.assertIsInstance(response.primary_stream, Pipe)
+        self.assertIsInstance(response.text_queue, Pipe)
 
         print(f'Engine responded: With following text stream')
-        for text in response.primary_stream:
-            print(text)
-
 
 if __name__ == '__main__':
     TestEngineIO.execute_all()

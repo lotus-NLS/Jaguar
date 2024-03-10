@@ -5,7 +5,7 @@ import unittest
 
 class TestLotusSettings(Unittest):
     def setUp(self):
-        pass
+        self.tearDown()
 
     @classmethod
     def setUpClass(cls):
@@ -47,4 +47,4 @@ class TestLotusSettings(Unittest):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    TestLotusSettings.execute_all()

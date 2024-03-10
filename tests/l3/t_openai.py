@@ -22,8 +22,8 @@ class TestContextOpenAI(OpenAITest):
         threading.Thread(target=exhaust).start()
 
         def print_stream():
-            for text in generation.get_text_stream():
-                self.lineprinter.add(msg=text)
+            for chunk in generation:
+                self.lineprinter.add(msg=chunk.get_text())
 
         print_stream()
 

@@ -57,7 +57,7 @@ class TestToolOutput(ToolTest):
         output = self.invalid_tool.handle(self.valid_tool_call)
         report = output.get_report()
         error_msgs = output.get_error_msgs()
-        self.assertIn("InvalidTool", report)
+        self.assertIn(SpoofErrorRaiser.get_name(), report)
         self.assertIn("EXCEPTION", report)
         self.assertTrue(any(msg for msg in error_msgs))
 
