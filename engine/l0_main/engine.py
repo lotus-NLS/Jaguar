@@ -1,3 +1,5 @@
+import time
+
 from hollarek.logging import Loggable
 from engine.l5_singletons import Settings, EngineIO
 from .entities import ConsoleUser
@@ -31,7 +33,8 @@ class LotusEngine(Loggable):
                 break
             response = user.send(msg=user_input)
             for text in response.get_text_stream():
-                print(text, end='')
+                print(text, end='', flush=True)
+                time.sleep(0.1)
 
 
 
