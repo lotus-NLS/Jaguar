@@ -15,17 +15,9 @@ class TestContextOpenAI(OpenAITest):
         context = Context(entries=[self.entry_spoofs.introduction_request], docs=[])
         generation = self.default_model.get_generation(context, self.text_options)
 
-        def exhaust():
-            for chunk in generation:
-                _ = chunk.get_text()
+        for chunk in generation:
+            self.lineprinter.add(msg=chunk.get_text())
 
-        threading.Thread(target=exhaust).start()
-
-        def print_stream():
-            for chunk in generation:
-                self.lineprinter.add(msg=chunk.get_text())
-
-        print_stream()
 
     def test_image_context(self):
         context = Context(entries=[self.entry_spoofs.image_entry], docs=[])
