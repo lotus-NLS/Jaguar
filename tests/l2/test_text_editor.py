@@ -1,4 +1,5 @@
-from hollarek.devtools import FileSpoofer, File
+from hollarek.devtools import FileSpoofer
+from hollarek.file import File
 from engine.l2_os import TextEditor
 from hollarek.devtools import Unittest
 

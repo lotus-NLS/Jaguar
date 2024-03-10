@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
