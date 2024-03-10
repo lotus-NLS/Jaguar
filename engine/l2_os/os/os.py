@@ -6,6 +6,7 @@ from engine.l3_models import Context
 from engine.l2_os.application import Application, Workspace
 from .meta_tools import Close, Open
 
+
 # ---------------------------------------------------------
 
 class OS(Loggable):
@@ -32,8 +33,11 @@ class OS(Loggable):
             try:
                 tool = tools_map[tool_call.name]
                 outputs += [tool.handle(tool_call=tool_call)]
-            except:
+            except KeyError:
                 self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
+                outputs += [ToolOutput.not_found(name=tool_call.name)]
+            except Exception as e:
+                outputs += [ToolOutput.failed(name=tool_call.name, reason=e)]
         return outputs
 
     # ---------------------------------------------------

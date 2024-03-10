@@ -65,7 +65,18 @@ class ToolOutput(Loggable):
     def as_entry(self) -> Entry:
         return Entry.as_tool(msg=self.get_report(), name =self.tool_name)
 
+    @classmethod
+    def not_found(cls, name : str):
+        output = cls(tool_name='None')
+        output.update(msg=f'Tool{name} not found', progress_type=Progress.FAILED)
+        return output
 
+    @classmethod
+    def failed(cls, name : str, reason : Optional[BaseException] = None):
+        output = cls(tool_name=name)
+        conditional_reason = f': {reason}' if reason else ''
+        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=Progress.FAILED)
+        return output
 
 class ToolException(Exception):
     pass
