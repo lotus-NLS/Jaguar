@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from api import Entry
 
 import json, tiktoken
 from typing import Optional
@@ -9,7 +9,7 @@ from abc import abstractmethod
 from enum import Enum
 from hollarek.logging import Loggable
 from .generation import Generation, Context
-from .options import Options
+from .options import Options, ToolOptions
 
 
 # ---------------------------------------------------------
@@ -29,6 +29,10 @@ class LLM(Loggable):
     def get_generation(self, context : Context, options: Options) -> Generation:
         pass
 
+    def get_text_generation(self, entries: list[Entry]) -> Generation:
+        context = Context(entries=entries, docs=[])
+        options = Options(tool_options=ToolOptions.no_call())
+        return self.get_generation(context=context, options=options)
 
 
 class Tokenizer(Loggable):

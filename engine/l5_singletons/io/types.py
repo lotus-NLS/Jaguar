@@ -75,7 +75,7 @@ class Pipe(Queue):
 class Response(Loggable):
     stop_token = '⊥'
 
-    def __init__(self, text_queue : Queue[str]):
+    def __init__(self, text_queue : Pipe):
         super().__init__()
         self.text_queue : Pipe = text_queue
 

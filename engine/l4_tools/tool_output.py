@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from api import Entry
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional, Any
@@ -23,8 +24,10 @@ class ExitStatus(Enum):
 @dataclass
 class ProgressMsg:
     progress_type : Progress
-    msg : str
+    content : str
 
+    def __str__(self):
+        return f'[{self.progress_type.value}]: {self.content}'
 
 @dataclass
 class ToolOutput(Loggable):
@@ -46,7 +49,7 @@ class ToolOutput(Loggable):
 
 
     def get_error_msgs(self) -> list[str]:
-        return [progress.msg for progress in self.progress if progress.progress_type in [Progress.EXCEPTION, Progress.FAILED]]
+        return [progress.content for progress in self.progress if progress.progress_type in [Progress.EXCEPTION, Progress.FAILED]]
 
 
     def update(self, msg : str, progress_type : Progress):
@@ -54,8 +57,14 @@ class ToolOutput(Loggable):
             self.exit_status = ExitStatus.EXCEPTION
         if progress_type == Progress.FAILED:
             self.exit_status = ExitStatus.FAILED
-        self.progress.append(ProgressMsg(progress_type=progress_type, msg=msg))
-        self.log(f'[{progress_type.value}]: {msg}', level=LogLevel.INFO)
+        progress_msg = ProgressMsg(progress_type=progress_type, content=msg)
+        self.progress.append(progress_msg)
+        self.log(str(progress_msg), level=LogLevel.INFO)
+
+
+    def as_entry(self) -> Entry:
+        return Entry.as_tool(msg=self.get_report(), name =self.tool_name)
+
 
 
 class ToolException(Exception):

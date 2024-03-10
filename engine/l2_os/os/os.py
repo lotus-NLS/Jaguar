@@ -1,7 +1,7 @@
 from __future__ import annotations
 from hollarek.logging import Loggable, LogLevel
 
-from engine.l4_tools import Tool, CallMap, ToolDoc
+from engine.l4_tools import Tool, CallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context
 from engine.l2_os.application import Application, Workspace
 from .meta_tools import Close, Open
@@ -22,17 +22,19 @@ class OS(Loggable):
     # ---------------------------------------------------
     # call updates
 
-    def handle_calls(self, call_map : CallMap):
+    def handle_calls(self, call_map : CallMap) -> list[ToolOutput]:
         if call_map.is_empty():
-            return
+            return []
 
         tools_map = {tool.get_name() : tool for tool in self.get_tools()}
+        outputs = []
         for tool_call in list(call_map.values()):
             try:
                 tool = tools_map[tool_call.name]
-                tool.handle(tool_call=tool_call)
+                outputs += [tool.handle(tool_call=tool_call)]
             except:
                 self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
+        return outputs
 
     # ---------------------------------------------------
     # get
