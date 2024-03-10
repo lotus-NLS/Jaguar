@@ -18,7 +18,7 @@ class LotusEngine(Loggable):
         self.settings : Settings = Settings(local=use_local, validate=True)
         self.handler: Agent = Agent()
         self.io: IO = IO(handler=self.handler)
-        threading.Thread(target=self.stop_on_esc).start()
+        threading.Thread(target=self.stop_on_esc, daemon=True).start()
 
     def launch(self, on_console : bool):
         self.log(f'Lotus started')
@@ -39,7 +39,7 @@ class LotusEngine(Loggable):
             response = user.send(msg=user_input)
             for text in response.get_text_stream():
                 print(text, end='', flush=True)
-                time.sleep(0.1)
+                time.sleep(0.05)
 
 
     def stop_on_esc(self):
