@@ -17,16 +17,16 @@ class Handler(Loggable):
 
 class User:
     def __init__(self):
-        self.io : EngineIO = EngineIO()
+        self.io : IO = IO()
 
     @abstractmethod
     def send(self, msg : str, image : Optional[PILImage] = None) -> Response:
         pass
 
 
-class EngineIO(Singleton):
+class IO(Singleton):
     def __init__(self, handler : Optional[Handler] = None):
-        if EngineIO.get_is_initialized():
+        if IO.get_is_initialized():
             return
 
         super().__init__()

@@ -25,12 +25,10 @@ class Settings(Singleton):
             Settings.configs = AWSConfigs(secret_name='lotus_api_keys')
 
         if validate:
-            t1 = self.validate_openai_key
-            t2 = self.validate_search_engine
-
             successful_tests = []
             failed_tests = []
-            for test in [t1, t2]:
+            # for test in [self.validdate_openai, self.validate_search_engine]:
+            for test in [self.validate_openai]:
                 if not test():
                     failed_tests.append(test.__name__)
                 else:
@@ -66,7 +64,7 @@ class Settings(Singleton):
     # ----------------------------------------------
     # validation
 
-    def validate_openai_key(self) -> bool:
+    def validate_openai(self) -> bool:
         temp = openai.api_key
         is_successful = False
         err_details = ''

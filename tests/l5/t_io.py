@@ -4,7 +4,7 @@ from api import Entry, Speaker, Role
 from hollarek.devtools import Unittest
 from tests.spoofs import MockEntity
 
-from engine.l5_singletons.io.engine_io import EngineIO
+from engine.l5_singletons.io.engine_io import IO
 from engine.l5_singletons.io.types import Response, Pipe, Task
 # --------------------------------------------
 
@@ -17,9 +17,9 @@ class TestEngineIO(Unittest):
 
 
     def setUp(self):
-        EngineIO.reset_instance()
+        IO.reset_instance()
         self.entity = MockEntity()
-        self.io = EngineIO(handler=self.entity)
+        self.io = IO(handler=self.entity)
 
 
     def test_initialization(self):

@@ -36,7 +36,7 @@ class TestLotusSettings(Unittest):
 
     def is_valid(self, local : bool = True):
         settings = Settings(local=local)
-        x,y = settings.validate_openai_key(), settings.validate_search_engine()
+        x,y = settings.validate_openai(), settings.validate_search_engine()
         for val in [x,y]:
             self.assertTrue(val)
 
