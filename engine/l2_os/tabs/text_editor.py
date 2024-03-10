@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
@@ -12,6 +14,7 @@ class TextEditor(Workspace):
         super().__init__(uri=uri)
         self.fpath : str = uri
         self.content : Optional[str] =None
+
 
     def get_text(self) -> Optional[str]:
         with open(self.fpath, 'r') as f:
@@ -31,11 +34,14 @@ class TextEditor(Workspace):
         if line <= 0:
             raise ValueError("Line number must be a positive integer.")
 
-        with open(self.fpath, 'r') as f:
-            lines = f.readlines()
+        try:
+            with open(self.fpath, 'r') as f:
+                lines = f.readlines()
+        except:
+            lines = []
+
         index = line - 1
         lines.insert(index, content)
-
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
 
