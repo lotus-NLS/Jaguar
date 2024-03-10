@@ -40,3 +40,4 @@ class EngineIO(Singleton):
 
     def run(self, socket : Socket = Network().engine_socket):
         self.app.run(port=socket.port, host=socket.ip)
+

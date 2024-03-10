@@ -1,6 +1,10 @@
+import os
+import threading
 import time
 
+from pynput.keyboard import Key
 from hollarek.logging import Loggable
+from hollarek.hardware import KeyboardListener
 from engine.l5_singletons import Settings, EngineIO
 from .entities import ConsoleUser
 from engine.l1_agent import Agent
@@ -14,7 +18,7 @@ class LotusEngine(Loggable):
         self.settings : Settings = Settings(local=use_local, validate=True)
         self.handler: Agent = Agent()
         self.io: EngineIO = EngineIO(handler=self.handler)
-
+        threading.Thread(target=self.stop_on_esc).start()
 
     def launch(self, on_console : bool):
         self.log(f'Lotus started')
@@ -22,6 +26,7 @@ class LotusEngine(Loggable):
             self._launch_console()
         else:
             raise NotImplementedError('Webapp not yet implemented')
+
 
 
     @staticmethod
@@ -37,6 +42,13 @@ class LotusEngine(Loggable):
                 time.sleep(0.1)
 
 
+    def stop_on_esc(self):
+        KeyboardListener().wait_on_hold(key=Key.esc, duration=2)
+        self.log(f'Lotus stopped')
+        os._exit(0)
+
+
+        # listener.wait_on_hold(key=)
 
             # if flags.get(flag=Flag.PRINT_THREADS):
             #     CustomThread.print_active_customthreads()
