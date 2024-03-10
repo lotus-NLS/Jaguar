@@ -56,9 +56,10 @@ class Agent(Handler):
         call_map = generation.get_call_map()
         if not call_map.is_empty():
             outputs = self.os.handle_calls(call_map=call_map)
+            for out in outputs:
+                self.memory.add_entry(entry=out.as_entry())
             if with_report:
-                reports = [output.as_entry() for output in outputs]
-                entries = self.get_active_context().entries + [self.get_feedback_request()] + reports
+                entries = self.get_active_context().entries + [self.get_feedback_request()]
                 feedback = self.model.get_text_generation(entries=entries)
                 self.process(generation=feedback, pipe=pipe)
         pipe.stop()
