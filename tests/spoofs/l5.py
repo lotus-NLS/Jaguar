@@ -2,11 +2,11 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.types import Response, TextPipeline, Task
+from engine.l5_singletons.io.types import Response, Pipe, Task
 from engine.l5_singletons.io.engine_io import Handler
 
 
-class MockTextStream(TextPipeline):
+class MockTextStream(Pipe):
     def __init__(self, str_len: int = 10, msg_count: int = 5):
         self.length = str_len
         self.count = msg_count

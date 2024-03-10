@@ -40,7 +40,7 @@ from api import Entry
 
 
 
-class TextPipeline(Queue):
+class Pipe(Queue):
     def put(self, msg : Optional[str], *args, **kwargs):
         if msg is None:
             return
@@ -77,7 +77,7 @@ class Response(Loggable):
 
     def __init__(self, text_queue : Queue[str]):
         super().__init__()
-        self.text_queue : TextPipeline = text_queue
+        self.text_queue : Pipe = text_queue
 
     def get_text_stream(self) -> Iterator[str]:
         timeout = 10
@@ -99,7 +99,7 @@ class Response(Loggable):
 
     @classmethod
     def failed(cls, msg : Optional[str] = None):
-        pipeline : TextPipeline = TextPipeline()
+        pipeline : Pipe = Pipe()
         pipeline.put(msg)
         pipeline.stop()
         return cls(text_queue=pipeline)

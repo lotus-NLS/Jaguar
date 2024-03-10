@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import threading
 from hollarek.logging import LogLevel
-from api import Entry, Role, Speaker
-from engine.l5_singletons import Response, Handler, Task, TaskQueue, TextPipeline
+from api import Entry
+from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, TextEditor
@@ -31,11 +31,11 @@ class Agent(Handler):
             self.memory.add_entry(entry=entry)
         try:
             generation = self.get_next(options=Options.from_task(task=task))
-            pipeline = TextPipeline()
-            def process_generation():
-                self.process(generation=generation, pipeline=pipeline)
-            threading.Thread(target=process_generation).start()
-            response = Response(text_queue=pipeline)
+            pipe = Pipe()
+            def do():
+                self.process(generation=generation, pipe=pipe)
+            threading.Thread(target=do).start()
+            response = Response(text_queue=pipe)
         except Exception as e:
             self.log(f'Error in getting generation: {e}', level=LogLevel.ERROR)
             response = Response.failed()
@@ -47,39 +47,38 @@ class Agent(Handler):
         return self.model.get_generation(context=context, options=options)
 
 
-    def process(self, generation : Generation, pipeline : TextPipeline, with_report : bool = True):
+    def process(self, generation : Generation, pipe : Pipe, with_report : bool = True):
         for chunk in generation:
-            pipeline.put(chunk.get_text())
+            pipe.put(chunk.get_text())
         response_entry = Entry.as_agent(msg=generation.get_text())
         self.memory.add_entry(entry=response_entry)
-        self.os.handle_calls(call_map=generation.get_call_map())
-        if with_report:
-            self.send_feedback(pipeline=pipeline)
-        pipeline.stop()
 
+        call_map = generation.get_call_map()
+        if not call_map.is_empty():
+            self.os.handle_calls(call_map=call_map)
+            if with_report:
+                entries = self.get_active_context().entries + [self.get_feedback_request()]
+                self.process(generation=self.model.get_text_generation(entries), pipe=pipe)
+        pipe.stop()
 
-    def send_feedback(self, pipeline : TextPipeline):
-        log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
-        feedback_entry = Entry.as_system(msg=log_msg)
-        new_generation = self.model.get_text_generation(entries=self.get_active_context().entries + [feedback_entry])
-        for chunk in new_generation:
-            text = chunk.get_text()
-            pipeline.put(text)
-
-    # ---------------------------------------------------
-    # Actions and context
 
     @classmethod
-    def as_speaker(cls) -> Speaker:
-        return Speaker(role=Role.AGENT, name=cls.__name__)
+    def get_feedback_request(cls) -> Entry:
+        log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
+        return Entry.as_system(msg=log_msg)
 
+
+    # ---------------------------------------------------
+    # context
 
     def get_active_context(self) -> Context:
         context = Context()
-        system_prompt = Entry.as_system(msg=self.identity.get_str())
-        context.add_entry(system_prompt)
-
+        context.add_entry(self.get_system_prompt())
         context += self.os.get_context()
         context += self.memory
 
         return context
+
+
+    def get_system_prompt(self) -> Entry:
+        return Entry.as_system(msg=self.identity.get_str())
