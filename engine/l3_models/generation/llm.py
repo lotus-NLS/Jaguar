@@ -16,6 +16,7 @@ from dataclasses import dataclass
 class ModelInfo:
     name : str
     supports_vision : bool
+    supports_tools : bool = True
 
 
 class LLM(Loggable):
@@ -29,6 +30,9 @@ class LLM(Loggable):
 
     def supports_vision(self) -> bool:
         return self.model_type.supports_vision
+
+    def supports_tool_calls(self) -> bool:
+        return self.model_type.supports_tools
 
     @abstractmethod
     def get_generation(self, context : Context, options: Options) -> Generation:

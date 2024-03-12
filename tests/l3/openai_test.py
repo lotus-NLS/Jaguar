@@ -2,7 +2,7 @@ import time
 from typing import Optional
 
 from hollarek.devtools import Unittest
-from engine.l3_models import Options, OpenAIModel, Context, Generation, OpenAIModelType
+from engine.l3_models import Options, OpenAIModel, Context, Generation
 from engine.l4_tools import CallMap
 from tests.spoofs import SpoofEntries, SpoofToolDocs
 

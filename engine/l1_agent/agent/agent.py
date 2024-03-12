@@ -5,14 +5,14 @@ from hollarek.logging import LogLevel
 from api import Entry
 from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
-from engine.l3_models import OpenAIModel, OpenAIModelType
+from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, TextEditor, Host
 from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
 
 class Agent(Handler):
-    def __init__(self, model : LLM = OpenAIModel(), identity : Identity = Identity.GOTO()):
+    def __init__(self, model : LLM = OpenAIModel.get_gpt4V(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context
         self.identity : Identity = identity

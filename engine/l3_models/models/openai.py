@@ -77,7 +77,7 @@ class OpenAIModel(LLM):
         }
 
         tool_options = options.tool_options
-        if tool_options.call_allowed and context.docs:
+        if tool_options.call_allowed and context.docs and self.supports_tool_calls():
             args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
 
@@ -98,7 +98,7 @@ class OpenAIModel(LLM):
 
     @classmethod
     def get_gpt4V(cls):
-        return cls(model_info=ModelInfo(name='gpt-4-vision-preview', supports_vision=True))
+        return cls(model_info=ModelInfo(name='gpt-4-vision-preview', supports_vision=True, supports_tools=False))
 
     @classmethod
     def get_gpt35(cls):
