@@ -1,5 +1,4 @@
 from engine.l3_models.generation import Context
-import threading
 
 from tests.l3.openai_test import OpenAITest
 

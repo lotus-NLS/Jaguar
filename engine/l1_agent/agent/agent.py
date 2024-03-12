@@ -6,7 +6,7 @@ from api import Entry
 from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, TextEditor
+from engine.l2_os import OS, TextEditor, Host
 from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
@@ -20,7 +20,7 @@ class Agent(Handler):
         self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[TextEditor])
+        self.os : OS = OS(workspace_types=[TextEditor, Host])
         self.model: LLM = model
 
     # ---------------------------------------------------

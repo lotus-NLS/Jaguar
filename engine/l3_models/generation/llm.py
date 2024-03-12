@@ -5,25 +5,30 @@ import json, tiktoken
 from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
-
-from enum import Enum
 from hollarek.logging import Loggable
 from .generation import Generation, Context
 from .options import Options, ToolOptions
-
+from dataclasses import dataclass
 
 # ---------------------------------------------------------
 
-class ModelType(Enum):
-    pass
+@dataclass
+class ModelType:
+    name : str
+    supports_vision : bool
 
 
 class LLM(Loggable):
     def __init__(self, model_type: ModelType):
         super().__init__()
-        self.model_type : str = model_type.value
-        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.model_type))
+        self.model_type : ModelType = model_type
+        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.get_model_name()))
 
+    def get_model_name(self) -> str:
+        return self.model_type.name
+
+    def supports_vision(self) -> bool:
+        return self.model_type.supports_vision
 
     @abstractmethod
     def get_generation(self, context : Context, options: Options) -> Generation:

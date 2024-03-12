@@ -25,6 +25,7 @@ class ToolArg:
             bool: "boolean",
             dict: "object"}
 
+
         if not self.dtype in self.get_supported_types():
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
                             f"Supported types are {self.get_supported_types()}")

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import openai
 from typing import Optional
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
@@ -56,15 +57,25 @@ class OpenAIGeneration(Generation):
 
 
 class OpenAIModelType(ModelType):
-    GPT_4 = 'gpt-4-0125-preview'
-    GPT_4_TURBO = 'gpt-4-turbo-preview'
-    GPT_4V = 'gpt-4-vision-preview'
-    GPT_35 = 'gpt-3.5-turbo-0125'
+    @classmethod
+    def get_gpt4(cls) -> OpenAIModelType:
+        return cls(name='gpt-4', supports_vision=False)
 
+    @classmethod
+    def get_gpt4_turbo(cls) -> OpenAIModelType:
+        return cls(name='gpt-4-turbo-preview', supports_vision=False)
+
+    @classmethod
+    def get_gpt4V(cls) -> OpenAIModelType:
+        return cls(name='gpt-4-vision-preview', supports_vision=True)
+
+    @classmethod
+    def get_gpt35(cls) -> OpenAIModelType:
+        return cls(name='gpt-3.5-turbo', supports_vision=False)
 
 
 class OpenAIModel(LLM):
-    def __init__(self, model_type : ModelType = OpenAIModelType.GPT_4_TURBO):
+    def __init__(self, model_type : ModelType = OpenAIModelType.get_gpt4_turbo()):
         super().__init__(model_type=model_type)
 
 
@@ -83,7 +94,7 @@ class OpenAIModel(LLM):
     def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self.model_type,
-            'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
+            'messages': [entry.as_dict(api_type=APIType.OPENAI, with_vision=self.supports_vision()) for entry in context.entries],
             'temperature': options.temp,
             'stream' : True
         }

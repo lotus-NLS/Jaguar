@@ -41,9 +41,9 @@ class Entry(Dillable):
     # ----------------------------------------------------
     # get
 
-    def as_dict(self, api_type : APIType) -> dict:
+    def as_dict(self, api_type : APIType, with_vision : bool = True) -> dict:
         if api_type == APIType.OPENAI:
-            return self.get_openai_data()
+            return self.get_openai_data(with_vision=with_vision)
         else:
             raise ValueError(f'API type {api_type} not supported')
 
@@ -71,12 +71,12 @@ class Entry(Dillable):
     # ----------------------------------------------------
     # get
 
-    def get_openai_data(self) -> dict:
+    def get_openai_data(self, with_vision : bool) -> dict:
         data = {'role': self.speaker.role.value}
         if self.speaker.role == Role.TOOL:
             data['name'] = self.speaker.name if self.speaker.name else 'unnamed'
 
-        if not self.image:
+        if not self.image or not with_vision:
             content = self.msg
         else:
             jpg_img = ImageConverter.convert(self.image, target_format=ImageFormat.JPEG)

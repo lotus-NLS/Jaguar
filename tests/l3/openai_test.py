@@ -35,7 +35,7 @@ class OpenAITest(Unittest):
     text_options = Options(max_tokens=10)
     default_options = Options()
     default_model = OpenAIModel()
-    vision_model = OpenAIModel(OpenAIModelType.GPT_4V)
+    vision_model = OpenAIModel(OpenAIModelType.get_gpt4V())
     lineprinter = LinePrinter()
 
     @classmethod
