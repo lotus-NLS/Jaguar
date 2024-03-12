@@ -7,7 +7,7 @@ from openai import Stream
 from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
 from engine.l5_singletons import Settings
-from engine.l3_models.generation import LLM, ModelType
+from engine.l3_models.generation import LLM, ModelInfo
 from engine.l3_models.generation import Generation, Chunk, Context, Options
 
 # ---------------------------------------------------------
@@ -55,30 +55,7 @@ class OpenAIGeneration(Generation):
         return OpenAIChunk(data=chunk_data)
 
 
-
-class OpenAIModelType(ModelType):
-    @classmethod
-    def get_gpt4(cls) -> OpenAIModelType:
-        return cls(name='gpt-4', supports_vision=False)
-
-    @classmethod
-    def get_gpt4_turbo(cls) -> OpenAIModelType:
-        return cls(name='gpt-4-turbo-preview', supports_vision=False)
-
-    @classmethod
-    def get_gpt4V(cls) -> OpenAIModelType:
-        return cls(name='gpt-4-vision-preview', supports_vision=True)
-
-    @classmethod
-    def get_gpt35(cls) -> OpenAIModelType:
-        return cls(name='gpt-3.5-turbo', supports_vision=False)
-
-
 class OpenAIModel(LLM):
-    def __init__(self, model_type : ModelType = OpenAIModelType.get_gpt4_turbo()):
-        super().__init__(model_type=model_type)
-
-
     def get_generation(self, context : Context, options: Options) -> OpenAIGeneration:
         for entry in context.entries:
             if not isinstance(entry, Entry):
@@ -93,7 +70,7 @@ class OpenAIModel(LLM):
 
     def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
-            'model': self.model_type,
+            'model': self.get_model_name(),
             'messages': [entry.as_dict(api_type=APIType.OPENAI, with_vision=self.supports_vision()) for entry in context.entries],
             'temperature': options.temp,
             'stream' : True
@@ -110,4 +87,20 @@ class OpenAIModel(LLM):
         openai.api_key = Settings().get_openai_apikey()
         openai_generator = openai.chat.completions.create(**args_dict)
         return openai_generator
+
+    @classmethod
+    def get_gpt4(cls):
+        return cls(model_info=ModelInfo(name='gpt-4', supports_vision=False))
+
+    @classmethod
+    def get_gpt4_turbo(cls):
+        return cls(model_info=ModelInfo(name='gpt-4-turbo-preview', supports_vision=False))
+
+    @classmethod
+    def get_gpt4V(cls):
+        return cls(model_info=ModelInfo(name='gpt-4-vision-preview', supports_vision=True))
+
+    @classmethod
+    def get_gpt35(cls):
+        return cls(model_info=ModelInfo(name='gpt-3.5-turbo', supports_vision=False))
 

@@ -13,15 +13,15 @@ from dataclasses import dataclass
 # ---------------------------------------------------------
 
 @dataclass
-class ModelType:
+class ModelInfo:
     name : str
     supports_vision : bool
 
 
 class LLM(Loggable):
-    def __init__(self, model_type: ModelType):
+    def __init__(self, model_info: ModelInfo):
         super().__init__()
-        self.model_type : ModelType = model_type
+        self.model_type : ModelInfo = model_info
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.get_model_name()))
 
     def get_model_name(self) -> str:

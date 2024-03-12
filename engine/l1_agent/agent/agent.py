@@ -5,7 +5,7 @@ from hollarek.logging import LogLevel
 from api import Entry
 from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
-from engine.l3_models import OpenAIModel
+from engine.l3_models import OpenAIModel, OpenAIModelType
 from engine.l2_os import OS, TextEditor, Host
 from engine.l1_agent.protocol import Identity
 
