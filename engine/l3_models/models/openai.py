@@ -51,13 +51,9 @@ class OpenAIChunk(Chunk):
         return call_map
 
 
-class OpenAIGeneration(Generation):
-    def _get_next_chunk(self, chunk_data : ChatCompletionChunk) -> OpenAIChunk:
-        return OpenAIChunk(data=chunk_data)
-
 
 class OpenAIModel(LLM):
-    def get_generation(self, context : Context, options: Options) -> OpenAIGeneration:
+    def get_generation(self, context : Context, options: Options) -> Generation:
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
@@ -66,7 +62,7 @@ class OpenAIModel(LLM):
         openai_response = self.get_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
 
-        return OpenAIGeneration(generator=openai_response)
+        return Generation(generator=openai_response)
 
 
     def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
