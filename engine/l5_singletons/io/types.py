@@ -91,6 +91,7 @@ class Response(Loggable):
                 self.log(f'Error in getting text from queue: {e}', level=LogLevel.ERROR)
                 break
             if text == self.stop_token:
+                self.log(f'\nReceived stop token from text queue', level=LogLevel.DEBUG)
                 break
             if not text:
                 continue

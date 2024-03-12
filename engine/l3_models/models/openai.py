@@ -1,5 +1,6 @@
 from __future__ import annotations
 import openai
+from func_timeout import func_timeout
 from typing import Optional
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 from openai import Stream
@@ -85,8 +86,10 @@ class OpenAIModel(LLM):
             args_dict['max_tokens'] = options.max_tokens
 
         openai.api_key = Settings().get_openai_apikey()
-        openai_generator = openai.chat.completions.create(**args_dict)
-        return openai_generator
+        def send_request():
+            return openai.chat.completions.create(**args_dict)
+        openai_stream = func_timeout(func=send_request,timeout=10)
+        return openai_stream
 
     @classmethod
     def get_gpt4(cls):
