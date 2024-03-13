@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 from hollarek.logging import LogLevel
+from func_timeout import FunctionTimedOut
 from api import Entry
 from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
@@ -36,7 +37,10 @@ class Agent(Handler):
                 self.process(generation=generation, pipe=pipe)
             threading.Thread(target=do).start()
             response = Response(text_queue=pipe)
-        except Exception as e:
+        except FunctionTimedOut as e:
+            self.log(f'Attempt to retrieve generation timed out: {e}', level=LogLevel.WARNING)
+            response = Response.failed()
+        except BaseException as e:
             self.log(f'Error in getting generation: {e}', level=LogLevel.ERROR)
             response = Response.failed()
         return response

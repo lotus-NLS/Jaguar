@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import time
+
 import openai
 from func_timeout import func_timeout
 from typing import Optional
