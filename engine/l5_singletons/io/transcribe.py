@@ -101,6 +101,34 @@ class Transcriber:
     def get_available_mics(cls) -> list[str]:
         return sr.Microphone.list_microphone_names()
 
+    # dynamic length recording draft
+    # import sounddevice as sd
+    # import numpy as np
+    #
+    # def callback(indata, frames, time, status):
+    #     # This function is called for each audio block
+    #     global recording_buffer
+    #     recording_buffer.append(indata.copy())
+    #
+    # def stop_condition_met(audio_data):
+    #     # Implement your stopping condition here
+    #     # For example, check for a duration of silence or a specific signal
+    #     return False
+    #
+    # fs = 16000  # Sample rate
+    # recording_buffer = []  # Initialize an empty list to store audio blocks
+    #
+    # # Start recording
+    # with sd.InputStream(callback=callback, samplerate=fs, channels=1):
+    #     print("Recording...")
+    #     while True:
+    #         if stop_condition_met(recording_buffer):
+    #             break
+    #     print("Stopping...")
+    #
+    # # Process the recorded audio
+    # recorded_audio = np.concatenate(recording_buffer, axis=0)    sd.wait()  # Wait until playback is finished
+
 
 
 
@@ -131,4 +159,4 @@ if __name__ == "__main__":
 
     print("Playing back...")
     sd.play(myrecording, fs)
-    sd.wait()  # Wait until playback is finished
+
