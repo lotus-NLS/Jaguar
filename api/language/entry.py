@@ -79,6 +79,7 @@ class Entry(Dillable):
         if not self.image or not with_vision:
             content = self.msg
         else:
+            self.image.show()
             jpg_img = ImageConverter.convert(self.image, target_format=ImageFormat.JPEG)
             base64_image = ImageConverter.as_base64_str(jpg_img)
             text = {

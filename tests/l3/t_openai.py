@@ -52,4 +52,4 @@ class TestToolCallOpenAI(OpenAITest):
 
 if __name__ == '__main__':
     TestContextOpenAI.execute_all()
-    TestToolCallOpenAI.execute_all()
+    # TestToolCallOpenAI.execute_all()

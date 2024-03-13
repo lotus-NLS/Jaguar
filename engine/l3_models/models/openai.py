@@ -62,7 +62,7 @@ class OpenAIModel(LLM):
         openai_response = self.get_response(context=context, options=options)
         self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
 
-        return Generation(generator=openai_response)
+        return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
 
     def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, Iterator
 from dataclasses import dataclass, field
 from abc import abstractmethod
-from api import Entry
+from api import Entry, APIType
 from hollarek.logging import Loggable, LogSettings
 from engine.l4_tools import CallMap
 
@@ -12,16 +12,16 @@ from engine.l4_tools import CallMap
 class Generation(Loggable):
     stop_token = '⊥'
 
-    def __init__(self, generator : Iterator):
-        super().__init__(settings=LogSettings(call_location=True))
+    def __init__(self, generator : Iterator, chunk_type : type[Chunk]):
+        super().__init__(settings=LogSettings(include_call_location=True))
         self.generator : Iterator = generator
+        self.chunk_type : type[Chunk] = chunk_type
         self.text_content : str = ''
         self.call_map = CallMap()
         self.is_done : bool = False
 
-    @abstractmethod
     def _get_next_chunk(self, chunk_data : object):
-        pass
+        return self.chunk_type(data=chunk_data)
 
     def exhaust(self):
         for _ in self:
