@@ -56,22 +56,6 @@ class Pipe(Queue):
         self.put(Response.stop_token)
 
 
-# class FailedTextStream(TextStream):
-#     def __init__(self, message: str = "Response failed"):
-#         self.message = message
-#         self.has_been_read = False
-#
-#     def __next__(self) -> str:
-#         if self.has_been_read:
-#             raise StopIteration
-#         self.has_been_read = True
-#         return self.message
-#
-#     def __iter__(self) -> Iterator[str]:
-#         return self
-
-
-
 class Response(Loggable):
     stop_token = '⊥'
 
