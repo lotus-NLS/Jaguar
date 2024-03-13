@@ -1,14 +1,14 @@
 import time
-import numpy as np
 import speech_recognition as sr
 from speech_recognition import Recognizer
 import whisper
 import torch
+import numpy as np
 
 from sys import platform
 from whisper import Whisper
 from io import BytesIO
-from engine.l5_singletons import Pipe
+from .types import Pipe
 
 
 class ModelDownloader:
@@ -57,28 +57,27 @@ class Transcriber:
             self.recorder.adjust_for_ambient_noise(self.source)
         self.stop_handle = self.recorder.listen_in_background(source=self.source, callback=self._process_speech)
 
-    def _process_speech(self, _, audio: sr.AudioData) -> None:
-        print(f'Heard something')
-        self.audio_buffer = BytesIO()
-        self.audio_buffer.write(audio.get_raw_data())
-        self._transcribe_audio()
+    # def _process_speech(self) -> None:
+    #     print(f'Heard something')
+    #     # self.audio_buffer = BytesIO()
+    #     # self.audio_buffer.write(audio.get_raw_data())
+    #     text = self.get_text(audio=)
+    #     self.text_buffer += text
+    #     for pipe in self.pipes:
+    #         pipe.put(msg=text)
+
 
     def stop(self):
         print(f'Stopped listening')
         self.stop_handle(wait_for_stop = False)
 
-    def _transcribe_audio(self):
-        audio_data = self.audio_buffer.getvalue()
+    def get_text(self, audio_data : bytes):
         audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
         result = self.model.transcribe(audio_np, fp16=torch.cuda.is_available())
         text = result['text'].strip()
 
-        self.text_buffer += text
-        for pipe in self.pipes:
-            pipe.put(msg=text)
+        return text
 
-        if text:
-            print(text)
 
     # --------------------------------------------
 
