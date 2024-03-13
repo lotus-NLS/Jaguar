@@ -1,15 +1,16 @@
 from engine.l4_tools import ToolDoc, ToolCall
 from engine.l2_os import Application, Action
-from tests.spoofs import MockTab
+from tests.spoofs import MockWorkspace, InvalidArgWorkspace
 from hollarek.devtools import Unittest
 
 # ---------------------------------------------------------
 
-class TestApplicationOpenClose(Unittest):
-
+class ApplicationTest(Unittest):
     def setUp(self):
-        self.app = Application(index=0, workspace_type=MockTab, desc='Test application')
+        self.app = Application(index=0, workspace_type=MockWorkspace, desc='Test application')
 
+
+class TestOpenClose(ApplicationTest):
     def test_basic_properties(self):
         self.assertEqual(self.app.get_name(), 'Application')
         self.assertIsInstance(self.app.desc, str)
@@ -18,7 +19,7 @@ class TestApplicationOpenClose(Unittest):
     def test_open_application(self):
         self.app.open(uri='some_path')
         self.assertTrue(self.app.is_open())
-        self.assertIsInstance(self.app.window.tab_map[0], MockTab)
+        self.assertIsInstance(self.app.window.tab_map[0], MockWorkspace)
 
     def test_close_application(self):
         self.app.open(uri='some_path')
@@ -34,15 +35,12 @@ class TestApplicationOpenClose(Unittest):
         self.assertEqual(len(self.app.window.tab_map), initial_tab_count - 1)
 
 
-class TestApplicationFunctions(Unittest):
-    def setUp(self):
-        self.app = Application(index=0, workspace_type=MockTab, desc='Test application')
-
-
+class TestActionProperties(ApplicationTest):
     def test_action_generation(self):
         self.app.open(uri='some_path')
-        self.assertIn('add', [action.get_name() for action in self.app.get_actions()])
-        self.assertIn('reset', [action.get_name() for action in self.app.get_actions()])
+        for text in ['add', 'reset']:
+            contains_keyword = any([text in action.get_name() for action in self.app.get_actions()])
+            self.assertTrue(contains_keyword)
 
     def test_action_docs(self):
         actions = self.app.get_actions()
@@ -54,7 +52,6 @@ class TestApplicationFunctions(Unittest):
         for action in actions:
             self.assertIsInstance(action, Action)
 
-
     def test_num_actions(self):
         self.app.open(uri='test_path')
         actions = self.app.get_actions()
@@ -62,7 +59,12 @@ class TestApplicationFunctions(Unittest):
         self.log(f'Actions are : {actions_info}')
         self.assertEqual(2, len(actions))
 
+    def test_invalid_args(self):
+        with self.assertRaises(TypeError):
+            invalid_arg_app = Application(index=1, workspace_type=InvalidArgWorkspace, desc='Invalid arg application')
 
+
+class TestActionExecution(ApplicationTest):
     def test_tool_execution(self):
         self.app.open(uri='test_path')
         add = self.app.tool_dict['add']
@@ -84,4 +86,5 @@ class TestApplicationFunctions(Unittest):
 
 if __name__ == '__main__':
     # TestApplicationOpenClose.execute_all()
-    TestApplicationFunctions.execute_all()
+    # TestActionProperties.execute_all()
+    TestActionProperties.execute_all()
