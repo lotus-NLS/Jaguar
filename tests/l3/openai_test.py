@@ -34,7 +34,7 @@ class LinePrinter:
 class OpenAITest(Unittest):
     text_options = Options(max_tokens=10)
     default_options = Options()
-    default_model = OpenAIModel.get_gpt4()
+    default_model = OpenAIModel.get_gpt4_turbo()
     vision_model = OpenAIModel.get_gpt4V()
     lineprinter = LinePrinter()
 

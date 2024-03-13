@@ -4,7 +4,7 @@ from enum import Enum
 
 from PIL.Image import Image as PILImage
 from hollarek.templates import Dillable
-from hollarek.file import ImageConverter, ImageFormat
+from hollarek.file import ImageConverter
 from dataclasses import dataclass
 from .flags import Flags
 from .speaker import Speaker, Role
