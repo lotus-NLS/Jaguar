@@ -79,16 +79,18 @@ class Entry(Dillable):
         if not self.image or not with_vision:
             content = self.msg
         else:
-            self.image.show()
-            jpg_img = ImageConverter.convert(self.image, target_format=ImageFormat.JPEG)
-            base64_image = ImageConverter.as_base64_str(jpg_img)
+            img_fmt = self.image.format
+            image = self.image
+            if image.mode != 'RGB':
+                image = ImageConverter.to_rgb(image=image)
+            base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
             text = {
                 "type": "text",
                 "text": f"{self.msg}"
             }
             image = {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/JPEG;base64,{base64_image}"}
+                "image_url": {"url": f"data:image/{img_fmt};base64,{base64_image}"}
             }
             content = [text, image]
 
