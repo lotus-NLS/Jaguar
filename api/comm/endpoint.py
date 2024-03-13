@@ -9,13 +9,13 @@ class Method(Enum):
 
 
 class Socket:
-    def __init__(self, ip: str, port: int):
+    def __init__(self, ip_addr: str, port: int):
         try:
-            ipaddress.ip_address(ip)
+            ipaddress.ip_address(ip_addr)
         except ValueError:
             raise ValueError("Invalid IP address")
 
-        self.ip = ip
+        self.ip = ip_addr
         self.port = port
         self.sock = socket_lib.socket(socket_lib.AF_INET, socket_lib.SOCK_STREAM)
 
