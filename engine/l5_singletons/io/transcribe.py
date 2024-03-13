@@ -106,10 +106,29 @@ class Transcriber:
 
 
 if __name__ == "__main__":
-    print(torch.cuda.is_available())
+    import sounddevice as sd
+    import numpy as np
+    from engine.l5_singletons import Transcriber
+    import speech_recognition as sr
+
+    sr.Microphone
+
+    duration = 4  # seconds
+    fs = 16000  # Sample rate
+
+    # Record audio
+
+    myrecording = sd.rec(frames=int(duration * fs), samplerate=fs, channels=1, dtype='int16')
+    print("Recording...")
+    sd.wait()  # Wait until recording is finished
+    print("Recording finished")
+
+    audio_bytes = myrecording.tobytes()
+
+    print(len(myrecording))
     transcriber = Transcriber()
-    transcriber.start()
-    time.sleep(10)
-    transcriber.stop()
-    # time.sleep(100)
-    time.sleep(10)
+    print(transcriber.get_text(audio_data=audio_bytes))
+
+    print("Playing back...")
+    sd.play(myrecording, fs)
+    sd.wait()  # Wait until playback is finished

@@ -12,7 +12,7 @@ from engine.l1_agent.protocol import Identity
 # ---------------------------------------------------------
 
 class Agent(Handler):
-    def __init__(self, model : LLM = OpenAIModel.get_gpt4V(), identity : Identity = Identity.GOTO()):
+    def __init__(self, model : LLM = OpenAIModel.get_gpt4_turbo(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context
         self.identity : Identity = identity

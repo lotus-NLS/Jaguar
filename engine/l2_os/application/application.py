@@ -19,14 +19,14 @@ class Application:
         self.get_name = lambda : self.workspace_type.__name__
         self.window : Window = Window(index=self.index, app_name=self.get_name())
 
-        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.tab_map)
+        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.workspace_map)
         self.actions : list[Action] = action_factory.get_actions()
         self.tool_dict: dict[str, Tool] = {tool.get_name(): tool for tool in self.actions}
 
 
     def open(self, uri : Optional[str]):
         if self.max_tabs:
-            if len(self.window.tab_map) == self.max_tabs:
+            if len(self.window.workspace_map) == self.max_tabs:
                 raise ValueError(f'Cannot open more than {self.max_tabs} tab(s)')
 
         new_tab = self.workspace_type(uri=uri)
@@ -45,7 +45,7 @@ class Application:
         return [action.get_doc() for action in self.get_actions(active_only=active_only)]
 
     def is_open(self) -> bool:
-        return len(self.window.tab_map) != 0
+        return len(self.window.workspace_map) != 0
 
 
 class ActionFactory(Loggable):

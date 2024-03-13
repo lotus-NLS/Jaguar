@@ -9,10 +9,7 @@ from pathlib import Path
 
 class Workspace:
     def __init__(self, uri : str):
-        uri_name = URI(path=uri).get_name()
-
-        self.name : str = uri_name if uri_name else 'unnamed tab'
-        self.path : str = uri
+        self.name : str = uri
 
     @abstractmethod
     def get_text(self) -> str:
@@ -27,48 +24,48 @@ class Workspace:
         image = self.get_image()
         if image:
             kwargs['image'] = image
-        msg = self.get_tab_header(msg=f' Tab {tab_index}: {self.name} ')
+        msg = self.get_workspace_header(msg=f' Tab {tab_index}: {self.name} ')
         msg += self.get_text()
-        msg += self.get_tab_header()
+        msg += self.get_workspace_header()
 
         return Entry(speaker=Speaker.get_tool(name=app_name), msg=msg, **kwargs)
 
     @staticmethod
-    def get_tab_header(msg: str = ''):
-        max_tab_len = 20
-        num_dashes = max(max_tab_len - len(msg), 0)
+    def get_workspace_header(msg: str = ''):
+        max_len = 50
+        num_dashes = max(max_len - len(msg), 0)
         dashes = '-' * int(num_dashes / 2)
         return f'\n{dashes}{msg}{dashes}'
 
 
 class Window:
     def __init__(self, index : int, app_name : str):
-        self.tab_map : dict[int, Workspace] = {}
-        self.index : int = index
+        self.workspace_map : dict[int, Workspace] = {}
         self.app_name : str = app_name
+        self.index : int = index
 
     def add_tab(self, tab : Workspace):
         index = 0
-        while self.tab_map.get(index):
+        while self.workspace_map.get(index):
             index += 1
-        self.tab_map[index] = tab
+        self.workspace_map[index] = tab
 
     def close_all(self):
-        self.tab_map = {}
+        self.workspace_map = {}
 
     def close_tab(self, index : int):
-        del self.tab_map[index]
+        del self.workspace_map[index]
 
     # ---------------------------------------------------
     # do
 
     def get_tabs(self) -> list[Workspace]:
-        return list(self.tab_map.values())
+        return list(self.workspace_map.values())
 
 
     def get_entry(self) -> Entry:
         entry = Entry.as_tool(name=self.app_name, msg=f'\n{self.get_window_header()}')
-        for index, tab in self.tab_map.items():
+        for index, tab in self.workspace_map.items():
             tab_entry = tab.get_entry(tab_index=index, app_name=self.app_name)
             entry += tab_entry
         return entry
