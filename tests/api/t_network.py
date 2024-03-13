@@ -18,23 +18,19 @@ class TestNetwork(Unittest):
         self.assertEqual(network.engine_socket, custom_engine_socket)
 
 
-    def test_get_host_local(self):
+    def test_host(self):
         self.assertEqual(Network.get_host(NetworkArea.LOCALHOST), '127.0.0.1')
-
-    def test_get_host_home(self):
-        self.assertIsInstance(Network.get_ip_addr(public=False), str)
-
-    def test_get_host_global(self):
+        self.assertIsInstance(Network.get_private_ip(), str)
         with self.assertRaises(PermissionError):
             Network.get_host(NetworkArea.GLOBAL)
 
     def test_get_public_ip_addr(self):
-        ip_addr = Network._get_public_ip_addr()
+        ip_addr = Network.get_public_ip()
         self.assertIsInstance(ip_addr, str)
         self.log(f'Public ip addr is {ip_addr}')
 
     def test_get_private_ip_addr(self):
-        ip_addr = Network.get_ip_addr(public=False)
+        ip_addr = Network.get_private_ip()
         self.assertIsInstance(ip_addr, str)
         self.log(f'Private ip addr is {ip_addr}')
 
