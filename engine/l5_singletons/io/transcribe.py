@@ -1,13 +1,9 @@
-import time
 import speech_recognition as sr
-from speech_recognition import Recognizer
 import whisper
 import torch
 import numpy as np
 
-from sys import platform
 from whisper import Whisper
-from io import BytesIO
 from .types import Pipe
 
 
@@ -36,16 +32,13 @@ class ModelDownloader:
 class Transcriber:
     def __init__(self, model : Whisper = ModelDownloader.get_tiny()):
         self.model : Whisper =  model
-        self.source = self.get_source()
 
-        self.recorder : Recognizer = Recognizer()
-        self.recorder.energy_threshold = 10000
-        self.recorder.dynamic_energy_threshold = True
+        self.recognizer = sr.Recognizer()
+        self.recognizer.non_speaking_duration = 0.3
+        self.recognizer.pause_threshold = 0.1
 
         self.pipes : list[Pipe] = []
-        self.audio_buffer : BytesIO = BytesIO()
         self.text_buffer : str = ''
-        self.stop_handle = None
 
     def get_output_pipe(self) -> Pipe:
         pipe = Pipe()
@@ -53,23 +46,17 @@ class Transcriber:
         return pipe
 
     def start(self):
-        with self.source:
-            self.recorder.adjust_for_ambient_noise(self.source)
-        self.stop_handle = self.recorder.listen_in_background(source=self.source, callback=self._process_speech)
+        while True:
+            with sr.Microphone() as source:
+                audio_data = self.recognizer.listen(source)
+            try:
+                text = self.recognizer.recognize_google(audio_data)
+                print(f"You said: {text}")
+            except sr.UnknownValueError:
+                print("Google Speech Recognition could not understand audio")
+            except sr.RequestError as e:
+                print(f"Could not request results from Google Speech Recognition service; {e}")
 
-    # def _process_speech(self) -> None:
-    #     print(f'Heard something')
-    #     # self.audio_buffer = BytesIO()
-    #     # self.audio_buffer.write(audio.get_raw_data())
-    #     text = self.get_text(audio=)
-    #     self.text_buffer += text
-    #     for pipe in self.pipes:
-    #         pipe.put(msg=text)
-
-
-    def stop(self):
-        print(f'Stopped listening')
-        self.stop_handle(wait_for_stop = False)
 
     def get_text(self, audio_data : bytes):
         audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
@@ -79,84 +66,8 @@ class Transcriber:
         return text
 
 
-    # --------------------------------------------
-
-    @staticmethod
-    def get_source(target_name : str = 'default'):
-        mic_names = sr.Microphone.list_microphone_names()
-        if 'linux' in platform:
-            mic_map = {name : j for j,name in enumerate(mic_names)}
-            target_index = mic_map.get(target_name)
-            if target_index:
-                source = sr.Microphone(sample_rate=16000, device_index=target_index)
-            else:
-                raise ValueError(f"Microphone with name {target_name} not found")
-        else:
-            source = sr.Microphone(sample_rate=16000)
-        print(f'Source successfully retreived')
-        return source
-
-
-    @classmethod
-    def get_available_mics(cls) -> list[str]:
-        return sr.Microphone.list_microphone_names()
-
-    # dynamic length recording draft
-    # import sounddevice as sd
-    # import numpy as np
-    #
-    # def callback(indata, frames, time, status):
-    #     # This function is called for each audio block
-    #     global recording_buffer
-    #     recording_buffer.append(indata.copy())
-    #
-    # def stop_condition_met(audio_data):
-    #     # Implement your stopping condition here
-    #     # For example, check for a duration of silence or a specific signal
-    #     return False
-    #
-    # fs = 16000  # Sample rate
-    # recording_buffer = []  # Initialize an empty list to store audio blocks
-    #
-    # # Start recording
-    # with sd.InputStream(callback=callback, samplerate=fs, channels=1):
-    #     print("Recording...")
-    #     while True:
-    #         if stop_condition_met(recording_buffer):
-    #             break
-    #     print("Stopping...")
-    #
-    # # Process the recorded audio
-    # recorded_audio = np.concatenate(recording_buffer, axis=0)    sd.wait()  # Wait until playback is finished
-
-
-
 
 
 if __name__ == "__main__":
-    import sounddevice as sd
-    import numpy as np
-    from engine.l5_singletons import Transcriber
-    import speech_recognition as sr
-
-    sr.Microphone
-
-    duration = 4  # seconds
-    fs = 16000  # Sample rate
-
-    # Record audio
-
-    myrecording = sd.rec(frames=int(duration * fs), samplerate=fs, channels=1, dtype='int16')
-    print("Recording...")
-    sd.wait()  # Wait until recording is finished
-    print("Recording finished")
-
-    audio_bytes = myrecording.tobytes()
-
-    print(len(myrecording))
     transcriber = Transcriber()
-    print(transcriber.get_text(audio_data=audio_bytes))
-
-    print("Playing back...")
-    sd.play(myrecording, fs)
-
+    transcriber.start()
