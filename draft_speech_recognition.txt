@@ -1,0 +1,22 @@
+#sudo apt update
+#sudo apt install python3-pip portaudio19-dev python3-pyaudio
+#pip3 install SpeechRecognition
+
+import speech_recognition as sr
+
+# Initialize recognizer class (for recognizing the speech)
+recognizer = sr.Recognizer()
+
+# Start listening
+with sr.Microphone() as source:
+    print("Listening...")
+    audio_data = recognizer.listen(source)
+    print("Recognizing...")
+    # Convert speech into text
+    try:
+        text = recognizer.recognize_google(audio_data)
+        print(f"You said: {text}")
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print(f"Could not request results from Google Speech Recognition service; {e}")
