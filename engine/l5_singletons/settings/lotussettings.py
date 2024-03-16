@@ -81,24 +81,17 @@ class LotusSettings(Singleton):
 
         try:
             openai.api_key = self.get_openai_apikey()
-            args_dict = {
-                'model': 'gpt-3.5-turbo',
-                'messages': [{'role' : 'user', 'content' : 'This is a test'}],
-                'stream' : True
-            }
-
+            test_entry = {'role' : 'user', 'content' : 'This is a test'}
+            args_dict = {'model': 'gpt-3.5-turbo','messages': [test_entry],'stream' : True}
             func_timeout(timeout=timeout, func=openai.chat.completions.create, kwargs=args_dict)
             is_successful = True
-
         except FunctionTimedOut:
             err_details = f'Request to OpenAI servers timed out after {timeout}'
         except BaseException as err:
             err_details = f'{err}'
-
         finally:
             if not is_successful:
                 self.log(msg=f'Error after test run of openai_api_key: {err_details}', level=LogLevel.ERROR)
-
             openai.api_key = temp
             return is_successful
 
