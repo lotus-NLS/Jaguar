@@ -1,46 +1,68 @@
-from typing import BinaryIO
+from typing import BinaryIO, Optional
 
 import speech_recognition as sr
-from .types import Pipe
+from queue import Queue
 from openai import OpenAI
-from engine.l5_singletons import LotusSettings
 import tempfile
+from engine.l5_singletons import LotusSettings
 
 
-class Transcriber:
+class BytePipe(Queue):
+    def get(self, block = True, timeout = None) -> bytes:
+        return super().get(block, timeout)
+
+    def put(self, item : bytes, block = True, timeout = None):
+        super().put(item, block, timeout)
+
+
+class Recorder:
     def __init__(self):
-        self.client = OpenAI(api_key=LotusSettings().get_openai_apikey())
         self.recognizer = sr.Recognizer()
         self.recognizer.non_speaking_duration = 0.1
         self.recognizer.pause_threshold = 0.2
         self.recognizer.energy_threshold = 750
 
-        self.pipes : list[Pipe] = []
-        self.text_buffer : str = ''
+        self.is_running : bool = False
+        self.pipes: list[BytePipe] = []
 
-    def register_pipe(self) -> Pipe:
-        pipe = Pipe()
+    def register_pipe(self) -> Queue[bytes]:
+        pipe = BytePipe()
         self.pipes.append(pipe)
         return pipe
 
     def start(self):
+        with sr.Microphone() as source:
+            self.listen(source=source)
+
+    def stop(self):
+        self.is_running = False
+
+    def listen(self, source : sr.AudioSource):
         while True:
-            with sr.Microphone() as source:
-                audio_data = self.recognizer.listen(source)
-            try:
-                text = self.get_text(wav_bytes=audio_data.get_wav_data())
-                print(f"You said: {text}")
-            except sr.UnknownValueError:
-                print("Google Speech Recognition could not understand audio")
-            except sr.RequestError as e:
-                print(f"Could not request results from Google Speech Recognition service; {e}")
+            if not self.is_running:
+                break
+            audio_data = self.recognizer.listen(source)
+            wav_bytes = audio_data.get_wav_data()
+            for pipe in self.pipes:
+                pipe.put(wav_bytes)
 
 
-    def get_text(self, wav_bytes : bytes):
+class Transcriber:
+    def __init__(self):
+        self.client = OpenAI(api_key=LotusSettings().get_openai_apikey())
+        self.text_buffer : str = ''
+
+    def get_text(self, wav_bytes : bytes) -> Optional[str]:
         wav_io = self.to_wav(audio_data=wav_bytes)
-        transcription = self.client.audio.transcriptions.create(model="whisper-1", file=wav_io)
-        wav_io.close()
-        return transcription.text
+        try:
+            transcription = self.client.audio.transcriptions.create(model="whisper-1", file=wav_io)
+            return transcription.text
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print(f"Could not request results from Google Speech Recognition service; {e}")
+        finally:
+            wav_io.close()
 
 
     @staticmethod
