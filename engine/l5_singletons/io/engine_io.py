@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import inspect
+import os.path
 import time
-
+import logging
 import uvicorn
 from abc import abstractmethod
 from fastapi import FastAPI
@@ -36,7 +38,7 @@ class IO(Singleton):
         self.socket : Socket = socket
 
         @self.app.post("/")
-        async def process(request: LotusRequest) -> StreamingResponse:
+        async def process(request: LotusRequest) -> SafeStream:
             if request.img:
                 raise NotImplementedError
             entry = [Entry.as_user(msg=request.msg)]
@@ -46,12 +48,13 @@ class IO(Singleton):
             def simple_text_stream():
                 yield "Hello"
                 time.sleep(1)
+                raise ValueError(f'nope')
                 yield " "
                 time.sleep(1)
                 yield "world!"
                 time.sleep(1)
                 yield "\nThis is a streaming response."
-            return StreamingResponse(content=simple_text_stream(), media_type="text/plain")
+            return SafeStream(content=simple_text_stream(), media_type="text/plain")
 
 
         @self.app.post("/transcribe")
@@ -67,3 +70,22 @@ class Task:
         self.new_entries : list[Entry] = new_entries if new_entries else []
         self.selected_tool : Optional[str] = required_tool_name
         self.skip_feedback : bool = False if self.selected_tool is None else True
+
+import linecache
+
+class SafeStream(StreamingResponse):
+    logger = logging.getLogger(f'uvicorn.error')
+    async def __call__(self, *args, **kwargs):
+        try:
+            return await super().__call__(*args, **kwargs)
+        except BaseException as e:
+            callstack = inspect.stack()
+            while callstack:
+                frame = callstack.pop()
+                if os.path.abspath(__file__) in frame.filename:
+                    file_path = frame.filename
+                    line_number = frame.lineno
+                    tb_str = (f'File "{file_path}", line {line_number}\n'
+                              f'    {linecache.getline(file_path, line_number).strip()}')
+                    print(f'{tb_str}')
+            self.logger.error(f'Error during streaming: {e}')
