@@ -4,8 +4,7 @@ import threading
 from hollarek.logging import LogLevel
 from func_timeout import FunctionTimedOut
 from api import Entry
-from engine.l5_singletons import Handler
-from api.communication.messages import Pipe, Response, TaskQueue, Task
+from engine.l5_singletons import Handler, Task, Pipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, TextEditor, Host
@@ -19,7 +18,7 @@ class Agent(Handler):
         # context
         self.identity : Identity = identity
         self.memory: Context = Context()
-        self.task_queue : TaskQueue[Task] = TaskQueue()
+        # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
         self.os : OS = OS(workspace_types=[TextEditor, Host])
@@ -28,7 +27,7 @@ class Agent(Handler):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, task: Task) -> Response:
+    def handle(self, task: Task) -> Pipe:
         for entry in task.new_entries:
             self.memory.add_entry(entry=entry)
         try:
@@ -37,14 +36,13 @@ class Agent(Handler):
             def do():
                 self.process(generation=generation, pipe=pipe)
             threading.Thread(target=do).start()
-            response = Response(text_queue=pipe)
         except FunctionTimedOut as e:
             self.log(f'Attempt to retrieve generation timed out: {e}', level=LogLevel.WARNING)
-            response = Response.failed()
+            pipe = Pipe.failed()
         except BaseException as e:
             self.log(f'Error in getting generation: {e}', level=LogLevel.ERROR)
-            response = Response.failed()
-        return response
+            pipe = Pipe.failed()
+        return pipe
 
 
     def get_next(self, options: Options = Options()) -> Generation:

@@ -6,10 +6,7 @@ from queue import Queue, Empty
 from typing import Iterator
 from hollarek.logging import LogLevel, get_logger
 
-
 # ----------------------------------------------
-
-
 
 class Task:
     def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
@@ -54,6 +51,15 @@ class Pipe(Queue):
             if not text:
                 continue
             yield text
+
+    @classmethod
+    def failed(cls, msg: Optional[str] = None):
+        pipeline: Pipe = Pipe()
+        conditional_msg = f':{msg}'
+        pipeline.put(f'Pipeline failed{conditional_msg}')
+        pipeline.stop()
+        return pipeline
+
 
     @classmethod
     def log(cls, msg : str, level : LogLevel):
