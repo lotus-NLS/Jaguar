@@ -1,6 +1,7 @@
 from PIL.Image import Image as PILImage
 from api import Entry
-from engine.l5_singletons import Response, Task, User
+from engine.l5_singletons import User
+from api.communication.messages import Response, Task
 from typing import Optional
 # ----------------------------------------------
 

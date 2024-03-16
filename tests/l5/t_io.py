@@ -5,7 +5,9 @@ from hollarek.devtools import Unittest
 from tests.spoofs import MockEntity
 
 from engine.l5_singletons.io.engine_io import IO
-from engine.l5_singletons.io.types import Response, Pipe, Task
+from api.communication.messages import Pipe, Response, Task
+
+
 # --------------------------------------------
 
 

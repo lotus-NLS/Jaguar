@@ -4,7 +4,8 @@ import threading
 from hollarek.logging import LogLevel
 from func_timeout import FunctionTimedOut
 from api import Entry
-from engine.l5_singletons import Response, Handler, Task, TaskQueue, Pipe
+from engine.l5_singletons import Handler
+from api.communication.messages import Pipe, Response, TaskQueue, Task
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, TextEditor, Host

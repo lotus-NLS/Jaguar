@@ -1,2 +1,2 @@
 from .language import *
-from .comm import *
+from .communication import *

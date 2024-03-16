@@ -2,7 +2,7 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.types import Response, Pipe, Task
+from api.communication.messages import Pipe, Response, Task
 from engine.l5_singletons.io.engine_io import Handler
 
 

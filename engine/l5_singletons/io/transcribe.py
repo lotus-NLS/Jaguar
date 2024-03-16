@@ -4,7 +4,7 @@ import torch
 import numpy as np
 
 from whisper import Whisper
-from .types import Pipe
+from api.communication.messages import Pipe
 
 
 class ModelDownloader:
