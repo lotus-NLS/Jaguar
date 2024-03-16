@@ -5,7 +5,7 @@ import time
 from pynput.keyboard import Key
 from hollarek.logging import Loggable
 from hollarek.hardware import KeyboardListener
-from engine.l5_singletons import Settings, IO
+from engine.l5_singletons import LotusSettings, IO
 from .entities import ConsoleUser
 from engine.l1_agent import Agent
 # ---------------------------------------------------------
@@ -15,7 +15,7 @@ class LotusEngine(Loggable):
     def __init__(self, use_local : bool = True):
         super().__init__()
 
-        self.settings : Settings = Settings(local=use_local, validate=True)
+        self.settings : LotusSettings = LotusSettings(use_local=use_local, validate=True)
         self.handler: Agent = Agent()
         self.io: IO = IO(handler=self.handler)
         threading.Thread(target=self.stop_on_esc, daemon=True).start()

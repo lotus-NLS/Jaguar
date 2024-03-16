@@ -1,38 +1,11 @@
 import speech_recognition as sr
-import whisper
-import torch
-import numpy as np
-
-from whisper import Whisper
 from .types import Pipe
-
-
-class ModelDownloader:
-    @classmethod
-    def get_tiny(cls) -> Whisper:
-        return whisper.load_model('tiny')
-
-    @classmethod
-    def get_base(cls) -> Whisper:
-        return whisper.load_model('base')
-
-    @classmethod
-    def get_small(cls) -> Whisper:
-        return whisper.load_model('small')
-
-    @classmethod
-    def get_medium(cls) -> Whisper:
-        return whisper.load_model('medium')
-
-    @classmethod
-    def get_large(cls) -> Whisper:
-        return whisper.load_model('large')
-
+from openai import OpenAI
+from engine.l5_singletons import LotusSettings
 
 class Transcriber:
-    def __init__(self, model : Whisper = ModelDownloader.get_tiny()):
-        self.model : Whisper =  model
-
+    def __init__(self):
+        self.client = OpenAI(api_key=LotusSettings.get_openai_apikey())
         self.recognizer = sr.Recognizer()
         self.recognizer.non_speaking_duration = 0.3
         self.recognizer.pause_threshold = 0.1
@@ -40,7 +13,7 @@ class Transcriber:
         self.pipes : list[Pipe] = []
         self.text_buffer : str = ''
 
-    def get_output_pipe(self) -> Pipe:
+    def register_pipe(self) -> Pipe:
         pipe = Pipe()
         self.pipes.append(pipe)
         return pipe
@@ -49,8 +22,9 @@ class Transcriber:
         while True:
             with sr.Microphone() as source:
                 audio_data = self.recognizer.listen(source)
+                audio_data.get_raw_data()
             try:
-                text = self.recognizer.recognize_google(audio_data)
+                text = self.get_text(audio_data=audio_data)
                 print(f"You said: {text}")
             except sr.UnknownValueError:
                 print("Google Speech Recognition could not understand audio")
@@ -59,12 +33,8 @@ class Transcriber:
 
 
     def get_text(self, audio_data : bytes):
-        audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
-        result = self.model.transcribe(audio_np, fp16=torch.cuda.is_available())
-        text = result['text'].strip()
-
-        return text
-
+        transcription = self.client.audio.transcriptions.create(model="whisper-1", file=audio_data)
+        return transcription.text
 
 
 

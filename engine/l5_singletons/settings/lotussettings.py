@@ -4,65 +4,74 @@ import os
 from typing import Optional
 
 from func_timeout import func_timeout, FunctionTimedOut
-from hollarek.configs import LocalConfigs, AWSConfigs
+from hollarek.configs import LocalConfigs, AWSConfigs, Configs
 from hollarek.templates import Singleton
-from hollarek.logging import LogLevel, get_logger
+from hollarek.logging import LogLevel, get_logger, Logger
 # --------------------------------------------
 
-class Settings(Singleton):
-    configs : Optional = None
-
-    def __init__(self, local : bool = False, validate : bool = True):
+class LotusSettings(Singleton):
+    def __init__(self, use_local : bool = False, validate : bool = True, logger : Optional[Logger] = None):
         if self.get_is_initialized():
             return
 
         super().__init__()
-        self.log = get_logger().log
-        config_path = os.path.join(os.path.expanduser('~'), '.creds' , 'lotusconfigs')
-        if local:
-            Settings.configs = LocalConfigs(config_fpath=config_path)
-        else:
-            Settings.configs = AWSConfigs(secret_name='lotus_api_keys')
-
+        self.log = logger.log if logger else get_logger().log
+        self.configs = self.get_configs(use_local=use_local)
         if validate:
-            successful_tests = []
-            failed_tests = []
-            # for test in [self.validdate_openai, self.validate_search_engine]:
-            for test in [self.validate_openai]:
-                if not test():
-                    failed_tests.append(test.__name__)
-                else:
-                    successful_tests.append(test.__name__)
-
-            if failed_tests:
-                raise ValueError(f'Validation failed for {failed_tests}')
-
-            self.log(msg=f'Successfully performed validations {successful_tests}')
+            self.validation()
 
         self.log(msg=f'Completed setup for all Settings')
 
+    @staticmethod
+    def get_configs(use_local : bool) -> Configs:
+        if use_local:
+            config_path = os.path.join(os.path.expanduser('~'), '.creds', 'lotusconfigs')
+            configs = LocalConfigs(config_fpath=config_path)
+        else:
+            configs = AWSConfigs(secret_name='lotus_api_keys')
+        return configs
+
     @classmethod
     def get_openai_apikey(cls) -> str:
-        return cls.configs.get('openai_api_key')
+        return cls.get('openai_api_key')
 
     @classmethod
     def get_google_apikey(cls) -> str:
-        return cls.configs.get('google_api_key')
+        return cls.get('google_api_key')
 
     @classmethod
     def get_searchengine_id(cls) -> str:
-        return cls.configs.get('search_engine_id')
+        return cls.get('search_engine_id')
 
     @classmethod
     def get_enable_introduction(cls) -> str:
-        return cls.configs.get('enable_introduction')
+        return cls.get('enable_introduction')
 
     @classmethod
     def get(cls, key: str) -> str:
-        return cls.configs.get(key)
+        instance = cls.get_instance()
+        if not instance.configs:
+            raise ResourceWarning(f'Lotus Settings is not initialized yet!')
+        return instance.configs.get(key)
+
 
     # ----------------------------------------------
     # validation
+
+    def validation(self):
+        successful_tests = []
+        failed_tests = []
+        for test in [self.validate_openai]:
+            if not test():
+                failed_tests.append(test.__name__)
+            else:
+                successful_tests.append(test.__name__)
+
+        if failed_tests:
+            raise ValueError(f'Validation failed for {failed_tests}')
+
+        self.log(msg=f'Successfully performed validations {successful_tests}')
+
 
     def validate_openai(self) -> bool:
         temp = openai.api_key
@@ -88,7 +97,7 @@ class Settings(Singleton):
 
         finally:
             if not is_successful:
-                self.log(f'Error after test run of openai_api_key: {err_details}', level=LogLevel.ERROR)
+                self.log(msg=f'Error after test run of openai_api_key: {err_details}', level=LogLevel.ERROR)
 
             openai.api_key = temp
             return is_successful
@@ -122,8 +131,7 @@ class Settings(Singleton):
 
         finally:
             if not is_successful:
-                self.log(f'Error after test run of search engine: {err_details}', LogLevel.ERROR)
+                self.log(msg=f'Error after test run of search engine: {err_details}', level=LogLevel.ERROR)
             return is_successful
-
 
 

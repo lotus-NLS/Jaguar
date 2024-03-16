@@ -8,7 +8,7 @@ from openai import Stream
 
 from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
-from engine.l5_singletons import Settings
+from engine.l5_singletons import LotusSettings
 from engine.l3_models.generation import LLM, ModelInfo
 from engine.l3_models.generation import Generation, Chunk, Context, Options
 
@@ -82,7 +82,7 @@ class OpenAIModel(LLM):
         if not options.max_tokens is None:
             args_dict['max_tokens'] = options.max_tokens
 
-        openai.api_key = Settings().get_openai_apikey()
+        openai.api_key = LotusSettings().get_openai_apikey()
         def send_request():
             return openai.chat.completions.create(**args_dict)
         openai_stream = func_timeout(func=send_request,timeout=10)

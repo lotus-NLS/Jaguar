@@ -1,4 +1,4 @@
-from engine.l5_singletons import Settings
+from engine.l5_singletons import LotusSettings
 from hollarek.devtools import Unittest
 # --------------------------------------------
 
@@ -30,19 +30,19 @@ class TestLotusSettings(Unittest):
     # --------------------------------------------
 
     def is_ok(self,local : bool = True ):
-        settings = Settings(local=local)
+        settings = LotusSettings(use_local=local)
         for key in self.valid_keys:
             self.assertIsInstance(settings.get(key), str)
 
     def is_valid(self, local : bool = True):
-        settings = Settings(local=local)
+        settings = LotusSettings(use_local=local)
         x,y = settings.validate_openai(), settings.validate_search_engine()
         for val in [x,y]:
             self.assertTrue(val)
 
     def tearDown(self):
-        Settings().configs.reset_instance()
-        Settings().reset_instance()
+        LotusSettings().configs.reset_instance()
+        LotusSettings().reset_instance()
 
 
 if __name__ == "__main__":

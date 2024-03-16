@@ -1,1 +1,1 @@
-from .settings import Settings
+from .lotussettings import LotusSettings
