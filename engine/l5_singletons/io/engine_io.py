@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import time
+
 import uvicorn
 from abc import abstractmethod
 from fastapi import FastAPI
@@ -43,8 +45,11 @@ class IO(Singleton):
 
             def simple_text_stream():
                 yield "Hello"
+                time.sleep(1)
                 yield " "
+                time.sleep(1)
                 yield "world!"
+                time.sleep(1)
                 yield "\nThis is a streaming response."
             return StreamingResponse(content=simple_text_stream(), media_type="text/plain")
 

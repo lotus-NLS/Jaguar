@@ -19,6 +19,7 @@ class TestEngineIO(Unittest):
         entity = MockEntity()
         cls.io = IO(handler=entity)
         threading.Thread(target=cls.io.run).start()
+        time.sleep(0.1)
 
 
     def test_initialization(self):
@@ -28,9 +29,9 @@ class TestEngineIO(Unittest):
         req_str = LotusRequest().json()
         # response = self.client.post("/", content=req_str)
         url = self.io.socket.as_addr(protocol='http')
-        response = requests.post(url=url,data=req_str)
-        for text in response.text:
-            print(text)
+        response = requests.post(url=url,data=req_str, stream=True)
+        for chunk in response.iter_content(chunk_size=None):
+            print(chunk)
 
         self.assertEqual(response.status_code, 200)
 
