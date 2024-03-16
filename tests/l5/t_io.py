@@ -19,7 +19,6 @@ class TestEngineIO(Unittest):
         entity = MockEntity()
         cls.io = IO(handler=entity)
         threading.Thread(target=cls.io.run).start()
-        time.sleep(3)
 
 
     def test_initialization(self):
@@ -30,6 +29,9 @@ class TestEngineIO(Unittest):
         # response = self.client.post("/", content=req_str)
         url = self.io.socket.as_addr(protocol='http')
         response = requests.post(url=url,data=req_str)
+        for text in response.text:
+            print(text)
+
         self.assertEqual(response.status_code, 200)
 
     # def test_transcribe_endpoint(self):

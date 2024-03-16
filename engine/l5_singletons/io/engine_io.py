@@ -34,14 +34,19 @@ class IO(Singleton):
         self.socket : Socket = socket
 
         @self.app.post("/")
-        async def process(request: LotusRequest) -> str:
+        async def process(request: LotusRequest) -> StreamingResponse:
             if request.img:
                 raise NotImplementedError
             entry = [Entry.as_user(msg=request.msg)]
             task = Task(new_entries=entry)
             response = self.handler.handle(task=task)
-            return 'OK'
-            # return StreamingResponse(content=response.get_text_stream(), media_type="text/plain")
+
+            def simple_text_stream():
+                yield "Hello"
+                yield " "
+                yield "world!"
+                yield "\nThis is a streaming response."
+            return StreamingResponse(content=simple_text_stream(), media_type="text/plain")
 
 
         @self.app.post("/transcribe")
