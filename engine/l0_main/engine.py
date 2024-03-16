@@ -41,7 +41,7 @@ class LotusEngine(Loggable):
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 
-
+    # noinspection PyProtectedMember
     def stop_on_esc(self):
         KeyboardListener().wait_on_hold(key=Key.esc, duration=2)
         self.log(f'Lotus stopped')

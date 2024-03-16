@@ -1,40 +1,40 @@
 from __future__ import annotations
 
-from api import Entry, Speaker, Role
 from hollarek.devtools import Unittest
 from tests.spoofs import MockEntity
+from fastapi.testclient import TestClient
 
 from engine.l5_singletons.io.engine_io import IO
-from engine.l5_singletons import Pipe, Task
-
 
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-
     def setUp(self):
         IO.reset_instance()
         self.entity = MockEntity()
         self.io = IO(handler=self.entity)
-
+        self.client = TestClient(self.io.app)
 
     def test_initialization(self):
         self.assertIsNotNone(self.io)
 
-    # def test_response_stream(self):
-    #     msg = 'Hello, do something'
-    #     print(f'User said: {msg}')
-    #     entry = Entry(msg=msg, speaker=Speaker(role=Role.USER))
-    #     task = Task(new_entries=[entry])
-    #     response = self.io.(task)
-    #
-    #     self.assertIsInstance(response, Pipe)
-    #
-    #     print(f'Engine responded: With following text stream')
+
+    def test_process_endpoint(self):
+        payload = {
+            "user_id": "test_id",
+            "bool_content": True,
+            "msg": ["Hello, World!"],
+            "img": None
+        }
+        response = self.client.post("/", json=payload)
+        self.assertEqual(response.status_code, 200)
+
+    def test_transcribe_endpoint(self):
+        payload = {
+            "audio_content": "base64_audio_string_here"
+        }
+        response = self.client.post("/transcribe", json=payload)
+        self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
     TestEngineIO.execute_all()
