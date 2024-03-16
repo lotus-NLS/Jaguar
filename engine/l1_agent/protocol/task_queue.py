@@ -1,9 +1,5 @@
-from __future__ import annotations
-
 from queue import Queue
-from typing import Optional
-
-from api import Entry
+from engine.l5_singletons import Task
 
 
 class TaskQueue(Queue):
@@ -26,10 +22,3 @@ class TaskQueue(Queue):
 
     def dialogue_task_is_enqueued(self) -> bool:
         return any(task.is_dialogue_task() for task in self.queued_items)
-
-
-class Task:
-    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
-        self.new_entries : list[Entry] = new_entries if new_entries else []
-        self.required_tool_name : Optional[str] = required_tool_name
-        self.skip_feedback : bool = False if self.required_tool_name is None else True

@@ -43,7 +43,7 @@ class Options:
 
     @classmethod
     def from_task(cls, task : Task):
-        return cls(tool_options=ToolOptions(call_allowed=True, required_tool_name=task.required_tool_name))
+        return cls(tool_options=ToolOptions(call_allowed=True, required_tool_name=task.selected_tool))
 
     def get_call_allowed(self):
         return self.tool_options.call_allowed

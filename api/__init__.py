@@ -1,2 +1,3 @@
 from .language import *
-from .communication import *
+from .network import *
+from .messages import *

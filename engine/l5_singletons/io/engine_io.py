@@ -1,28 +1,19 @@
-from flask import Flask, request, jsonify
-from PIL.Image import Image as PILImage
 from abc import abstractmethod
 from typing import Optional
+from fastapi import FastAPI
+import uvicorn
 
+from api import LotusRequest, TranscribeRequest, Socket, NetworkAddresses
 from hollarek.logging import Loggable
 from hollarek.templates import Singleton
-from api import Network, Socket
-from api.communication.messages import Response, Task
+from .types import Task
 from .transcribe import Transcriber
 # ----------------------------------------------
 
+
 class Handler(Loggable):
     @abstractmethod
-    def handle(self, task : Task) -> Response:
-        pass
-
-
-class User:
-    def __init__(self):
-        self.io : IO = IO()
-        self.transcriber : Transcriber = Transcriber()
-
-    @abstractmethod
-    def send(self, msg : str, image : Optional[PILImage] = None) -> Response:
+    def handle(self, task : Task) -> LotusRequest:
         pass
 
 
@@ -35,22 +26,23 @@ class IO(Singleton):
             raise ValueError('Handler must be provided')
         super().__init__()
         self.entity : handler = handler
-        self.app : FastAPI = Flask(__name__)
+        self.transcriber : Transcriber = Transcriber()
+        self.app : FastAPI = FastAPI()
 
-        @app.post("/")
-        async def process(request: Request):
-            body_str = await request.body()  # Asynchronously get the request body
-            task_str = body_str.decode('utf-8')  # Decode bytes to string
-            return entity.handle(task=task_str)
+        @self.app.post("/")
+        async def process(request: LotusRequest):
+            raise NotImplementedError
+            # return self.entity.handle(task=request.messages)
 
-        @app.post("/transcribe")
-        async def transcribe(request: Request):
-            body_str = await request.body()  # Asynchronously get the request body
-            task_str = body_str.decode('utf-8')  # Decode bytes to string
+        @self.app.post("/transcribe")
+        async def transcribe(request: TranscribeRequest):
+            raise NotImplementedError
+            # body_str = await request.body()  # Asynchronously get the request body
+            # task_str = body_str.decode('utf-8')  # Decode bytes to string
             # Process the transcription based on the input task string
-            return {"transcribed_text": "Dummy transcribed text based on " + task_str}
+            # return {"transcribed_text": "Dummy transcribed text based on " + task_str}
 
 
-    def run(self, socket : Socket = Network().engine_socket):
-        self.app.run(port=socket.port, host=socket.ip)
+    def run(self, socket : Socket = NetworkAddresses().engine_socket):
+        uvicorn.run(self.app, host=socket.ip, port=socket.port)
 

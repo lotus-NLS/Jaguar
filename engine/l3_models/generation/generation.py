@@ -98,4 +98,4 @@ class Context:
         self.entries = []
 
     def __iadd__(self, other):
-        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+        return Context(entries=self.entries + other.messages, docs=self.docs + other.docs)
