@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uvicorn
 from abc import abstractmethod
 from fastapi import FastAPI
@@ -7,14 +9,14 @@ from typing import Optional
 from api import LotusRequest, TranscribeRequest, Socket, Network, Entry
 from hollarek.logging import Loggable
 from hollarek.templates import Singleton
-from .types import Task, Pipe
+from .pipes import TextPipe
 from .transcribe import Transcriber
 # ----------------------------------------------
 
 
 class Handler(Loggable):
     @abstractmethod
-    def handle(self, task : Task) -> Pipe:
+    def handle(self, task : Task) -> TextPipe:
         pass
 
 
@@ -52,3 +54,9 @@ class IO(Singleton):
     def run(self, socket : Socket = Network().engine_socket):
         uvicorn.run(self.app, host=socket.ip, port=socket.port)
 
+
+class Task:
+    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
+        self.new_entries : list[Entry] = new_entries if new_entries else []
+        self.selected_tool : Optional[str] = required_tool_name
+        self.skip_feedback : bool = False if self.selected_tool is None else True

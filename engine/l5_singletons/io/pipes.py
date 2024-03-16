@@ -1,22 +1,14 @@
 from __future__ import annotations
 
 from typing import Optional
-from api import Entry
 from queue import Queue, Empty
 from typing import Iterator
 from hollarek.logging import LogLevel, get_logger
 
 # ----------------------------------------------
 
-class Task:
-    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
-        self.new_entries : list[Entry] = new_entries if new_entries else []
-        self.selected_tool : Optional[str] = required_tool_name
-        self.skip_feedback : bool = False if self.selected_tool is None else True
 
-
-
-class Pipe(Queue):
+class TextPipe(Queue):
     stop_token = '⊥'
     logger = None
 
@@ -54,7 +46,7 @@ class Pipe(Queue):
 
     @classmethod
     def failed(cls, msg: Optional[str] = None):
-        pipeline: Pipe = Pipe()
+        pipeline: TextPipe = TextPipe()
         conditional_msg = f':{msg}'
         pipeline.put(f'Pipeline failed{conditional_msg}')
         pipeline.stop()
@@ -66,3 +58,11 @@ class Pipe(Queue):
         if not cls.logger:
             cls.logger = get_logger()
         cls.logger(msg=msg, level=level)
+
+
+class BytePipe(Queue):
+    def get(self, block = True, timeout = None) -> bytes:
+        return super().get(block, timeout)
+
+    def put(self, item : bytes, block = True, timeout = None):
+        super().put(item, block, timeout)

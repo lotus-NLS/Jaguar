@@ -2,10 +2,11 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.engine_io import Handler, Pipe, Task
+from engine.l5_singletons.io.engine_io import Handler, TextPipe
+from engine.l5_singletons import Task
 
 
-class MockPipe(Pipe):
+class MockPipe(TextPipe):
     def __init__(self, str_len: int = 10, msg_count: int = 5):
         super().__init__()
         self.length = str_len
@@ -23,6 +24,6 @@ class MockPipe(Pipe):
 
 
 class MockEntity(Handler):
-    def handle(self, task: Task) -> Pipe:
+    def handle(self, task: Task) -> TextPipe:
         return MockPipe()
 

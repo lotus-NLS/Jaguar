@@ -4,15 +4,8 @@ import speech_recognition as sr
 from queue import Queue
 from openai import OpenAI
 import tempfile
-from engine.l5_singletons import LotusSettings
-
-
-class BytePipe(Queue):
-    def get(self, block = True, timeout = None) -> bytes:
-        return super().get(block, timeout)
-
-    def put(self, item : bytes, block = True, timeout = None):
-        super().put(item, block, timeout)
+from engine.l5_singletons.settings import LotusSettings
+from .pipes import BytePipe
 
 
 class Recorder:
@@ -74,8 +67,5 @@ class Transcriber:
 
 
 
-
-
 if __name__ == "__main__":
     transcriber = Transcriber()
-    transcriber.start()

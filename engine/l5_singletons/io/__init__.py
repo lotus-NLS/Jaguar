@@ -1,3 +1,3 @@
-from .engine_io import IO, Handler
-from .types import Pipe, Task
+from .engine_io import IO, Handler, Task
+from .pipes import TextPipe
 from .transcribe import Transcriber
