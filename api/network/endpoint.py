@@ -19,8 +19,8 @@ class Socket:
         self.port = port
         self.sock = socket_lib.socket(socket_lib.AF_INET, socket_lib.SOCK_STREAM)
 
-    def as_addr(self):
-        return f'{self.ip}:{self.port}'
+    def as_addr(self, protocol : str = 'https'):
+        return f'{protocol}://{self.ip}:{self.port}'
 
 
 class Endpoint:

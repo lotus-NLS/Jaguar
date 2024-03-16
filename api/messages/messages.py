@@ -9,10 +9,10 @@ from typing import Optional
 class LotusRequest(BaseModel):
     user_id: str = 'default_id'
     bool_content: Optional[bool] = None
-    msg: str = Field(default_factory=list)
+    msg: str = ''
     img : Optional[str] = None
 
 
 class TranscribeRequest(BaseModel):
-    audio_content : Optional[str] = None
+    wav_bytes : bytes = None
 

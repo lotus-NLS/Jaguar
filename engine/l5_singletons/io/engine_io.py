@@ -21,7 +21,7 @@ class Handler(Loggable):
 
 
 class IO(Singleton):
-    def __init__(self, handler : Optional[Handler] = None):
+    def __init__(self, handler : Optional[Handler] = None, socket : Socket = Network().engine_socket):
         if IO.get_is_initialized():
             return
 
@@ -31,28 +31,25 @@ class IO(Singleton):
         self.handler : handler = handler
         self.transcriber : Transcriber = Transcriber()
         self.app : FastAPI = FastAPI()
+        self.socket : Socket = socket
 
         @self.app.post("/")
-        async def process(request: LotusRequest) -> StreamingResponse:
+        async def process(request: LotusRequest) -> str:
             if request.img:
                 raise NotImplementedError
             entry = [Entry.as_user(msg=request.msg)]
             task = Task(new_entries=entry)
             response = self.handler.handle(task=task)
-            return StreamingResponse(content=response.get_text_stream(), media_type="text/plain")
+            return 'OK'
+            # return StreamingResponse(content=response.get_text_stream(), media_type="text/plain")
 
 
         @self.app.post("/transcribe")
         async def transcribe(request: TranscribeRequest) -> str:
-            raise NotImplementedError
-            # body_str = await request.body()  # Asynchronously get the request body
-            # task_str = body_str.decode('utf-8')  # Decode bytes to string
-            # Process the transcription based on the input task string
-            # return {"transcribed_text": "Dummy transcribed text based on " + task_str}
+            return self.transcriber.get_text(wav_bytes=request.wav_bytes)
 
-
-    def run(self, socket : Socket = Network().engine_socket):
-        uvicorn.run(self.app, host=socket.ip, port=socket.port)
+    def run(self):
+        uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
 
 
 class Task:
