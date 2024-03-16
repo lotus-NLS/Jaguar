@@ -1,4 +1,4 @@
-from api.communication import Network, NetworkArea, Socket
+from api.network import Network, NetworkArea, Socket
 from hollarek.devtools import Unittest
 
 class TestNetwork(Unittest):

@@ -10,7 +10,7 @@ class NetworkArea(Enum):
     GLOBAL = 'WAN'
 
 
-class NetworkAddresses:
+class Network:
     def __init__(self, webapp_socket : Optional[Socket] = None, engine_socket : Optional[Socket] = None):
         super().__init__()
 

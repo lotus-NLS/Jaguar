@@ -2,8 +2,7 @@ from __future__ import annotations
 import string
 import random
 
-from api.communication.messages import Pipe, Response, Task
-from engine.l5_singletons.io.engine_io import Handler
+from engine.l5_singletons.io.engine_io import Handler, Pipe, Task
 
 
 class MockPipe(Pipe):
@@ -24,6 +23,6 @@ class MockPipe(Pipe):
 
 
 class MockEntity(Handler):
-    def handle(self, task: Task) -> Response:
-        return Response(text_queue=MockPipe())
+    def handle(self, task: Task) -> Pipe:
+        return MockPipe()
 

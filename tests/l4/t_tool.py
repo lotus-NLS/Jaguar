@@ -1,7 +1,7 @@
 from engine.l4_tools import ToolCall
 from engine.l4_tools.tool_output import MissingArgs, ExitStatus, Progress, ToolOutput
 from hollarek.devtools import Unittest
-from tests.spoofs import SpoofPrinter, SpoofErrorRaiser, SpoofToolCall
+from ..spoofs import SpoofPrinter, SpoofErrorRaiser, SpoofToolCall
 
 
 class ToolTest(Unittest):

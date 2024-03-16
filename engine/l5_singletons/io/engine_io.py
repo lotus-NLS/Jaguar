@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from typing import Optional
 
-from api import LotusRequest, TranscribeRequest, Socket, NetworkAddresses, Entry
+from api import LotusRequest, TranscribeRequest, Socket, Network, Entry
 from hollarek.logging import Loggable
 from hollarek.templates import Singleton
 from .types import Task, Pipe
@@ -49,6 +49,6 @@ class IO(Singleton):
             # return {"transcribed_text": "Dummy transcribed text based on " + task_str}
 
 
-    def run(self, socket : Socket = NetworkAddresses().engine_socket):
+    def run(self, socket : Socket = Network().engine_socket):
         uvicorn.run(self.app, host=socket.ip, port=socket.port)
 

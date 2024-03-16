@@ -1,18 +1,18 @@
 from PIL.Image import Image as PILImage
 from api import Entry
-from engine.l5_singletons import User
-from api.communication.messages import Response, Task
 from typing import Optional
+from engine.l5_singletons import Task
+# from api import NetworkAddresses
 # ----------------------------------------------
 
 
-class ConsoleUser(User):
-    def send(self, msg : str, image : Optional[PILImage] = None) -> Response:
+class ConsoleUser:
+    def send(self, msg : str, image : Optional[PILImage] = None):
         task = Task(new_entries=[Entry.as_user(msg=msg, image=image)])
-        return self.io.handle(task=task)
+        raise NotImplementedError
 
 
-class WebappUserSpoof(User):
+class WebappUserSpoof:
     def send(self, msg : str, image : Optional[PILImage] = None):
         pass
 
