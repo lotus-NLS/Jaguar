@@ -1,6 +1,5 @@
 from __future__ import annotations
 import time
-import threading
 import requests
 import base64
 from hollarek.devtools import Unittest, FileSpoofer
@@ -11,15 +10,14 @@ from engine.l5_singletons.io.engine_io import IO
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
+    # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
         IO.reset_instance()
-        entity = MockEntity()
-        cls.io = IO(handler=entity)
+        cls.io = IO(handler=MockEntity())
         cls.server_proc = cls.io.dev_run()
-        time.sleep(0.1)
         cls.addr = cls.io.socket.as_addr(protocol='http')
-
+        time.sleep(0.1)
 
     def test_initialization(self):
         self.assertIsNotNone(self.io)
@@ -38,16 +36,18 @@ class TestEngineIO(Unittest):
         url = f'{self.addr}/transcribe'
         req_str = TranscribeRequest(wav_base64=to_base64(data=data)).json()
         response = requests.post(url,data=req_str)
-        print(response.text)
+        self.assertIn(f'Four score and seven years ago'.lower(),response.text.lower())
+        print(f'Transcription output: {response.text}')
 
+    # noinspection PyUnresolvedReferences
     @classmethod
     def tearDownClass(cls):
         cls.server_proc.terminate()
         cls.server_proc.join()
 
+
 def to_base64(data: bytes) -> str:
     return base64.b64encode(data).decode()
-
 
 if __name__ == '__main__':
     TestEngineIO.execute_all()

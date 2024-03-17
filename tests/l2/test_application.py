@@ -61,7 +61,7 @@ class TestActionProperties(ApplicationTest):
 
     def test_invalid_args(self):
         with self.assertRaises(TypeError):
-            invalid_arg_app = Application(index=1, workspace_type=InvalidArgWorkspace, desc='Invalid arg application')
+            Application(index=1, workspace_type=InvalidArgWorkspace, desc='Invalid arg application')
 
 
 class TestActionExecution(ApplicationTest):
