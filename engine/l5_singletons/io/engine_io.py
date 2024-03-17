@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import logging
 import uvicorn
+from multiprocessing import Process
 from abc import abstractmethod
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -51,8 +52,12 @@ class IO(Singleton):
             wav_bytes = from_base64(encoded_str=request.wav_base64)
             return self.transcriber.get_text(wav_bytes=wav_bytes)
 
-    def run(self):
-        uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
+    def dev_run(self) -> Process:
+        def do():
+            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
+        process = Process(target=do)
+        process.start()
+        return process
 
 
 class SafeStream(StreamingResponse):

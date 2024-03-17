@@ -16,7 +16,7 @@ class TestEngineIO(Unittest):
         IO.reset_instance()
         entity = MockEntity()
         cls.io = IO(handler=entity)
-        threading.Thread(target=cls.io.run).start()
+        cls.server_proc = cls.io.dev_run()
         time.sleep(0.1)
         cls.addr = cls.io.socket.as_addr(protocol='http')
 
@@ -39,6 +39,11 @@ class TestEngineIO(Unittest):
         req_str = TranscribeRequest(wav_base64=to_base64(data=data)).json()
         response = requests.post(url,data=req_str)
         print(response.text)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server_proc.terminate()
+        cls.server_proc.join()
 
 def to_base64(data: bytes) -> str:
     return base64.b64encode(data).decode()
