@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import inspect
-import os.path
 import time
 import logging
 import uvicorn
@@ -65,27 +63,22 @@ class IO(Singleton):
         uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
 
 
-class Task:
-    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
-        self.new_entries : list[Entry] = new_entries if new_entries else []
-        self.selected_tool : Optional[str] = required_tool_name
-        self.skip_feedback : bool = False if self.selected_tool is None else True
-
-import linecache
-
 class SafeStream(StreamingResponse):
     logger = logging.getLogger(f'uvicorn.error')
     async def __call__(self, *args, **kwargs):
         try:
             return await super().__call__(*args, **kwargs)
         except BaseException as e:
-            callstack = inspect.stack()
-            while callstack:
-                frame = callstack.pop()
-                if os.path.abspath(__file__) in frame.filename:
-                    file_path = frame.filename
-                    line_number = frame.lineno
-                    tb_str = (f'File "{file_path}", line {line_number}\n'
-                              f'    {linecache.getline(file_path, line_number).strip()}')
-                    print(f'{tb_str}')
-            self.logger.error(f'Error during streaming: {e}')
+            endpoint = args[0].get('route')
+            if not endpoint:
+                f'Not found'
+            self.logger.error(f'Error during streaming on endpoint \"{endpoint}\": {e}')
+
+
+class Task:
+    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
+        self.new_entries : list[Entry] = new_entries if new_entries else []
+        self.selected_tool : Optional[str] = required_tool_name
+        self.skip_feedback : bool = False if self.selected_tool is None else True
+
+
