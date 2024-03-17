@@ -11,7 +11,6 @@ class TestLotusSettings(Unittest):
         cls.valid_keys = ['openai_api_key', 'google_api_key', 'search_engine_id', 'enable_introduction']
         cls.invalid_keys = ['invalid_key', 'invalid_key2', 'invalid_key3']
 
-
     # --------------------------------------------
     # tests
 
