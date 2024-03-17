@@ -2,11 +2,12 @@ from __future__ import annotations
 import time
 import requests
 import base64
-from hollarek.devtools import Unittest, FileSpoofer
+from hollarek.devtools import Unittest
+from hollarek.file import FileSpoofer
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity
-from engine.l5_singletons.io.engine_io import IO
+from engine.l5_singletons.io.io import IO
 # --------------------------------------------
 
 class TestEngineIO(Unittest):

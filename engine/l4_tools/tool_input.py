@@ -2,7 +2,6 @@ from __future__ import annotations
 import json
 from typing import Optional,Any
 from json_repair import repair_json
-from hollarek.logging import debug
 from hollarek.devtools import Argument
 from dataclasses import dataclass
 # ---------------------------------------------------
@@ -143,7 +142,7 @@ class CallMap(dict[int, ToolCall]):
         print(f'\n-> Generated tool calls')
         for call in list(self.values()):
             print(f'tool name: {call.name}')
-            debug(call.get_args_dict())
+            print(call.get_args_dict())
 
     def is_empty(self) -> bool:
         return len(self) == 0

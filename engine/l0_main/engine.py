@@ -3,7 +3,7 @@ import threading
 import time
 
 from pynput.keyboard import Key
-from hollarek.logging import Loggable
+from hollarek.core.logging import Loggable
 from hollarek.hardware import KeyboardListener
 from engine.l5_singletons import LotusSettings, IO
 from .entities import ConsoleUser

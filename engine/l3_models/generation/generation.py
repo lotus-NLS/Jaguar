@@ -4,7 +4,7 @@ from typing import Optional, Iterator
 from dataclasses import dataclass, field
 from abc import abstractmethod
 from api import Entry
-from hollarek.logging import Loggable, LogSettings
+from hollarek.core.logging import Loggable, LogSettings
 from engine.l4_tools import CallMap
 
 # ---------------------------------------------------------

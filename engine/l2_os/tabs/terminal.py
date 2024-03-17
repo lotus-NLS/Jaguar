@@ -4,7 +4,7 @@
 # from subprocess import Popen, PIPE
 # from typing import Optional
 #
-# from hollarek.events import Countdown
+# from hollarek.core.events import Countdown
 # from ..application import Tool, ToolArg
 # from io import StringIO
 # # ---------------------------------------------------------

@@ -1,7 +1,9 @@
 from PIL.Image import Image as PILImage
 from api import Entry
 from typing import Optional
-from engine.l5_singletons import Task
+from engine.l5_singletons.io import Task
+
+
 # from api import NetworkAddresses
 # ----------------------------------------------
 

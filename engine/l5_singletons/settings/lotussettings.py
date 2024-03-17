@@ -4,9 +4,10 @@ import os
 from typing import Optional
 
 from func_timeout import func_timeout, FunctionTimedOut
+from hollarek.cloud import AWSRegion
 from hollarek.configs import LocalConfigs, AWSConfigs, Configs
-from hollarek.templates import Singleton
-from hollarek.logging import LogLevel, get_logger, Logger
+from hollarek.abstract import Singleton
+from hollarek.core.logging import LogLevel, get_logger, Logger
 # --------------------------------------------
 
 class LotusSettings(Singleton):
@@ -28,7 +29,7 @@ class LotusSettings(Singleton):
             config_path = os.path.join(os.path.expanduser('~'), '.creds', 'lotusconfigs')
             configs = LocalConfigs(config_fpath=config_path)
         else:
-            configs = AWSConfigs(secret_name='lotus_api_keys')
+            configs = AWSConfigs(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
         return configs
 
     @classmethod

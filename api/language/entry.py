@@ -3,8 +3,7 @@ from typing import Optional
 from enum import Enum
 
 from PIL.Image import Image as PILImage
-from hollarek.templates import Dillable
-from hollarek.file import ImageConverter
+from hollarek.file import ImageConverter, ImageSerializer
 from dataclasses import dataclass
 from .flags import Flags
 from .speaker import Speaker, Role
@@ -17,12 +16,11 @@ class APIType(Enum):
 
 
 @dataclass
-class Entry(Dillable):
+class Entry:
     speaker : Speaker
     msg : str
     image : Optional[PILImage] = None
     flags : Optional[Flags] = None
-
 
 
     def add_msg(self, msg : str):
@@ -83,7 +81,7 @@ class Entry(Dillable):
             image = self.image
             if image.mode != 'RGB':
                 image = ImageConverter.to_rgb(image=image)
-            base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
+            base64_image = ImageSerializer.as_base64_str(image, img_format=img_fmt)
             text = {
                 "type": "text",
                 "text": f"{self.msg}"

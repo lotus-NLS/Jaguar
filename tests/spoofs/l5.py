@@ -2,8 +2,9 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.engine_io import Handler, TextPipe
-from engine.l5_singletons import Task
+from engine.l5_singletons.io.io import TextPipe
+from engine.l5_singletons import TaskHandler
+from engine.l5_singletons.io import Task
 
 
 class MockPipe(TextPipe):
@@ -23,7 +24,7 @@ class MockPipe(TextPipe):
         return super().get(*args, **kwargs)
 
 
-class MockEntity(Handler):
+class MockEntity(TaskHandler):
     def handle(self, task: Task) -> TextPipe:
         return MockPipe()
 

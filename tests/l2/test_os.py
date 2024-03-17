@@ -1,7 +1,8 @@
 import json
 from engine.l4_tools import Tool, ToolCall
 from engine.l2_os import OS, TextEditor
-from hollarek.devtools import Unittest, FileSpoofer
+from hollarek.devtools import Unittest
+from hollarek.file import FileSpoofer
 
 class TestOpenClose(Unittest):
     def setUp(self):

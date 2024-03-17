@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import threading
-from hollarek.logging import LogLevel
+from hollarek.core.logging import LogLevel
 from func_timeout import FunctionTimedOut
 from api import Entry
-from engine.l5_singletons import Handler, Task, TextPipe
+from engine.l5_singletons import TaskHandler, TextPipe
+from engine.l5_singletons.io import Task
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, TextEditor, Host
@@ -12,7 +13,7 @@ from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
 
-class Agent(Handler):
+class Agent(TaskHandler):
     def __init__(self, model : LLM = OpenAIModel.get_gpt4_turbo(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context

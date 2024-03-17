@@ -1,5 +1,5 @@
 from __future__ import annotations
-from hollarek.logging import Loggable, LogLevel
+from hollarek.core.logging import Loggable, LogLevel
 
 from engine.l4_tools import Tool, CallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context

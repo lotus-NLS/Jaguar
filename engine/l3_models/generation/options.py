@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from engine.l5_singletons import Task
+from engine.l5_singletons.io import Task
 
 
 @dataclass

@@ -4,7 +4,7 @@ from api import Entry
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Optional, Any
-from hollarek.logging import Loggable, LogLevel
+from hollarek.core.logging import Loggable, LogLevel
 # ---------------------------------------------------
 
 class Progress(Enum):

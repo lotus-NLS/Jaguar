@@ -4,37 +4,32 @@ import base64
 import logging
 import uvicorn
 from multiprocessing import Process
-from abc import abstractmethod
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from typing import Optional
 
 from api import LotusRequest, TranscribeRequest, Socket, Network, Entry
-from hollarek.logging import Loggable
-from hollarek.templates import Singleton
-from .pipes import TextPipe
+from hollarek.abstract import Singleton
+from .task import Task, TaskHandler
 from .transcribe import Transcriber
+
 # ----------------------------------------------
 
 
-class Handler(Loggable):
-    @abstractmethod
-    def handle(self, task : Task) -> TextPipe:
-        pass
-
-
 class IO(Singleton):
-    def __init__(self, handler : Optional[Handler] = None, socket : Socket = Network().engine_socket):
+    def __init__(self, handler : Optional[TaskHandler] = None, socket : Socket = Network().engine_socket):
         if IO.get_is_initialized():
             return
 
         if not handler:
-            raise ValueError('Handler must be provided')
+            raise ValueError('Handler must be provided on initialization')
         super().__init__()
         self.handler : handler = handler
         self.transcriber : Transcriber = Transcriber()
-        self.app : FastAPI = FastAPI()
         self.socket : Socket = socket
+
+        self.app: FastAPI = FastAPI()
+        self.dev_process: Optional[Process] = None
 
         @self.app.post("/")
         async def process(request: LotusRequest) -> SafeStream:
@@ -49,15 +44,19 @@ class IO(Singleton):
 
         @self.app.post("/transcribe")
         async def transcribe(request: TranscribeRequest) -> str:
-            wav_bytes = from_base64(encoded_str=request.wav_base64)
+            wav_bytes = base64.b64decode(request.wav_base64)
             return self.transcriber.get_text(wav_bytes=wav_bytes)
 
-    def dev_run(self) -> Process:
+
+    def dev_run(self):
         def do():
             uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
-        process = Process(target=do)
-        process.start()
-        return process
+        self.dev_process = Process(target=do)
+        self.dev_process.start()
+
+    def dev_kill(self):
+        self.dev_process.terminate()
+
 
 
 class SafeStream(StreamingResponse):
@@ -72,12 +71,3 @@ class SafeStream(StreamingResponse):
             self.logger.error(f'Error during streaming on endpoint \"{endpoint}\": {e}', exc_info=True)
 
 
-class Task:
-    def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
-        self.new_entries : list[Entry] = new_entries if new_entries else []
-        self.selected_tool : Optional[str] = required_tool_name
-        self.skip_feedback : bool = False if self.selected_tool is None else True
-
-
-def from_base64(encoded_str: str) -> bytes:
-    return base64.b64decode(encoded_str)

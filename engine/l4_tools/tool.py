@@ -1,7 +1,7 @@
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
-from hollarek.logging import get_logger
+from hollarek.core.logging import get_logger
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
 from .tool_input import ToolCall, ToolArg, ToolDoc
 # ---------------------------------------------------------

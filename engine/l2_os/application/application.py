@@ -3,7 +3,7 @@ from engine.l4_tools import Tool, ToolArg, ToolDoc
 
 from .action import Action
 from .window import Window, Workspace
-from hollarek.logging import Loggable, LogSettings
+from hollarek.core.logging import Loggable, LogSettings
 from hollarek.devtools import ModuleInspector
 from dataclasses import dataclass
 # ---------------------------------------------------
