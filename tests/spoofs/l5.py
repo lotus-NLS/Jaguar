@@ -13,14 +13,14 @@ class MockPipe(TextPipe):
         self.count = msg_count
         self.current = 0
 
-    def get(self) -> str:
+    def get(self, *args, **kwargs) -> str:
         if self.current < self.count:
             self.current += 1
             msg = ''.join(random.choices(string.ascii_lowercase, k=self.length))
             self.put(msg)
         else:
             self.stop()
-        return super().get()
+        return super().get(*args, **kwargs)
 
 
 class MockEntity(Handler):

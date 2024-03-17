@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import Optional
 from queue import Queue, Empty
 from typing import Iterator
-from hollarek.logging import LogLevel, get_logger
+from hollarek.logging import LogLevel, get_logger, Logger
 
 # ----------------------------------------------
 
 
 class TextPipe(Queue):
     stop_token = '⊥'
-    logger = None
+    logger : Optional[Logger] = None
 
     def put(self, msg : Optional[str], *args, **kwargs):
         if msg is None:
@@ -57,7 +57,7 @@ class TextPipe(Queue):
     def log(cls, msg : str, level : LogLevel):
         if not cls.logger:
             cls.logger = get_logger()
-        cls.logger(msg=msg, level=level)
+        cls.logger.log(msg=msg, level=level)
 
 
 class BytePipe(Queue):

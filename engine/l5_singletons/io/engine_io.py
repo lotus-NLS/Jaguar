@@ -41,18 +41,9 @@ class IO(Singleton):
                 raise NotImplementedError
             entry = [Entry.as_user(msg=request.msg)]
             task = Task(new_entries=entry)
-            response = self.handler.handle(task=task)
 
-            def simple_text_stream():
-                yield "Hello"
-                time.sleep(1)
-                raise ValueError(f'nope')
-                yield " "
-                time.sleep(1)
-                yield "world!"
-                time.sleep(1)
-                yield "\nThis is a streaming response."
-            return SafeStream(content=simple_text_stream(), media_type="text/plain")
+            response = self.handler.handle(task=task)
+            return SafeStream(content=response.get_text_stream(), media_type="text/plain")
 
 
         @self.app.post("/transcribe")
@@ -72,7 +63,7 @@ class SafeStream(StreamingResponse):
             endpoint = args[0].get('route')
             if not endpoint:
                 f'Not found'
-            self.logger.error(f'Error during streaming on endpoint \"{endpoint}\": {e}')
+            self.logger.error(f'Error during streaming on endpoint \"{endpoint}\": {e}', exc_info=True)
 
 
 class Task:
