@@ -58,7 +58,6 @@ class IO(Singleton):
         self.dev_process.terminate()
 
 
-
 class SafeStream(StreamingResponse):
     logger = logging.getLogger(f'uvicorn.error')
     async def __call__(self, *args, **kwargs):

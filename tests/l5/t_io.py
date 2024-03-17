@@ -16,7 +16,7 @@ class TestEngineIO(Unittest):
     def setUpClass(cls):
         IO.reset_instance()
         cls.io = IO(handler=MockEntity())
-        cls.server_proc = cls.io.dev_run()
+        cls.io.dev_run()
         cls.addr = cls.io.socket.as_addr(protocol='http')
         time.sleep(0.1)
 
@@ -43,8 +43,7 @@ class TestEngineIO(Unittest):
     # noinspection PyUnresolvedReferences
     @classmethod
     def tearDownClass(cls):
-        cls.server_proc.terminate()
-        cls.server_proc.join()
+        cls.io.dev_kill()
 
 
 def to_base64(data: bytes) -> str:

@@ -4,8 +4,8 @@ from abc import abstractmethod
 from typing import Optional
 
 from api import Entry
-from engine.l5_singletons import TextPipe
 from hollarek.core.logging import Loggable
+from .pipes import TextPipe
 
 
 class TaskHandler(Loggable):

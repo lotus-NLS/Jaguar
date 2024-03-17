@@ -2,9 +2,8 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l5_singletons.io.io import TextPipe
 from engine.l5_singletons import TaskHandler
-from engine.l5_singletons.io import Task
+from engine.l5_singletons.io import Task, TextPipe
 
 
 class MockPipe(TextPipe):

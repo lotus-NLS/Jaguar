@@ -41,7 +41,6 @@ class TestLotusSettings(Unittest):
             self.assertTrue(val)
 
     def tearDown(self):
-        LotusSettings().configs.reset_instance()
         LotusSettings().reset_instance()
 
 
