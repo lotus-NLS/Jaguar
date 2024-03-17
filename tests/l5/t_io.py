@@ -1,15 +1,13 @@
 from __future__ import annotations
-
 import time
-
-import requests
-
-from api import LotusRequest
-from tests.spoofs import MockEntity
-from hollarek.devtools import Unittest
-
-from engine.l5_singletons.io.engine_io import IO
 import threading
+import requests
+import base64
+from hollarek.devtools import Unittest, FileSpoofer
+
+from api import LotusRequest, TranscribeRequest
+from tests.spoofs import MockEntity
+from engine.l5_singletons.io.engine_io import IO
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
@@ -20,6 +18,7 @@ class TestEngineIO(Unittest):
         cls.io = IO(handler=entity)
         threading.Thread(target=cls.io.run).start()
         time.sleep(0.1)
+        cls.addr = cls.io.socket.as_addr(protocol='http')
 
 
     def test_initialization(self):
@@ -27,20 +26,23 @@ class TestEngineIO(Unittest):
 
     def test_process_endpoint(self):
         req_str = LotusRequest().json()
-        # response = self.client.post("/", content=req_str)
-        url = self.io.socket.as_addr(protocol='http')
-        response = requests.post(url=url,data=req_str, stream=True)
+        response = requests.post(url=self.addr, data=req_str, stream=True)
         for chunk in response.iter_content(chunk_size=None):
             print(chunk)
-
         self.assertEqual(response.status_code, 200)
 
-    # def test_transcribe_endpoint(self):
-    #     payload = {
-    #         "audio_content": "base64_audio_string_here"
-    #     }
-    #     response = self.client.post("/transcribe", json=payload)
-    #     self.assertEqual(response.status_code, 200)
+    def test_transcribe_endpoint(self):
+        spoof_wav = FileSpoofer.lend_wav()
+        with open(spoof_wav.fpath, 'rb') as f:
+            data = f.read()
+        url = f'{self.addr}/transcribe'
+        req_str = TranscribeRequest(wav_base64=to_base64(data=data)).json()
+        response = requests.post(url,data=req_str)
+        print(response.text)
+
+def to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode()
+
 
 if __name__ == '__main__':
     TestEngineIO.execute_all()

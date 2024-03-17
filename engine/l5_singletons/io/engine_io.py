@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import time
+import base64
 import logging
 import uvicorn
 from abc import abstractmethod
@@ -48,7 +48,8 @@ class IO(Singleton):
 
         @self.app.post("/transcribe")
         async def transcribe(request: TranscribeRequest) -> str:
-            return self.transcriber.get_text(wav_bytes=request.wav_bytes)
+            wav_bytes = from_base64(encoded_str=request.wav_base64)
+            return self.transcriber.get_text(wav_bytes=wav_bytes)
 
     def run(self):
         uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
@@ -73,3 +74,5 @@ class Task:
         self.skip_feedback : bool = False if self.selected_tool is None else True
 
 
+def from_base64(encoded_str: str) -> bytes:
+    return base64.b64decode(encoded_str)

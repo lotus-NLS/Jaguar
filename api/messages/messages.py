@@ -14,5 +14,5 @@ class LotusRequest(BaseModel):
 
 
 class TranscribeRequest(BaseModel):
-    wav_bytes : bytes = None
+    wav_base64 : str
 
