@@ -19,3 +19,7 @@ class Task:
         self.new_entries : list[Entry] = new_entries if new_entries else []
         self.selected_tool : Optional[str] = required_tool_name
         self.skip_feedback : bool = False if self.selected_tool is None else True
+
+    @classmethod
+    def make_default(cls, msg : str):
+        return cls(new_entries=[Entry.as_user(msg=msg)])

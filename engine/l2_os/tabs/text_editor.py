@@ -1,20 +1,26 @@
 from __future__ import annotations
+
+import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
-from hollarek.fsys import FsysNode
 from engine.l2_os.application import Workspace
+from hollarek.file import TextFile
 
 # ---------------------------------------------------------
 
 class TextEditor(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
-        self.fpath : str = uri
-        self.content : Optional[str] =None
+        self.content : Optional[str] = None
+        self.fpath = uri
+        self.text_file : TextFile = TextFile(fpath=uri, require_writable=True)
 
 
     def get_text(self) -> Optional[str]:
+        if not os.path.isfile(self.fpath):
+            return ''
+
         with open(self.fpath, 'r') as f:
             lines = f.readlines()
         numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
@@ -27,7 +33,7 @@ class TextEditor(Workspace):
 
 
     def insert(self, line: int, content: str):
-        if FsysNode(path=self.fpath).get_suffix() == 'pdf':
+        if self.text_file.get_suffix() == 'pdf':
             raise ValueError('Cannot edit pdf files')
         if line <= 0:
             raise ValueError("Line number must be a positive integer.")
@@ -37,7 +43,6 @@ class TextEditor(Workspace):
                 lines = f.readlines()
         except:
             lines = []
-
         index = line - 1
         lines.insert(index, content)
         with open(self.fpath, 'w') as f:
@@ -45,7 +50,7 @@ class TextEditor(Workspace):
 
 
     def delete_lines(self, start_line: int, end_line: int):
-        if FsysNode(path=self.fpath).get_suffix().lower() == 'pdf':
+        if self.text_file.get_suffix().lower() == 'pdf':
             raise ValueError('Cannot edit pdf files')
         if start_line <= 0 or end_line < start_line:
             raise ValueError("Invalid line range.")

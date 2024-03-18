@@ -71,4 +71,8 @@ class OS(Loggable):
             docs += app.get_docs()
         return docs
 
-
+    def get_apps(self, open_only : bool = True):
+        applications = list(self.app_map.values())
+        if open_only:
+            return [app for app in applications if app.is_open()]
+        return applications
