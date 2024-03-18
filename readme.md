@@ -10,12 +10,9 @@ For more information see the "Wiki" section on the [Project management page](htt
 
 ## Setup and usage for Ubuntu 22.04
 
-Use the launch script in the root of the repo:
-```
-bash launch.sh         # Standard launch
-```
+This is still in flux, [TODO] later
 
-Speech recognition also requires PyAudio
+Speech recognition requires PyAudio
 ```
 sudo apt-get install portaudio19-dev python3-pyaudio
 pip install PyAudio
