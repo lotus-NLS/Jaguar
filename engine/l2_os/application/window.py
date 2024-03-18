@@ -37,6 +37,13 @@ class Workspace:
         dashes = '-' * int(num_dashes / 2)
         return f'\n{dashes}{msg}{dashes}'
 
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.__name__
+
+    @abstractmethod
+    def get_desc(self) -> str:
+        pass
 
 class Window:
     def __init__(self, index : int, app_name : str):

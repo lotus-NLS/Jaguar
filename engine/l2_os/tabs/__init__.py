@@ -1,2 +1,2 @@
-from .text_editor import TextEditor
+from .text_editor import LotusText
 from .host_control import Host

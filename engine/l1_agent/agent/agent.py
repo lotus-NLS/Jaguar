@@ -8,7 +8,7 @@ from engine.l5_singletons import TaskHandler, TextPipe
 from engine.l5_singletons.io import Task
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, TextEditor, Host
+from engine.l2_os import OS, LotusText, Host
 from engine.l1_agent.protocol import Identity
 
 # ---------------------------------------------------------
@@ -22,7 +22,7 @@ class Agent(TaskHandler):
         # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[TextEditor, Host])
+        self.os : OS = OS(workspace_types=[LotusText, Host])
         self.model: LLM = model
 
     # ---------------------------------------------------

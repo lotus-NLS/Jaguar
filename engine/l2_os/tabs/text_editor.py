@@ -9,7 +9,7 @@ from hollarek.file import TextFile
 
 # ---------------------------------------------------------
 
-class TextEditor(Workspace):
+class LotusText(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
         self.content : Optional[str] = None
@@ -60,3 +60,7 @@ class TextEditor(Workspace):
         del lines[start_line - 1:end_line]
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
+
+    def get_desc(self) -> str:
+        return (f'This application allows you to view almost any text file including .pdf and .docx files'
+                f'However you can only edit plain text files')

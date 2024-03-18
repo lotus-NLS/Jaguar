@@ -1,6 +1,6 @@
 import json
 from engine.l4_tools import Tool, ToolCall
-from engine.l2_os import OS, TextEditor
+from engine.l2_os import OS, LotusText
 from hollarek.devtools import Unittest
 from hollarek.file import FileSpoofer
 
@@ -8,7 +8,7 @@ class TestOpenClose(Unittest):
     def setUp(self):
         self.test_txt = FileSpoofer.lend_txt()
 
-        self.os_system = OS(workspace_types=[TextEditor])
+        self.os_system = OS(workspace_types=[LotusText])
         self.open_tool = self.os_system.open
         self.text_app = self.os_system.app_map[0]
         open_call_dict = { 'application_index' : 0, 'uri' : self.test_txt.fpath}
@@ -35,7 +35,7 @@ class TestTools(Unittest):
     def setUp(self):
         self.test_txt = FileSpoofer.lend_txt()
 
-        self.os_system = OS(workspace_types=[TextEditor])
+        self.os_system = OS(workspace_types=[LotusText])
         self.open_tool = self.os_system.open
         self.text_app = self.os_system.app_map[0]
         open_call_dict = {'application_index': 0, 'uri': self.test_txt.fpath}
@@ -46,7 +46,7 @@ class TestTools(Unittest):
         docs = self.os_system._get_docs()
         self.assertTrue(len(docs) == 4)
 
-        tool_first_names = ['Open', 'Close', f'{TextEditor.insert.__name__}', f'{TextEditor.delete_lines.__name__}']
+        tool_first_names = ['Open', 'Close', f'{LotusText.insert.__name__}', f'{LotusText.delete_lines.__name__}']
 
         found_full_names = []
         for doc in docs:
