@@ -12,30 +12,27 @@ from api import LotusRequest, TranscribeRequest, Entry
 from hollarek.network import Socket, Endpoint, Method
 from .task import Task, TaskHandler
 from .transcribe import Transcriber
-
+from abc import abstractmethod
 # ----------------------------------------------
 
-class EngineIO:
+class Server:
     def __init__(self, handler : TaskHandler, socket : Socket = Socket.get_localhost(port=5000)):
         super().__init__()
         self.handler : handler = handler
         self.transcriber : Transcriber = Transcriber()
         self.socket : Socket = socket
 
-        self.dev_process: Optional[Process] = None
         self.app: FastAPI = FastAPI()
         self.add_endpoint(endpoint=self.get_transcribe_endpoint(), callback=self.transcribe)
         self.add_endpoint(endpoint=self.get_process_endpoint(), callback=self.respond)
 
+    @abstractmethod
+    def run(self):
+        pass
 
-    def dev_run(self):
-        def do():
-            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
-        self.dev_process = Process(target=do)
-        self.dev_process.start()
-
-    def dev_kill(self):
-        self.dev_process.terminate()
+    @abstractmethod
+    def kill(self):
+        pass
 
     # ----------------------------------------------
     # callbacks
@@ -54,6 +51,7 @@ class EngineIO:
         return self.transcriber.get_text(wav_bytes=wav_bytes)
 
 
+
     # ----------------------------------------------
 
     def add_endpoint(self, endpoint : Endpoint, callback : Callable):
@@ -65,8 +63,29 @@ class EngineIO:
     def get_process_endpoint(self) -> Endpoint:
         return Endpoint(path='/process', method=Method.POST, socket=self.socket)
 
-    @staticmethod
-    def get_protocol() -> str:
+    @classmethod
+    @abstractmethod
+    def get_protocol(cls) -> str:
+        pass
+
+
+class DevServer(Server):
+    def __init__(self, handler : TaskHandler, socket : Socket = Socket.get_localhost(port=5000)):
+        super().__init__(handler=handler, socket=socket)
+        self.handler : handler = handler
+        self.dev_process: Optional[Process] = None
+
+    def run(self):
+        def do():
+            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
+        self.dev_process = Process(target=do)
+        self.dev_process.start()
+
+    def kill(self):
+        self.dev_process.terminate()
+
+    @classmethod
+    def get_protocol(cls):
         return 'http'
 
 

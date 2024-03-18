@@ -2,7 +2,6 @@ import threading
 from typing import BinaryIO, Optional
 
 import speech_recognition as sr
-from queue import Queue
 from openai import OpenAI
 import tempfile
 from engine.l5_singletons.settings import LotusSettings

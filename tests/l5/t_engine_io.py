@@ -7,14 +7,14 @@ from hollarek.file import FileSpoofer
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity
-from engine.l5_singletons.io.engine_io import EngineIO
+from engine.l5_singletons.io.engine_io import Server
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
     # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
-        cls.io = EngineIO(handler=MockEntity())
+        cls.io = Server(handler=MockEntity())
         cls.io.dev_run()
         cls.addr = cls.io.socket.as_addr(protocol='http')
         time.sleep(0.1)
