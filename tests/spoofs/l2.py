@@ -25,6 +25,9 @@ class MockWorkspace(Workspace):
     def reset(self):
         self.text_content = ''
 
+    def get_desc(self) -> str:
+        return ''
+
 
 class InvalidArgWorkspace(Workspace):
     def get_text(self) -> str:
@@ -36,3 +39,5 @@ class InvalidArgWorkspace(Workspace):
     def invalid_type_func(self, plant : Plant):
         pass
 
+    def get_desc(self) -> str:
+        return ''

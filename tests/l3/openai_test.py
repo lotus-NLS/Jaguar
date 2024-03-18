@@ -47,7 +47,7 @@ class OpenAITest(Unittest):
         self.lineprinter.reset()
 
     def get_result(self, context : Context, generation : Generation) -> (str, CallMap):
-        prompts_context = [entry.get_msg() for entry in context.entries]
+        prompts_context = [entry.msg for entry in context.entries]
         call_map : CallMap = CallMap()
 
         print(f'-> Prompts: \n {prompts_context}')

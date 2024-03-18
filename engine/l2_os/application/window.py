@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from api import Entry, Speaker
 from PIL.Image import Image as PILImage
 from typing import Optional
 from urllib.parse import urlparse
 from pathlib import Path
+from api import Entry
 
 # ---------------------------------------------------------
 
@@ -28,7 +28,7 @@ class Workspace:
         msg += self.get_text()
         msg += self.get_workspace_header()
 
-        return Entry(speaker=Speaker.get_tool(name=app_name), msg=msg, **kwargs)
+        return Entry.as_tool(msg=msg, name=app_name, **kwargs)
 
     @staticmethod
     def get_workspace_header(msg: str = ''):

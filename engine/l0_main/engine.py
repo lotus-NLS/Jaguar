@@ -1,4 +1,3 @@
-import os
 import time
 
 from hollarek.core.logging import Loggable

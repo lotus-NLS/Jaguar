@@ -76,8 +76,7 @@ class DevServer(Server):
         self.dev_process: Optional[Process] = None
 
     def get_context_view(self) -> str:
-        context = self.handler
-
+        raise NotImplementedError
 
 
     def run(self):

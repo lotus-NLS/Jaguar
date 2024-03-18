@@ -1,7 +1,7 @@
 import os.path
 from engine.l1_agent import Agent
 from engine.l5_singletons import Task
-from engine.l3_models import Context, OpenAIModel
+from engine.l3_models import OpenAIModel
 from engine.l1_agent.protocol import Identity
 import uuid
 from hollarek.devtools import Unittest

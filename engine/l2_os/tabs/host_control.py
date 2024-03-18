@@ -26,4 +26,6 @@ class Host(Workspace):
     def type(self, msg : str):
         self.keyboard.type(msg=msg)
 
-
+    def get_desc(self) -> str:
+        return (f'This application allows you to interact with the hardware i.e. click, type and view the display'
+                f'just like the user')

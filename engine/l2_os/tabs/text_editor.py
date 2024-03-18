@@ -61,6 +61,7 @@ class LotusText(Workspace):
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
 
-    def get_desc(self) -> str:
+    @classmethod
+    def get_desc(cls) -> str:
         return (f'This application allows you to view almost any text file including .pdf and .docx files'
                 f'However you can only edit plain text files')
