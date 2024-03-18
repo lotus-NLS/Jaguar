@@ -22,12 +22,11 @@ class LotusEngine(Loggable):
 
     def launch(self, on_console : bool):
         self.log(f'Lotus started')
+        self.engine_io.dev_run()
         if on_console:
             self._launch_console()
         else:
             raise NotImplementedError('Webapp not yet implemented')
-
-
 
     def _launch_console(self):
         dev_user = DevUser(engineIO=self.engine_io)
@@ -45,6 +44,7 @@ class LotusEngine(Loggable):
     def stop_on_esc(self):
         KeyboardListener().wait_on_hold(key=Key.esc, duration=2)
         self.log(f'Lotus stopped')
+        self.engine_io.dev_kill()
         os._exit(0)
 
 

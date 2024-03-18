@@ -14,7 +14,6 @@ class TestEngineIO(Unittest):
     # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
-        EngineIO.reset_instance()
         cls.io = EngineIO(handler=MockEntity())
         cls.io.dev_run()
         cls.addr = cls.io.socket.as_addr(protocol='http')
@@ -25,7 +24,9 @@ class TestEngineIO(Unittest):
 
     def test_process_endpoint(self):
         req_str = LotusRequest().json()
-        response = requests.post(url=self.addr, data=req_str, stream=True)
+        process_endpoint = self.io.get_process_endpoint()
+        url = f'{self.addr}{process_endpoint.path}'
+        response = requests.post(url=url, data=req_str, stream=True)
         for chunk in response.iter_content(chunk_size=None):
             print(chunk)
         self.assertEqual(response.status_code, 200)

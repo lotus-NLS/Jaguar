@@ -97,5 +97,7 @@ class Context:
     def reset(self):
         self.entries = []
 
-    def __iadd__(self, other):
-        return Context(entries=self.entries + other.msg, docs=self.docs + other.docs)
+    def __iadd__(self, other : Context):
+        if not isinstance(other,Context):
+            raise TypeError(f'Cannot add Context with {type(other)}')
+        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)

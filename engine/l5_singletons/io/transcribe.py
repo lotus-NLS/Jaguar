@@ -18,7 +18,7 @@ class Recorder:
         self.is_running : bool = False
         self.pipes: list[BytePipe] = []
 
-    def register_pipe(self) -> Queue[bytes]:
+    def register_pipe(self) -> BytePipe:
         pipe = BytePipe()
         self.pipes.append(pipe)
         return pipe
