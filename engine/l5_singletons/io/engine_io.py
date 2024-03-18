@@ -9,10 +9,10 @@ from fastapi.responses import StreamingResponse
 from typing import Optional, Callable
 
 from api import LotusRequest, TranscribeRequest, Entry
+from abc import abstractmethod
 from hollarek.network import Socket, Endpoint, Method
 from .task import Task, TaskHandler
 from .transcribe import Transcriber
-from abc import abstractmethod
 # ----------------------------------------------
 
 class Server:

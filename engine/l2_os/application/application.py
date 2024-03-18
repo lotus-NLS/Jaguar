@@ -61,7 +61,7 @@ class ActionFactory(Loggable):
     def get_actions(self) -> list[Action]:
         actions = []
         for method in self.methods:
-            excluded_methods = [Workspace.get_entry, Workspace.__init__, Workspace.get_text, Workspace.get_text, Workspace.get_image]
+            excluded_methods = [Workspace.get_entry, Workspace.__init__, Workspace.get_text, Workspace.get_image, Workspace.get_desc]
             excluded_method_names = [mthd.__name__ for mthd in excluded_methods]
             if method.__name__ in excluded_method_names:
                 continue

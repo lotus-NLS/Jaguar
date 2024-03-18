@@ -17,7 +17,7 @@ class TestAgentContext(Unittest):
         entries = self.context.entries
         self.assertTrue(len(entries) > 0)
         self.assertTrue(len(self.context.docs) > 0)
-        print(f'Tools are {self.context.docs} and entries are {entries}')
+        # print(f'Tools are {self.context.docs} and entries are {entries}')
         first_entry = entries[0]
         self.assertIsInstance(obj=first_entry.msg, cls=str)
         self.assertEqual(first_entry.msg, self.agent.identity.get_str())
