@@ -101,6 +101,10 @@ class ToolDoc(dict[str, Any]):
         except:
             return False
 
+    def as_str(self, pretty: bool = False):
+        indent = 4 if pretty else None
+        return json.dumps(self, indent=indent)
+
 
 class ToolCall:
     def __init__(self, name : str = '', json_str : str = '', index : int = 0):

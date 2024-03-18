@@ -36,10 +36,55 @@ class Entry:
             self.image = new_img
         return self
 
+    @classmethod
+    def as_user(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_user(name=name), msg=msg, image=image)
+
+    @classmethod
+    def as_system(cls, msg: str, image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg, image=image)
+
+    @classmethod
+    def as_agent(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_agent(name=name), msg=msg, image=image)
+
+    @classmethod
+    def as_tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> 'Entry':
+        return cls(speaker=Speaker.get_tool(name=name), msg=msg, image=image)
+
+
     # ----------------------------------------------------
     # get
 
-    def as_dict(self, api_type : APIType, with_vision : bool = True) -> dict:
+    def get_openai_data(self, with_vision : bool) -> dict:
+        data = {'role': self.speaker.role.value}
+        if self.speaker.role == Role.TOOL:
+            data['name'] = self.speaker.name if self.speaker.name else 'unnamed'
+
+        if not self.image or not with_vision:
+            content = self.msg
+        else:
+            img_fmt = self.image.format
+            base64_image = self.get_image_as_base64()
+            text = {
+                "type": "text",
+                "text": f"{self.msg}"
+            }
+            image = {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/{img_fmt};base64,{base64_image}"}
+            }
+            content = [text, image]
+
+        data['content'] = content
+        return data
+
+
+
+    # ----------------------------------------------------
+    # view
+
+    def as_dict(self, api_type: APIType, with_vision: bool = True) -> dict:
         if api_type == APIType.OPENAI:
             return self.get_openai_data(with_vision=with_vision)
         else:
@@ -57,59 +102,20 @@ class Entry:
     def get_image(self) -> Optional[PILImage]:
         return self.image
 
-    def print(self):
-        print(self)
+    def get_image_as_base64(self) -> Optional[str]:
+        img_fmt = self.image.format
+        image = self.image
+        if image.mode != 'RGB':
+            image = ImageConverter.to_rgb(image=image)
+        base64_image = ImageSerializer.as_base64_str(image, img_format=img_fmt)
+        return base64_image
 
-    def __str__(self):
+    def as_str(self):
         speaker_msg = f'\n{self.get_name()}({self.get_role()})'
         as_str = speaker_msg + f':{self.get_msg()}'
+        if self.image:
+            as_str += f'\n{self.get_image_as_base64()}'
         return as_str
 
-
-    # ----------------------------------------------------
-    # get
-
-    def get_openai_data(self, with_vision : bool) -> dict:
-        data = {'role': self.speaker.role.value}
-        if self.speaker.role == Role.TOOL:
-            data['name'] = self.speaker.name if self.speaker.name else 'unnamed'
-
-        if not self.image or not with_vision:
-            content = self.msg
-        else:
-            img_fmt = self.image.format
-            image = self.image
-            if image.mode != 'RGB':
-                image = ImageConverter.to_rgb(image=image)
-            base64_image = ImageSerializer.as_base64_str(image, img_format=img_fmt)
-            text = {
-                "type": "text",
-                "text": f"{self.msg}"
-            }
-            image = {
-                "type": "image_url",
-                "image_url": {"url": f"data:image/{img_fmt};base64,{base64_image}"}
-            }
-            content = [text, image]
-
-        data['content'] = content
-        return data
-
-    # ----------------------------------------------------
-    # convenience methods
-
-    @classmethod
-    def as_user(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
-        return cls(speaker=Speaker.get_user(name=name), msg=msg, image=image)
-
-    @classmethod
-    def as_system(cls, msg: str, image: Optional[PILImage] = None) -> 'Entry':
-        return cls(speaker=Speaker.get_system(name='SYSTEM'), msg=msg, image=image)
-
-    @classmethod
-    def as_agent(cls, msg: str, name: str = '', image: Optional[PILImage] = None) -> 'Entry':
-        return cls(speaker=Speaker.get_agent(name=name), msg=msg, image=image)
-
-    @classmethod
-    def as_tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> 'Entry':
-        return cls(speaker=Speaker.get_tool(name=name), msg=msg, image=image)
+    def __str__(self):
+        return self.as_str()

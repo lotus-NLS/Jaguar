@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from abc import abstractmethod
 from api import Entry
 from hollarek.core.logging import Loggable, LogSettings
-from engine.l4_tools import CallMap
+from engine.l4_tools import CallMap, ToolDoc
 
 # ---------------------------------------------------------
 
@@ -89,7 +89,7 @@ class Chunk:
 @dataclass
 class Context:
     entries: list[Entry] = field(default_factory=list)
-    docs: list[dict] = field(default_factory=list)
+    docs: list[ToolDoc] = field(default_factory=list)
 
     def add_entry(self, entry : Entry):
         self.entries.append(entry)
@@ -101,3 +101,15 @@ class Context:
         if not isinstance(other,Context):
             raise TypeError(f'Cannot add Context with {type(other)}')
         return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+
+    def as_str(self) -> str:
+        seperator = '+' + '-'*50 + '+'
+        context_str = f'Entries:\n'
+        for entry in self.entries:
+            context_str += entry.as_str()
+
+        context_str += seperator
+        for doc in self.docs:
+            context_str += doc.as_str()
+        context_str += seperator
+        return context_str

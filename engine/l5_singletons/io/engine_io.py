@@ -75,6 +75,11 @@ class DevServer(Server):
         self.handler : handler = handler
         self.dev_process: Optional[Process] = None
 
+    def get_context_view(self) -> str:
+        context = self.handler
+
+
+
     def run(self):
         def do():
             uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
