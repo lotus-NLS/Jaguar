@@ -17,7 +17,8 @@ bash launch.sh         # Standard launch
 
 Speech recognition also requires PyAudio
 ```
-sudo apt-get install python3-pyaudio
+sudo apt-get install portaudio19-dev python3-pyaudio
+pip install PyAudio
 ```
 
 ## Codebase
