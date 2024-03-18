@@ -53,7 +53,7 @@ class ActionFactory(Loggable):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
         self.tab_map : dict[int, Workspace] =  tab_map
-        self.methods : list[Callable] = ModuleInspector.get_methods(cls=self.cls)
+        self.methods : list[Callable] = ModuleInspector.get_methods(cls=self.cls, public_only=True)
 
     # ---------------------------------------------------------
     # loop

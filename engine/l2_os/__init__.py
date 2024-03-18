@@ -1,3 +1,3 @@
 from .application import *
 from .os import *
-from .tabs import *
+from .workspaces import *

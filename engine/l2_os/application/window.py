@@ -5,10 +5,12 @@ from urllib.parse import urlparse
 from pathlib import Path
 from api import Entry
 
+from hollarek.core.logging import Loggable
 # ---------------------------------------------------------
 
-class Workspace:
+class Workspace(Loggable):
     def __init__(self, uri : str):
+        super().__init__()
         self.name : str = uri
 
     @abstractmethod

@@ -6,7 +6,7 @@ from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, LotusText, Host
+from engine.l2_os import OS, LotusText, Host, LotusTerminal
 from engine.l1_agent.protocol import Identity, Task
 
 
@@ -21,7 +21,7 @@ class Agent(Loggable):
         # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[LotusText, Host])
+        self.os : OS = OS(workspace_types=[LotusText, Host, LotusTerminal])
         self.model: LLM = model
 
     # ---------------------------------------------------

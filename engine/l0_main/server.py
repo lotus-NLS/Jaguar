@@ -116,7 +116,7 @@ class ProductionServer(Server):
 
     def kill(self):
         raise NotImplementedError
-        
+
 
 class SafeStream(StreamingResponse):
     logger = logging.getLogger(f'uvicorn.error')
