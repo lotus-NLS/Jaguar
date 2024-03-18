@@ -1,3 +1,4 @@
+import threading
 from typing import BinaryIO, Optional
 
 import speech_recognition as sr
@@ -24,8 +25,11 @@ class Recorder:
         return pipe
 
     def start(self):
-        with sr.Microphone() as source:
-            self.listen(source=source)
+        def do():
+            self.is_running = True
+            with sr.Microphone() as source:
+                self.listen(source=source)
+        threading.Thread(target=do).start()
 
     def stop(self):
         self.is_running = False

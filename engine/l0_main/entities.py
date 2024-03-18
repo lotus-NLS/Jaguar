@@ -11,8 +11,8 @@ class DevUser:
         self.engine_io : EngineIO = engineIO
         self.buffer : str = ''
         self.recorder : Recorder = Recorder()
+        self.recorder.start()
         threading.Thread(target=self.listen).start()
-
 
     def add_input(self, msg : str):
         self.buffer += msg
@@ -28,7 +28,7 @@ class DevUser:
 
     def listen(self):
         audio_pipe = self.recorder.register_pipe()
-        self.recorder.start()
+
         while True:
             audio_data = audio_pipe.get()
             wav_base64 = to_base64(data=audio_data)
