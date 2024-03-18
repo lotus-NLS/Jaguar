@@ -40,7 +40,6 @@ class EngineIO:
         response = self.handler.handle(task=task)
         return SafeStream(content=response.get_text_stream(), media_type="text/plain")
 
-
     async def transcribe(self, request: TranscribeRequest) -> str:
         wav_bytes = base64.b64decode(request.wav_base64)
         return self.transcriber.get_text(wav_bytes=wav_bytes)

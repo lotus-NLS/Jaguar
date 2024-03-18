@@ -20,6 +20,7 @@ class LotusEngine(Loggable):
         self.engine_io: EngineIO = EngineIO(handler=self.handler)
         threading.Thread(target=self.stop_on_esc, daemon=True).start()
 
+
     def launch(self, on_console : bool):
         self.log(f'Lotus started')
         self.engine_io.dev_run()
@@ -27,6 +28,8 @@ class LotusEngine(Loggable):
             self._launch_console()
         else:
             raise NotImplementedError('Webapp not yet implemented')
+        self.stop()
+
 
     def _launch_console(self):
         dev_user = DevUser(engineIO=self.engine_io)
@@ -34,19 +37,22 @@ class LotusEngine(Loggable):
             user_input = input()
             if user_input == 'exit':
                 break
-            dev_user.write(msg=user_input)
+            dev_user.add_input(msg=user_input)
             response = dev_user.fire()
-            for text in response.iter_content():
+            for text in response.iter_content(chunk_size=None, decode_unicode=True):
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 
-    # noinspection PyProtectedMember
+
     def stop_on_esc(self):
         KeyboardListener().wait_on_hold(key=Key.esc, duration=2)
+        self.stop()
+
+    # noinspection PyProtectedMember
+    def stop(self):
         self.log(f'Lotus stopped')
         self.engine_io.dev_kill()
         os._exit(0)
-
 
         # listener.wait_on_hold(key=)
 
