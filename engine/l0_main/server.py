@@ -103,6 +103,21 @@ class DevServer(Server):
         return 'http'
 
 
+class ProductionServer(Server):
+    def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
+        super().__init__(handler=Agent(), socket=Socket.get_localhost(port=5000))
+
+    @classmethod
+    def get_protocol(cls) -> str:
+        raise NotImplementedError
+
+    def run(self):
+        raise NotImplementedError
+
+    def kill(self):
+        raise NotImplementedError
+        
+
 class SafeStream(StreamingResponse):
     logger = logging.getLogger(f'uvicorn.error')
     async def __call__(self, *args, **kwargs):
