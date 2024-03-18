@@ -50,12 +50,16 @@ class Server:
         wav_bytes = base64.b64decode(request.wav_base64)
         return self.transcriber.get_text(wav_bytes=wav_bytes)
 
-
-
     # ----------------------------------------------
 
     def add_endpoint(self, endpoint : Endpoint, callback : Callable):
-        self.app.post(endpoint.path)(callback)
+        if endpoint.method == Method.POST:
+            decorator = self.app.post
+        elif endpoint.method == Method.GET:
+            decorator = self.app.get
+        else:
+            raise ValueError(f'Unsupported method: {endpoint.method}')
+        decorator(endpoint.path)(callback)
 
     def get_transcribe_endpoint(self) -> Endpoint:
         return Endpoint(path='/transcribe', method=Method.POST, socket=self.socket)
@@ -74,9 +78,15 @@ class DevServer(Server):
         super().__init__(handler=handler, socket=socket)
         self.handler : handler = handler
         self.dev_process: Optional[Process] = None
+        self.add_endpoint(endpoint=self.get_context_endpoint(), callback=self.get_context_view)
+
+
+    def get_context_endpoint(self, *args, **kwargs) -> Endpoint:
+        return Endpoint(path='/context', method=Method.GET, socket=self.socket)
 
     def get_context_view(self) -> str:
-        raise NotImplementedError
+        context = self.handler.get_active_context()
+        return context.as_str()
 
 
     def run(self):
