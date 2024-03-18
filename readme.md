@@ -15,6 +15,11 @@ Use the launch script in the root of the repo:
 bash launch.sh         # Standard launch
 ```
 
+Speech recognition also requires PyAudio
+```
+sudo apt-get install python3-pyaudio
+```
+
 ## Codebase
 
 <details>
