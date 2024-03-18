@@ -23,7 +23,7 @@ class TestEngineIO(Unittest):
         self.assertIsNotNone(self.io)
 
     def test_process_endpoint(self):
-        req_str = LotusRequest().json()
+        req_str = LotusRequest().model_dump_json()
         process_endpoint = self.io.get_process_endpoint()
         url = f'{self.addr}{process_endpoint.path}'
         response = requests.post(url=url, data=req_str, stream=True)
@@ -36,7 +36,7 @@ class TestEngineIO(Unittest):
         with open(spoof_wav.fpath, 'rb') as f:
             data = f.read()
         url = f'{self.addr}/transcribe'
-        req_str = TranscribeRequest(wav_base64=to_base64(data=data)).json()
+        req_str = TranscribeRequest(wav_base64=to_base64(data=data)).model_dump_json()
         response = requests.post(url,data=req_str)
         self.assertIn(f'Four score and seven years ago'.lower(),response.text.lower())
         print(f'Transcription output: {response.text}')
@@ -52,4 +52,4 @@ def to_base64(data: bytes) -> str:
 
 if __name__ == '__main__':
     TestEngineIO.execute_all()
-    # req_str = LotusRequest().json()
+    # req_str = LotusRequest().model_dump_json()

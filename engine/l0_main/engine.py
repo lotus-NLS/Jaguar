@@ -30,7 +30,7 @@ class LotusEngine(Loggable):
     def _launch_console(self):
         dev_user = DevUser(engineIO=self.engine_io)
         while True:
-            user_input = input(f'\n User:')
+            user_input = input(f'\nUser: ')
             if user_input == 'exit':
                 break
             dev_user.add_input(msg=user_input)

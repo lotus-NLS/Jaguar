@@ -110,7 +110,7 @@ class LotusSettings(Singleton):
                 'num' : 5
             }
             response = requests.get(url, params=params)
-            response_json = response.json()
+            response_json = response.model_dump_json()
 
 
             is_successful = response.status_code == 200

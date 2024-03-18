@@ -20,7 +20,7 @@ class DevUser:
         self.buffer += msg
 
     def fire(self):
-        req_str = LotusRequest(msg=self.buffer).json()
+        req_str = LotusRequest(msg=self.buffer).model_dump_json()
 
         process_endpoint = self.engine_io.get_process_endpoint()
         url = process_endpoint.get_url(protocol=self.engine_io.get_protocol())
@@ -32,7 +32,7 @@ class DevUser:
         while True:
             audio_data = audio_pipe.get()
             wav_base64 = to_base64(data=audio_data)
-            req_str = TranscribeRequest(wav_base64=wav_base64).json()
+            req_str = TranscribeRequest(wav_base64=wav_base64).model_dump_json()
             transcribe_endpoint = self.engine_io.get_transcribe_endpoint()
 
             url = transcribe_endpoint.get_url(protocol=self.engine_io.get_protocol())
