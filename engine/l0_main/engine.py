@@ -7,6 +7,7 @@ from hollarek.core.logging import Loggable
 from hollarek.hardware import KeyboardListener
 from engine.l5_singletons import LotusSettings, EngineIO
 from engine.l1_agent import Agent
+from .entities import DevUser
 # ---------------------------------------------------------
 
 
@@ -16,7 +17,7 @@ class LotusEngine(Loggable):
 
         self.settings : LotusSettings = LotusSettings(use_local=use_local, validate=True)
         self.handler: Agent = Agent()
-        self.io: EngineIO = EngineIO(handler=self.handler)
+        self.engine_io: EngineIO = EngineIO(handler=self.handler)
         threading.Thread(target=self.stop_on_esc, daemon=True).start()
 
     def launch(self, on_console : bool):
@@ -28,15 +29,15 @@ class LotusEngine(Loggable):
 
 
 
-    @staticmethod
-    def _launch_console():
-        user = ConsoleUser()
+    def _launch_console(self):
+        dev_user = DevUser(engineIO=self.engine_io)
         while True:
             user_input = input()
             if user_input == 'exit':
                 break
-            response = user.send(msg=user_input)
-            for text in response.get_text_stream():
+            dev_user.write(msg=user_input)
+            response = dev_user.fire()
+            for text in response.iter_content():
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 

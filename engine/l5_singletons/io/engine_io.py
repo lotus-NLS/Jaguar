@@ -62,6 +62,9 @@ class EngineIO:
     def get_process_endpoint(self) -> Endpoint:
         return Endpoint(path='/process', method=Method.POST, socket=self.socket)
 
+    @staticmethod
+    def get_protocol() -> str:
+        return 'http'
 
 
 class SafeStream(StreamingResponse):

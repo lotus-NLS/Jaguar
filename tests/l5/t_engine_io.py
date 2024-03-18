@@ -7,7 +7,7 @@ from hollarek.file import FileSpoofer
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity
-from engine.l5_singletons.io.engineio import EngineIO
+from engine.l5_singletons.io.engine_io import EngineIO
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
