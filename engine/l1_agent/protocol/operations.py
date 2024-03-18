@@ -1,7 +1,7 @@
 # import yaml
 # from abc import abstractmethod
 #
-# from engine.l5_singletons import Query
+# from engine.l5_settings import Query
 #
 # from .mandate import Mandate
 #

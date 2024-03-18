@@ -7,16 +7,16 @@ from multiprocessing import Process
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from typing import Optional, Callable
+from abc import abstractmethod
 
 from api import LotusRequest, TranscribeRequest, Entry
-from abc import abstractmethod
 from hollarek.network import Socket, Endpoint, Method
-from .task import Task, TaskHandler
+from engine.l1_agent import Agent, Task
 from .transcribe import Transcriber
 # ----------------------------------------------
 
 class Server:
-    def __init__(self, handler : TaskHandler, socket : Socket = Socket.get_localhost(port=5000)):
+    def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
         super().__init__()
         self.handler : handler = handler
         self.transcriber : Transcriber = Transcriber()
@@ -70,7 +70,7 @@ class Server:
 
 
 class DevServer(Server):
-    def __init__(self, handler : TaskHandler, socket : Socket = Socket.get_localhost(port=5000)):
+    def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
         super().__init__(handler=handler, socket=socket)
         self.handler : handler = handler
         self.dev_process: Optional[Process] = None

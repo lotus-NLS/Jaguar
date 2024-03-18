@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import threading
-from hollarek.core.logging import LogLevel
+from hollarek.core.logging import LogLevel, Loggable
 from func_timeout import FunctionTimedOut
-from api import Entry
-from engine.l5_singletons import TaskHandler, TextPipe
-from engine.l5_singletons.io import Task
+from api import Entry, TextPipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
 from engine.l2_os import OS, LotusText, Host
-from engine.l1_agent.protocol import Identity
+from engine.l1_agent.protocol import Identity, Task
+
 
 # ---------------------------------------------------------
 
-class Agent(TaskHandler):
+class Agent(Loggable):
     def __init__(self, model : LLM = OpenAIModel.get_gpt4_turbo(), identity : Identity = Identity.GOTO()):
         super().__init__()
         # context
@@ -32,7 +31,7 @@ class Agent(TaskHandler):
         for entry in task.new_entries:
             self.memory.add_entry(entry=entry)
         try:
-            generation = self.get_next(options=Options.from_task(task=task))
+            generation = self.get_next(options=task.get_options())
             pipe = TextPipe()
             def do():
                 self.process(generation=generation, pipe=pipe)

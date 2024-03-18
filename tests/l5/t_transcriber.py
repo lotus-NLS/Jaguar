@@ -1,6 +1,6 @@
 from hollarek.file import FileSpoofer
 from hollarek.devtools import Unittest
-from engine.l5_singletons import Transcriber
+from engine.l0_main import Transcriber
 
 class TestTranscriber(Unittest):
     def setUp(self):

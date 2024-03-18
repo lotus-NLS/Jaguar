@@ -1,9 +1,10 @@
 import time
 
 from hollarek.core.logging import Loggable
-from engine.l5_singletons import LotusSettings, DevServer, Server
+from engine.l5_settings import LotusSettings
 from engine.l1_agent import Agent
-from .entities import DevUser
+from .dev_user import DevUser
+from .server import Server, DevServer
 # ---------------------------------------------------------
 
 

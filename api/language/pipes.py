@@ -5,6 +5,8 @@ from queue import Queue, Empty
 from typing import Iterator
 from hollarek.core.logging import LogLevel, get_logger, Logger
 
+
+
 # ----------------------------------------------
 
 
@@ -60,9 +62,3 @@ class TextPipe(Queue):
         cls.logger.log(msg=msg, level=level)
 
 
-class BytePipe(Queue):
-    def get(self, block = True, timeout = None) -> bytes:
-        return super().get(block, timeout)
-
-    def put(self, item : bytes, block = True, timeout = None):
-        super().put(item, block, timeout)

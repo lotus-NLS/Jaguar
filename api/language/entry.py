@@ -5,13 +5,11 @@ from enum import Enum
 from PIL.Image import Image as PILImage
 from hollarek.file import ImageConverter, ImageSerializer
 from dataclasses import dataclass
-from .speaker import Role
+
+
 # ----------------------------------------------
 
-class APIType(Enum):
-    OPENAI = 'OPENAI'
-    GOOGLE = 'GOOGLE'
-    ANTHROPIC = 'ANTHROPIC'
+
 
 
 @dataclass
@@ -107,3 +105,17 @@ class Entry:
 
         data['content'] = content
         return data
+
+class APIType(Enum):
+    OPENAI = 'OPENAI'
+    GOOGLE = 'GOOGLE'
+    ANTHROPIC = 'ANTHROPIC'
+
+class Role(Enum):
+    TOOL = 'function'
+    USER = 'user'
+    AGENT = 'assistant'
+    SYSTEM = 'system'
+
+    def __str__(self):
+        return self.value

@@ -1,4 +1,4 @@
-from engine.l5_singletons import LotusSettings
+from engine.l5_settings import LotusSettings
 from hollarek.devtools import Unittest
 # --------------------------------------------
 

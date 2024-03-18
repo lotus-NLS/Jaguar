@@ -7,16 +7,16 @@ from hollarek.file import FileSpoofer
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity
-from engine.l5_singletons.io.engine_io import Server
+from engine.l0_main import DevServer
 # --------------------------------------------
 
 class TestEngineIO(Unittest):
-    # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
-        cls.io = Server(handler=MockEntity())
-        cls.io.dev_run()
-        cls.addr = cls.io.socket.as_addr(protocol='http')
+        io = DevServer(handler=MockEntity())
+        io.run()
+        cls.addr = io.socket.as_addr(protocol='http')
+        cls.io = io
         time.sleep(0.1)
 
     def test_initialization(self):
@@ -44,7 +44,7 @@ class TestEngineIO(Unittest):
     # noinspection PyUnresolvedReferences
     @classmethod
     def tearDownClass(cls):
-        cls.io.dev_kill()
+        cls.io.kill()
 
 
 def to_base64(data: bytes) -> str:

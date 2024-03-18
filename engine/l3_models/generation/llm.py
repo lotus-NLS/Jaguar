@@ -7,7 +7,7 @@ from tiktoken import Encoding
 from abc import abstractmethod
 from hollarek.core.logging import Loggable
 from .generation import Generation, Context
-from .options import Options, ToolOptions
+from .options import Options, CallOptions
 from dataclasses import dataclass
 
 # ---------------------------------------------------------
@@ -40,7 +40,7 @@ class LLM(Loggable):
 
     def get_text_generation(self, entries: list[Entry]) -> Generation:
         context = Context(entries=entries, docs=[])
-        options = Options(tool_options=ToolOptions.no_call())
+        options = Options(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)
 
 

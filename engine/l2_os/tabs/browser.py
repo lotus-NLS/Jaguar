@@ -1,7 +1,7 @@
 # from ..application import Tool, ToolArg, Update
 #
 # from hollarek.io.web import SearchEngine, SiteVisitor
-# from engine.l5_singletons.lotus_settings import Settings
+# from engine.l5_settings.lotus_settings import Settings
 # # ---------------------------------------------------------
 #
 # class WebSearch(Tool):

@@ -3,11 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from engine.l5_singletons.io import Task
-
-
 @dataclass
-class ToolOptions:
+class CallOptions:
     call_allowed: bool
     required_tool_name: Optional[str] = None
 
@@ -37,17 +34,13 @@ class ToolOptions:
 
 @dataclass
 class Options:
-    tool_options : ToolOptions = ToolOptions.auto()
+    call_options : CallOptions = CallOptions.auto()
     max_tokens : Optional[int] = None
     temp : float = 0.3
 
-    @classmethod
-    def from_task(cls, task : Task):
-        return cls(tool_options=ToolOptions(call_allowed=True, required_tool_name=task.selected_tool))
-
     def get_call_allowed(self):
-        return self.tool_options.call_allowed
+        return self.call_options.call_allowed
 
     @classmethod
     def text_only(cls, max_tokens : Optional[int] = None, temp : float = 0.3):
-        return cls(tool_options=ToolOptions.no_call(), max_tokens=max_tokens, temp=temp)
+        return cls(call_options=CallOptions.no_call(), max_tokens=max_tokens, temp=temp)

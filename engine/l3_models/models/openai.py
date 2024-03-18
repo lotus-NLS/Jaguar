@@ -8,7 +8,7 @@ from openai import Stream
 
 from api import Entry, APIType
 from engine.l4_tools import ToolCall, CallMap
-from engine.l5_singletons import LotusSettings
+from engine.l5_settings import LotusSettings
 from engine.l3_models.generation import LLM, ModelInfo
 from engine.l3_models.generation import Generation, Chunk, Context, Options
 
@@ -74,7 +74,7 @@ class OpenAIModel(LLM):
             'stream' : True
         }
 
-        tool_options = options.tool_options
+        tool_options = options.call_options
         if tool_options.call_allowed and context.docs and self.supports_tool_calls():
             args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
