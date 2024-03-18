@@ -15,7 +15,6 @@ from .transcribe import Transcriber
 
 # ----------------------------------------------
 
-
 class EngineIO:
     def __init__(self, handler : TaskHandler, socket : Socket = Socket.get_localhost(port=5000)):
         super().__init__()
@@ -26,12 +25,22 @@ class EngineIO:
         self.dev_process: Optional[Process] = None
         self.app: FastAPI = FastAPI()
         self.add_endpoint(endpoint=self.get_transcribe_endpoint(), callback=self.transcribe)
-        self.add_endpoint(endpoint=self.get_process_endpoint(), callback=self.process)
+        self.add_endpoint(endpoint=self.get_process_endpoint(), callback=self.respond)
 
-    def add_endpoint(self, endpoint : Endpoint, callback : Callable):
-        self.app.post(endpoint.path)(callback)
 
-    async def process(self, request: LotusRequest) -> SafeStream:
+    def dev_run(self):
+        def do():
+            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
+        self.dev_process = Process(target=do)
+        self.dev_process.start()
+
+    def dev_kill(self):
+        self.dev_process.terminate()
+
+    # ----------------------------------------------
+    # callbacks
+
+    async def respond(self, request: LotusRequest) -> SafeStream:
         if request.img:
             raise NotImplementedError
         entry = [Entry.as_user(msg=request.msg)]
@@ -44,16 +53,11 @@ class EngineIO:
         wav_bytes = base64.b64decode(request.wav_base64)
         return self.transcriber.get_text(wav_bytes=wav_bytes)
 
-    def dev_run(self):
-        def do():
-            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
-        self.dev_process = Process(target=do)
-        self.dev_process.start()
 
-    def dev_kill(self):
-        self.dev_process.terminate()
+    # ----------------------------------------------
 
-# ----------------------------------------------
+    def add_endpoint(self, endpoint : Endpoint, callback : Callable):
+        self.app.post(endpoint.path)(callback)
 
     def get_transcribe_endpoint(self) -> Endpoint:
         return Endpoint(path='/transcribe', method=Method.POST, socket=self.socket)
