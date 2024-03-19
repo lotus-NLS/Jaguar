@@ -1,23 +1,28 @@
+import os, fcntl
 import subprocess
 import platform
+import time
 from subprocess import Popen, PIPE
 from typing import Optional
-from io import StringIO
+from func_timeout import func_timeout, FunctionTimedOut
 from PIL.Image import Image as PILImage
-
 from engine.l2_os import Workspace
 # ---------------------------------------------------------
-
 
 class LotusTerminal(Workspace):
     def __init__(self, uri : str):
         super().__init__(uri=uri)
-        self.total_text: str = ''
-        self.buffer : StringIO = StringIO()
+        self.text = ''
+        self.near_end, self.far_end = os.pipe()
+        fcntl.fcntl(self.near_end, fcntl.F_SETFL, os.O_NONBLOCK)
         self.session: Optional[Popen] = self._get_session()
 
     def get_text(self) -> str:
-        return self.buffer.getvalue()
+        try:
+            func_timeout(func=self._read_pipe,timeout=0.25)
+        except FunctionTimedOut:
+            self.error(f'Function _read_pipe timed out')
+        return self.text
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -35,6 +40,13 @@ class LotusTerminal(Workspace):
     # ---------------------------------------------------------
     # Setup
 
+    def _read_pipe(self):
+        try:
+            while True:
+                self.text += os.read(self.near_end, 1024).decode()
+        except BlockingIOError:
+            pass
+
     def _get_session(self) -> Optional[Popen]:
         os_type = self._get_os_type()
         if  os_type == 'Linux':
@@ -46,7 +58,8 @@ class LotusTerminal(Workspace):
 
         shell_session = None
         try:
-            shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=self.buffer, stderr=self.buffer, text=True)
+            out = self.far_end
+            shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True)
         except Exception as e:
             self.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')
 
@@ -56,7 +69,17 @@ class LotusTerminal(Workspace):
     def _get_os_type() -> str:
         return f'{platform.system()}'
 
-
-if __name__ == "__main__":
-    terminal = LotusTerminal(uri='')
-    terminal.run(command=f'echo Hello')
+#
+# if __name__ == "__main__":
+#     terminal = LotusTerminal(uri='')
+#     terminal.run(command=f'echo Hello')
+#     terminal.run(command=f'echo Hello')
+#     terminal.run(command=f'echo Hello')
+#     lotsa_hello = 'Hello'*10000
+#     terminal.run(command=f'echo {lotsa_hello}')
+#     terminal.run(command=f'echo Hello')
+#     terminal.run(command=f'echo Hello')
+#     time.sleep(1)
+#     print(terminal.get_text())
+#     print(terminal.get_text())
+#
