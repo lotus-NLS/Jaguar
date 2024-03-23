@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 from typing import Optional
 from func_timeout import func_timeout, FunctionTimedOut
 from PIL.Image import Image as PILImage
+from engine.l4_tools import InvalidArgValue
 from .workspace import Workspace
 # ---------------------------------------------------------
 
@@ -16,8 +17,12 @@ class LotusTerminal(Workspace):
         self.session: Optional[Popen] = None
         self.text = ''
 
-    def open(self, workdir_path : str):
-        self._get_session(cwd=workdir_path)
+    def open(self, workdir_path : str = '~'):
+        print(f'cwd, workdirpath = {workdir_path}')
+        cwd = os.path.expanduser(workdir_path)
+        if not os.path.isdir(cwd):
+            raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
+        self.session = self._get_session(cwd=cwd)
 
     def close(self):
         self.session = None
@@ -62,9 +67,6 @@ class LotusTerminal(Workspace):
         shell_session = None
         try:
             out = self.far_end
-            if not cwd:
-                cwd = '~'
-            cwd = os.path.expanduser(cwd)
             shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
         except Exception as e:
             self.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')

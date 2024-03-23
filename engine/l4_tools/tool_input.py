@@ -68,6 +68,9 @@ class ToolArg:
             return True
         return self.input in self.choices
 
+    def is_set(self) -> bool:
+        return not self.get_value() is None
+
 
 class ToolDoc(dict[str, Any]):
     @classmethod

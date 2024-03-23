@@ -93,14 +93,14 @@ class ActionFactory(Loggable):
             def __init__(self):
                 super().__init__(workspace=workspace)
                 args = ModuleInspector.get_args(func=mthd)
-                self.mthd_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
+                self.tool_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
             @classmethod
             def get_name(cls) -> str:
                 return f'{workspace.get_name()}_{mthd.__name__}'
 
             def do(self):
-                kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
+                kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(workspace, **kwargs)
                 conditional_hook()
 
@@ -108,7 +108,7 @@ class ActionFactory(Loggable):
                 return f'Allows for operating {self.get_name()}'
 
             def get_args(self) -> list[ToolArg]:
-                return self.mthd_args
+                return self.tool_args
         return NewAction()
 
 
