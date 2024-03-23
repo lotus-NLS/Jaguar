@@ -112,10 +112,9 @@ class Context:
 
         context_str = get_seperator(name=f'Entries')
         for entry in self.entries:
-            context_str += entry.as_str()
+            context_str += f'{entry.as_str()}\n'
 
         context_str += get_seperator(name='Tool Docs')
         for doc in self.docs:
             context_str += f'{doc.as_str(pretty=True)}\n'
-            print(doc.as_str(pretty=True))
         return context_str

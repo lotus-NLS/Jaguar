@@ -31,7 +31,6 @@ class MetaTool(Tool):
 class Close(MetaTool):
     def __init__(self, application_map : dict[int,Application]):
         super().__init__(application_map=application_map)
-        self.tab_arg : ToolArg = ToolArg(name='tab_index', desc='Index of tab to close', is_optional=True)
 
     def get_desc(self) -> str:
         return f'Close an open window from associated application'
@@ -43,12 +42,8 @@ class Close(MetaTool):
     # do
 
     def do(self):
-        tab_index = int(self.tab_arg.input) if self.tab_arg.input else None
         application = self.get_application()
-        if tab_index:
-            application.window.close_tab(tab_index)
-        else:
-            application.close()
+        application.close()
 
 
 class Open(Tool):

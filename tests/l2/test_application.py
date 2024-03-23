@@ -19,7 +19,7 @@ class TestOpenClose(ApplicationTest):
     def test_open_application(self):
         self.app.open(uri='some_path')
         self.assertTrue(self.app.is_open())
-        self.assertIsInstance(self.app.window.workspace_map[0], MockWorkspace)
+        self.assertIsInstance(self.app.window.workspace[0], MockWorkspace)
 
     def test_close_application(self):
         self.app.open(uri='some_path')
@@ -30,9 +30,9 @@ class TestOpenClose(ApplicationTest):
     def test_close_individual_tabs(self):
         self.app.open(uri='tab1')
         self.app.open(uri='tab2')
-        initial_tab_count = len(self.app.window.workspace_map)
+        initial_tab_count = len(self.app.window.workspace)
         self.app.window.close_tab(0)
-        self.assertEqual(len(self.app.window.workspace_map), initial_tab_count - 1)
+        self.assertEqual(len(self.app.window.workspace), initial_tab_count - 1)
 
 
 class TestActionProperties(ApplicationTest):
@@ -70,17 +70,17 @@ class TestActionExecution(ApplicationTest):
         add = self.app.tool_dict['add']
         reset = self.app.tool_dict['reset']
 
-        add_json_str = '{"msg": "New text", "tab_index" : "0"}'
+        add_json_str = '{"msg": "New text"}'
         tool_call = ToolCall(json_str=add_json_str)
 
         add.handle(tool_call=tool_call)
-        self.assertIn('New text', self.app.window.workspace_map[0].get_text())
+        self.assertIn('New text', self.app.window.workspace[0].get_text())
         self.log(f'Window context before reset: {self.app.window.get_entry()}')
 
-        reset_json_str = '{"tab_index" : "0"}'
+        reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.handle(tool_call)
-        self.assertEqual('', self.app.window.workspace_map[0].get_text())
+        self.assertEqual('', self.app.window.workspace[0].get_text())
         self.log(f'Window context after reset : {self.app.window.get_entry()}')
 
 

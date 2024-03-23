@@ -71,8 +71,8 @@ class Entry:
         return base64_image
 
     def as_str(self):
-        speaker_msg = f'\n{self.msg}({self.role}'
-        as_str = speaker_msg + f':{self.msg}'
+        name_str = f'Unnamed' if not self.name else self.name
+        as_str = f'{name_str}({self.role.value}) : {self.msg}'
         if self.image:
             as_str += f'\n{self.get_image_as_base64()}'
         return as_str

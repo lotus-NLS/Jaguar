@@ -1,7 +1,6 @@
 from __future__ import annotations
 import platform, distro
 from enum import Enum
-from engine.l2_os import LotusText
 # ----------------------------------------------------
 
 

@@ -19,21 +19,17 @@ class Application:
         self.get_name = lambda : self.workspace_type.__name__
         self.window : Window = Window(index=self.index, app_name=self.get_name())
 
-        action_factory = ActionFactory(cls=self.workspace_type, tab_map=self.window.workspace_map)
+        action_factory = ActionFactory(cls=self.workspace_type, workspace=self.window.workspace)
         self.actions : list[Action] = action_factory.get_actions()
         self.tool_dict: dict[str, Tool] = {tool.get_name(): tool for tool in self.actions}
 
 
     def open(self, uri : Optional[str]):
-        if self.max_tabs:
-            if len(self.window.workspace_map) == self.max_tabs:
-                raise ValueError(f'Cannot open more than {self.max_tabs} tab(s)')
-
         new_tab = self.workspace_type(uri)
         self.window.add_workspace(new_tab)
 
     def close(self):
-        self.window.close_all()
+        self.window.close()
 
     # ---------------------------------------------------
     #  actions
@@ -45,14 +41,14 @@ class Application:
         return [action.get_doc() for action in self.get_actions(active_only=active_only)]
 
     def is_open(self) -> bool:
-        return len(self.window.workspace_map) != 0
+        return not self.window.workspace is None
 
 
 class ActionFactory(Loggable):
-    def __init__(self, cls : type[Workspace], tab_map : dict[int, Workspace]):
+    def __init__(self, cls : type[Workspace], workspace : Workspace):
         super().__init__(settings=LogSettings(timestamp=False))
         self.cls : type = cls
-        self.tab_map : dict[int, Workspace] =  tab_map
+        self.workspace : Workspace =  workspace
         self.methods : list[Callable] = ModuleInspector.get_methods(cls=self.cls, public_only=True)
 
     # ---------------------------------------------------------
@@ -70,12 +66,12 @@ class ActionFactory(Loggable):
 
 
     def create_action(self, mthd : Callable) -> Action:
-        tab_map = self.tab_map
         args = ModuleInspector.get_args(func=mthd)
+        workspace = self.workspace
 
         class NewAction(Action):
             def __init__(self):
-                super().__init__(tab_map=tab_map)
+                super().__init__(workspace=workspace)
                 self.mthd_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
             @classmethod
@@ -84,13 +80,12 @@ class ActionFactory(Loggable):
 
             def do(self):
                 kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
-                tab = self.get_tab()
-                mthd(tab,**kwargs)
+                mthd(self.workspace,**kwargs)
 
             def get_desc(self) -> str:
                 return f'Allows for operating {self.get_name()}'
 
             def get_args(self) -> list[ToolArg]:
-                return self.mthd_args + [self.index_arg]
+                return self.mthd_args
 
         return NewAction()

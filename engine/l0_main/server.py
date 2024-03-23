@@ -4,7 +4,6 @@ import base64
 import logging
 import uvicorn
 from multiprocessing import Process
-from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from typing import Optional, Callable
 from abc import abstractmethod
@@ -13,7 +12,6 @@ from api import LotusRequest, TranscribeRequest, Entry
 from hollarek.network import Socket, Endpoint, Method
 from engine.l1_agent import Agent, Task
 from .transcribe import Transcriber
-from fastapi.responses import HTMLResponse
 
 # ----------------------------------------------
 

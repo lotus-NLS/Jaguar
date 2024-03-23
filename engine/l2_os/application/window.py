@@ -9,35 +9,24 @@ from hollarek.core.logging import Loggable
 
 class Window:
     def __init__(self, index : int, app_name : str):
-        self.workspace_map : dict[int, Workspace] = {}
+        self.workspace : Optional[Workspace] = None
         self.app_name : str = app_name
         self.index : int = index
 
-    def add_workspace(self, tab : Workspace):
-        index = 0
-        while self.workspace_map.get(index):
-            index += 1
-        self.workspace_map[index] = tab
+    def add_workspace(self, workspace : Workspace):
+        self.workspace = workspace
 
-    def close_all(self):
-        self.workspace_map = {}
-
-    def close_tab(self, index : int):
-        del self.workspace_map[index]
+    def close(self):
+        self.workspace = None
 
     # ---------------------------------------------------
     # do
 
-    def get_tabs(self) -> list[Workspace]:
-        return list(self.workspace_map.values())
-
     def get_entry(self) -> Entry:
         basic_info = f'Application: \"{self.app_name}\" Window number : {self.index}'
         entry = Entry.as_tool(name=f'{self.app_name}', msg=basic_info)
-        for index, workspace in self.workspace_map.items():
-            entry.add_msg(msg=workspace.get_text())
+        entry.add_msg(msg=self.workspace.get_text())
         return entry
-
 
 
 class Workspace(Loggable):
