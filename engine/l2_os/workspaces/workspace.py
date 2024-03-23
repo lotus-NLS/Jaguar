@@ -7,7 +7,7 @@ from typing import Optional, Callable
 from engine.l4_tools import ToolArg, ToolDoc, Tool, ToolCall
 from hollarek.core.logging import Loggable, LogSettings
 from hollarek.devtools import ModuleInspector
-
+import inspect
 # ---------------------------------------------------------
 
 class Workspace(Loggable):
@@ -20,8 +20,13 @@ class Workspace(Loggable):
         self.close_action : Action = self.create_close_action()
 
     def create_workspace_actions(self) -> list[Action]:
-        base_methods = ModuleInspector.get_methods(obj=Workspace)
-        actions = self.action_factory.create_all(excluded_methods=[func.__name__ for func in base_methods])
+        class_methods =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False)
+        class_method_names = [func.__name__ for func in class_methods]
+        instance_methods = ModuleInspector.get_methods(obj=self, include_inherited=False)
+        target_methods = [mthd for mthd in instance_methods if mthd.__name__ in class_method_names]
+
+        print(f'Target methods are {target_methods}')
+        actions = self.action_factory.create_all(target_methods=target_methods)
         return actions
 
     def create_open_action(self) -> Action:
@@ -78,32 +83,29 @@ class ActionFactory(Loggable):
     def __init__(self, workspace : Workspace):
         super().__init__(settings=LogSettings(timestamp=False))
         self.workspace : Workspace =  workspace
-        self.methods : list[Callable] = ModuleInspector.get_methods(obj=workspace, public_only=True)
 
     # ---------------------------------------------------------
     # loop
 
-    def create_all(self, excluded_methods : list[str]) -> list[Action]:
-        actions = []
-        for method in self.methods:
-            if method.__name__ in excluded_methods:
-                continue
-            actions.append(self.create_action(mthd=method))
-        return actions
-
+    def create_all(self, target_methods : list[Callable]) -> list[Action]:
+        return [self.create_action(mthd=method) for method in target_methods]
 
     def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> Action:
         if hook:
             hook_args = ModuleInspector.get_args(func=hook, exclude_self=False)
             if hook_args:
                 raise ValueError(f'Hook {hook.__name__} must have no arguments')
-        args = ModuleInspector.get_args(func=mthd)
+        if not inspect.ismethod(mthd):
+            raise TypeError(f'{ActionFactory.create_action.__name__} accept only bound methods;'
+                            f'Method \"{mthd.__name__}\" is not bound')
+
         workspace = self.workspace
         conditional_hook = lambda: hook() if hook else None
 
         class NewAction(Action):
             def __init__(self):
                 super().__init__(workspace=workspace)
+                args = ModuleInspector.get_args(func=mthd)
                 self.mthd_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
             @classmethod
@@ -112,7 +114,7 @@ class ActionFactory(Loggable):
 
             def do(self):
                 kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
-                mthd(**kwargs)
+                mthd(workspace, **kwargs)
                 conditional_hook()
 
             def get_desc(self) -> str:
