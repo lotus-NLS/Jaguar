@@ -58,7 +58,7 @@ class LotusTerminal(Workspace):
         self.session.stdin.write(f'echo "{user}@{hostname}:$(pwd)$ "')
         self.session.stdin.flush()
 
-        self.session.stdin.write(command + '\n')
+        self.session.stdin.write(command+ '\n')
         self.session.stdin.flush()
 
     # ---------------------------------------------------------

@@ -48,7 +48,7 @@ class Workspace(Loggable):
     # context
 
     def get_entry(self) -> Entry:
-        msg = f'Workspace: \"{self.get_name()}\"'
+        msg = f'Workspace: \"{self.get_name()}\"\n'
         msg += self.get_text()
         return Entry.as_tool(name=self.get_name(), msg=msg, image = self.get_image())
 
