@@ -102,19 +102,17 @@ class Context:
             raise TypeError(f'Cannot add Context with {type(other)}')
         return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
 
-    def as_str(self) -> str:
+    def as_str(self, section_header : str) -> str:
         def get_seperator(name : str) -> str:
             max_len = 100
             num_dashes = max(0, max_len-len(name))
             dashes = '-'*int(num_dashes/2.)
             return '\n+' + dashes + f' {name} '+ dashes + '+\n'
 
-
-        context_str = get_seperator(name=f'Entries')
+        context_str = get_seperator(name=section_header)
         for entry in self.entries:
             context_str += f'{entry.as_str()}\n'
 
-        context_str += get_seperator(name='Tool Docs')
         for doc in self.docs:
             context_str += f'{doc.as_str(pretty=True)}\n'
         return context_str

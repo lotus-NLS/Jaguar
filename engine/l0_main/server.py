@@ -74,6 +74,7 @@ class Server:
 
 import html
 from fastapi import FastAPI, Response
+from engine.l3_models import Context
 
 class DevServer(Server):
     def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
@@ -82,18 +83,22 @@ class DevServer(Server):
         self.dev_process: Optional[Process] = None
         self.add_endpoint(endpoint=self.get_context_endpoint(), callback=self.get_context_view)
 
-
     def get_context_endpoint(self, *args, **kwargs) -> Endpoint:
         return Endpoint(path='/context', method=Method.GET, socket=self.socket)
 
     def get_context_view(self) -> Response:
-        context = self.handler.get_active_context()
-        context_str = context.as_str()
+
+        system_context =  Context(entries=[self.handler.get_system_prompt()])
+        os_context = self.handler.os.get_context()
+        memory = Context(entries=self.handler.memory)
+        context_str = system_context.as_str(section_header=f'System prompt')
+        context_str += os_context.as_str(section_header=f'Lotus Operating System')
+        context_str += memory.as_str(section_header=f'Memory')
+
         escaped_context = html.escape(context_str)
         html_context = escaped_context.replace("\n", "<br>")
         html_context = f'<pre> {html_context} </pre>'
         return Response(content=html_context, media_type="text/html")
-
 
     def run(self):
         def do():

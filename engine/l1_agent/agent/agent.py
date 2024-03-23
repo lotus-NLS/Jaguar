@@ -6,7 +6,7 @@ from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, LotusText, Host, LotusTerminal
+from engine.l2_os import OS, LotusTerminal
 from engine.l1_agent.protocol import Identity, Task
 
 
@@ -17,7 +17,7 @@ class Agent(Loggable):
         super().__init__()
         # context
         self.identity : Identity = identity
-        self.memory: Context = Context()
+        self.memory: list[Entry] = []
         # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
@@ -29,7 +29,7 @@ class Agent(Loggable):
 
     def handle(self, task: Task) -> TextPipe:
         for entry in task.new_entries:
-            self.memory.add_entry(entry=entry)
+            self.memory += entry
         try:
             generation = self.get_next(options=task.get_options())
             pipe = TextPipe()
@@ -54,13 +54,13 @@ class Agent(Loggable):
         for chunk in generation:
             pipe.put(chunk.get_text())
         response_entry = Entry.as_agent(msg=generation.get_text())
-        self.memory.add_entry(entry=response_entry)
+        self.memory += response_entry
 
         call_map = generation.get_call_map()
         if not call_map.is_empty():
             outputs = self.os.handle_calls(call_map=call_map)
             for out in outputs:
-                self.memory.add_entry(entry=out.as_entry())
+                self.memory += out.as_entry()
             if with_report:
                 entries = self.get_active_context().entries + [self.get_feedback_request()]
                 feedback = self.model.get_text_generation(entries=entries)
@@ -84,7 +84,6 @@ class Agent(Loggable):
         context += self.memory
 
         return context
-
 
     def get_system_prompt(self) -> Entry:
         return Entry.as_system(msg=self.identity.get_str())
