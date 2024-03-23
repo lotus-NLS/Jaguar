@@ -4,14 +4,13 @@ import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
-from engine.l2_os.application import Workspace
 from hollarek.file import TextFile
-
+from .workspace import Workspace
 # ---------------------------------------------------------
 
 class LotusText(Workspace):
     def __init__(self, filepath : str):
-        super().__init__(uri=filepath)
+        super().__init__()
         self.content : Optional[str] = None
         self.fpath = filepath
         self.text_file : TextFile = TextFile(fpath=filepath, require_writable=True)

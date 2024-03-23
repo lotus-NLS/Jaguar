@@ -3,23 +3,14 @@ from hollarek.core.logging import Loggable, LogLevel
 
 from engine.l4_tools import Tool, CallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context
-from engine.l2_os.application import Application, Workspace
-from .meta_tools import Close, Open
-
+from engine.l2_os.workspaces import Workspace
 
 # ---------------------------------------------------------
 
 class OS(Loggable):
     def __init__(self, workspace_types : list[type[Workspace]]):
         super().__init__()
-        self.app_map = {}
-        for j, workspace_type in enumerate(workspace_types):
-            self.app_map[j] = Application(index=j, workspace_type=workspace_type)
-
-
-        self.open_tools : list[Tool] = [Open(app) for app in self.app_map.values()]
-        self.close : Tool = Close(self.app_map)
-        self.meta_tools : list[Tool] = [self.close] + self.open_tools
+        self.workspaces : dict[int, Workspace] = {j : workspace_type() for (j, workspace_type) in  enumerate(workspace_types)}
 
     # ---------------------------------------------------
     # call updates
@@ -41,39 +32,35 @@ class OS(Loggable):
                 outputs += [ToolOutput.failed(name=tool_call.name, reason=e)]
         return outputs
 
+
     # ---------------------------------------------------
     # get
 
     def get_context(self) -> Context:
-        open_apps = [app for app in self.app_map.values() if app.is_open()]
+        open_workspaces = [workspace for workspace in self.get_workspaces()]
         entries = []
-        for app in open_apps:
+        for workspace in open_workspaces:
             try:
-                entry = app.window.get_entry()
+                entry = workspace.get_entry()
                 entries.append(entry)
             except:
-                self.log(f'Error in getting entry for app \"{app.get_name()}\"', level=LogLevel.ERROR)
+                self.log(f'Error in getting entry for app \"{workspace.get_name()}\"', level=LogLevel.ERROR)
         docs = self._get_docs()
         return Context(entries=entries, docs=docs)
 
 
     def get_tools(self) -> list[Tool]:
-        tools = self.meta_tools
-        active_applications = [app for app in self.app_map.values() if app.is_open()]
-        for app in active_applications:
-            tools += app.get_actions()
+        tools = []
+        for workspace in self.get_workspaces():
+            tools += workspace.get_actions()
         return tools
 
 
     def _get_docs(self) -> list[ToolDoc]:
-        docs = [tool.get_doc() for tool in self.meta_tools]
-        active_applications = [app for app in self.app_map.values() if app.is_open()]
-        for app in active_applications:
-            docs += app.get_docs()
+        docs = []
+        for workspace in self.get_workspaces():
+            docs += workspace.get_docs()
         return docs
 
-    def get_apps(self, open_only : bool = True):
-        applications = list(self.app_map.values())
-        if open_only:
-            return [app for app in applications if app.is_open()]
-        return applications
+    def get_workspaces(self) -> list[Workspace]:
+        return [workspace for workspace in self.workspaces.values()]

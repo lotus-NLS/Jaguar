@@ -21,7 +21,7 @@ class Agent(Loggable):
         # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[LotusText, Host, LotusTerminal])
+        self.os : OS = OS(workspace_types=[LotusTerminal])
         self.model: LLM = model
 
     # ---------------------------------------------------

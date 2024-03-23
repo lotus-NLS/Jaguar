@@ -1,14 +1,14 @@
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from engine.l2_os.application import Workspace
 from hollarek.hardware import TextMouse, Keyboard, Display, Grid
+from .workspace import Workspace
 
 # ---------------------------------------------------
 
 class Host(Workspace):
     def __init__(self):
-        super().__init__(uri='')
+        super().__init__()
         self.input_grid = Grid(20,20)
         self.text_mouse = TextMouse(input_grid=self.input_grid)
         self.keyboard = Keyboard()
@@ -25,7 +25,3 @@ class Host(Workspace):
 
     def type(self, msg : str):
         self.keyboard.type(msg=msg)
-
-    def get_desc(self) -> str:
-        return (f'This application allows you to interact with the hardware i.e. click, type and view the display'
-                f'just like the user')

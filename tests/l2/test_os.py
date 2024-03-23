@@ -10,7 +10,7 @@ class TestOpenClose(Unittest):
 
         self.os_system = OS(workspace_types=[LotusText])
         self.open_tool = self.os_system.open
-        self.text_app = self.os_system.app_map[0]
+        self.text_app = self.os_system.workspacetype_map[0]
         open_call_dict = { 'application_index' : 0, 'uri' : self.test_txt.fpath}
         open_call = ToolCall(name=self.open_tool.get_name(), json_str=json.dumps(open_call_dict))
         self.open_tool.handle(tool_call=open_call)
@@ -21,7 +21,7 @@ class TestOpenClose(Unittest):
         close_call_dict = { 'application_index' : 0}
         close_call = ToolCall(name=close_tool.get_name(), json_str=json.dumps(close_call_dict))
         close_tool.handle(tool_call=close_call)
-        self.assertFalse(self.text_app.is_open())
+        self.assertFalse(self.text_app.is_active())
 
 
     def test_metatools_found(self):
@@ -37,7 +37,7 @@ class TestTools(Unittest):
 
         self.os_system = OS(workspace_types=[LotusText])
         self.open_tool = self.os_system.open
-        self.text_app = self.os_system.app_map[0]
+        self.text_app = self.os_system.workspacetype_map[0]
         open_call_dict = {'application_index': 0, 'uri': self.test_txt.fpath}
         open_call = ToolCall(name=self.open_tool.get_name(), json_str=json.dumps(open_call_dict))
         self.open_tool.handle(tool_call=open_call)

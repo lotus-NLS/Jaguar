@@ -14,17 +14,17 @@ class TestOpenClose(ApplicationTest):
     def test_basic_properties(self):
         self.assertEqual(self.app.get_name(), 'Application')
         self.assertIsInstance(self.app.desc, str)
-        self.assertFalse(self.app.is_open())
+        self.assertFalse(self.app.is_active())
 
     def test_open_application(self):
         self.app.open(uri='some_path')
-        self.assertTrue(self.app.is_open())
+        self.assertTrue(self.app.is_active())
         self.assertIsInstance(self.app.window.workspace[0], MockWorkspace)
 
     def test_close_application(self):
         self.app.open(uri='some_path')
         self.app.close()
-        self.assertFalse(self.app.is_open())
+        self.assertFalse(self.app.is_active())
         self.assertTrue(len(self.app.window.get_tabs()) == 0)
 
     def test_close_individual_tabs(self):

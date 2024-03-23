@@ -5,16 +5,20 @@ from subprocess import Popen, PIPE
 from typing import Optional
 from func_timeout import func_timeout, FunctionTimedOut
 from PIL.Image import Image as PILImage
-from engine.l2_os import Workspace
+from .workspace import Workspace
 # ---------------------------------------------------------
 
 class LotusTerminal(Workspace):
-    def __init__(self, workdir_path : str):
-        super().__init__(uri=workdir_path)
-        self.text = ''
+    def __init__(self):
+        super().__init__()
         self.near_end, self.far_end = os.pipe()
         fcntl.fcntl(self.near_end, fcntl.F_SETFL, os.O_NONBLOCK)
-        self.session: Optional[Popen] = self._get_session()
+        self.session: Optional[Popen] = None
+        self.text = ''
+
+    def open(self, workdir_path : str):
+        super().open()
+        self._get_session(cwd=workdir_path)
 
     def get_text(self) -> str:
         try:
@@ -25,9 +29,6 @@ class LotusTerminal(Workspace):
 
     def get_image(self) -> Optional[PILImage]:
         return None
-
-    def get_desc(self) -> str:
-        return f'This application allows you to execute command in the Terminal'
 
     # ---------------------------------------------------------
     # actions
@@ -46,7 +47,7 @@ class LotusTerminal(Workspace):
         except BlockingIOError:
             pass
 
-    def _get_session(self) -> Optional[Popen]:
+    def _get_session(self, cwd : str) -> Optional[Popen]:
         os_type = self._get_os_type()
         if  os_type == 'Linux':
             shell_cmd = '/bin/bash'
@@ -58,7 +59,6 @@ class LotusTerminal(Workspace):
         shell_session = None
         try:
             out = self.far_end
-            cwd = self.uri
             if not cwd:
                 cwd = '~'
             cwd = os.path.expanduser(cwd)
