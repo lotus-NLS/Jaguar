@@ -15,12 +15,35 @@ class Workspace(Loggable):
         super().__init__()
         self.action_factory = ActionFactory(workspace=self)
         self.is_active : bool = False
+        self.workspace_actions : list[Action] = self.create_workspace_actions()
+        self.open_action : Action = self.create_open_action()
+        self.close_action : Action = self.create_close_action()
 
-    def open(self):
-        self.is_active = True
+    def create_workspace_actions(self) -> list[Action]:
+        base_methods = ModuleInspector.get_methods(obj=Workspace)
+        actions = self.action_factory.create_all(excluded_methods=[func.__name__ for func in base_methods])
+        return actions
 
-    def close(self):
-        self.is_active = False
+    def create_open_action(self) -> Action:
+        def set_active():
+            self.is_active = True
+        return self.action_factory.create_action(mthd=self.open, hook=set_active)
+
+    def create_close_action(self) -> Action:
+        def set_inactive():
+            self.is_active = False
+        return self.action_factory.create_action(mthd=self.close, hook=set_inactive)
+
+    @abstractmethod
+    def open(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def close(self,*args, **kwargs):
+        pass
+
+    # ---------------------------------------------------
+    # context
 
     def get_entry(self) -> Entry:
         msg = f'Workspace: \"{self.get_name()}\"'
@@ -41,14 +64,11 @@ class Workspace(Loggable):
     def get_name(cls) -> str:
         return cls.__name__
 
-    def get_actions(self) -> list[Action]:
+    def get_actions(self):
         if self.is_active:
-            base_methods = ModuleInspector.get_methods(obj=self)
-            excluded_methods = [func for func in base_methods if not func in [Workspace.close]]
-            actions = self.action_factory.create_all(excluded_methods=excluded_methods)
+            return self.workspace_actions + [self.close_action]
         else:
-            actions = [self.action_factory.create_action(mthd=self.open)]
-        return actions
+            return [self.open_action]
 
     def get_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]
@@ -63,19 +83,23 @@ class ActionFactory(Loggable):
     # ---------------------------------------------------------
     # loop
 
-    def create_all(self, excluded_methods : list[Callable]) -> list[Action]:
+    def create_all(self, excluded_methods : list[str]) -> list[Action]:
         actions = []
         for method in self.methods:
-            excluded_method_names = [mthd.__name__ for mthd in excluded_methods]
-            if method.__name__ in excluded_method_names:
+            if method.__name__ in excluded_methods:
                 continue
             actions.append(self.create_action(mthd=method))
         return actions
 
 
-    def create_action(self, mthd : Callable) -> Action:
+    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> Action:
+        if hook:
+            hook_args = ModuleInspector.get_args(func=hook, exclude_self=False)
+            if hook_args:
+                raise ValueError(f'Hook {hook.__name__} must have no arguments')
         args = ModuleInspector.get_args(func=mthd)
         workspace = self.workspace
+        conditional_hook = lambda: hook() if hook else None
 
         class NewAction(Action):
             def __init__(self):
@@ -89,6 +113,7 @@ class ActionFactory(Loggable):
             def do(self):
                 kwargs = {arg.name : arg.get_value() for arg in self.mthd_args}
                 mthd(**kwargs)
+                conditional_hook()
 
             def get_desc(self) -> str:
                 return f'Allows for operating {self.get_name()}'

@@ -17,19 +17,19 @@ class TestOpenClose(ApplicationTest):
         self.assertFalse(self.app.is_active())
 
     def test_open_application(self):
-        self.app.open(uri='some_path')
+        self.app.open_action(uri='some_path')
         self.assertTrue(self.app.is_active())
         self.assertIsInstance(self.app.window.workspace[0], MockWorkspace)
 
     def test_close_application(self):
-        self.app.open(uri='some_path')
+        self.app.open_action(uri='some_path')
         self.app.close()
         self.assertFalse(self.app.is_active())
         self.assertTrue(len(self.app.window.get_tabs()) == 0)
 
     def test_close_individual_tabs(self):
-        self.app.open(uri='tab1')
-        self.app.open(uri='tab2')
+        self.app.open_action(uri='tab1')
+        self.app.open_action(uri='tab2')
         initial_tab_count = len(self.app.window.workspace)
         self.app.window.close_tab(0)
         self.assertEqual(len(self.app.window.workspace), initial_tab_count - 1)
@@ -37,7 +37,7 @@ class TestOpenClose(ApplicationTest):
 
 class TestActionProperties(ApplicationTest):
     def test_action_generation(self):
-        self.app.open(uri='some_path')
+        self.app.open_action(uri='some_path')
         for text in ['add', 'reset']:
             contains_keyword = any([text in action.get_name() for action in self.app.get_actions()])
             self.assertTrue(contains_keyword)
@@ -53,7 +53,7 @@ class TestActionProperties(ApplicationTest):
             self.assertIsInstance(action, Action)
 
     def test_num_actions(self):
-        self.app.open(uri='test_path')
+        self.app.open_action(uri='test_path')
         actions = self.app.get_actions()
         actions_info = [action.get_name() for action in actions]
         self.log(f'Actions are : {actions_info}')
@@ -66,7 +66,7 @@ class TestActionProperties(ApplicationTest):
 
 class TestActionExecution(ApplicationTest):
     def test_tool_execution(self):
-        self.app.open(uri='test_path')
+        self.app.open_action(uri='test_path')
         add = self.app.tool_dict['add']
         reset = self.app.tool_dict['reset']
 
