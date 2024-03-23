@@ -60,7 +60,8 @@ class LotusTerminal(Workspace):
             out = self.far_end
             cwd = self.uri
             if not cwd:
-                cwd = os.path.expanduser('~')
+                cwd = '~'
+            cwd = os.path.expanduser(cwd)
             shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
         except Exception as e:
             self.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')
