@@ -1,7 +1,6 @@
 import os, fcntl
 import subprocess
 import platform
-import time
 from subprocess import Popen, PIPE
 from typing import Optional
 from func_timeout import func_timeout, FunctionTimedOut
@@ -59,7 +58,10 @@ class LotusTerminal(Workspace):
         shell_session = None
         try:
             out = self.far_end
-            shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True)
+            cwd = self.uri
+            if not cwd:
+                cwd = os.path.expanduser('~')
+            shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
         except Exception as e:
             self.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')
 
@@ -69,17 +71,4 @@ class LotusTerminal(Workspace):
     def _get_os_type() -> str:
         return f'{platform.system()}'
 
-#
-# if __name__ == "__main__":
-#     terminal = LotusTerminal(uri='')
-#     terminal.run(command=f'echo Hello')
-#     terminal.run(command=f'echo Hello')
-#     terminal.run(command=f'echo Hello')
-#     lotsa_hello = 'Hello'*10000
-#     terminal.run(command=f'echo {lotsa_hello}')
-#     terminal.run(command=f'echo Hello')
-#     terminal.run(command=f'echo Hello')
-#     time.sleep(1)
-#     print(terminal.get_text())
-#     print(terminal.get_text())
 #

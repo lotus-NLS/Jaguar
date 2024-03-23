@@ -11,7 +11,7 @@ from hollarek.core.logging import Loggable
 class Workspace(Loggable):
     def __init__(self, uri : str):
         super().__init__()
-        self.name : str = uri
+        self.uri : str = uri
 
     @abstractmethod
     def get_text(self) -> str:
@@ -26,7 +26,7 @@ class Workspace(Loggable):
         image = self.get_image()
         if image:
             kwargs['image'] = image
-        msg = self.get_workspace_header(msg=f' Tab {tab_index}: {self.name} ')
+        msg = self.get_workspace_header(msg=f' Tab {tab_index}: {self.uri} ')
         msg += self.get_text()
         msg += self.get_workspace_header()
 
