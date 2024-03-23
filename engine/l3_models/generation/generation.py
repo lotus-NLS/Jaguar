@@ -103,13 +103,19 @@ class Context:
         return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
 
     def as_str(self) -> str:
-        seperator = '+' + '-'*50 + '+'
-        context_str = f'Entries:\n'
+        def get_seperator(name : str) -> str:
+            max_len = 100
+            num_dashes = max(0, max_len-len(name))
+            dashes = '-'*int(num_dashes/2.)
+            return '\n+' + dashes + f' {name} '+ dashes + '+\n'
+
+
+        context_str = get_seperator(name=f'Entries')
         for entry in self.entries:
             context_str += entry.as_str()
 
-        context_str += seperator
+        context_str += get_seperator(name='Tool Docs')
         for doc in self.docs:
-            context_str += doc.as_str()
-        context_str += seperator
+            context_str += f'{doc.as_str(pretty=True)}\n'
+            print(doc.as_str(pretty=True))
         return context_str

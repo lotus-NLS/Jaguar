@@ -13,6 +13,8 @@ from api import LotusRequest, TranscribeRequest, Entry
 from hollarek.network import Socket, Endpoint, Method
 from engine.l1_agent import Agent, Task
 from .transcribe import Transcriber
+from fastapi.responses import HTMLResponse
+
 # ----------------------------------------------
 
 class Server:
@@ -72,6 +74,8 @@ class Server:
     def get_protocol(cls) -> str:
         pass
 
+import html
+from fastapi import FastAPI, Response
 
 class DevServer(Server):
     def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
@@ -84,9 +88,13 @@ class DevServer(Server):
     def get_context_endpoint(self, *args, **kwargs) -> Endpoint:
         return Endpoint(path='/context', method=Method.GET, socket=self.socket)
 
-    def get_context_view(self) -> str:
+    def get_context_view(self) -> Response:
         context = self.handler.get_active_context()
-        return context.as_str()
+        context_str = context.as_str()
+        escaped_context = html.escape(context_str)
+        html_context = escaped_context.replace("\n", "<br>")
+        html_context = f'<pre> {html_context} </pre>'
+        return Response(content=html_context, media_type="text/html")
 
 
     def run(self):
