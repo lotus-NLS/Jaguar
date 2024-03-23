@@ -21,6 +21,7 @@ class DevUser:
 
     def fire(self):
         req_str = LotusRequest(msg=self.buffer).model_dump_json()
+        self.buffer = ''
 
         process_endpoint = self.engine_io.get_process_endpoint()
         url = process_endpoint.get_url(protocol=self.engine_io.get_protocol())

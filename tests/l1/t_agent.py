@@ -60,17 +60,22 @@ class TestApplicationUsage(Unittest):
         for text in response.get_text_stream():
             print(text, end='')
         self.assertTrue(os.path.isfile(fpath))
-        open_apps = self.agent.os.get_apps(open_only=True)
+        open_apps = self.get_open_workspace()
         self.assertTrue(len(open_apps)==1)
 
         close_task = Task.make_default(msg=f'Now please close the text application again')
         response = self.agent.handle(close_task)
         for text in response.get_text_stream():
             print(text, end='')
-        open_apps = self.agent.os.get_apps(open_only=True)
+        open_apps = self.get_open_workspace()
         self.assertTrue(len(open_apps)==0)
 
 
+    def get_open_workspace(self):
+        workspaces= self.agent.os.get_workspaces()
+        return [workspace for workspace in workspaces if workspace.is_active]
+
 
 if __name__ == '__main__':
-    TestAgentContext.execute_all()
+    # TestAgentContext.execute_all()
+    TestApplicationUsage.execute_all()

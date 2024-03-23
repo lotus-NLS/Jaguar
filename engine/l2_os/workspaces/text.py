@@ -9,14 +9,23 @@ from .workspace import Workspace
 # ---------------------------------------------------------
 
 class LotusText(Workspace):
-    def __init__(self, filepath : str):
+    def __init__(self):
         super().__init__()
         self.content : Optional[str] = None
+        self.text_file : Optional[TextFile] = None
+        self.fpath : Optional[str] = None
+
+
+    def open(self, filepath : str):
+        self.text_file = TextFile(fpath=filepath, require_writable=True)
         self.fpath = filepath
-        self.text_file : TextFile = TextFile(fpath=filepath, require_writable=True)
 
+    def close(self, *args, **kwargs):
+        pass
 
-    def get_text(self) -> Optional[str]:
+    def get_text(self) -> str:
+        if not self.fpath:
+            return ''
         if not os.path.isfile(self.fpath):
             return ''
 
@@ -26,10 +35,10 @@ class LotusText(Workspace):
         msg = ''.join(numbered_lines)
         return msg
 
-
     def get_image(self) -> Optional[PILImage]:
         return None
 
+    # ---------------------------------------------------------
 
     def insert(self, line: int, content: str):
         if self.text_file.get_suffix() == 'pdf':
@@ -59,8 +68,3 @@ class LotusText(Workspace):
         del lines[start_line - 1:end_line]
         with open(self.fpath, 'w') as f:
             f.writelines(lines)
-
-    @classmethod
-    def get_desc(cls) -> str:
-        return (f'This application allows you to view almost any text file including .pdf and .docx files'
-                f'However you can only edit plain text files')
