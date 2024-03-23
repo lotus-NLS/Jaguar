@@ -17,8 +17,11 @@ class LotusTerminal(Workspace):
         self.text = ''
 
     def open(self, workdir_path : str):
-        super().open_action()
         self._get_session(cwd=workdir_path)
+
+    def close(self):
+        self.session = None
+        self.text = None
 
     def get_text(self) -> str:
         try:

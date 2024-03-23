@@ -2,12 +2,12 @@ from __future__ import annotations
 from abc import abstractmethod, ABC
 from PIL.Image import Image as PILImage
 from api import Entry
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
+import inspect
 
 from engine.l4_tools import ToolArg, ToolDoc, Tool, ToolCall
 from hollarek.core.logging import Loggable, LogSettings
 from hollarek.devtools import ModuleInspector
-import inspect
 # ---------------------------------------------------------
 
 class Workspace(Loggable):
@@ -20,24 +20,21 @@ class Workspace(Loggable):
         self.close_action : Action = self.create_close_action()
 
     def create_workspace_actions(self) -> list[Action]:
-        class_methods =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False)
-        class_method_names = [func.__name__ for func in class_methods]
-        instance_methods = ModuleInspector.get_methods(obj=self, include_inherited=False)
-        target_methods = [mthd for mthd in instance_methods if mthd.__name__ in class_method_names]
-
-        print(f'Target methods are {target_methods}')
+        cls_mthds =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False, public_only=True)
+        excluded_names = [func.__name__ for func in ModuleInspector.get_methods(obj=Workspace)]
+        target_methods = [mthd for mthd in cls_mthds if not mthd.__name__ in excluded_names]
         actions = self.action_factory.create_all(target_methods=target_methods)
         return actions
 
     def create_open_action(self) -> Action:
         def set_active():
             self.is_active = True
-        return self.action_factory.create_action(mthd=self.open, hook=set_active)
+        return self.action_factory.create_action(mthd=self.__class__.open, hook=set_active)
 
     def create_close_action(self) -> Action:
         def set_inactive():
             self.is_active = False
-        return self.action_factory.create_action(mthd=self.close, hook=set_inactive)
+        return self.action_factory.create_action(mthd=self.__class__.close, hook=set_inactive)
 
     @abstractmethod
     def open(self, *args, **kwargs):
@@ -55,6 +52,10 @@ class Workspace(Loggable):
         msg += self.get_text()
         return Entry.as_tool(name=self.get_name(), msg=msg, image = self.get_image())
 
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.__name__
+
     @abstractmethod
     def get_text(self) -> str:
         pass
@@ -65,15 +66,8 @@ class Workspace(Loggable):
 
     # ---------------------------------------------------
 
-    @classmethod
-    def get_name(cls) -> str:
-        return cls.__name__
-
     def get_actions(self):
-        if self.is_active:
-            return self.workspace_actions + [self.close_action]
-        else:
-            return [self.open_action]
+        return self.workspace_actions + [self.close_action] if self.is_active else [self.open_action]
 
     def get_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]
@@ -84,20 +78,13 @@ class ActionFactory(Loggable):
         super().__init__(settings=LogSettings(timestamp=False))
         self.workspace : Workspace =  workspace
 
-    # ---------------------------------------------------------
-    # loop
-
     def create_all(self, target_methods : list[Callable]) -> list[Action]:
         return [self.create_action(mthd=method) for method in target_methods]
 
-    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> Action:
-        if hook:
-            hook_args = ModuleInspector.get_args(func=hook, exclude_self=False)
-            if hook_args:
-                raise ValueError(f'Hook {hook.__name__} must have no arguments')
-        if not inspect.ismethod(mthd):
-            raise TypeError(f'{ActionFactory.create_action.__name__} accept only bound methods;'
-                            f'Method \"{mthd.__name__}\" is not bound')
+    def create_action(self, mthd : Callable, hook : Optional[Callable[[], Any]] = None) -> Action:
+        if inspect.ismethod(mthd):
+            raise TypeError(f'{ActionFactory.create_action.__name__} accept only unbound methods;'
+                            f'Method \"{mthd.__name__}\" is bound')
 
         workspace = self.workspace
         conditional_hook = lambda: hook() if hook else None
@@ -122,7 +109,6 @@ class ActionFactory(Loggable):
 
             def get_args(self) -> list[ToolArg]:
                 return self.mthd_args
-
         return NewAction()
 
 
