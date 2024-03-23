@@ -43,8 +43,8 @@ class OS(Loggable):
             try:
                 entry = workspace.get_entry()
                 entries.append(entry)
-            except:
-                self.log(f'Error in getting entry for app \"{workspace.get_name()}\"', level=LogLevel.ERROR)
+            except BaseException as e:
+                self.log(f'Error in getting entry for app \"{workspace.get_name()}\": {e}', level=LogLevel.ERROR)
         docs = self._get_docs()
         return Context(entries=entries, docs=docs)
 
