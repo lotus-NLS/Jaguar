@@ -17,7 +17,6 @@ class Identity:
     def get_str(self) -> str:
         msg = f'{self.core.value}\n'
         msg += f'You operate on the OS: {self.os_information}'
-        msg += self.get_lotus_msg()
         return msg
 
 
@@ -39,19 +38,6 @@ class Identity:
             detail += f" (Error obtaining additional details: {e})"
 
         return detail
-
-    @classmethod
-    def get_lotus_msg(cls) -> str:
-        lotus_msg = (f'Lotus provides an operating system for LLMs which can be operated almost exclusively via text. '
-                     f'These applications are there for you and they can be viewed and manipulated only by you.'
-                     f'The following applications are provided to you:')
-        for workspace in [LotusText]:
-            lotus_msg += f'- {workspace.get_name()}: {workspace.get_desc()}'
-        lotus_msg += (f'Each application will provide a tool with which you can open windows of that application'
-                      f'and one tool with which you can close windows of that application.'
-                      f'On the open windows you can perform actions much like you would in a standard operating system')
-        return lotus_msg
-
 
 
 

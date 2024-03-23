@@ -63,7 +63,7 @@ class Open(Tool):
 
 
     def get_desc(self) -> str:
-        return f'Opens the application {self.app.get_name}'
+        return f'Opens the application {self.app.get_name()}'
 
     def get_name(self) -> str:
         return f'Open_{self.app.get_name()}'
