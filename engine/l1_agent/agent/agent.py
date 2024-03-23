@@ -28,8 +28,7 @@ class Agent(Loggable):
     # Main routine
 
     def handle(self, task: Task) -> TextPipe:
-        for entry in task.new_entries:
-            self.memory += entry
+        self.memory += task.new_entries
         try:
             generation = self.get_next(options=task.get_options())
             pipe = TextPipe()
@@ -54,13 +53,13 @@ class Agent(Loggable):
         for chunk in generation:
             pipe.put(chunk.get_text())
         response_entry = Entry.as_agent(msg=generation.get_text())
-        self.memory += response_entry
+        self.memory.append(response_entry)
 
         call_map = generation.get_call_map()
         if not call_map.is_empty():
             outputs = self.os.handle_calls(call_map=call_map)
             for out in outputs:
-                self.memory += out.as_entry()
+                self.memory.append(out.as_entry())
             if with_report:
                 entries = self.get_active_context().entries + [self.get_feedback_request()]
                 feedback = self.model.get_text_generation(entries=entries)
@@ -81,7 +80,7 @@ class Agent(Loggable):
         context = Context()
         context.add_entry(self.get_system_prompt())
         context += self.os.get_context()
-        context += self.memory
+        context += Context(entries=self.memory)
 
         return context
 
