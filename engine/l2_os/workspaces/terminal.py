@@ -9,8 +9,8 @@ from engine.l2_os import Workspace
 # ---------------------------------------------------------
 
 class LotusTerminal(Workspace):
-    def __init__(self, uri : str):
-        super().__init__(uri=uri)
+    def __init__(self, workdir_path : str):
+        super().__init__(uri=workdir_path)
         self.text = ''
         self.near_end, self.far_end = os.pipe()
         fcntl.fcntl(self.near_end, fcntl.F_SETFL, os.O_NONBLOCK)

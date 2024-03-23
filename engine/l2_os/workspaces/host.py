@@ -7,8 +7,8 @@ from hollarek.hardware import TextMouse, Keyboard, Display, Grid
 # ---------------------------------------------------
 
 class Host(Workspace):
-    def __init__(self, uri : str):
-        super().__init__(uri=uri)
+    def __init__(self):
+        super().__init__(uri='')
         self.input_grid = Grid(20,20)
         self.text_mouse = TextMouse(input_grid=self.input_grid)
         self.keyboard = Keyboard()

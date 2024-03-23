@@ -29,8 +29,8 @@ class Application:
             if len(self.window.workspace_map) == self.max_tabs:
                 raise ValueError(f'Cannot open more than {self.max_tabs} tab(s)')
 
-        new_tab = self.workspace_type(uri=uri)
-        self.window.add_tab(new_tab)
+        new_tab = self.workspace_type(uri)
+        self.window.add_workspace(new_tab)
 
     def close(self):
         self.window.close_all()

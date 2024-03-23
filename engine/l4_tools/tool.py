@@ -9,7 +9,7 @@ from .tool_input import ToolCall, ToolArg, ToolDoc
 class Tool:
     def __init__(self, call_timeout : float = 60):
         self.is_active : bool = True
-        self.logger = get_logger(name=self.get_name())
+        self.logger = get_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
 
     # ---------------------------------------------------

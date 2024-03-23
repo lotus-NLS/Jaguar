@@ -4,7 +4,7 @@ from typing import Optional
 from urllib.parse import urlparse
 from pathlib import Path
 from api import Entry
-
+from hollarek.devtools import ModuleInspector
 from hollarek.core.logging import Loggable
 # ---------------------------------------------------------
 
@@ -26,14 +26,14 @@ class Workspace(Loggable):
         image = self.get_image()
         if image:
             kwargs['image'] = image
-        msg = self.get_workspace_header(msg=f' Tab {tab_index}: {self.uri} ')
+        msg = self._get_workspace_header(msg=f' Tab {tab_index}: {self.uri} ')
         msg += self.get_text()
-        msg += self.get_workspace_header()
+        msg += self._get_workspace_header()
 
         return Entry.as_tool(msg=msg, name=app_name, **kwargs)
 
     @staticmethod
-    def get_workspace_header(msg: str = ''):
+    def _get_workspace_header(msg: str = ''):
         max_len = 50
         num_dashes = max(max_len - len(msg), 0)
         dashes = '-' * int(num_dashes / 2)
@@ -47,13 +47,22 @@ class Workspace(Loggable):
     def get_desc(self) -> str:
         pass
 
+    @classmethod
+    def get_init_argname(cls) -> Optional[str]:
+        init_args = ModuleInspector.get_args(cls.__init__)
+        name = None
+        if init_args:
+            name = init_args[0].name
+        return name
+
+
 class Window:
     def __init__(self, index : int, app_name : str):
         self.workspace_map : dict[int, Workspace] = {}
         self.app_name : str = app_name
         self.index : int = index
 
-    def add_tab(self, tab : Workspace):
+    def add_workspace(self, tab : Workspace):
         index = 0
         while self.workspace_map.get(index):
             index += 1

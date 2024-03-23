@@ -10,11 +10,11 @@ from hollarek.file import TextFile
 # ---------------------------------------------------------
 
 class LotusText(Workspace):
-    def __init__(self, uri : str):
-        super().__init__(uri=uri)
+    def __init__(self, filepath : str):
+        super().__init__(uri=filepath)
         self.content : Optional[str] = None
-        self.fpath = uri
-        self.text_file : TextFile = TextFile(fpath=uri, require_writable=True)
+        self.fpath = filepath
+        self.text_file : TextFile = TextFile(fpath=filepath, require_writable=True)
 
 
     def get_text(self) -> Optional[str]:

@@ -51,21 +51,25 @@ class Close(MetaTool):
             application.close()
 
 
-class Open(MetaTool):
-    def __init__(self, application_map: dict[int, Application]):
-        super().__init__(application_map=application_map)
-        self.uri_arg : ToolArg = ToolArg(name='uri', desc='URI argument')
+class Open(Tool):
+    def __init__(self, app: Application):
+        super().__init__()
+        self.app : Application = app
+        workspace_type = self.app.workspace_type
+        uri_name = workspace_type.get_init_argname()
+        if uri_name:
+            print(f'Uri name for application {self.app.get_name()} is {uri_name}')
+            self.uri_arg : ToolArg = ToolArg(name=uri_name)
+
 
     def get_desc(self) -> str:
-        info_map = {index : app.get_name() for index, app in self.map.items()}
-        return f'Opens an application: \n{info_map}'
+        return f'Opens the application {self.app.get_name}'
 
-    def get_choices(self):
-        return [str(index) for index, app in self.map.items() if not app.is_open()]
+    def get_name(self) -> str:
+        return f'Open_{self.app.get_name()}'
 
     # ---------------------------------------------------
     # do
 
     def do(self):
-        application = self.get_application()
-        application.open(uri=self.uri_arg.input)
+        self.app.open(uri=self.uri_arg.input)

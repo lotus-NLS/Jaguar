@@ -16,9 +16,10 @@ class OS(Loggable):
         for j, workspace_type in enumerate(workspace_types):
             self.app_map[j] = Application(index=j, workspace_type=workspace_type)
 
-        self.open : Tool = Open(self.app_map)
+
+        self.open_tools : list[Tool] = [Open(app) for app in self.app_map.values()]
         self.close : Tool = Close(self.app_map)
-        self.meta_tools : list[Tool] = [self.open, self.close]
+        self.meta_tools : list[Tool] = [self.close] + self.open_tools
 
     # ---------------------------------------------------
     # call updates
