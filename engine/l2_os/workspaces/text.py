@@ -13,7 +13,6 @@ class LotusText(Workspace):
         self.content : Optional[str] = None
         self.text_file : Optional[TextFile] = None
 
-
     def open(self, filepath : str):
         self.text_file = TextFile(fpath=filepath, require_writable=True)
 

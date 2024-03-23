@@ -37,7 +37,7 @@ class OS(Loggable):
     # get
 
     def get_context(self) -> Context:
-        open_workspaces = [workspace for workspace in self.get_workspaces()]
+        open_workspaces = [workspace for workspace in self.get_workspaces() if workspace.is_active]
         entries = []
         for workspace in open_workspaces:
             try:

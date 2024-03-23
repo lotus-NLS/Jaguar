@@ -20,6 +20,9 @@ class LotusTerminal(Workspace):
         self.content = ''
 
     def open(self, workdir_path : str = '~'):
+        """
+        Opens a terminal in which you can freely execute commands
+        """
         print(f'cwd, workdirpath = {workdir_path}')
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
@@ -27,6 +30,9 @@ class LotusTerminal(Workspace):
         self.session = self._get_session(cwd=cwd)
 
     def close(self):
+        """
+        Close LotusTerminal. The session will not be saved
+        """
         self.session = None
         self.content = None
 

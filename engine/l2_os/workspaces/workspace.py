@@ -88,6 +88,7 @@ class ActionFactory(Loggable):
 
         workspace = self.workspace
         conditional_hook = lambda: hook() if hook else None
+        docstring = mthd.__doc__
 
         class NewAction(Action):
             def __init__(self):
@@ -105,7 +106,8 @@ class ActionFactory(Loggable):
                 conditional_hook()
 
             def get_desc(self) -> str:
-                return f'Allows for operating {self.get_name()}'
+                desc = docstring if docstring else f'Allows for operating {self.get_name()}'
+                return desc
 
             def get_args(self) -> list[ToolArg]:
                 return self.tool_args
