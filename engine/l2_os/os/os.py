@@ -41,10 +41,10 @@ class OS(Loggable):
         entries = []
         for workspace in open_workspaces:
             try:
-                entry = func_timeout(func=workspace.get_entry, timeout=0.1)
+                entry = func_timeout(func=workspace.get_entry, timeout=10)
                 entries.append(entry)
             except FunctionTimedOut:
-                self.error(f'Workspace get entry timed for workspace \"{workspace.get_name()}\"')
+                self.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
             except BaseException as e:
                 self.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
         docs = self._get_docs()

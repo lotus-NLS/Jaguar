@@ -1,4 +1,4 @@
-import os, fcntl
+import os
 import subprocess
 import platform
 from subprocess import Popen, PIPE
