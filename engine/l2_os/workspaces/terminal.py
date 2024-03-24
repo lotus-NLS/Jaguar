@@ -59,7 +59,7 @@ class LotusTerminal(Workspace):
         """Runs a command in the current terminal session"""
         user = 'agent'
         hostname = socket.gethostname()
-        self.session.stdin.write(f'echo "{user}@{hostname}:$(pwd)$"; {command}\n')
+        self.session.stdin.write(f'echo "{user}@{hostname}:$(pwd)$ {command}"; {command}\n')
         self.session.stdin.flush()
 
     # ---------------------------------------------------------
@@ -69,10 +69,10 @@ class LotusTerminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        text = self._get_pipe_content(0.05)
+        text = self._get_pipe_content(0.01)
         while text:
             self.content += text
-            text = self._get_pipe_content(0.05)
+            text = self._get_pipe_content(0.01)
         return self.content
 
 
