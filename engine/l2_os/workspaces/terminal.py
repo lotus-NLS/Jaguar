@@ -1,13 +1,14 @@
 import os, fcntl
 import subprocess
 import platform
+import time
 from subprocess import Popen, PIPE
 from typing import Optional
 from func_timeout import func_timeout, FunctionTimedOut
 from PIL.Image import Image as PILImage
 from engine.l4_tools import InvalidArgValue
 import socket
-
+import select
 from .workspace import Workspace
 # ---------------------------------------------------------
 
@@ -68,15 +69,13 @@ class LotusTerminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        try:
-            func_timeout(func=self._read_pipe,timeout=0.25)
-        except FunctionTimedOut:
-            self.error(f'Function _read_pipe timed out')
+        text = self._get_pipe_content(0.05)
+        while text:
+            self.content += text
+            text = self._get_pipe_content(0.05)
         return self.content
 
-    def _read_pipe(self):
-        try:
-            while True:
-                self.content += f'{os.read(self.near_end, 1024).decode()}\n'
-        except BlockingIOError:
-            pass
+
+    def _get_pipe_content(self, timeout : float) -> Optional[str]:
+        readable, _, _ = select.select([self.near_end], [], [], timeout)
+        return os.read(self.near_end, 1024).decode() if readable else None

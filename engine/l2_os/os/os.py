@@ -4,7 +4,7 @@ from hollarek.core.logging import Loggable, LogLevel
 from engine.l4_tools import Tool, CallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context
 from engine.l2_os.workspaces import Workspace
-
+from func_timeout import func_timeout, FunctionTimedOut
 # ---------------------------------------------------------
 
 class OS(Loggable):
@@ -41,9 +41,12 @@ class OS(Loggable):
         entries = []
         for workspace in open_workspaces:
             try:
-                entries.append(workspace.get_entry())
+                entry = func_timeout(func=workspace.get_entry, timeout=0.1)
+                entries.append(entry)
+            except FunctionTimedOut:
+                self.error(f'Workspace get entry timed for workspace \"{workspace.get_name()}\"')
             except BaseException as e:
-                self.log(f'Error in getting entry for app \"{workspace.get_name()}\": {e}', level=LogLevel.ERROR)
+                self.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
         docs = self._get_docs()
         return Context(entries=entries, docs=docs)
 

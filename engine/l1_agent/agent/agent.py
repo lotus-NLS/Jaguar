@@ -61,16 +61,10 @@ class Agent(Loggable):
             for out in outputs:
                 self.memory.append(out.as_entry())
             if with_report:
-                entries = self.get_active_context().entries + [self.get_feedback_request()]
+                entries = self.get_active_context().entries
                 feedback = self.model.get_text_generation(entries=entries)
                 self.process(generation=feedback, pipe=pipe)
         pipe.stop()
-
-
-    @classmethod
-    def get_feedback_request(cls) -> Entry:
-        log_msg = '##Automatic message: The user has been provided with the function output with very brief summary/feedback'
-        return Entry.as_system(msg=log_msg)
 
 
     # ---------------------------------------------------
