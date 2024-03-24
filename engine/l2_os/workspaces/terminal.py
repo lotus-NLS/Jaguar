@@ -20,9 +20,7 @@ class LotusTerminal(Workspace):
         self.content = ''
 
     def open(self, workdir_path : str = '~'):
-        """
-        Opens a terminal in which you can freely execute commands
-        """
+        """Opens a terminal in which you can freely execute commands"""
         print(f'cwd, workdirpath = {workdir_path}')
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
@@ -30,9 +28,7 @@ class LotusTerminal(Workspace):
         self.session = self._get_session(cwd=cwd)
 
     def close(self):
-        """
-        Close LotusTerminal. The session will not be saved
-        """
+        """Close LotusTerminal. The session will not be saved"""
         self.session = None
         self.content = None
 
@@ -59,12 +55,10 @@ class LotusTerminal(Workspace):
     # actions
 
     def run(self, command : str) :
+        """Runs a command in the current terminal session"""
         user = 'agent'
         hostname = socket.gethostname()
-        self.session.stdin.write(f'echo "{user}@{hostname}:$(pwd)$ "')
-        self.session.stdin.flush()
-
-        self.session.stdin.write(command+ '\n')
+        self.session.stdin.write(f'echo "{user}@{hostname}:$(pwd)$"; {command}\n')
         self.session.stdin.flush()
 
     # ---------------------------------------------------------
