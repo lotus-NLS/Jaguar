@@ -14,6 +14,7 @@ class LotusText(Workspace):
         self.text_file : Optional[TextFile] = None
 
     def open(self, filepath : str):
+        """Allows for viewing *any* file containing text including pdf, csv, doc, docx and even handwritten text in .jpg. Can only write to plaintext files."""
         self.text_file = TextFile(fpath=filepath, require_writable=True)
 
     def close(self, *args, **kwargs):
@@ -27,7 +28,7 @@ class LotusText(Workspace):
             lines = ['']
 
         numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
-        msg = ''.join(numbered_lines)
+        msg = '\n'.join(numbered_lines)
         return msg
 
     def get_image(self) -> Optional[PILImage]:
