@@ -1,5 +1,5 @@
 from engine.l4_tools import ToolDoc, ToolCall
-from engine.l2_os import Application, Action
+from engine.l2_os import Workspace
 from tests.spoofs import MockWorkspace, InvalidArgWorkspace
 from hollarek.devtools import Unittest
 

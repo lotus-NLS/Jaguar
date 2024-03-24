@@ -23,7 +23,7 @@ class LotusTerminal(Workspace):
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.session = self._get_session(cwd=cwd)
-        self.display_prompt()
+        self._display_prompt()
 
     def close(self):
         """Close LotusTerminal. The session will not be saved"""
@@ -56,10 +56,10 @@ class LotusTerminal(Workspace):
         """Runs a command in the current terminal session"""
         self.session.stdin.write(f'echo "{command}"; {command}\n')
         self.session.stdin.flush()
-        self.display_prompt()
+        self._display_prompt()
 
 
-    def display_prompt(self):
+    def _display_prompt(self):
         user = 'agent'
         hostname = socket.gethostname()
         self.session.stdin.write(f'echo -n "{user}@{hostname}:$(pwd)$ "\n')

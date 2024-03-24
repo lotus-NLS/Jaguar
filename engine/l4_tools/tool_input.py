@@ -38,7 +38,8 @@ class ToolArg:
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
-        return cls(name=arg.name, dtype=arg.dtype, is_optional=arg.has_default_val(), desc='')
+        desc = '' if not arg.has_default_val() else f'Default value if left unspecified is \"{arg.get_default_val()}\"'
+        return cls(name=arg.name, dtype=arg.dtype, is_optional=arg.has_default_val(), desc=desc)
 
 
     def get_arg_json_doc(self) -> dict[str,str]:
@@ -135,8 +136,8 @@ class ToolCall:
         return tool_args_dict
 
 
-class CallMap(dict[int, ToolCall]):
-    def add(self, new : CallMap):
+class ToolCalls(dict[int, ToolCall]):
+    def add(self, new : ToolCalls):
         for index, call in new.items():
             if not index in self:
                 self[index] = call

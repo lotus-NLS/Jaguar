@@ -7,7 +7,7 @@ from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceD
 from openai import Stream
 
 from api import Entry, APIType
-from engine.l4_tools import ToolCall, CallMap
+from engine.l4_tools import ToolCall, ToolCalls
 from engine.l5_settings import LotusSettings
 from engine.l3_models.generation import LLM, ModelInfo
 from engine.l3_models.generation import Generation, Chunk, Context, Options
@@ -33,12 +33,12 @@ class OpenAIChunk(Chunk):
         return finish_reason_present
 
 
-    def get_call_map(self) -> CallMap:
+    def get_call_map(self) -> ToolCalls:
         tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
         if not tool_calls:
-            return CallMap()
+            return ToolCalls()
 
-        call_map : CallMap = CallMap()
+        call_map : ToolCalls = ToolCalls()
         for openai_tool_call in tool_calls:
             index = openai_tool_call.index
             call = call_map.get(index, ToolCall())

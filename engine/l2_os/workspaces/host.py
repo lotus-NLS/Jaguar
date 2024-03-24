@@ -25,3 +25,7 @@ class Host(Workspace):
 
     def type(self, msg : str):
         self.keyboard.type(msg=msg)
+
+    @classmethod
+    def get_desc(cls) -> str:
+        return 'Allows you to operate the host system'

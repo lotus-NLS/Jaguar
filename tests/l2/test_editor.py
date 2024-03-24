@@ -9,18 +9,18 @@ class TestTextTab(Unittest):
         self.test_text : File = FileSpoofer.lend_txt()
 
     def test_content(self):
-        tab = LotusText(filepath=self.test_text.fpath)
+        tab = LotusText()
         self.log(msg=f'Initial content: \n{tab.get_text()}')
 
     def test_insert(self):
-        tab = LotusText(filepath=self.test_text.fpath)
+        tab = LotusText()
         new_content = 'Second line \n'
         tab.insert(2, new_content)
         self.assertIn(new_content, tab.get_text())
         self.log(msg=tab.get_text())
 
     def test_delete_lines(self):
-        tab = LotusText(filepath=self.test_text.fpath)
+        tab = LotusText()
         tab.delete_lines(1, 1)
         with open(self.test_text.fpath, 'r') as f:
             content = f.readlines()

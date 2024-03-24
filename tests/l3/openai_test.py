@@ -3,7 +3,7 @@ from typing import Optional
 
 from hollarek.devtools import Unittest
 from engine.l3_models import Options, OpenAIModel, Context, Generation
-from engine.l4_tools import CallMap
+from engine.l4_tools import ToolCalls
 from tests.spoofs import SpoofEntries, SpoofToolDocs
 
 # ---------------------------------------------------------
@@ -46,9 +46,9 @@ class OpenAITest(Unittest):
     def tearDown(self):
         self.lineprinter.reset()
 
-    def get_result(self, context : Context, generation : Generation) -> (str, CallMap):
+    def get_result(self, context : Context, generation : Generation) -> (str, ToolCalls):
         prompts_context = [entry.msg for entry in context.entries]
-        call_map : CallMap = CallMap()
+        call_map : ToolCalls = ToolCalls()
 
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")
