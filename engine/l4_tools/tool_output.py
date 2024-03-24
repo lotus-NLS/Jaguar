@@ -40,11 +40,9 @@ class ToolOutput(Loggable):
         super().__init__()
 
     def get_report(self) -> str:
-        log_msg = f'Report on tool \"{self.tool_name}\":\n'
-        log_msg += f'Exit status: {self.exit_status.value}'
-
-        if not ExitStatus == ExitStatus.SUCCESS:
-            log_msg += f'; Reason: {self.get_error_msgs()}'
+        log_msg = f'\"{self.tool_name}\" ran with exit status : \"{self.exit_status.value}\"'
+        if not self.exit_status == ExitStatus.SUCCESS:
+            log_msg += f'; failure/exception reason: {self.get_error_msgs()}'
         return log_msg
 
 

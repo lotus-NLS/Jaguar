@@ -76,7 +76,7 @@ class LotusTerminal(Workspace):
         while text:
             self.content += text
             text = self._get_pipe_content(0.01)
-        return self.content
+        return self.content + f' [Waiting for input]'
 
     def _get_pipe_content(self, timeout : float) -> Optional[str]:
         readable, _, _ = select.select([self.near_end], [], [], timeout)

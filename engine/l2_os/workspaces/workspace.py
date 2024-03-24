@@ -48,7 +48,16 @@ class Workspace(Loggable):
     # context
 
     def get_entry(self) -> Entry:
-        msg = f'Workspace: \"{self.get_name()}\"\n{self.get_text()}'
+        def big_seperator(name : str) -> str:
+            max_len = 50
+            num_dashes = max(0, max_len-len(name))
+            dashes = '-'*int(num_dashes/2.)
+            return '\n+' + dashes + f' {name} '+ dashes + '+\n'
+
+        msg = big_seperator(f'Workspace: \"{self.get_name()}\"')
+        msg += self.get_text()
+        msg += big_seperator(f'')
+
         return  Entry.as_tool(name=self.get_name(), msg=msg, image = self.get_image())
 
 
