@@ -10,7 +10,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 class OS(Loggable):
     def __init__(self, workspace_types : list[type[Workspace]]):
         super().__init__()
-        self.workspaces : dict[int, Workspace] = {j : workspace_type() for (j, workspace_type) in  enumerate(workspace_types)}
+        self.workspace_map : dict[int, Workspace] = {j : workspace_type() for (j, workspace_type) in enumerate(workspace_types)}
 
     # ---------------------------------------------------
     # call updates
@@ -65,4 +65,4 @@ class OS(Loggable):
         return docs
 
     def get_workspaces(self) -> list[Workspace]:
-        return [workspace for workspace in self.workspaces.values()]
+        return [workspace for workspace in self.workspace_map.values()]
