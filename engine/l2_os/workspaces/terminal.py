@@ -1,10 +1,8 @@
 import os, fcntl
 import subprocess
 import platform
-import time
 from subprocess import Popen, PIPE
 from typing import Optional
-from func_timeout import func_timeout, FunctionTimedOut
 from PIL.Image import Image as PILImage
 from engine.l4_tools import InvalidArgValue
 import socket
@@ -21,8 +19,7 @@ class LotusTerminal(Workspace):
         self.content = ''
 
     def open(self, workdir_path : str = '~'):
-        """Opens a terminal in which you can freely execute commands"""
-        print(f'cwd, workdirpath = {workdir_path}')
+        """Opens a terminal in the specified working directory"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
@@ -75,7 +72,10 @@ class LotusTerminal(Workspace):
             text = self._get_pipe_content(0.01)
         return self.content
 
-
     def _get_pipe_content(self, timeout : float) -> Optional[str]:
         readable, _, _ = select.select([self.near_end], [], [], timeout)
         return os.read(self.near_end, 1024).decode() if readable else None
+
+    @classmethod
+    def get_desc(cls) -> str:
+        return "A terminal in which you can freely execute commands"

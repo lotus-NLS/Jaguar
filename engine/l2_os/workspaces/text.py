@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
@@ -14,27 +15,16 @@ class LotusText(Workspace):
         self.text_file : Optional[TextFile] = None
 
     def open(self, filepath : str):
-        """Allows for viewing *any* file containing text including pdf, csv, doc, docx and even handwritten text in .jpg. Can only write to plaintext files."""
+        """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
         self.text_file = TextFile(fpath=filepath, require_writable=True)
 
+
     def close(self, *args, **kwargs):
+        """Closes LotusText. Once closed you can open another file"""
         pass
 
-    def get_text(self) -> str:
-        try:
-            text = self.text_file.read()
-            lines = text.splitlines()
-        except:
-            lines = ['']
-
-        numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
-        msg = '\n'.join(numbered_lines)
-        return msg
-
-    def get_image(self) -> Optional[PILImage]:
-        return None
-
     # ---------------------------------------------------------
+    # actions
 
     def insert(self, line: int, content: str):
         if line <= 0:
@@ -59,3 +49,30 @@ class LotusText(Workspace):
         del lines[start_line - 1:end_line]
         newcontent = '\n'.join(lines)
         self.text_file.write(newcontent)
+
+    # ---------------------------------------------------------
+    # context
+
+    def get_text(self) -> str:
+        fpath = self.text_file.fpath
+        meta =  f'Currently editing file: \"{fpath}\"\n'
+        meta += f'File exists on disk: \"{os.path.isfile(fpath)}\"\n'
+
+        try:
+            content = self.text_file.read()
+            lines = content.splitlines()
+        except:
+            lines = ['']
+
+        numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
+        labeled_content = '\n'.join(numbered_lines)
+        return meta + labeled_content
+
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+    @classmethod
+    def get_desc(cls) -> str:
+        return ("Allows for viewing *any* file containing text including pdf, csv, doc, docx and "
+                "even handwritten text in .jpg. Can only write to plaintext files.")
+

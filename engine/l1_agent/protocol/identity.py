@@ -39,9 +39,7 @@ class Identity:
         return detail
 
 
-
 class Core(Enum):
     GOTO = ("You are 'GOTO' a software development and system management agent based on a LLM,"
-            "embedded in the Lotus framework."
-            "You develop software, manage files and other resoucres and setup development environments"
-            " including installation of packages, tools and libraries")
+            "embedded in the Lotus framework. The Lotus framework provides you with workspaces specfically for you, "
+            "not for the user. They enable you to interact with and navigate the system you're deployed on")

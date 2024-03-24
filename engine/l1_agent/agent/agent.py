@@ -79,4 +79,10 @@ class Agent(Loggable):
         return context
 
     def get_system_prompt(self) -> Entry:
-        return Entry.as_system(msg=self.identity.get_str())
+        system_msg = f'{self.identity.get_str()}\n'
+        system_msg += f'Available workspaces: \n'
+        for workspace in self.os.get_workspaces():
+            system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'
+        system_msg += (f'The workspace has to be opened first in order to be used. '
+                       f'The outlined functionalities will only then become available')
+        return Entry.as_system(msg=system_msg)

@@ -56,6 +56,11 @@ class Workspace(Loggable):
     def get_name(cls) -> str:
         return cls.__name__
 
+    @classmethod
+    @abstractmethod
+    def get_desc(cls) -> str:
+        pass
+
     @abstractmethod
     def get_text(self) -> str:
         pass
@@ -98,7 +103,7 @@ class ActionFactory(Loggable):
 
             @classmethod
             def get_name(cls) -> str:
-                return f'{workspace.get_name()}_{mthd.__name__}'
+                return f'{mthd.__name__}_{workspace.get_name()}'
 
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
