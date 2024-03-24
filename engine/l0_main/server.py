@@ -84,6 +84,7 @@ class DevServer(Server):
         self.add_endpoint(endpoint=self.get_context_endpoint(), callback=self.get_context_view)
 
     def get_context_endpoint(self, *args, **kwargs) -> Endpoint:
+        _, __ = args, kwargs
         return Endpoint(path='/context', method=Method.GET, socket=self.socket)
 
     def get_context_view(self) -> Response:
@@ -116,7 +117,7 @@ class DevServer(Server):
 
 class ProductionServer(Server):
     def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):
-        super().__init__(handler=Agent(), socket=Socket.get_localhost(port=5000))
+        super().__init__(handler=handler, socket=socket)
 
     @classmethod
     def get_protocol(cls) -> str:
