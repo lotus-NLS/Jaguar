@@ -4,21 +4,17 @@ from typing import Optional, Iterator
 from dataclasses import dataclass, field
 from abc import abstractmethod
 from api import Entry
-from hollarek.core.logging import Loggable, LogSettings
-from engine.l4_tools import ToolCalls, ToolDoc
+from engine.l4_tools import ToolCallMap, ToolDoc
 
 # ---------------------------------------------------------
 
-class Generation(Loggable):
-    stop_token = '⊥'
-
+class Generation:
     def __init__(self, generator : Iterator, chunk_type : type[Chunk]):
-        super().__init__(settings=LogSettings(include_call_location=True))
         self.generator : Iterator = generator
         self.chunk_type : type[Chunk] = chunk_type
-        self.text_content : str = ''
-        self.call_map = ToolCalls()
         self.is_done : bool = False
+        self.text_content : str = ''
+        self.call_map = ToolCallMap()
 
     def _get_next_chunk(self, chunk_data : object):
         return self.chunk_type(data=chunk_data)
@@ -49,14 +45,13 @@ class Generation(Loggable):
         chunk_call_map = chunk.get_call_map()
         self.call_map.add(chunk_call_map)
 
-
     def stop(self):
         self.is_done = True
 
     # ---------------------------------------------------------
     # get
 
-    def get_call_map(self) -> ToolCalls:
+    def get_call_map(self) -> ToolCallMap:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
         return self.call_map
@@ -82,7 +77,7 @@ class Chunk:
         pass
 
     @abstractmethod
-    def get_call_map(self) -> ToolCalls:
+    def get_call_map(self) -> ToolCallMap:
         pass
 
 

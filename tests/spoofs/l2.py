@@ -1,6 +1,7 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
 from engine.l2_os import Workspace
+
 # ---------------------------------------------------------
 
 class Plant:
@@ -9,9 +10,15 @@ class Plant:
 
 
 class MockWorkspace(Workspace):
-    def __init__(self, uri: str):
-        super().__init__(uri)
+    def __init__(self):
+        super().__init__()
         self.text_content = 'Initial'
+
+    def on_open(self, *args, **kwargs):
+        pass
+
+    def on_close(self, *args, **kwargs):
+        pass
 
     def get_text(self) -> str:
         return self.text_content
@@ -41,3 +48,9 @@ class InvalidArgWorkspace(Workspace):
 
     def get_desc(self) -> str:
         return ''
+
+    def on_open(self, *args, **kwargs):
+        pass
+
+    def on_close(self, *args, **kwargs):
+        pass

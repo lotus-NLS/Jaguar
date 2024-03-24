@@ -136,8 +136,8 @@ class ToolCall:
         return tool_args_dict
 
 
-class ToolCalls(dict[int, ToolCall]):
-    def add(self, new : ToolCalls):
+class ToolCallMap(dict[int, ToolCall]):
+    def add(self, new : ToolCallMap):
         for index, call in new.items():
             if not index in self:
                 self[index] = call

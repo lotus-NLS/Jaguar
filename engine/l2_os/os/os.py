@@ -1,7 +1,7 @@
 from __future__ import annotations
 from hollarek.core.logging import Loggable, LogLevel
 
-from engine.l4_tools import Tool, ToolCalls, ToolDoc, ToolOutput
+from engine.l4_tools import Tool, ToolCallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context
 from engine.l2_os.workspaces import Workspace
 from func_timeout import func_timeout, FunctionTimedOut
@@ -15,7 +15,7 @@ class OS(Loggable):
     # ---------------------------------------------------
     # call updates
 
-    def handle_calls(self, call_map : ToolCalls) -> list[ToolOutput]:
+    def handle_calls(self, call_map : ToolCallMap) -> list[ToolOutput]:
         if call_map.is_empty():
             return []
 

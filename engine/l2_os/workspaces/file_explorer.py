@@ -12,14 +12,14 @@ class LotusFileExplorer(Workspace):
         super().__init__()
         self.current_dir: Optional[str] = None
 
-    def open(self, workdir_path: str = '~'):
+    def on_open(self, workdir_path: str = '~'):
         """Opens the file explorer in the specified working directory"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.current_dir = cwd
 
-    def close(self):
+    def on_close(self):
         """Close LotusFileExplorer"""
         self.current_dir = None
 

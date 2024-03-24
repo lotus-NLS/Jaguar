@@ -14,12 +14,12 @@ class LotusText(Workspace):
         self.content : Optional[str] = None
         self.text_file : Optional[TextFile] = None
 
-    def open(self, filepath : str):
+    def on_open(self, filepath : str):
         """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
         self.text_file = TextFile(fpath=filepath, require_writable=True)
 
 
-    def close(self, *args, **kwargs):
+    def on_close(self, *args, **kwargs):
         """Closes LotusText. Once closed you can open another file"""
         pass
 

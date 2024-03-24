@@ -14,11 +14,11 @@ class Host(Workspace):
         self.keyboard = Keyboard()
         self.display = Display.get_primary()
 
-    def get_text(self) -> str:
-        return ''
+    def on_open(self):
+        pass
 
-    def get_image(self) -> Optional[PILImage]:
-        return self.display.get_screenshot(grid=self.input_grid)
+    def on_close(self):
+        pass
 
     def click(self, cell_num : int):
         self.text_mouse.click(cell_num=cell_num, on_primary_display=self.display.is_primary)
@@ -26,6 +26,17 @@ class Host(Workspace):
     def type(self, msg : str):
         self.keyboard.type(msg=msg)
 
+    # ---------------------------------------------------------
+    # context
+
+    def get_text(self) -> str:
+        return ''
+
+    def get_image(self) -> Optional[PILImage]:
+        return self.display.get_screenshot(grid=self.input_grid)
+
     @classmethod
     def get_desc(cls) -> str:
         return 'Allows you to operate the host system'
+
+
