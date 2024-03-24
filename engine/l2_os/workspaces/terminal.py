@@ -14,7 +14,6 @@ class LotusTerminal(Workspace):
     def __init__(self):
         super().__init__()
         self.near_end, self.far_end = os.pipe()
-        fcntl.fcntl(self.near_end, fcntl.F_SETFL, os.O_NONBLOCK)
         self.session: Optional[Popen] = None
         self.content = ''
 
@@ -30,7 +29,7 @@ class LotusTerminal(Workspace):
         self.session = None
         self.content = None
 
-    def _get_session(self, cwd : str) -> Optional[Popen]:
+    def _get_session(self, cwd : str) -> Popen:
         os_type = f'{platform.system()}'
         if  os_type == 'Linux':
             shell_cmd = '/bin/bash'
@@ -40,14 +39,14 @@ class LotusTerminal(Workspace):
         else:
             raise ValueError(f'OS type {os_type} not supported')
 
-        shell_session = None
         try:
             out = self.far_end
-            shell_session = subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
+            return subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
         except Exception as e:
-            self.error(f'An exception occured while trying to start terminal session using {shell_cmd}: {e}')
-
-        return shell_session
+            self.error(msg=f'An exception occured while trying to start terminal session using executable'
+                           f' \"{shell_cmd}\": \"{e}\"')
+            err = e
+        raise err
 
     # ---------------------------------------------------------
     # actions
