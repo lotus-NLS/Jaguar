@@ -33,7 +33,7 @@ class LotusTerminal(Workspace):
         self.content = None
 
     def _get_session(self, cwd : str) -> Optional[Popen]:
-        os_type = self._get_os_type()
+        os_type = f'{platform.system()}'
         if  os_type == 'Linux':
             shell_cmd = '/bin/bash'
         # elif os_type == 'Windows':
@@ -68,16 +68,11 @@ class LotusTerminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        if self.session is None:
-            return ''
         try:
             func_timeout(func=self._read_pipe,timeout=0.25)
         except FunctionTimedOut:
             self.error(f'Function _read_pipe timed out')
-
-
         return self.content
-
 
     def _read_pipe(self):
         try:
@@ -85,12 +80,3 @@ class LotusTerminal(Workspace):
                 self.content += f'{os.read(self.near_end, 1024).decode()}\n'
         except BlockingIOError:
             pass
-
-
-
-
-    @staticmethod
-    def _get_os_type() -> str:
-        return f'{platform.system()}'
-
-#
