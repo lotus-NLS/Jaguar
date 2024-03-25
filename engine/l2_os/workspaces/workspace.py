@@ -29,12 +29,16 @@ class Workspace(Loggable):
     def create_open_action(self) -> Action:
         def set_active():
             self.is_active = True
-        return self.action_factory.create_action(mthd=self.__class__.on_open, hook=set_active)
+        func = self.__class__.on_open
+        func.__name__ = f'open'
+        return self.action_factory.create_action(mthd=func, hook=set_active)
 
     def create_close_action(self) -> Action:
         def set_inactive():
             self.is_active = False
-        return self.action_factory.create_action(mthd=self.__class__.on_close, hook=set_inactive)
+        func = self.__class__.on_close
+        func.__name__ = f'close'
+        return self.action_factory.create_action(mthd=func, hook=set_inactive)
 
     @abstractmethod
     def on_open(self, *args, **kwargs):
