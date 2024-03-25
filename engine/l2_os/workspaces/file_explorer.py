@@ -63,4 +63,5 @@ class LotusFileExplorer(Workspace):
         return content
 
     def get_desc(self) -> str:
-        return f"A file explorer to navigate and display file structures. Show hidden files: {self.show_hidden}"
+        return (f"A file explorer to navigate and display file structures. "
+                f"Show hidden files currently set to: {self.show_hidden}")

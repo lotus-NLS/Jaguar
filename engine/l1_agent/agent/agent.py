@@ -67,6 +67,7 @@ class Agent(Loggable):
         pipe.stop()
 
 
+
     # ---------------------------------------------------
     # context
 

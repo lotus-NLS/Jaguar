@@ -72,7 +72,7 @@ class Entry:
 
     def as_str(self):
         name_str = f'Unnamed' if not self.name else self.name
-        as_str = f'{name_str}({self.role.value}) : {self.msg}'
+        as_str = f'{self.role.value}({name_str}): {self.msg}'
         if self.image:
             as_str += f'\n{self.get_image_as_base64()}'
         return as_str
