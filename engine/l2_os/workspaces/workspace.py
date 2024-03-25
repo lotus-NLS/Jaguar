@@ -69,9 +69,8 @@ class Workspace(Loggable):
     def get_name(cls) -> str:
         return cls.__name__
 
-    @classmethod
     @abstractmethod
-    def get_desc(cls) -> str:
+    def get_desc(self) -> str:
         pass
 
     @abstractmethod
@@ -116,7 +115,7 @@ class ActionFactory(Loggable):
 
             @classmethod
             def get_name(cls) -> str:
-                return f'{mthd.__name__}_{workspace.get_name()}'
+                return f'{mthd.__name__}-{workspace.get_name()}'
 
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
@@ -124,7 +123,7 @@ class ActionFactory(Loggable):
                 conditional_hook()
 
             def get_desc(self) -> str:
-                desc = docstring if docstring else f'Allows for operating {self.get_name()}'
+                desc = docstring if docstring else f'Allows for operating {mthd.__name__}'
                 return desc
 
             def get_args(self) -> list[ToolArg]:
