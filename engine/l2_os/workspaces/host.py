@@ -14,10 +14,10 @@ class Host(Workspace):
         self.keyboard = Keyboard()
         self.display = Display.get_primary()
 
-    def on_open(self):
+    def open(self):
         pass
 
-    def on_close(self):
+    def close(self):
         pass
 
     def click(self, cell_num : int):

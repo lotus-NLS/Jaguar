@@ -27,12 +27,12 @@ class ToolArg:
             Enum : "string"}
 
 
-        if self.is_supported(self.dtype):
+        if not self.is_supported(self.dtype):
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
                             f"Supported types are {list(self.to_json_type.keys())}")
 
     def get_json_type(self,python_type: type) -> Optional[str]:
-        base_type = Enum if issubclass(Enum, python_type) else python_type
+        base_type = Enum if issubclass(python_type, Enum) else python_type
         json_type = self.to_json_type.get(base_type)
         return json_type
 
@@ -141,6 +141,10 @@ class ToolCall:
             tool_args_dict = load(s=repair_json(json_str=self.json_str))
         return tool_args_dict
 
+    @classmethod
+    def from_args_dict(cls, args_dict : dict) -> ToolCall:
+        json_str = json.dumps(args_dict)
+        return cls(json_str=json_str)
 
 class ToolCallMap(dict[int, ToolCall]):
     def add(self, new : ToolCallMap):

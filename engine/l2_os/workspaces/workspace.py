@@ -29,23 +29,21 @@ class Workspace(Loggable):
     def create_open_action(self) -> Action:
         def set_active():
             self.is_active = True
-        func = self.__class__.on_open
-        func.__name__ = f'open'
+        func = self.__class__.open
         return self.action_factory.create_action(mthd=func, hook=set_active)
 
     def create_close_action(self) -> Action:
         def set_inactive():
             self.is_active = False
-        func = self.__class__.on_close
-        func.__name__ = f'close'
+        func = self.__class__.close
         return self.action_factory.create_action(mthd=func, hook=set_inactive)
 
     @abstractmethod
-    def on_open(self, *args, **kwargs):
+    def open(self, *args, **kwargs):
         pass
 
     @abstractmethod
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         pass
 
     # ---------------------------------------------------
@@ -84,7 +82,8 @@ class Workspace(Loggable):
     # ---------------------------------------------------
 
     def get_actions(self):
-        return self.workspace_actions + [self.close_action] if self.is_active else [self.open_action]
+        meta_action = [self.close_action] if self.is_active else [self.open_action]
+        return self.workspace_actions + meta_action
 
     def get_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]

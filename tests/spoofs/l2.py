@@ -1,12 +1,16 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
 from engine.l2_os import Workspace
-
+from enum import Enum
 # ---------------------------------------------------------
 
 class Plant:
     def __init__(self):
         self.is_watered : bool = False
+
+class MockChoice(Enum):
+    choiceOne = 'choiceOne'
+    choiceTwo = 'choiceTwo'
 
 
 class MockWorkspace(Workspace):
@@ -14,10 +18,10 @@ class MockWorkspace(Workspace):
         super().__init__()
         self.text_content = 'Initial'
 
-    def on_open(self, *args, **kwargs):
+    def open(self, *args, **kwargs):
         pass
 
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         pass
 
     def get_text(self) -> str:
@@ -49,8 +53,29 @@ class InvalidArgWorkspace(Workspace):
     def get_desc(self) -> str:
         return ''
 
-    def on_open(self, *args, **kwargs):
+    def open(self, *args, **kwargs):
         pass
 
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
+        pass
+
+
+class EnumArgWorkspace(Workspace):
+    def get_text(self) -> str:
+        return ''
+
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+    @staticmethod
+    def decide(choice : MockChoice):
+        print(f'I decided on {choice}')
+
+    def get_desc(self) -> str:
+        return ''
+
+    def open(self, *args, **kwargs):
+        pass
+
+    def close(self, *args, **kwargs):
         pass

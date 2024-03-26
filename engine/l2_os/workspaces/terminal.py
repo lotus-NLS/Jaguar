@@ -17,7 +17,7 @@ class LotusTerminal(Workspace):
         self.session: Optional[Popen] = None
         self.content = ''
 
-    def on_open(self, workdir_path : str = '~'):
+    def open(self, workdir_path : str = '~'):
         """Opens a terminal in the specified working directory"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
@@ -25,7 +25,7 @@ class LotusTerminal(Workspace):
         self.session = self._get_session(cwd=cwd)
         self._display_prompt()
 
-    def on_close(self):
+    def close(self):
         """Close LotusTerminal. The session will not be saved"""
         self.session = None
         self.content = None

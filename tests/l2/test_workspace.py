@@ -1,6 +1,6 @@
 from engine.l4_tools import ToolDoc, ToolCall
 from engine.l2_os import Action
-from tests.spoofs import MockWorkspace, InvalidArgWorkspace
+from tests.spoofs import MockWorkspace, InvalidArgWorkspace, EnumArgWorkspace
 from hollarek.devtools import Unittest
 
 # ---------------------------------------------------------
@@ -8,6 +8,7 @@ from hollarek.devtools import Unittest
 class WorkspaceTest(Unittest):
     def setUp(self):
         self.workspace = MockWorkspace()
+        self.enum_workspace = EnumArgWorkspace()
 
 
 class TestWorkspaceOpenClose(WorkspaceTest):
@@ -57,6 +58,12 @@ class TestWorkspaceActions(WorkspaceTest):
         with self.assertRaises(TypeError):
             InvalidArgWorkspace()
 
+    def test_enum_workspace(self):
+        actions = self.enum_workspace.get_actions()
+        this = actions[0]
+        tool_call = ToolCall.from_args_dict({'choice' : 'choiceOne'})
+        this.handle(tool_call)
+
 
 class TestActionExecution(WorkspaceTest):
     def test_tool_execution(self):
@@ -91,5 +98,5 @@ class TestActionExecution(WorkspaceTest):
 
 if __name__ == '__main__':
     # TestWorkspaceOpenClose.execute_all()
-    # TestWorkspaceActions.execute_all()
-    TestActionExecution.execute_all()
+    TestWorkspaceActions.execute_all()
+    # TestActionExecution.execute_all()
