@@ -31,9 +31,10 @@ class LotusFileExplorer(Workspace):
             raise InvalidArgValue(f'Invalid directory path: {new_dirpath} is not a directory')
         self.current_dir_path = new_dirpath
 
-    def toggle_show_hidden(self):
-        """Hides/shows hidden directories """
-        self.show_hidden = not self.show_hidden
+    def set_hidden_visibility(self, visibility : bool):
+        """Displays/hides hidden files/folders when visbilitiy is true/false"""
+        print(f'visbility, dtype : {visibility}, {type(visibility)}')
+        self.show_hidden = visibility
 
     # ---------------------------------------------------------
     # context
@@ -63,5 +64,4 @@ class LotusFileExplorer(Workspace):
         return content
 
     def get_desc(self) -> str:
-        return (f"A file explorer to navigate and display file structures. "
-                f"Show hidden files currently set to: {self.show_hidden}")
+        return f"A file explorer to navigate and display file structures"

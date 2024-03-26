@@ -44,7 +44,9 @@ class LotusText(Workspace):
         if start_line <= 0 or end_line < start_line:
             raise ValueError("Invalid line range.")
 
-        lines = self.text_file.read()
+        content = self.text_file.read()
+        lines = content.splitlines()
+
         del lines[start_line - 1:end_line]
         newcontent = '\n'.join(lines)
         self.text_file.write(newcontent)
@@ -64,7 +66,9 @@ class LotusText(Workspace):
         else:
             lines = []
 
-        numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(lines)]
+        highest_line_number = len(lines)
+        min_space = len(str(highest_line_number))+1
+        numbered_lines = [f"{i + 1:<{min_space}}| {line}" for i, line in enumerate(lines)]
         labeled_content = '\n'.join(numbered_lines)
         return meta + labeled_content
 
