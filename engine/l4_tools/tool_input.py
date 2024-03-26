@@ -4,6 +4,7 @@ from typing import Optional,Any
 from json_repair import repair_json
 from hollarek.devtools import Argument
 from dataclasses import dataclass
+from enum import Enum
 # ---------------------------------------------------
 
 @dataclass
@@ -16,24 +17,27 @@ class ToolArg:
     input : Optional[str] = None
 
     def __post_init__(self):
-        self.choices = self.choices if not self.dtype == bool else ['0', '1']
+        if self.dtype == bool:
+            self.choices = ['0', '1']
         self.to_json_type: dict[type, str] = {
             int: "number",
             float: "number",
             str: "string",
-            bool: "boolean"}
+            bool: "boolean",
+            Enum : "string"}
 
 
-        if not self.dtype in self.get_supported_types():
+        if self.is_supported(self.dtype):
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {self.get_supported_types()}")
+                            f"Supported types are {list(self.to_json_type.keys())}")
 
     def get_json_type(self,python_type: type) -> Optional[str]:
-        json_type = self.to_json_type.get(python_type)
+        base_type = Enum if issubclass(Enum, python_type) else python_type
+        json_type = self.to_json_type.get(base_type)
         return json_type
 
-    def get_supported_types(self) -> list[type]:
-        return list(self.to_json_type.keys())
+    def is_supported(self, python_type : type) -> bool:
+        return not self.get_json_type(python_type) is None
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
