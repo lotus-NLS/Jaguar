@@ -65,6 +65,7 @@ class TestWorkspaceActions(WorkspaceTest):
         this.handle(tool_call)
 
 
+
 class TestActionExecution(WorkspaceTest):
     def test_tool_execution(self):
         self.workspace.open_action.do()

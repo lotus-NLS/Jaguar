@@ -2,9 +2,9 @@ from __future__ import annotations
 import json
 from typing import Optional,Any
 from json_repair import repair_json
-from hollarek.devtools import Argument
 from dataclasses import dataclass
 from enum import Enum
+from hollarek.devtools import Argument
 # ---------------------------------------------------
 
 @dataclass
@@ -14,40 +14,31 @@ class ToolArg:
     dtype : type =  str
     is_optional: bool = False
     choices : Optional[list[str]] = None
-    input : Optional[str] = None
 
     def __post_init__(self):
+        self.input : Optional[Any] = None
         if self.dtype == bool:
             self.choices = ['0', '1']
-        self.to_json_type: dict[type, str] = {
-            int: "number",
-            float: "number",
-            str: "string",
-            bool: "boolean",
-            Enum : "string"}
-
 
         if not self.is_supported(self.dtype):
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {list(self.to_json_type.keys())}")
+                            f"Supported types are {list(to_json_type.keys())}")
 
-    def get_json_type(self,python_type: type) -> Optional[str]:
-        base_type = Enum if issubclass(python_type, Enum) else python_type
-        json_type = self.to_json_type.get(base_type)
-        return json_type
-
-    def is_supported(self, python_type : type) -> bool:
-        return not self.get_json_type(python_type) is None
+    @staticmethod
+    def is_supported(python_type : type) -> bool:
+        return not get_json_type(python_type) is None
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
+        choices = [choice.value for choice in arg.dtype] if issubclass(arg.dtype, Enum) else None
         desc = '' if not arg.has_default_val() else f'Default value if left unspecified is \"{arg.get_default_val()}\"'
-        return cls(name=arg.name, dtype=arg.dtype, is_optional=arg.has_default_val(), desc=desc)
+        return cls(name=arg.name, dtype=arg.dtype, is_optional=arg.has_default_val(), desc=desc, choices=choices)
 
+    # ---------------------------------------------------
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': self.get_json_type(python_type=str),
+            'type': get_json_type(python_type=str),
             'description': f'{self.desc}',
         }
 
@@ -55,7 +46,6 @@ class ToolArg:
             arg_doc['enum'] = self.choices
 
         return arg_doc
-
 
     def get_value(self) -> Optional[Any]:
         val = self.input
@@ -69,52 +59,14 @@ class ToolArg:
             raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}.")
         return val
 
-
     def input_is_valid(self) -> bool:
         if self.choices is None:
             return True
         return self.input in self.choices
 
+
     def is_set(self) -> bool:
         return not self.get_value() is None
-
-
-class ToolDoc(dict[str, Any]):
-    @classmethod
-    def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
-        required_arg_names = [arg.name for arg in args if not arg.is_optional]
-        arg_docs = {arg.name: arg.get_arg_json_doc() for arg in args}
-        function_doc = {
-            'name': name,
-            'description': desc,
-            'parameters': {
-                'type': 'object',
-                'properties': arg_docs,
-                'required': required_arg_names
-            },
-        }
-
-        tool_doc = {
-            'type': 'function',
-            'function': function_doc
-        }
-
-        return cls(tool_doc)
-
-    def get_tool_name(self):
-        return self['function']['name']
-
-    def get_is_valid_json(self) -> bool:
-        try:
-            json.dumps(self)
-            return True
-        except:
-            return False
-
-    def as_str(self, pretty: bool = False) -> str:
-        relevant_doc = self['function']
-        indent = 4 if pretty else None
-        return json.dumps(relevant_doc, indent=indent)
 
 
 class ToolCall:
@@ -146,6 +98,8 @@ class ToolCall:
         json_str = json.dumps(args_dict)
         return cls(json_str=json_str)
 
+
+
 class ToolCallMap(dict[int, ToolCall]):
     def add(self, new : ToolCallMap):
         for index, call in new.items():
@@ -166,3 +120,10 @@ class ToolCallMap(dict[int, ToolCall]):
     def is_empty(self) -> bool:
         return len(self) == 0
 
+
+def get_json_type(python_type: type) -> Optional[str]:
+    base_type = Enum if issubclass(python_type, Enum) else python_type
+    json_type = to_json_type.get(base_type)
+    return json_type
+
+to_json_type  : dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean",Enum : "string"}

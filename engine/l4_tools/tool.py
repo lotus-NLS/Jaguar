@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+import json
+from typing import Any
+
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from hollarek.core.logging import get_logger
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
-from .tool_input import ToolCall, ToolArg, ToolDoc
+from .tool_input import ToolCall, ToolArg
+
 # ---------------------------------------------------------
 
 class Tool:
@@ -62,11 +68,7 @@ class Tool:
     # Get
 
     def get_doc(self) -> ToolDoc:
-        doc = ToolDoc.from_info(name=self.get_name(), desc=self.get_desc(), args=self.get_args())
-        if not doc.get_is_valid_json():
-            raise ValueError(f'\n[Error]: Tool {self.get_name()} has invalid json doc\nAborting ...')
-
-        return doc
+        return ToolDoc.from_info(name=self.get_name(), desc=self.get_desc(), args=self.get_args())
 
     @classmethod
     def get_name(cls) -> str:
@@ -78,3 +80,34 @@ class Tool:
 
     def get_args(self) -> list[ToolArg]:
         return [attr for attr in self.__dict__.values() if isinstance(attr, ToolArg)]
+
+
+class ToolDoc(dict[str, Any]):
+    @classmethod
+    def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
+        required_arg_names = [arg.name for arg in args if not arg.is_optional]
+        arg_docs = {arg.name: arg.get_arg_json_doc() for arg in args}
+        function_doc = {
+            'name': name,
+            'description': desc,
+            'parameters': {
+                'type': 'object',
+                'properties': arg_docs,
+                'required': required_arg_names
+            },
+        }
+
+        tool_doc = {
+            'type': 'function',
+            'function': function_doc
+        }
+
+        return cls(tool_doc)
+
+    def get_tool_name(self) -> str:
+        return self['function']['name']
+
+    def as_str(self, pretty: bool = False) -> str:
+        relevant_doc = self['function']
+        indent = 4 if pretty else None
+        return json.dumps(relevant_doc, indent=indent)
