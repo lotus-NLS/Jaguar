@@ -14,7 +14,7 @@ class LotusText(Workspace):
         self.content : Optional[str] = None
         self.text_file : Optional[TextFile] = None
 
-    def on_open(self, filepath : str):
+    def on_open(self, filepath : str, required_permissions : str):
         """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
         self.text_file = TextFile(fpath=filepath, require_writable=True)
         self.text_file.read() # one test run to check if the file can be read

@@ -21,8 +21,7 @@ class ToolArg:
             int: "number",
             float: "number",
             str: "string",
-            bool: "boolean",
-            dict: "object"}
+            bool: "boolean"}
 
 
         if not self.dtype in self.get_supported_types():
