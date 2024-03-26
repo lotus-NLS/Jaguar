@@ -55,10 +55,13 @@ class ToolArg:
 
 
     def get_value(self) -> Optional[Any]:
-        if self.input is None:
+        val = self.input
+        if val is None:
             return None
         try:
-            val = self.dtype(self.input)
+            if self.dtype is bool:
+                 val = int(self.input)
+            val = self.dtype(val)
         except ValueError:
             raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}.")
         return val

@@ -66,7 +66,7 @@ class ToolOutput(Loggable):
     @classmethod
     def not_found(cls, name : str):
         output = cls(tool_name='None')
-        output.update(msg=f'Tool{name} not found', progress_type=Progress.FAILED)
+        output.update(msg=f'Tool \"{name}\" not found', progress_type=Progress.FAILED)
         return output
 
     @classmethod
