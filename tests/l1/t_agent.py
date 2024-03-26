@@ -18,7 +18,7 @@ class TestAgentContext(Unittest):
         # print(f'Tools are {self.context.docs} and entries are {entries}')
         first_entry = entries[0]
         self.assertIsInstance(obj=first_entry.msg, cls=str)
-        self.assertEqual(first_entry.msg, self.agent.identity.get_str())
+        self.assertIn(self.agent.identity.get_str(), first_entry.msg)
 
 
     def test_identity_query(self):

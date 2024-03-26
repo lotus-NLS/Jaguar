@@ -51,14 +51,14 @@ class TestToolOutput(ToolTest):
         output = self.simple_tool.handle(self.valid_tool_call)
         report = output.get_report()
         self.assertIn(SpoofPrinter.get_name(), report)
-        self.assertIn("Exit status: SUCCESS", report)
+        self.assertIn(ExitStatus.SUCCESS.value, report)
 
     def test_report_exception(self):
         output = self.invalid_tool.handle(self.valid_tool_call)
         report = output.get_report()
         error_msgs = output.get_error_msgs()
         self.assertIn(SpoofErrorRaiser.get_name(), report)
-        self.assertIn("EXCEPTION", report)
+        self.assertIn(ExitStatus.EXCEPTION.value, report)
         self.assertTrue(any(msg for msg in error_msgs))
 
     def test_error_messages(self):

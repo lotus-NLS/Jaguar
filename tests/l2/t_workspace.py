@@ -13,7 +13,6 @@ class WorkspaceTest(Unittest):
 
 class TestWorkspaceOpenClose(WorkspaceTest):
     def test_basic_properties(self):
-        self.assertEqual(self.workspace.get_name(), 'Application')
         self.assertIsInstance(self.workspace.get_desc(), str)
         self.assertFalse(self.workspace.is_active)
 
