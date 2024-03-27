@@ -82,8 +82,9 @@ class Workspace(Loggable):
     # ---------------------------------------------------
 
     def get_actions(self):
-        meta_action = [self.close_action] if self.is_active else [self.open_action]
-        return self.workspace_actions + meta_action
+        while_open = self.workspace_actions + [self.close_action]
+        while_closed = [self.open_action]
+        return while_open if self.is_active else while_closed
 
     def get_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]
