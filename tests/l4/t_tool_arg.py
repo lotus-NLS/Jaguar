@@ -5,7 +5,6 @@ from enum import Enum
 
 
 class TestToolArg(Unittest):
-
     def setUp(self):
         self.tool_arg_methods = ToolArgMethods()
 

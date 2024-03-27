@@ -19,7 +19,8 @@ class LotusText(Workspace):
     def open(self, filepath : str, require_writable : bool = False):
         """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
         self.text_file = TextFile(fpath=filepath, require_writable=require_writable)
-        self.text_file.read() # one test run to check if the file can be read
+        if self.text_file.exists_on_disk():
+            self.text_file.read() # one test run to check if the file can be read
 
     def close(self, *args, **kwargs):
         """Closes LotusText. Once closed you can open another file"""

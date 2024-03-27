@@ -1,6 +1,6 @@
 from engine.l4_tools import ToolDoc, ToolCall
 from engine.l2_os import Action
-from tests.spoofs import MockWorkspace, InvalidArgWorkspace, EnumArgWorkspace
+from tests.spoofs import MockWorkspace
 from hollarek.devtools import Unittest
 
 # ---------------------------------------------------------
@@ -8,7 +8,6 @@ from hollarek.devtools import Unittest
 class WorkspaceTest(Unittest):
     def setUp(self):
         self.workspace = MockWorkspace()
-        self.enum_workspace = EnumArgWorkspace()
 
 
 class TestWorkspaceOpenClose(WorkspaceTest):
