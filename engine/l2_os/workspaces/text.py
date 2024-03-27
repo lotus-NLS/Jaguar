@@ -6,7 +6,9 @@ from PIL.Image import Image as PILImage
 
 from hollarek.file import TextFile
 from .workspace import Workspace
+from enum import Enum
 # ---------------------------------------------------------
+
 
 class LotusText(Workspace):
     def __init__(self):
@@ -14,9 +16,9 @@ class LotusText(Workspace):
         self.content : Optional[str] = None
         self.text_file : Optional[TextFile] = None
 
-    def open(self, filepath : str, required_permissions : str):
+    def open(self, filepath : str, require_writable : bool = False):
         """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
-        self.text_file = TextFile(fpath=filepath, require_writable=True)
+        self.text_file = TextFile(fpath=filepath, require_writable=require_writable)
         self.text_file.read() # one test run to check if the file can be read
 
     def close(self, *args, **kwargs):
