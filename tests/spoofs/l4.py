@@ -1,8 +1,7 @@
 from engine.l4_tools import Tool, ToolArg
 import time
 import json
-
-
+from enum import Enum
 
 class SpoofPrinter(Tool):
     def __init__(self, call_timeout: float = 60):
@@ -31,3 +30,39 @@ class SpoofToolCall:
     valid_printer_args = json.dumps({f'arg_one': 'value'})
     invalid_printer_args = json.dumps({'arg_onee': ''})
     empty_args_json = json.dumps({})
+
+
+
+class MockChoice(Enum):
+    choiceOne = 'choiceOne'
+    choiceTwo = 'choiceTwo'
+
+
+class Plant:
+    pass
+
+
+class ToolArgMethods:
+    @staticmethod
+    def valid_type_func(this : str, other : int):
+        print(f'this, other = {this}, {other}')
+
+    @staticmethod
+    def invalid_type_func(plant : Plant):
+        pass
+
+    @staticmethod
+    def enum_type_func(choice : MockChoice):
+        print(f'I decided on {choice}')
+
+    @staticmethod
+    def default_val_func(num : int = 200):
+        print(f'The number is {num}')
+
+    @staticmethod
+    def unannotated(num, the_str):
+        pass
+
+    @staticmethod
+    def no_args_func():
+        print(f'Hello world')

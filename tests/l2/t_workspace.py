@@ -53,17 +53,6 @@ class TestWorkspaceActions(WorkspaceTest):
         self.log(f'Actions are : {actions_info}')
         self.assertEqual(3, len(actions))
 
-    def test_invalid_args(self):
-        with self.assertRaises(TypeError):
-            InvalidArgWorkspace()
-
-    def test_enum_workspace(self):
-        actions = self.enum_workspace.get_actions()
-        this = actions[0]
-        tool_call = ToolCall.from_args_dict({'choice' : 'choiceOne'})
-        this.handle(tool_call)
-
-
 
 class TestActionExecution(WorkspaceTest):
     def test_tool_execution(self):
