@@ -32,7 +32,7 @@ class LotusFileExplorer(Workspace):
         self.current_dir_path = new_dirpath
 
     def set_hidden_visibility(self, visibility : bool):
-        """Displays/hides hidden files/folders when visbilitiy is true/false"""
+        """Shows/hides hidden files/folders when visbilitiy is true/false"""
         print(f'visbility, dtype : {visibility}, {type(visibility)}')
         self.show_hidden = visibility
 

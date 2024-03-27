@@ -10,14 +10,15 @@ from enum import Enum
 # ---------------------------------------------------------
 
 
-class LotusText(Workspace):
+class LotusAdvancedTextEditor(Workspace):
     def __init__(self):
         super().__init__()
         self.content : Optional[str] = None
         self.text_file : Optional[TextFile] = None
 
     def open(self, filepath : str, require_writable : bool = False):
-        """If file exists will provide a view. It it doesn't exists will attempt to create a pathtext file at filepath"""
+        """Allows for viewing and editing plain Text files. A view-only mode allows for also viewing
+        text in .pdfs, .doc, .docx and even handwritten text in .jpg and .png images """
         self.text_file = TextFile(fpath=filepath, require_writable=require_writable)
         if self.text_file.exists_on_disk():
             self.text_file.read() # one test run to check if the file can be read
