@@ -6,10 +6,7 @@ from PIL.Image import Image as PILImage
 from hollarek.file import ImageConverter, ImageSerializer
 from dataclasses import dataclass
 
-
 # ----------------------------------------------
-
-
 
 
 @dataclass

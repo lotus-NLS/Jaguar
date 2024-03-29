@@ -30,7 +30,7 @@ class ToolArg:
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
-        choices = [choice.value for choice in arg.dtype] if issubclass(arg.dtype, Enum) else None
+        choices = [choice.name for choice in arg.dtype] if issubclass(arg.dtype, Enum) else None
         desc = '' if not arg.has_default_val() else f'Default value if left unspecified is \"{arg.get_default_val()}\"'
         return cls(name=arg.name, dtype=arg.dtype, is_optional=arg.has_default_val(), desc=desc, choices=choices)
 
@@ -53,7 +53,9 @@ class ToolArg:
             return None
         try:
             if self.dtype is bool:
-                 val = int(self.input)
+                val = int(self.input)
+            if issubclass(self.dtype, Enum):
+                val =  self.dtype[val]
             val = self.dtype(val)
         except ValueError:
             raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}.")
