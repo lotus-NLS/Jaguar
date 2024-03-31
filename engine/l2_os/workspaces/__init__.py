@@ -1,5 +1,5 @@
-from .text import LotusAdvancedTextEditor
+from .text import AdvancedTextExitor
 from .host import Host
-from .lotusterminal import LotusTerminal
-from .file_explorer import LotusFileExplorer
+from .terminal import Terminal
+from .file_explorer import FileExplorer
 from .workspace import Workspace, Action

@@ -6,7 +6,7 @@ from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
 from engine.l3_models import LLM, Context, Options, Generation
 from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, LotusTerminal, LotusAdvancedTextEditor, LotusFileExplorer
+from engine.l2_os import OS, Terminal, AdvancedTextExitor, FileExplorer
 from engine.l1_agent.protocol import Identity, Task
 
 
@@ -21,7 +21,7 @@ class Agent(Loggable):
         # self.task_queue : TaskQueue[Task] = TaskQueue()
 
         # processing
-        self.os : OS = OS(workspace_types=[LotusAdvancedTextEditor, LotusTerminal, LotusFileExplorer])
+        self.os : OS = OS(workspace_types=[AdvancedTextExitor, Terminal, FileExplorer])
         self.model: LLM = model
 
     # ---------------------------------------------------
@@ -88,6 +88,6 @@ class Agent(Loggable):
         system_msg += f'Available workspaces: \n'
         for workspace in self.os.get_workspaces():
             system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'
-        system_msg += (f'The workspace has to be opened first in order to be used. '
+        system_msg += (f'The workspace has to be opened first in order for you to make use of it. '
                        f'The outlined functionalities will only then become available')
         return Entry.as_system(msg=system_msg)

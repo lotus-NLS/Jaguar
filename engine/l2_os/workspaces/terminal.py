@@ -10,7 +10,7 @@ import select
 from .workspace import Workspace
 # ---------------------------------------------------------
 
-class LotusTerminal(Workspace):
+class Terminal(Workspace):
     def __init__(self):
         super().__init__()
         self.near_end, self.far_end = os.pipe()
@@ -18,7 +18,7 @@ class LotusTerminal(Workspace):
         self.content = ''
 
     def open(self, workdir_path : str = '~'):
-        """Opens a terminal in the specified working directory"""
+        """Opens a terminal in the specified working directory available only to you"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')

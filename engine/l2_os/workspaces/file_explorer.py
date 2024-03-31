@@ -8,14 +8,14 @@ from .workspace import Workspace
 
 # ---------------------------------------------------------
 
-class LotusFileExplorer(Workspace):
+class FileExplorer(Workspace):
     def __init__(self):
         super().__init__()
         self.current_dir_path: Optional[str] = None
         self.show_hidden : bool = True
 
     def open(self, directory_path: str = '~'):
-        """Opens the file explorer in the specified directory"""
+        """Opens a file explorer in the specified directory available only to you"""
         self.change_dir(directory_path=directory_path)
 
     def close(self):
