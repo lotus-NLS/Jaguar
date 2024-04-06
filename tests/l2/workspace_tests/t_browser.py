@@ -1,5 +1,7 @@
 from engine.l2_os import Browser
+from engine.l5_settings import LotusSettings
 from hollarek.devtools import Unittest
+from hollarek.web import SearchEngine, SearchResult
 
 class BrowserTest(Unittest):
     def setUp(self):
@@ -21,5 +23,25 @@ class BrowserTest(Unittest):
         self.assertIn(self.lightning_site, lightning_text.lower())
         print(f'Lightning text =\n {lightning_text}')
 
+class SearchEngineTester(Unittest):
+    @classmethod
+    def setUpClass(cls):
+        settings = LotusSettings()
+        engine_id = LotusSettings.get_searchengine_id()
+        api_key = LotusSettings.get_google_apikey()
+        cls.search_engine = SearchEngine(searchengine_id=engine_id, google_key=api_key)
+
+    def test_urls(self):
+        urls = self.search_engine.get_urls(search_term='beavers')
+        for url in urls:
+            self.assertIsInstance(url, str)
+
+    def test_results(self):
+        results = self.search_engine.get_results(search_term = 'beavers')
+        for result in results:
+            self.assertIsInstance(result, SearchResult)
+            print(result)
+
 if __name__ == "__main__":
-    BrowserTest.execute_all()
+    # BrowserTest.execute_all()
+    SearchEngineTester.execute_all()

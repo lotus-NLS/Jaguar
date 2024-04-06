@@ -35,9 +35,9 @@ class Browser(Workspace):
 
     def google_search(self, search_term : str, num_results : int = 4):
         """Googles the search term and displays links/summaries of top results"""
-        urls = self.search_engine.get_urls(search_term=search_term, num_results=num_results)
+        results = self.search_engine.get_results(search_term=search_term, num_results=num_results)
         self.search_context = f'Results for search term \"{search_term}\"\n'
-        for index, site in enumerate(urls):
+        for index, site in enumerate(results):
             self.search_context += f'({index}): {site}\n'
 
     def visit_site(self, url : str):
@@ -96,4 +96,4 @@ class Browser(Workspace):
 
 
     def get_desc(self) -> str:
-        return f"A browser to google for and visit sites"
+        return f"A browser allowing you to perform a google search and visit sites"
