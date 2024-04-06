@@ -1,6 +1,6 @@
 from hollarek.file import File, FileSpoofer
 from hollarek.devtools import Unittest
-from engine.l2_os import AdvancedTextExitor
+from engine.l2_os import DocumentEditor
 from engine.l4_tools import ToolCall
 import json
 
@@ -9,7 +9,7 @@ import json
 class TestTextWorkspace(Unittest):
     def setUp(self):
         self.test_text : File = FileSpoofer.lend_txt()
-        self.workspace = AdvancedTextExitor()
+        self.workspace = DocumentEditor()
         tool_call = ToolCall(json_str= json.dumps({'filepath' : self.test_text.fpath}))
         self.workspace.open_action.handle(tool_call)
         print(f'Test text file fpath : {self.test_text.fpath}')

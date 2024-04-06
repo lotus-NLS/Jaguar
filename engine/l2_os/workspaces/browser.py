@@ -23,6 +23,10 @@ class Browser(Workspace):
         """Close LotusFileExplorer"""
         self.currrent_url = None
 
+    def visit_site(self, url : str):
+        """Visit another site"""
+        self.currrent_url = url
+
     # ---------------------------------------------------------
     # context
 
@@ -30,6 +34,7 @@ class Browser(Workspace):
         return None
 
     def get_text(self) -> str:
+        info_text = f'---> Currently visiting site: {self.currrent_url}\n\n'
         page_source = self.site_visitor.get_html(url=self.currrent_url)
         soup = BeautifulSoup(page_source, 'html.parser')
         links = soup.find_all('a')
@@ -54,10 +59,13 @@ class Browser(Workspace):
             return True
 
         markdown_links = [get_repr(link) for link in links if link_qualifes(link)]
-        link_content = '\n'.join(markdown_links)
-        site_text = self.site_visitor.get_text(url=self.currrent_url)
+        links_content = '\n'.join(markdown_links)
+        site_text = f'- Site text: \n{self.site_visitor.get_text(url=self.currrent_url)}\n'
+        links_text = f'- Links: \n {links_content}'
 
-        return f'{site_text}\n{link_content}'
+        text = f'{info_text}{site_text}\n{links_text}'
+
+        return text
 
     def get_desc(self) -> str:
         return f"A file explorer to navigate and display file structures"

@@ -10,7 +10,7 @@ from enum import Enum
 # ---------------------------------------------------------
 
 
-class AdvancedTextExitor(Workspace):
+class DocumentEditor(Workspace):
     def __init__(self):
         super().__init__()
         self.content : Optional[str] = None
