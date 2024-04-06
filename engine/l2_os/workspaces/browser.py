@@ -13,15 +13,18 @@ class Browser(Workspace):
         self.current_dir_path: Optional[str] = None
         self.show_hidden : bool = True
         self.currrent_url : Optional[str] = None
-        self.site_visitor : SiteVisitor = SiteVisitor()
+        self.site_visitor : Optional[SiteVisitor] = None
+
 
     def open(self, url: str):
         """Opens the specified site"""
+        self.site_visitor = SiteVisitor(headless=False)
         self.currrent_url = url
 
     def close(self):
         """Close LotusFileExplorer"""
         self.currrent_url = None
+        self.site_visitor= None
 
     def visit_site(self, url : str):
         """Visit another site"""

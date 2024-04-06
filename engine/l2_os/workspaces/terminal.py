@@ -72,10 +72,10 @@ class Terminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        text = self._get_pipe_content(0.01)
+        text = self._get_pipe_content(timeout=0.1)
         while text:
             self.content += text
-            text = self._get_pipe_content(0.01)
+            text = self._get_pipe_content(timeout=0.05)
         return self.content + f' [Waiting for input]'
 
     def _get_pipe_content(self, timeout : float) -> Optional[str]:
