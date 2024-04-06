@@ -31,7 +31,9 @@ class Browser(Workspace):
     def close(self):
         """Close Browser"""
         self.currrent_url = None
-        self.site_visitor= None
+        if self.site_visitor:
+            self.site_visitor.engine.quit()
+        self.site_visitor = None
 
     def google_search(self, search_term : str, num_results : int = 4):
         """Googles the search term and displays links/summaries of top results"""

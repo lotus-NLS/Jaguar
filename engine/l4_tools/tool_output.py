@@ -33,6 +33,7 @@ class ProgressMsg:
 class ToolOutput(Loggable):
     tool_name : str
     value : Optional[Any] = None
+    call_args: Optional[dict] = None
     progress: list[ProgressMsg] = field(default_factory=list)
     exit_status : ExitStatus = ExitStatus.SUCCESS
 
@@ -40,11 +41,15 @@ class ToolOutput(Loggable):
         super().__init__()
 
     def get_report(self) -> str:
-        log_msg = f'\"{self.tool_name}\" ran with exit status : \"{self.exit_status.value}\"'
+        log_msg = (f'Tool \"{self.tool_name}\" finished execution with status:'
+                   f' {self.exit_status.value}')
         if not self.exit_status == ExitStatus.SUCCESS:
             log_msg += f'; failure/exception reason: {self.get_error_msgs()}'
+        log_msg += f'; Call arguments were {self.call_args}'
         return log_msg
 
+    def set_args(self, args : dict):
+        self.call_args = args
 
     def get_error_msgs(self) -> list[str]:
         return [progress.content for progress in self.progress if progress.progress_type in [Progress.EXCEPTION, Progress.FAILED]]

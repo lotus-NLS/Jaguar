@@ -24,6 +24,7 @@ class Tool:
     def handle(self, tool_call: ToolCall) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name())
         output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=Progress.START)
+        output.set_args(args=tool_call.get_args_dict())
         try:
             self._set_args(tool_call=tool_call)
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=Progress.UPDATE)
