@@ -23,7 +23,7 @@ class Browser(Workspace):
         """Opens the specified site. Use url=search://{search_term} to perform a google search insted"""
         if url.startswith('search://'):
             search_tearm = url.replace(f'search://','')
-            self.search(search_term=search_tearm)
+            self.google_search(search_term=search_tearm)
         else:
             self.visit_site(url=url)
 
@@ -33,15 +33,15 @@ class Browser(Workspace):
         self.currrent_url = None
         self.site_visitor= None
 
-    def search(self, search_term : str, num_results : int = 4):
-        """Googles the search_term and displays results"""
+    def google_search(self, search_term : str, num_results : int = 4):
+        """Googles the search term and displays links/summaries of top results"""
         urls = self.search_engine.get_urls(search_term=search_term, num_results=num_results)
         self.search_context = f'Results for search term \"{search_term}\"\n'
         for index, site in enumerate(urls):
             self.search_context += f'({index}): {site}\n'
 
     def visit_site(self, url : str):
-        """Visit another site"""
+        """Visits the selected site in the browser"""
         self.currrent_url = url
         self.site_visitor = SiteVisitor(headless=False)
 
@@ -55,14 +55,14 @@ class Browser(Workspace):
     def get_text(self) -> str:
         browser_text = ''
         if self.search_context:
-            browser_text += self.search_context
+            browser_text += f'{self.search_context}\n'
         if self.currrent_url:
             browser_text += self._get_site_text()
         return browser_text
 
 
     def _get_site_text(self) -> str:
-        info_text = f'---> Currently visiting site: {self.currrent_url}\n\n'
+        info_text = f'---> Currently visiting site: {self.currrent_url}\n'
         page_source = self.site_visitor.get_html(url=self.currrent_url)
         soup = BeautifulSoup(page_source, 'html.parser')
         links = soup.find_all('a')
