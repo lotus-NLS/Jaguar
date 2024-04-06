@@ -2,6 +2,7 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
 from hollarek.web import SiteVisitor
+from urllib.parse import urlparse
 from .workspace import Workspace
 
 # ---------------------------------------------------------
@@ -37,8 +38,12 @@ class Browser(Workspace):
             link_text = link.get_text(strip=True)
             content = link.get('href')
 
+            parsed_url = urlparse(self.currrent_url)
+            base_domain = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
             if not content.startswith('http'):
-                content = f'{self.currrent_url}/{content}'
+                prefix = '' if content.startswith('/') else '/'
+                content = f'{base_domain}{prefix}{content}'
 
             return f"[{link_text}]({content})"
 

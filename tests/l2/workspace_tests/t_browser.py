@@ -11,7 +11,7 @@ class BrowserTest(Unittest):
         self.browser.open(url=self.beaver_test)
         beaver_text = self.browser.get_text()
         self.assertIn('beaver', beaver_text.lower())
-        self.assertIn(self.beaver_test, beaver_text.lower())
+        self.assertIn(f'https://en.wikipedia.org/wiki/Talk:Beaver'.lower(), beaver_text.lower())
         print(f'Beaver text =\n {beaver_text}')
 
     def test_lightning(self):
