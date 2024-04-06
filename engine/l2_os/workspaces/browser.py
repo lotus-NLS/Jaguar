@@ -1,7 +1,8 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
-from hollarek.web import SiteVisitor
+from hollarek.web import SiteVisitor, SearchEngine
+from engine.l5_settings import LotusSettings
 from urllib.parse import urlparse
 from .workspace import Workspace
 
@@ -14,7 +15,9 @@ class Browser(Workspace):
         self.show_hidden : bool = True
         self.currrent_url : Optional[str] = None
         self.site_visitor : Optional[SiteVisitor] = None
-
+        google_key, searchengine_id = LotusSettings.get_google_apikey(), LotusSettings.get_searchengine_id()
+        self.search_engine : SearchEngine = SearchEngine(google_key=google_key, searchengine_id=searchengine_id)
+        self.search_context : Optional[str] = None
 
     def open(self, url: str):
         """Opens the specified site"""
@@ -25,6 +28,13 @@ class Browser(Workspace):
         """Close LotusFileExplorer"""
         self.currrent_url = None
         self.site_visitor= None
+
+    def search(self, search_term : str, num_results : int = 4):
+        """Googles the search_term and displays results"""
+        urls = self.search_engine.get_urls(search_term=search_term, num_results=num_results)
+        self.search_context = ''
+        for index, site in enumerate(urls):
+            self.search_context += f'{index}: {site}'
 
     def visit_site(self, url : str):
         """Visit another site"""
@@ -65,6 +75,7 @@ class Browser(Workspace):
         links_content = '\n'.join(markdown_links)
         site_text = f'- Site text: \n{self.site_visitor.get_text(url=self.currrent_url)}\n'
         links_text = f'- Links: \n {links_content}'
+
 
         text = f'{info_text}{site_text}\n{links_text}'
 
