@@ -29,7 +29,7 @@ class Browser(Workspace):
 
 
     def close(self):
-        """Close LotusFileExplorer"""
+        """Close Browser"""
         self.currrent_url = None
         self.site_visitor= None
 
@@ -57,7 +57,10 @@ class Browser(Workspace):
         if self.search_context:
             browser_text += f'{self.search_context}\n'
         if self.currrent_url:
-            browser_text += self._get_site_text()
+            if self.site_visitor.site_exists(url=self.currrent_url):
+                browser_text += self._get_site_text()
+            else:
+                browser_text += f'---> Site does not exist: {self.currrent_url}\n'
         return browser_text
 
 
