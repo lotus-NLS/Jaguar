@@ -23,6 +23,7 @@ class BrowserTest(Unittest):
         self.assertIn(self.lightning_site, lightning_text.lower())
         print(f'Lightning text =\n {lightning_text}')
 
+
 class SearchEngineTester(Unittest):
     @classmethod
     def setUpClass(cls):
@@ -41,6 +42,7 @@ class SearchEngineTester(Unittest):
         for result in results:
             self.assertIsInstance(result, SearchResult)
             print(result)
+
 
 if __name__ == "__main__":
     # BrowserTest.execute_all()
