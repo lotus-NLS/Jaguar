@@ -1,9 +1,8 @@
 distro
 func_timeout
-
-Requests
+requests
 tiktoken
 uvicorn
 fastapi
 openai
-git+ssh://git@github.com/Somerandomguy10111/hollarek.git#egg=hollarek
+holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
