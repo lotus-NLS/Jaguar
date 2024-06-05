@@ -7,8 +7,8 @@ from holytools.configs import PassConfigs, BaseConfigs
 from holytools.logging import Loggable
 
 from func_timeout import func_timeout, FunctionTimedOut
-from awsops import AWSRegion
-from awsops.aws_configs import ConfigsAWS
+# from awsops import AWSRegion
+# from awsops.aws_configs import ConfigsAWS
 
 settingsLogger = LoggerFactory.make_logger(name=__name__)
 
@@ -23,19 +23,18 @@ class LotusSettings(Loggable):
         return cls.configs.get(key)
 
     @classmethod
-    def set_configs(cls, use_local : bool, enable_validation : bool = False) -> BaseConfigs:
+    def set_configs(cls, use_local : bool, enable_validation : bool = False):
         if use_local:
-            configs = PassConfigs()
+            cls.configs = PassConfigs(pass_dirpath='~/Drive/.password-store')
         else:
-            configs = ConfigsAWS(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
+            raise NotImplementedError
+        #     configs = ConfigsAWS(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
 
         if enable_validation:
             cls.validation()
 
         settingsLogger.info(msg=f'Completed setup for all Settings')
 
-
-        return configs
 
     @classmethod
     def get_openai_apikey(cls) -> str:
@@ -96,7 +95,7 @@ class LotusSettings(Loggable):
             err_details = f'{err}'
         finally:
             if not is_successful:
-                settingsLogger.error(msg=f'Error after test run of openai_api_key: {err_details}')
+                settingsLogger.error(msg=f'Error after test run of openai_api_key: {err_details.__repr__()}')
             openai.api_key = temp
             return is_successful
 

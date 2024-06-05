@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 @dataclass
@@ -34,7 +34,7 @@ class CallOptions:
 
 @dataclass
 class Options:
-    call_options : CallOptions = CallOptions.auto()
+    call_options: CallOptions = field(default_factory=CallOptions.auto)
     max_tokens : Optional[int] = None
     temp : float = 0.3
 
