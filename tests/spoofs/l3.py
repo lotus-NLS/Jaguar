@@ -1,5 +1,5 @@
 from engine.l4_tools import Tool, ToolArg
-from holytools.file import ImageFile, FileSpoofer
+from holytools.file import ImageFile, FileMock
 from api import Entry
 
 # ---------------------------------------------------------
@@ -36,7 +36,7 @@ class SpoofEntries:
             msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         self.repetition_request = Entry.as_user(msg='Can you please repeat what I said above in its entirety?')
 
-        fpath = FileSpoofer.lend_png().fpath  # Assuming SpoofFiles and ImageIO are defined elsewhere
+        fpath = FileMock.lend_png().fpath  # Assuming SpoofFiles and ImageIO are defined elsewhere
         img_io = ImageFile(fpath=fpath)
         img_content = img_io.read()
         self.image_entry = Entry.as_user(msg='Can you describe what\'s in this image?', image=img_content)

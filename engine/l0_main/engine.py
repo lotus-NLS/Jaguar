@@ -1,6 +1,6 @@
 import time
 
-from holytools.core.logging import Loggable
+from holytools.logging import Loggable
 from engine.l5_settings import LotusSettings
 from engine.l1_agent import Agent
 from .dev_user import DevUser
@@ -12,7 +12,7 @@ class LotusEngine(Loggable):
     def __init__(self, use_local : bool = True):
         super().__init__()
 
-        self.settings : LotusSettings = LotusSettings(use_local=use_local, validate=True)
+        LotusSettings.set_configs(use_local=use_local, enable_validation=True)
         self.handler: Agent = Agent()
         self.engine_io: Server = DevServer(handler=self.handler)
 

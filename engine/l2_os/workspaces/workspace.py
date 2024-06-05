@@ -6,7 +6,7 @@ from typing import Optional, Callable, Any
 import inspect
 
 from engine.l4_tools import ToolArg, ToolDoc, Tool, ToolCall
-from holytools.core.logging import Loggable, LogSettings
+from holytools.logging import Loggable
 from holytools.devtools import ModuleInspector
 # ---------------------------------------------------------
 
@@ -92,7 +92,7 @@ class Workspace(Loggable):
 
 class ActionFactory(Loggable):
     def __init__(self, workspace : Workspace):
-        super().__init__(settings=LogSettings(timestamp=False))
+        super().__init__()
         self.workspace : Workspace =  workspace
 
     def create_all(self, target_methods : list[Callable]) -> list[Action]:

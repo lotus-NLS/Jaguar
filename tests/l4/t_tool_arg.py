@@ -1,7 +1,9 @@
-from holytools.devtools import Unittest, ModuleInspector
-from engine.l4_tools import ToolCall, ToolArg
-from tests.spoofs import ToolArgMethods, MockChoice
 from enum import Enum
+
+from holytools.devtools import Unittest, ModuleInspector
+
+from engine.l4_tools import ToolArg
+from tests.spoofs import ToolArgMethods, MockChoice
 
 
 class TestToolArg(Unittest):

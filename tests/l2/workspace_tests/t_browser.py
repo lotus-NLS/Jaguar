@@ -27,7 +27,6 @@ class BrowserTest(Unittest):
 class SearchEngineTester(Unittest):
     @classmethod
     def setUpClass(cls):
-        settings = LotusSettings()
         engine_id = LotusSettings.get_searchengine_id()
         api_key = LotusSettings.get_google_apikey()
         cls.search_engine = SearchEngine(searchengine_id=engine_id, google_key=api_key)

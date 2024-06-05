@@ -1,35 +1,40 @@
-import openai
-import requests
-import os
 from typing import Optional
 
+import openai
+import requests
+from holytools.logging import LoggerFactory
+from holytools.configs import PassConfigs, BaseConfigs
+from holytools.logging import Loggable
+
 from func_timeout import func_timeout, FunctionTimedOut
-from holytools.cloud import AWSRegion
-from holytools.configs import LocalConfigs, AWSConfigs, Configs
-from holytools.abstract import Singleton
-from holytools.core.logging import LogLevel, get_logger, Logger
+from awsops import AWSRegion
+from awsops.aws_configs import ConfigsAWS
+
+settingsLogger = LoggerFactory.make_logger(name=__name__)
+
 # --------------------------------------------
 
-class LotusSettings(Singleton):
-    def __init__(self, use_local : bool = False, validate : bool = True, logger : Optional[Logger] = None):
-        if self.get_is_initialized():
-            return
+class LotusSettings(Loggable):
+    configs : Optional[BaseConfigs] = None
+    enable_validation : bool = False
 
-        super().__init__()
-        self.log = logger.log if logger else get_logger().log
-        self.configs = self.get_configs(use_local=use_local)
-        if validate:
-            self.validation()
+    @classmethod
+    def get(cls, key: str) -> str:
+        return cls.configs.get(key)
 
-        self.log(msg=f'Completed setup for all Settings')
-
-    @staticmethod
-    def get_configs(use_local : bool) -> Configs:
+    @classmethod
+    def set_configs(cls, use_local : bool, enable_validation : bool = False) -> BaseConfigs:
         if use_local:
-            config_path = os.path.join(os.path.expanduser('~'), '.creds', 'lotusconfigs')
-            configs = LocalConfigs(config_fpath=config_path)
+            configs = PassConfigs()
         else:
-            configs = AWSConfigs(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
+            configs = ConfigsAWS(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
+
+        if enable_validation:
+            cls.validation()
+
+        settingsLogger.info(msg=f'Completed setup for all Settings')
+
+
         return configs
 
     @classmethod
@@ -49,20 +54,19 @@ class LotusSettings(Singleton):
         return cls.get('enable_introduction')
 
     @classmethod
-    def get(cls, key: str) -> str:
-        instance = cls.get_instance()
-        if not instance.configs:
-            raise ResourceWarning(f'Lotus Settings is not initialized yet!')
-        return instance.configs.get(key)
-
+    def reset(cls):
+        cls.configs = None
+        cls.enable_validation = False
+        settingsLogger.info(msg=f'Reset settings')
 
     # ----------------------------------------------
     # validation
 
-    def validation(self):
+    @classmethod
+    def validation(cls):
         successful_tests = []
         failed_tests = []
-        for test in [self.validate_openai]:
+        for test in [cls.validate_openai]:
             if not test():
                 failed_tests.append(test.__name__)
             else:
@@ -71,17 +75,17 @@ class LotusSettings(Singleton):
         if failed_tests:
             raise ValueError(f'Validation failed for {failed_tests}')
 
-        self.log(msg=f'Successfully performed validations {successful_tests}')
+        settingsLogger.info(msg=f'Successfully performed validations {successful_tests}')
 
-
-    def validate_openai(self) -> bool:
+    @classmethod
+    def validate_openai(cls) -> bool:
         temp = openai.api_key
         is_successful = False
         err_details = ''
         timeout = 5
 
         try:
-            openai.api_key = self.get_openai_apikey()
+            openai.api_key = cls.get_openai_apikey()
             test_entry = {'role' : 'user', 'content' : 'This is a test'}
             args_dict = {'model': 'gpt-3.5-turbo','messages': [test_entry],'stream' : True}
             func_timeout(timeout=timeout, func=openai.chat.completions.create, kwargs=args_dict)
@@ -92,12 +96,12 @@ class LotusSettings(Singleton):
             err_details = f'{err}'
         finally:
             if not is_successful:
-                self.log(msg=f'Error after test run of openai_api_key: {err_details}', level=LogLevel.ERROR)
+                settingsLogger.error(msg=f'Error after test run of openai_api_key: {err_details}')
             openai.api_key = temp
             return is_successful
 
-
-    def validate_search_engine(self) -> bool:
+    @classmethod
+    def validate_search_engine(cls) -> bool:
         is_successful = False
         err_details = ''
         try:
@@ -105,8 +109,8 @@ class LotusSettings(Singleton):
             url = "https://www.googleapis.com/customsearch/v1"
             params = {
                 'q': 'snails',
-                'key': self.get_google_apikey(),
-                'cx': self.get_searchengine_id(),
+                'key': cls.get_google_apikey(),
+                'cx': cls.get_searchengine_id(),
                 'num' : 5
             }
             response = requests.get(url, params=params)
@@ -125,7 +129,7 @@ class LotusSettings(Singleton):
 
         finally:
             if not is_successful:
-                self.log(msg=f'Error after test run of search engine: {err_details}', level=LogLevel.ERROR)
+                settingsLogger.error(msg=f'Error after test run of search engine: {err_details}')
             return is_successful
 
 

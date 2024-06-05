@@ -1,10 +1,11 @@
 import os
 from typing import Optional
+
 from PIL.Image import Image as PILImage
+
 from engine.l4_tools import InvalidArgValue
-from holytools.fsys import FsysNode
-from holytools.abstract import Tree
 from .workspace import Workspace
+
 
 # ---------------------------------------------------------
 
@@ -43,25 +44,22 @@ class FileExplorer(Workspace):
         return None
 
     def get_text(self) -> str:
-        from devtools import Timer
-        timer = Timer()
-        timer.start()
-        node = FsysNode(self.current_dir_path)
-
-        subtrees = []
-        max_size = 100
-        for child in node.get_child_nodes(exclude_hidden=not self.show_hidden):
-            try:
-                tree = child.get_tree(max_size=max_size, exclude_hidden=not self.show_hidden)
-            except:
-                name_with_warning = f'{child.get_name()} [Warning: Subdirectory too large to display; Exceeds limit of {max_size} files/folders]'
-                tree = Tree({ name_with_warning : {}})
-            subtrees.append(tree)
-
-        tree = Tree.join_trees(root=node, subtrees=subtrees)
-        content = f'[Directory: {self.current_dir_path}]\n {tree.as_str()}'
-        timer.capture()
-        return content
+        raise NotImplemented(f'Need to reimplement tree display')
+        # node = FsysNode(self.current_dir_path)
+        #
+        # subtrees = []
+        # max_size = 100
+        # for child in node.get_child_nodes(exclude_hidden=not self.show_hidden):
+        #     try:
+        #         tree = child.get_tree(max_size=max_size, exclude_hidden=not self.show_hidden)
+        #     except:
+        #         name_with_warning = f'{child.get_name()} [Warning: Subdirectory too large to display; Exceeds limit of {max_size} files/folders]'
+        #         tree = Tree({ name_with_warning : {}})
+        #     subtrees.append(tree)
+        #
+        # tree = FileExplorer.join_tree(self, node, subtrees)
+        # content = f'[Directory: {self.current_dir_path}]\n {tree.as_str()}'
+        # return content
 
     def get_desc(self) -> str:
         return f"A file explorer to navigate and display file structures"

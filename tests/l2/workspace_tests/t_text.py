@@ -1,4 +1,4 @@
-from holytools.file import File, FileSpoofer
+from holytools.file import File, FileMock
 from holytools.devtools import Unittest
 from engine.l2_os import DocumentEditor
 from engine.l4_tools import ToolCall
@@ -8,7 +8,7 @@ import json
 
 class TestTextWorkspace(Unittest):
     def setUp(self):
-        self.test_text : File = FileSpoofer.lend_txt()
+        self.test_text : File = FileMock.lend_txt()
         self.workspace = DocumentEditor()
         tool_call = ToolCall(json_str= json.dumps({'filepath' : self.test_text.fpath}))
         self.workspace.open_action.handle(tool_call)

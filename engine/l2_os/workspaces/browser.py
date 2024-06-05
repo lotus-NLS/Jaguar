@@ -32,7 +32,7 @@ class Browser(Workspace):
         """Close Browser"""
         self.currrent_url = None
         if self.site_visitor:
-            self.site_visitor.engine.quit()
+            self.site_visitor.quit()
         self.site_visitor = None
 
     def google_search(self, search_term : str, num_results : int = 4):

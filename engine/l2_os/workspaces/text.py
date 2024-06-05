@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import os.path
 from typing import Optional
-from PIL.Image import Image as PILImage
 
-from holytools.file import TextFile
+from PIL.Image import Image as PILImage
+from holytools.file import PlaintextFile
+
 from .workspace import Workspace
-from enum import Enum
+
+
 # ---------------------------------------------------------
 
 
@@ -14,11 +16,11 @@ class DocumentEditor(Workspace):
     def __init__(self):
         super().__init__()
         self.content : Optional[str] = None
-        self.text_file : Optional[TextFile] = None
+        self.text_file : Optional[PlaintextFile] = None
 
     def open(self, filepath : str, require_writable : bool = False):
         """Allowd you to view and edit plain Text files. A view-only mode allows for also viewing text in .pdfs, .doc, .docx and even handwritten text in .jpg and .png images """
-        self.text_file = TextFile(fpath=filepath, require_writable=require_writable)
+        self.text_file = PlaintextFile(fpath=filepath, require_writable=require_writable)
         if self.text_file.exists_on_disk():
             self.text_file.read() # one test run to check if the file can be read
 
@@ -81,5 +83,5 @@ class DocumentEditor(Workspace):
     @classmethod
     def get_desc(cls) -> str:
         return ("Allows for viewing *any* file containing text including pdf, csv, doc, docx and "
-                "even handwritten text in .jpg. Can only write to plaintext files.")
+                "even handwritten text in .jpg. Can only write to Plaintext files.")
 

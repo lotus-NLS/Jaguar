@@ -1,5 +1,5 @@
 from __future__ import annotations
-from holytools.core.logging import Loggable, LogLevel
+from holytools.logging import Loggable, LogLevel
 
 from engine.l4_tools import Tool, ToolCallMap, ToolDoc, ToolOutput
 from engine.l3_models import Context

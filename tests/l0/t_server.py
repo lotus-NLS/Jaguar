@@ -3,7 +3,7 @@ import time
 import requests
 import base64
 from holytools.devtools import Unittest
-from holytools.file import FileSpoofer
+from holytools.file import FileMock
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity
@@ -32,7 +32,7 @@ class TestEngineIO(Unittest):
         self.assertEqual(response.status_code, 200)
 
     def test_transcribe_endpoint(self):
-        spoof_wav = FileSpoofer.lend_wav()
+        spoof_wav = FileMock.lend_wav()
         with open(spoof_wav.fpath, 'rb') as f:
             data = f.read()
         url = f'{self.addr}/transcribe'

@@ -29,18 +29,18 @@ class TestLotusSettings(Unittest):
     # --------------------------------------------
 
     def is_ok(self,local : bool = True ):
-        settings = LotusSettings(use_local=local)
+        LotusSettings.set_configs(use_local=local, enable_validation=False)
         for key in self.valid_keys:
-            self.assertIsInstance(settings.get(key), str)
+            self.assertIsInstance(LotusSettings.get(key), str)
 
     def is_valid(self, local : bool = True):
-        settings = LotusSettings(use_local=local)
-        x,y = settings.validate_openai(), settings.validate_search_engine()
+        LotusSettings.set_configs(use_local=local, enable_validation=True)
+        x,y = LotusSettings.validate_openai(), LotusSettings.validate_search_engine()
         for val in [x,y]:
             self.assertTrue(val)
 
     def tearDown(self):
-        LotusSettings().reset_instance()
+        LotusSettings.reset()
 
 
 if __name__ == "__main__":

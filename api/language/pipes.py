@@ -3,16 +3,16 @@ from __future__ import annotations
 from typing import Optional
 from queue import Queue, Empty
 from typing import Iterator
-from holytools.core.logging import LogLevel, get_logger, Logger
+from holytools.logging import LoggerFactory
 
 
+pipeLogger = LoggerFactory.make_logger(name=__name__)
 
 # ----------------------------------------------
 
 
 class TextPipe(Queue):
     stop_token = '⊥'
-    logger : Optional[Logger] = None
 
     def put(self, msg : Optional[str], *args, **kwargs):
         if msg is None:
@@ -34,13 +34,13 @@ class TextPipe(Queue):
             try:
                 text = self.get(timeout=timeout)
             except Empty:
-                self.log(f'Text queue timed out after {timeout}s', level=LogLevel.WARNING)
+                pipeLogger.warning(f'Text queue timed out after {timeout}s')
                 break
             except Exception as e:
-                self.log(f'Error in getting text from queue: {e}', level=LogLevel.ERROR)
+                pipeLogger.error(f'Error in getting text from queue: {e}')
                 break
             if text == self.stop_token:
-                self.log(f'\nReceived stop token from text queue', level=LogLevel.DEBUG)
+                pipeLogger.debug(f'\nReceived stop token from text queue')
                 break
             if not text:
                 continue
@@ -54,11 +54,5 @@ class TextPipe(Queue):
         pipeline.stop()
         return pipeline
 
-
-    @classmethod
-    def log(cls, msg : str, level : LogLevel):
-        if not cls.logger:
-            cls.logger = get_logger()
-        cls.logger.log(msg=msg, level=level)
 
 

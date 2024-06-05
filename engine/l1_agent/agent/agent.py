@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import threading
-from holytools.core.logging import LogLevel, Loggable
+from holytools.logging import LogLevel, Loggable
 from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
 from engine.l3_models import LLM, Context, Options, Generation
