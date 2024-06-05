@@ -2,8 +2,8 @@ from __future__ import annotations
 import time
 import requests
 import base64
-from hollarek.devtools import Unittest
-from hollarek.file import FileSpoofer
+from holytools.devtools import Unittest
+from holytools.file import FileSpoofer
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity

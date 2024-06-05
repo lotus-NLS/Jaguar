@@ -4,7 +4,7 @@ import os.path
 from typing import Optional
 from PIL.Image import Image as PILImage
 
-from hollarek.file import TextFile
+from holytools.file import TextFile
 from .workspace import Workspace
 from enum import Enum
 # ---------------------------------------------------------

@@ -1,6 +1,6 @@
 import time
 
-from hollarek.core.logging import Loggable
+from holytools.core.logging import Loggable
 from engine.l5_settings import LotusSettings
 from engine.l1_agent import Agent
 from .dev_user import DevUser

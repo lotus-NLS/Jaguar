@@ -1,7 +1,7 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
-from hollarek.web import SiteVisitor, SearchEngine
+from holytools.web import SiteVisitor, SearchEngine
 from engine.l5_settings import LotusSettings
 from urllib.parse import urlparse
 from .workspace import Workspace

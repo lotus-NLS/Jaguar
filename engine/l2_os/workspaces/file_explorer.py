@@ -2,8 +2,8 @@ import os
 from typing import Optional
 from PIL.Image import Image as PILImage
 from engine.l4_tools import InvalidArgValue
-from hollarek.fsys import FsysNode
-from hollarek.abstract import Tree
+from holytools.fsys import FsysNode
+from holytools.abstract import Tree
 from .workspace import Workspace
 
 # ---------------------------------------------------------

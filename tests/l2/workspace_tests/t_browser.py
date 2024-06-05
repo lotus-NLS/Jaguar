@@ -1,7 +1,7 @@
 from engine.l2_os import Browser
 from engine.l5_settings import LotusSettings
-from hollarek.devtools import Unittest
-from hollarek.web import SearchEngine, SearchResult
+from holytools.devtools import Unittest
+from holytools.web import SearchEngine, SearchResult
 
 class BrowserTest(Unittest):
     def setUp(self):

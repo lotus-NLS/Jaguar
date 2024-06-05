@@ -1,7 +1,7 @@
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from hollarek.hardware import TextMouse, Keyboard, Display, Grid
+from holytools.hardware import TextMouse, Keyboard, Display, Grid
 from .workspace import Workspace
 
 # ---------------------------------------------------

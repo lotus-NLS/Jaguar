@@ -1,5 +1,5 @@
 from engine.l5_settings import LotusSettings
-from hollarek.devtools import Unittest
+from holytools.devtools import Unittest
 # --------------------------------------------
 
 class TestLotusSettings(Unittest):

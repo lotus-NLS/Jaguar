@@ -5,7 +5,7 @@ import json, tiktoken
 from typing import Optional
 from tiktoken import Encoding
 from abc import abstractmethod
-from hollarek.core.logging import Loggable
+from holytools.core.logging import Loggable
 from .generation import Generation, Context
 from .options import Options, CallOptions
 from dataclasses import dataclass

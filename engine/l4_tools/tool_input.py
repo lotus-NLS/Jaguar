@@ -4,7 +4,7 @@ from typing import Optional,Any
 from json_repair import repair_json
 from dataclasses import dataclass
 from enum import Enum
-from hollarek.devtools import Argument
+from holytools.devtools import Argument
 # ---------------------------------------------------
 
 @dataclass

@@ -4,10 +4,10 @@ import os
 from typing import Optional
 
 from func_timeout import func_timeout, FunctionTimedOut
-from hollarek.cloud import AWSRegion
-from hollarek.configs import LocalConfigs, AWSConfigs, Configs
-from hollarek.abstract import Singleton
-from hollarek.core.logging import LogLevel, get_logger, Logger
+from holytools.cloud import AWSRegion
+from holytools.configs import LocalConfigs, AWSConfigs, Configs
+from holytools.abstract import Singleton
+from holytools.core.logging import LogLevel, get_logger, Logger
 # --------------------------------------------
 
 class LotusSettings(Singleton):

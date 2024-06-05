@@ -1,7 +1,7 @@
 import threading
 import requests
 from api import LotusRequest, TranscribeRequest
-from hollarek.hardware import Recorder
+from holytools.hardware import Recorder
 from base64 import b64encode
 from .server import Server
 # ----------------------------------------------

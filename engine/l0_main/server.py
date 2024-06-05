@@ -9,7 +9,7 @@ from typing import Optional, Callable
 from abc import abstractmethod
 
 from api import LotusRequest, TranscribeRequest, Entry
-from hollarek.network import Socket, Endpoint, Method
+from holytools.network import Socket, Endpoint, Method
 from engine.l1_agent import Agent, Task
 from .transcribe import Transcriber
 

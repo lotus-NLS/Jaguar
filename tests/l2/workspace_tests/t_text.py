@@ -1,5 +1,5 @@
-from hollarek.file import File, FileSpoofer
-from hollarek.devtools import Unittest
+from holytools.file import File, FileSpoofer
+from holytools.devtools import Unittest
 from engine.l2_os import DocumentEditor
 from engine.l4_tools import ToolCall
 import json

@@ -1,5 +1,5 @@
-from hollarek.file import FileSpoofer
-from hollarek.devtools import Unittest
+from holytools.file import FileSpoofer
+from holytools.devtools import Unittest
 from engine.l0_main import Transcriber
 
 class TestTranscriber(Unittest):

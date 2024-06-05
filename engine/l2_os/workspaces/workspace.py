@@ -6,8 +6,8 @@ from typing import Optional, Callable, Any
 import inspect
 
 from engine.l4_tools import ToolArg, ToolDoc, Tool, ToolCall
-from hollarek.core.logging import Loggable, LogSettings
-from hollarek.devtools import ModuleInspector
+from holytools.core.logging import Loggable, LogSettings
+from holytools.devtools import ModuleInspector
 # ---------------------------------------------------------
 
 class Workspace(Loggable):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 from queue import Queue, Empty
 from typing import Iterator
-from hollarek.core.logging import LogLevel, get_logger, Logger
+from holytools.core.logging import LogLevel, get_logger, Logger
 
 
 

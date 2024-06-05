@@ -1,5 +1,5 @@
 from engine.l4_tools import Tool, ToolArg
-from hollarek.file import ImageFile, FileSpoofer
+from holytools.file import ImageFile, FileSpoofer
 from api import Entry
 
 # ---------------------------------------------------------

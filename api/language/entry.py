@@ -3,7 +3,7 @@ from typing import Optional
 from enum import Enum
 
 from PIL.Image import Image as PILImage
-from hollarek.file import ImageConverter, ImageSerializer
+from holytools.file import ImageConverter, ImageSerializer
 from dataclasses import dataclass
 
 # ----------------------------------------------

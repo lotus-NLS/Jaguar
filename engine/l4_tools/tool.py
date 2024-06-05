@@ -6,7 +6,7 @@ from typing import Any
 from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
-from hollarek.core.logging import get_logger
+from holytools.logging import LoggerFactory
 from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
 from .tool_input import ToolCall, ToolArg
 
@@ -15,7 +15,7 @@ from .tool_input import ToolCall, ToolArg
 class Tool:
     def __init__(self, call_timeout : float = 60):
         self.is_active : bool = True
-        self.logger = get_logger(name=f'{self.__class__}')
+        self.logger = LoggerFactory.make_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
 
     # ---------------------------------------------------
