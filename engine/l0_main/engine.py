@@ -11,7 +11,6 @@ from .server import Server, DevServer
 class LotusEngine(Loggable):
     def __init__(self, use_local : bool = True):
         super().__init__()
-
         LotusSettings.set_configs(use_local=use_local, enable_validation=True)
         self.handler: Agent = Agent()
         self.engine_io: Server = DevServer(handler=self.handler)
@@ -40,25 +39,7 @@ class LotusEngine(Loggable):
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 
-
-    # noinspection PyProtectedMember
     def stop(self):
         self.log(f'Lotus stopped')
         self.engine_io.kill()
 
-
-        # listener.wait_on_hold(key=)
-
-            # if flags.get(flag=Flag.PRINT_THREADS):
-            #     CustomThread.print_active_customthreads()
-            #     continue
-            #
-            # if flags.get(flag=Flag.QUIT):
-            #     break
-            #
-            # if flags.get(flag=Flag.RESET):
-            #     [bot.clear_log() for bot in self.handler]
-            #     logging.info(f'Bot logs cleared')
-            #     continue
-            #
-            # self.user.enqueue(msg=user_entry.get_content(), final=True)

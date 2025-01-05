@@ -7,4 +7,5 @@ fastapi
 openai
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
 awsops @ git+https://git@github.com/Somerandomguy10111/AWSOps.git
+pyscrape @ git+https://github.com/Somerandomguy10111/pyscrape
 json_repair
