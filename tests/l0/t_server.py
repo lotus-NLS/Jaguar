@@ -3,7 +3,7 @@ import time
 import requests
 import base64
 from holytools.devtools import Unittest
-from holytools.file import FileMock
+from holytools.fileIO import FileMock
 
 from api import LotusRequest, TranscribeRequest
 from tests.spoofs import MockEntity

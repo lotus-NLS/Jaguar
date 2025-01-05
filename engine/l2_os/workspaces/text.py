@@ -4,7 +4,7 @@ import os.path
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from holytools.file import PlaintextFile
+from holytools.fileIO import PlaintextFile
 
 from .workspace import Workspace
 

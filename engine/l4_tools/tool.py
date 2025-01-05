@@ -15,7 +15,7 @@ from .tool_input import ToolCall, ToolArg
 class Tool:
     def __init__(self, call_timeout : float = 60):
         self.is_active : bool = True
-        self.logger = LoggerFactory.make_logger(name=f'{self.__class__}')
+        self.logger = LoggerFactory.get_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
 
     # ---------------------------------------------------

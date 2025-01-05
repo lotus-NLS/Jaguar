@@ -7,10 +7,8 @@ from holytools.configs import PassConfigs, BaseConfigs
 from holytools.logging import Loggable
 
 from func_timeout import func_timeout, FunctionTimedOut
-# from awsops import AWSRegion
-# from awsops.aws_configs import ConfigsAWS
 
-settingsLogger = LoggerFactory.make_logger(name=__name__)
+settingsLogger = LoggerFactory.get_logger(name=__name__)
 
 # --------------------------------------------
 
@@ -25,10 +23,9 @@ class LotusSettings(Loggable):
     @classmethod
     def set_configs(cls, use_local : bool, enable_validation : bool = False):
         if use_local:
-            cls.configs = PassConfigs(pass_dirpath='~/Drive/.password-store')
+            cls.configs = PassConfigs()
         else:
             raise NotImplementedError
-        #     configs = ConfigsAWS(secret_name='lotus_api_keys', region=AWSRegion.EU_NORTH_1.value)
 
         if enable_validation:
             cls.validation()

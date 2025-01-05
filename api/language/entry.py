@@ -3,7 +3,7 @@ from typing import Optional
 from enum import Enum
 
 from PIL.Image import Image as PILImage
-from holytools.file import ImageConverter, ImageSerializer
+from holytools.fileIO.converters import ImageConverter
 from dataclasses import dataclass
 
 # ----------------------------------------------
@@ -64,7 +64,7 @@ class Entry:
         image = self.image
         if image.mode != 'RGB':
             image = ImageConverter.to_rgb(image=image)
-        base64_image = ImageSerializer.as_base64_str(image, img_format=img_fmt)
+        base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
         return base64_image
 
     def as_str(self):

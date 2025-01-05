@@ -6,7 +6,7 @@ from typing import Iterator
 from holytools.logging import LoggerFactory
 
 
-pipeLogger = LoggerFactory.make_logger(name=__name__)
+pipeLogger = LoggerFactory.get_logger(name=__name__)
 
 # ----------------------------------------------
 
