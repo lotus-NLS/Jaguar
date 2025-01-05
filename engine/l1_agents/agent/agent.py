@@ -4,10 +4,10 @@ import threading
 from holytools.logging import LogLevel, Loggable
 from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
-from engine.l3_models import LLM, Context, Options, Generation
-from engine.l3_models import OpenAIModel
-from engine.l2_os import OS, Terminal, DocumentEditor, FileExplorer, Browser
-from engine.l1_agent.protocol import Identity, Task
+from engine.l2_models import LLM, Context, Options, Generation
+from engine.l2_models import OpenAIModel
+from engine.l3_os import OS, Terminal, DocumentEditor, FileExplorer, Browser
+from engine.l1_agents.protocol import Identity, Task
 
 
 # ---------------------------------------------------------

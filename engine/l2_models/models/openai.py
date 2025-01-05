@@ -9,8 +9,8 @@ from openai import Stream
 from api import Entry, APIType
 from engine.l4_tools import ToolCall, ToolCallMap
 from engine.l5_settings import LotusSettings
-from engine.l3_models.generation import LLM, ModelInfo
-from engine.l3_models.generation import Generation, Chunk, Context, Options
+from engine.l2_models.generation import LLM, ModelInfo
+from engine.l2_models.generation import Generation, Chunk, Context, Options
 
 # ---------------------------------------------------------
 

@@ -1,5 +1,4 @@
 from .text import DocumentEditor
-from .host import Host
 from .terminal import Terminal
 from .browser import Browser
 from .file_explorer import FileExplorer

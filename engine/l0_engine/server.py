@@ -10,7 +10,7 @@ from fastapi.responses import StreamingResponse
 from holytools.network import Socket, Endpoint, Method
 
 from api import LotusRequest, Entry
-from engine.l1_agent import Agent, Task
+from engine.l1_agents import Agent, Task
 
 
 # ----------------------------------------------
@@ -74,7 +74,7 @@ class Server:
 
 import html
 from fastapi import FastAPI, Response
-from engine.l3_models import Context
+from engine.l2_models import Context
 
 class DevServer(Server):
     def __init__(self, handler : Agent, socket : Socket = Socket.get_localhost(port=5000)):

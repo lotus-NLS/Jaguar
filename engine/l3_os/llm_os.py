@@ -1,9 +1,9 @@
 from __future__ import annotations
 from holytools.logging import Loggable, LogLevel
 
-from engine.l4_tools import Tool, ToolCallMap, ToolDoc, ToolOutput
-from engine.l3_models import Context
-from engine.l2_os.workspaces import Workspace
+from engine.l3_os.tools import Tool, ToolCallMap, ToolDoc, ToolOutput
+from engine.l2_models import Context
+from engine.l3_os.workspaces import Workspace
 from func_timeout import func_timeout, FunctionTimedOut
 # ---------------------------------------------------------
 

@@ -2,21 +2,19 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
 from pyscrape import SiteVisitor, SearchEngine
-from engine.l5_settings import LotusSettings
 from urllib.parse import urlparse
 from .workspace import Workspace
 
 # ---------------------------------------------------------
 
 class Browser(Workspace):
-    def __init__(self):
+    def __init__(self, google_api_key : str, searchengine_id : str):
         super().__init__()
         self.current_dir_path: Optional[str] = None
         self.show_hidden : bool = True
         self.currrent_url : Optional[str] = None
         self.site_visitor : Optional[SiteVisitor] = None
-        google_key, searchengine_id = LotusSettings.get_google_apikey(), LotusSettings.get_searchengine_id()
-        self.search_engine : SearchEngine = SearchEngine(google_key=google_key, searchengine_id=searchengine_id)
+        self.search_engine : SearchEngine = SearchEngine(google_key=google_api_key, searchengine_id=searchengine_id)
         self.search_context : Optional[str] = None
 
     def open(self, url: str):

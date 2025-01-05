@@ -1,4 +1,4 @@
-from engine.l3_models.generation import Context
+from engine.l2_models.generation import Context
 
 from tests.l3.openai_test import OpenAITest
 

@@ -1,6 +1,6 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
-from engine.l2_os import Workspace
+from engine.l3_os import Workspace
 # ---------------------------------------------------------
 
 class Plant:

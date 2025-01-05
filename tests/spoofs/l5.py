@@ -3,7 +3,7 @@ import string
 import random
 
 from api import TextPipe
-from engine.l1_agent import Agent, Task
+from engine.l1_agents import Agent, Task
 
 
 class MockPipe(TextPipe):
