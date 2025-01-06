@@ -2,14 +2,20 @@ import time
 
 from holytools.logging import Loggable
 from engine.l1_agents import Agent
-from .server import Server, DevServer
+
+from .server import Server
+from .server import DevServer
+from .settings import LotusCredentials
+from .users.developer import DevUser
+
+
 # ---------------------------------------------------------
 
 
 class LotusEngine(Loggable):
-    def __init__(self, use_local : bool = True):
+    def __init__(self, local_credentials : bool = True):
         super().__init__()
-        LotusSettings.set_configs(use_local=use_local, enable_validation=True)
+        self.credentials = LotusCredentials(use_local=local_credentials)
         self.handler: Agent = Agent()
         self.engine_io: Server = DevServer(handler=self.handler)
 
@@ -43,28 +49,5 @@ class LotusEngine(Loggable):
 
 
 
-import requests
 
-from api import LotusRequest
-from .server import Server
-
-
-# ----------------------------------------------
-
-
-class DevUser:
-    def __init__(self, engineIO : Server):
-        self.engine_io : Server = engineIO
-        self.buffer : str = ''
-
-    def add_input(self, msg : str):
-        self.buffer += msg
-
-    def fire(self):
-        req_str = LotusRequest(msg=self.buffer).model_dump_json()
-        self.buffer = ''
-
-        process_endpoint = self.engine_io.get_process_endpoint()
-        url = process_endpoint.get_url(protocol=self.engine_io.get_protocol())
-        return requests.post(url=url, data=req_str, stream=True)
 

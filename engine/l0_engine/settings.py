@@ -4,8 +4,6 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 from holytools.configs import PassConfigs
 from holytools.logging import Loggable
-from holytools.logging import LoggerFactory
-
 
 # --------------------------------------------
 
