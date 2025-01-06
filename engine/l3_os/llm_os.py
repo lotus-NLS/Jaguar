@@ -32,24 +32,8 @@ class OS(Loggable):
                 outputs += [ToolOutput.failed(name=tool_call.name, reason=e)]
         return outputs
 
-
     # ---------------------------------------------------
     # get
-
-    def get_context(self) -> Context:
-        open_workspaces = [workspace for workspace in self.get_workspaces() if workspace.is_active]
-        entries = []
-        for workspace in open_workspaces:
-            try:
-                entry = func_timeout(func=workspace.get_entry, timeout=10)
-                entries.append(entry)
-            except FunctionTimedOut:
-                self.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
-            except BaseException as e:
-                self.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
-        docs = self._get_docs()
-        return Context(entries=entries, docs=docs)
-
 
     def get_tools(self) -> list[Tool]:
         tools = []
@@ -57,8 +41,7 @@ class OS(Loggable):
             tools += workspace.get_actions()
         return tools
 
-
-    def _get_docs(self) -> list[ToolDoc]:
+    def get_docs(self) -> list[ToolDoc]:
         docs = []
         for workspace in self.get_workspaces():
             docs += workspace.get_docs()
