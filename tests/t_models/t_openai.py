@@ -1,6 +1,6 @@
 # from engine.l2_models.generation import Context
 #
-# from tests.l3.openai_test import OpenAITest
+# from tests.t_aos.openai_test import OpenAITest
 #
 # # ---------------------------------------------------------
 #
