@@ -1,48 +1,55 @@
+from __future__ import annotations
+
 from engine.l2_models.generation import Context
-from tests.t_l2_models.openai_test import OpenAITest
+from tests.t_l2_models.base import OpenAITest
 
 
 # ---------------------------------------------------------
 
+
+
 class TestContextOpenAI(OpenAITest):
     def test_text_chunks(self):
-        context = Context(entries=[self.mock_entries.introduction_request], docs=[])
+        context = Context(entries=[self.example_entries.introduction],
+                          docs=[])
         generation = self.default_model.get_generation(context, self.text_only)
-        self.get_result(context, generation)
+        self.get_action(context, generation)
 
     def test_text_stream(self):
-        context = Context(entries=[self.mock_entries.introduction_request], docs=[])
+        context = Context(entries=[self.example_entries.introduction],
+                          docs=[])
         generation = self.default_model.get_generation(context, self.text_only)
 
         for chunk in generation:
-            self.lineprinter.add(msg=chunk.get_text())
+            self.textbox.add(msg=chunk.get_text())
 
     def test_image_context(self):
-        context = Context(entries=[self.mock_entries.image_entry], docs=[])
+        context = Context(entries=[self.example_entries.image_entry],
+                          docs=[])
         generation = self.default_model.get_generation(context, self.text_only)
-        self.get_result(context, generation)
+        self.get_action(context, generation)
 
 
 class TestToolCallOpenAI(OpenAITest):
     def test_simple_tool_call(self):
-        context = Context(entries=[self.mock_entries.welcome_request],
-                          docs=[self.doc_spoof.greet_tool_docs])
+        context = Context(entries=[self.example_entries.welcome_request],
+                          docs=[self.greet_tool.get_doc()])
         generation = self.default_model.get_generation(context, self.tool_allowed)
-        self.get_result(context, generation)
+        self.get_action(context, generation)
 
     def test_multi_tool_call(self):
-        context = Context(entries=[self.mock_entries.welcome_request,self.mock_entries.chef_notification_request],
-                          docs=[self.doc_spoof.greet_tool_docs, self.doc_spoof.notify_chef_docs])
+        context = Context(entries=[self.example_entries.welcome_request, self.example_entries.notify_chef],
+                          docs=[self.greet_tool.get_doc(), self.noify_chef_tool.get_doc()])
         generation = self.default_model.get_generation(context, self.tool_allowed)
-        text, callMap = self.get_result(context, generation)
+        text, callMap = self.get_action(context, generation)
 
         self.assertTrue(len(callMap.values()) == 2)
 
     def test_text_and_function_call(self):
-        context = Context(entries=[self.mock_entries.welcome_request, self.mock_entries.write_text_entries_request],
-                          docs=[self.doc_spoof.greet_tool_docs])
+        context = Context(entries=[self.example_entries.welcome_request, self.example_entries.write_num_guests],
+                          docs=[self.greet_tool.get_doc()])
         generation = self.default_model.get_generation(context, self.tool_allowed)
-        text, callmap = self.get_result(context=context, generation=generation)
+        text, callmap = self.get_action(context=context, generation=generation)
 
         self.assertTrue(text)
         self.assertTrue(len(callmap.values()) == 1)
