@@ -41,7 +41,7 @@ class OpenAITest(CredTest):
         self.text_only = Options.text_only()
         self.tool_allowed = Options()
 
-        self.default_model = OpenAIModel(name='gpt-4o', api_key=self.openai_apikey)
+        self.default_model = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.lineprinter = LinePrinter()
 
     def get_result(self, context : Context, generation : Generation) -> (str, ToolCallMap):

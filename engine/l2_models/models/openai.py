@@ -11,15 +11,17 @@ from engine.l2_models.generation import Generation, Chunk, Context, Options
 from engine.l2_models.models.llm import LLM
 from engine.l3_aos.tools import ToolCallMap, ToolCall
 
-
 # ---------------------------------------------------------
-
 
 class OpenAIModel(LLM):
     def __init__(self, name : str, api_key : str):
         super().__init__(name=name)
         self.openai_api_key : str = api_key
         self.client : OpenAI = OpenAI(api_key=api_key)
+
+    @classmethod
+    def default_model(cls, api_key : str) -> OpenAIModel:
+        return cls(name='gpt-4o', api_key=api_key)
 
     def get_generation(self, context : Context, options: Options) -> Generation:
         for entry in context.entries:
