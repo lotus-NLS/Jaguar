@@ -16,8 +16,8 @@ class BaseTest(Unittest):
         cls.empty_tool_call = ToolCall(json_str=MockToolCalls.empty_args_json)
 
     def setUp(self):
-        self.simple_tool = PrinterTool()
-        self.invalid_tool = InvalidTool()
+        self.simple_tool : Tool = PrinterTool()
+        self.invalid_tool : Tool = InvalidTool()
 
 
 class MockToolCalls:

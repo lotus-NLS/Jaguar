@@ -17,6 +17,7 @@ class ToolOutput(Loggable):
     call_args: Optional[dict] = None
 
     def __post_init__(self):
+        super().__init__()
         self.progress_msgs : list[ProgressMsg] = []
 
     @classmethod

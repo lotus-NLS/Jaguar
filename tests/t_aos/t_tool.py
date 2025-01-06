@@ -9,26 +9,26 @@ class TestExitStatus(BaseTest):
     def test_success(self):
         output = self.simple_tool.handle(self.valid_tool_call)
         self.assertIsInstance(output, ToolOutput)
-        self.assertEqual(output.exit_status, ExitStatus.SUCCESS)
+        self.assertEqual(output.get_exit_status(), ExitStatus.SUCCESS)
 
     def test_timeout(self):
         self.simple_tool.timeout = 0.000
         output = self.simple_tool.handle(self.valid_tool_call)
-        self.assertEqual(output.exit_status, ExitStatus.FAILED)
+        self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
 
     def test_exception(self):
         output = self.invalid_tool.handle(self.valid_tool_call)
-        self.assertEqual(output.exit_status, ExitStatus.EXCEPTION)
-        self.assertTrue(any(msg.progress_type == ProgressUpdate.EXCEPTION for msg in output.progress))
+        self.assertEqual(output.get_exit_status(), ExitStatus.EXCEPTION)
+        self.assertTrue(any(msg.progress_type == ProgressUpdate.EXCEPTION for msg in output.progress_msgs))
 
     def test_missing_required_arg(self):
         output = self.simple_tool.handle(self.empty_tool_call)
-        self.assertEqual(output.exit_status, ExitStatus.FAILED)
-        self.assertTrue(any(msg.progress_type == ProgressUpdate.FAILED for msg in output.progress))
+        self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
+        self.assertTrue(any(msg.progress_type == ProgressUpdate.FAILED for msg in output.progress_msgs))
 
     def test_invalid_arg(self):
         output = self.simple_tool.handle(self.invalid_tool_call)
-        self.assertEqual(output.exit_status, ExitStatus.FAILED)
+        self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
 
 
 class TestToolOutput(BaseTest):
