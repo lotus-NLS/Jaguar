@@ -72,10 +72,9 @@ class ToolArg:
 
 
 class ToolCall:
-    def __init__(self, name : str = '', json_str : str = '', index : int = 0):
+    def __init__(self, name : str = '', json_str : str = ''):
         self.name : str = name if name else ''
         self.json_str : str = json_str if json_str else ''
-        self.index : int = index
 
     def add(self, partial_call : ToolCall):
         self.name += partial_call.name
@@ -101,8 +100,8 @@ class ToolCall:
         return cls(json_str=json_str)
 
 
-class Actions(dict[int, ToolCall]):
-    def add(self, new : Actions):
+class ToolCallMap(dict[int, ToolCall]):
+    def add(self, new : ToolCallMap):
         for index, call in new.items():
             if not index in self:
                 self[index] = call

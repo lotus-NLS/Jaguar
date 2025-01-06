@@ -8,7 +8,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 from api import Entry
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import Actions, ToolDoc
+from engine.l3_aos.tools import ToolCallMap, ToolDoc
 
 
 # ---------------------------------------------------------
@@ -19,7 +19,7 @@ class Generation:
         self.chunk_type : type[Chunk] = chunk_type
         self.is_done : bool = False
         self.text_content : str = ''
-        self.actions = Actions()
+        self.actions = ToolCallMap()
 
     def _get_next_chunk(self, chunk_data : object):
         return self.chunk_type(data=chunk_data)
@@ -56,7 +56,7 @@ class Generation:
     # ---------------------------------------------------------
     # get
 
-    def get_actions(self) -> Actions:
+    def get_actions(self) -> ToolCallMap:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
         return self.actions
@@ -82,7 +82,7 @@ class Chunk:
         pass
 
     @abstractmethod
-    def get_call_map(self) -> Actions:
+    def get_call_map(self) -> ToolCallMap:
         pass
 
 

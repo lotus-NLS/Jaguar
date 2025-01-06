@@ -9,7 +9,7 @@ from openai import Stream
 from api import Entry, APIType
 from engine.l2_models.generation import Generation, Chunk, Context, Options
 from engine.l2_models.models.llm import LLM
-from engine.l3_aos.tools import Actions, ToolCall
+from engine.l3_aos.tools import ToolCallMap, ToolCall
 
 # ---------------------------------------------------------
 
@@ -75,12 +75,12 @@ class OpenAIChunk(Chunk):
         return finish_reason_present
 
 
-    def get_call_map(self) -> Actions:
+    def get_call_map(self) -> ToolCallMap:
         tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
         if not tool_calls:
-            return Actions()
+            return ToolCallMap()
 
-        call_map : Actions = Actions()
+        call_map : ToolCallMap = ToolCallMap()
         for openai_tool_call in tool_calls:
             index = openai_tool_call.index
             call = call_map.get(index, ToolCall())
