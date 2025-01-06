@@ -56,11 +56,19 @@ class Agent(Loggable):
             raise e
         return pipe
 
+    def get_context(self) -> Context:
+        context = Context(entries=[self._get_system_prompt()])
+        context += Context.from_aos(aos=self.aos)
+        context += Context(entries=self.memory)
+
+        return context
+
     def write(self, generation : Generation, pipe : TextPipe):
         for chunk in generation:
             pipe.put(chunk.get_text())
         self.memory.append(Entry.agent(msg=generation.get_text()))
         pipe.stop()
+
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
@@ -82,13 +90,6 @@ class Agent(Loggable):
 
     # ---------------------------------------------------
     # context
-
-    def get_context(self) -> Context:
-        context = Context(entries=[self._get_system_prompt()])
-        context += Context.from_aos(aos=self.aos)
-        context += Context(entries=self.memory)
-
-        return context
 
     def _get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.get_str()}\n'
