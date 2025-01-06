@@ -15,7 +15,7 @@ class Task:
 
     @classmethod
     def make_default(cls, msg : str):
-        return cls(new_entries=[Entry.as_user(msg=msg)])
+        return cls(new_entries=[Entry.user(msg=msg)])
 
     def get_options(self) -> Options:
         call_options = CallOptions(call_allowed=True, required_tool_name=self.selected_tool)

@@ -4,7 +4,8 @@ from typing import Optional, Iterator
 from dataclasses import dataclass, field
 from abc import abstractmethod
 from api import Entry
-from engine.l4_tools import ToolCallMap, ToolDoc
+from engine.l3_os.tools import ToolCallMap, ToolDoc
+
 
 # ---------------------------------------------------------
 

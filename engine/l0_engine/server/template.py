@@ -52,7 +52,7 @@ class Server:
     async def respond(self, request: LotusRequest) -> SafeStream:
         if request.img:
             raise NotImplementedError
-        entry = [Entry.as_user(msg=request.msg)]
+        entry = [Entry.user(msg=request.msg)]
         task = Task(new_entries=entry)
 
         response = self.handler.handle(task=task)

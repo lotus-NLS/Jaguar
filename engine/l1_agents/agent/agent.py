@@ -52,7 +52,7 @@ class Agent(Loggable):
     def process(self, generation : Generation, pipe : TextPipe, with_report : bool = True):
         for chunk in generation:
             pipe.put(chunk.get_text())
-        response_entry = Entry.as_agent(msg=generation.get_text())
+        response_entry = Entry.agent(msg=generation.get_text())
         self.memory.append(response_entry)
 
         call_map = generation.get_call_map()
@@ -70,7 +70,7 @@ class Agent(Loggable):
     @classmethod
     def get_feedback_request(cls) -> Entry:
         log_msg = '##Automatic message: Provide the user with an update'
-        return Entry.as_user(msg=log_msg)
+        return Entry.user(msg=log_msg)
 
     # ---------------------------------------------------
     # context
@@ -90,4 +90,4 @@ class Agent(Loggable):
             system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'
         system_msg += (f'The workspace has to be opened first in order for you to make use of it. '
                        f'The outlined functionalities will only then become available')
-        return Entry.as_system(msg=system_msg)
+        return Entry.system(msg=system_msg)

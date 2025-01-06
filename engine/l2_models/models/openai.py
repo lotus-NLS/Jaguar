@@ -1,18 +1,64 @@
 from __future__ import annotations
 
-import openai
+from openai import OpenAI
 from func_timeout import func_timeout
 from typing import Optional
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 from openai import Stream
 
 from api import Entry, APIType
-from engine.l4_tools import ToolCall, ToolCallMap
-from engine.l5_settings import LotusSettings
-from engine.l2_models.generation import LLM, ModelInfo
+from engine.l2_models.generation import LLM, ModelCard
 from engine.l2_models.generation import Generation, Chunk, Context, Options
+from engine.l3_os.tools import ToolCallMap, ToolCall
+
 
 # ---------------------------------------------------------
+
+
+class OpenAIModel(LLM):
+    def __init__(self, name : str, api_key : str):
+        super().__init__(name=name)
+        self.openai_api_key : str = api_key
+        self.client : OpenAI = OpenAI(api_key=api_key)
+
+    def get_generation(self, context : Context, options: Options) -> Generation:
+        for entry in context.entries:
+            if not isinstance(entry, Entry):
+                raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
+
+        self.log(f'Creating generation request')
+        openai_response = self.get_response(context=context, options=options)
+        self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
+
+        return Generation(generator=openai_response, chunk_type=OpenAIChunk)
+
+    def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
+        args_dict = {
+            'model': self.get_name(),
+            'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
+            'temperature': options.temp,
+            'stream' : True
+        }
+
+        tool_options = options.call_options
+        if tool_options.call_allowed and context.docs and self.supports_tool_calls():
+            args_dict['tools'] = context.docs
+            args_dict['tool_choice'] = tool_options.get_openai_syntax()
+
+        if not options.max_tokens is None:
+            args_dict['max_tokens'] = options.max_tokens
+
+        def send_request():
+            return self.client.chat.completions.create(**args_dict)
+        openai_stream = func_timeout(func=send_request,timeout=10)
+        return openai_stream
+
+    def supports_vision(self) -> bool:
+        raise NotImplementedError
+
+    def supports_tool_calls(self) -> bool:
+        raise NotImplementedError
+
 
 class OpenAIChunk(Chunk):
     def __init__(self, data : ChatCompletionChunk):
@@ -50,57 +96,4 @@ class OpenAIChunk(Chunk):
                 call_map[index] = call
 
         return call_map
-
-
-
-class OpenAIModel(LLM):
-    def get_generation(self, context : Context, options: Options) -> Generation:
-        for entry in context.entries:
-            if not isinstance(entry, Entry):
-                raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
-
-        self.log(f'Creating generation request')
-        openai_response = self.get_response(context=context, options=options)
-        self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
-
-        return Generation(generator=openai_response, chunk_type=OpenAIChunk)
-
-
-    def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
-        args_dict = {
-            'model': self.get_model_name(),
-            'messages': [entry.as_dict(api_type=APIType.OPENAI, with_vision=self.supports_vision()) for entry in context.entries],
-            'temperature': options.temp,
-            'stream' : True
-        }
-
-        tool_options = options.call_options
-        if tool_options.call_allowed and context.docs and self.supports_tool_calls():
-            args_dict['tools'] = context.docs
-            args_dict['tool_choice'] = tool_options.get_openai_syntax()
-
-        if not options.max_tokens is None:
-            args_dict['max_tokens'] = options.max_tokens
-
-        openai.api_key = LotusSettings().get_openai_apikey()
-        def send_request():
-            return openai.chat.completions.create(**args_dict)
-        openai_stream = func_timeout(func=send_request,timeout=10)
-        return openai_stream
-
-    @classmethod
-    def get_gpt4(cls):
-        return cls(model_info=ModelInfo(name='gpt-4', supports_vision=False))
-
-    @classmethod
-    def get_gpt4_turbo(cls):
-        return cls(model_info=ModelInfo(name='gpt-4-turbo-preview', supports_vision=False))
-
-    @classmethod
-    def get_gpt4V(cls):
-        return cls(model_info=ModelInfo(name='gpt-4-vision-preview', supports_vision=True, supports_tools=False))
-
-    @classmethod
-    def get_gpt35(cls):
-        return cls(model_info=ModelInfo(name='gpt-3.5-turbo', supports_vision=False))
 

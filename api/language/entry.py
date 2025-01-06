@@ -16,7 +16,6 @@ class Entry:
     name : Optional[str] = None
     image: Optional[PILImage] = None
 
-
     def __post_init__(self):
         if not self.name and self.role == Role.TOOL:
             raise ValueError('Tool must have a name')
@@ -31,31 +30,31 @@ class Entry:
             self.image = new_img
         return self
 
-    def add_msg(self, msg : str):
+    def add_text(self, msg : str):
         self.msg += msg
 
     @classmethod
-    def as_user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> 'Entry':
+    def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:
         return cls(role=Role.USER, name=name, msg=msg, image=image)
 
     @classmethod
-    def as_system(cls, msg: str, image: Optional[PILImage] = None) -> 'Entry':
+    def system(cls, msg: str, image: Optional[PILImage] = None) -> Entry:
         return cls(role=Role.SYSTEM, name=None, msg=msg, image=image)
 
     @classmethod
-    def as_agent(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> 'Entry':
+    def agent(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:
         return cls(role=Role.AGENT, name=name, msg=msg, image=image)
 
     @classmethod
-    def as_tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> 'Entry':
+    def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Entry:
         return cls(role=Role.TOOL, name=name, msg=msg, image=image)
 
     # ----------------------------------------------------
     # view
 
-    def as_dict(self, api_type: APIType, with_vision: bool = True) -> dict:
+    def as_dict(self, api_type: APIType) -> dict:
         if api_type == APIType.OPENAI:
-            return self.as_openai_dict(with_vision=with_vision)
+            return self.as_openai_dict()
         else:
             raise ValueError(f'API type {api_type} not supported')
 
@@ -80,33 +79,33 @@ class Entry:
     # ----------------------------------------------------
     # get
 
-    def as_openai_dict(self, with_vision : bool) -> dict:
+    def as_openai_dict(self) -> dict:
         data = {'role': self.role.value}
         if self.role == Role.TOOL:
             data['name'] = self.name if self.name else 'unnamed'
 
-        if not self.image or not with_vision:
+        if not self.image:
             content = self.msg
         else:
-            img_fmt = self.image.format
-            base64_image = self.get_image_as_base64()
             text = {
                 "type": "text",
                 "text": f"{self.msg}"
             }
             image = {
                 "type": "image_url",
-                "image_url": {"url": f"data:image/{img_fmt};base64,{base64_image}"}
+                "image_url": {"url": f"data:image/{self.image.format};base64,{self.get_image_as_base64()}"}
             }
             content = [text, image]
 
         data['content'] = content
         return data
 
+
 class APIType(Enum):
     OPENAI = 'OPENAI'
     GOOGLE = 'GOOGLE'
     ANTHROPIC = 'ANTHROPIC'
+
 
 class Role(Enum):
     TOOL = 'function'

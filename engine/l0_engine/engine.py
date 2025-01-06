@@ -13,9 +13,9 @@ from .users.developer import DevUser
 
 
 class LotusEngine(Loggable):
-    def __init__(self, local_credentials : bool = True):
+    def __init__(self, use_local_credentials : bool = True):
         super().__init__()
-        self.credentials = LotusCredentials(use_local=local_credentials)
+        self.credentials = LotusCredentials(use_local=use_local_credentials)
         self.handler: Agent = Agent()
         self.engine_io: Server = DevServer(handler=self.handler)
 

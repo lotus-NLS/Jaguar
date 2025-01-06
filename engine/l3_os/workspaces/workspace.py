@@ -60,7 +60,7 @@ class Workspace(Loggable):
         msg += self.get_text()
         msg += big_seperator(f'')
 
-        return  Entry.as_tool(name=self.get_name(), msg=msg, image = self.get_image())
+        return  Entry.tool(name=self.get_name(), msg=msg, image = self.get_image())
 
 
     @classmethod

@@ -66,7 +66,7 @@ class ToolOutput(Loggable):
 
 
     def as_entry(self) -> Entry:
-        return Entry.as_tool(msg=self.get_report(), name =self.tool_name)
+        return Entry.tool(msg=self.get_report(), name =self.tool_name)
 
     @classmethod
     def not_found(cls, name : str):

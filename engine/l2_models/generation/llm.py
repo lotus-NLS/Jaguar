@@ -12,27 +12,14 @@ from dataclasses import dataclass
 
 # ---------------------------------------------------------
 
-@dataclass
-class ModelInfo:
-    name : str
-    supports_vision : bool
-    supports_tools : bool = True
-
-
 class LLM(Loggable):
-    def __init__(self, model_info: ModelInfo):
+    def __init__(self, name : str):
         super().__init__()
-        self.model_type : ModelInfo = model_info
-        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self.get_model_name()))
+        self._name : str = name
+        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
 
-    def get_model_name(self) -> str:
-        return self.model_type.name
-
-    def supports_vision(self) -> bool:
-        return self.model_type.supports_vision
-
-    def supports_tool_calls(self) -> bool:
-        return self.model_type.supports_tools
+    def get_name(self) -> str:
+        return self._name
 
     @abstractmethod
     def get_generation(self, context : Context, options: Options) -> Generation:
