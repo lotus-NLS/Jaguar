@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import json
-from typing import Any
-
-from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
+from func_timeout import func_timeout, FunctionTimedOut
+
 from holytools.logging import LoggerFactory
-from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
 from .input import ToolCall, ToolArg
+from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
+
 
 # ---------------------------------------------------------
 
@@ -63,6 +63,10 @@ class Tool:
     def do(self):
         pass
 
+    @abstractmethod
+    def get_desc(self) -> str:
+        pass
+
     # ---------------------------------------------------
     # Get
 
@@ -73,26 +77,20 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-    @abstractmethod
-    def get_desc(self) -> str:
-        pass
-
     def get_args(self) -> list[ToolArg]:
         return [attr for attr in self.__dict__.values() if isinstance(attr, ToolArg)]
 
 
-class ToolDoc(dict[str, Any]):
+class ToolDoc(dict):
     @classmethod
     def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
-        required_arg_names = [arg.name for arg in args if not arg.is_optional]
-        arg_docs = {arg.name: arg.get_json_doc() for arg in args}
         function_doc = {
             'name': name,
             'description': desc,
             'parameters': {
                 'type': 'object',
-                'properties': arg_docs,
-                'required': required_arg_names
+                'properties': {arg.name: arg.get_json_doc() for arg in args},
+                'required': [arg.name for arg in args if not arg.is_optional]
             },
         }
 
