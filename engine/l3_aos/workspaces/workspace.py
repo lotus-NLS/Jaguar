@@ -91,6 +91,23 @@ class Workspace(Loggable):
         return [action.get_doc() for action in self.get_actions()]
 
 
+class Action(Tool, ABC):
+    def __init__(self, workspace: Workspace, call_timeout : float = 20):
+        super().__init__(call_timeout=call_timeout)
+        self.workspace : Workspace = workspace
+
+    @abstractmethod
+    def do(self):
+        pass
+
+    @abstractmethod
+    def get_desc(self) -> str:
+        pass
+
+    def _set_args(self, tool_call : ToolCall):
+        super()._set_args(tool_call=tool_call)
+
+
 class ActionFactory(Loggable):
     def __init__(self, workspace : Workspace):
         super().__init__()
@@ -132,18 +149,4 @@ class ActionFactory(Loggable):
         return NewAction()
 
 
-class Action(Tool, ABC):
-    def __init__(self, workspace: Workspace, call_timeout : float = 20):
-        super().__init__(call_timeout=call_timeout)
-        self.workspace : Workspace = workspace
 
-    @abstractmethod
-    def do(self):
-        pass
-
-    @abstractmethod
-    def get_desc(self) -> str:
-        pass
-
-    def _set_args(self, tool_call : ToolCall):
-        super()._set_args(tool_call=tool_call)
