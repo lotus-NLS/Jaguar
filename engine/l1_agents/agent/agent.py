@@ -7,7 +7,7 @@ from func_timeout import FunctionTimedOut
 from api import Entry, TextPipe
 from engine.l1_agents.protocol import Identity, Task
 from engine.l2_models import Context, Generation
-from engine.l2_models.models.llm import LLM
+from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput
 from holytools.logging import LogLevel, Loggable
@@ -57,7 +57,7 @@ class Agent(Loggable):
         return pipe
 
     def get_context(self) -> Context:
-        context = Context(entries=[self._get_system_prompt()])
+        context = Context(entries=[self.get_system_prompt()])
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
@@ -91,7 +91,7 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # context
 
-    def _get_system_prompt(self) -> Entry:
+    def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.get_str()}\n'
         system_msg += f'Available workspaces: \n'
         for workspace in self.aos.get_workspaces():

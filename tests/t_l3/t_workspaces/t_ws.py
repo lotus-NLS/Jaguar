@@ -1,6 +1,6 @@
 from typing import Optional
 
-from engine.l3_aos.tools import ToolDoc, ToolCall
+from engine.l3_aos.tools import ToolDoc, ToolCall, Tool
 from engine.l3_aos.workspace import Workspace
 from holytools.devtools import Unittest
 from PIL.Image import Image as PILImage
@@ -33,7 +33,7 @@ class TestActionProperties(WorkspaceTest):
     def test_action_type(self):
         actions = self.workspace.get_actions()
         for action in actions:
-            self.assertIsInstance(action, ToolCall)
+            self.assertIsInstance(action, Tool)
 
     def test_num_actions(self):
         self.workspace.open_action.do()
@@ -47,7 +47,7 @@ class TestActionExectuion(WorkspaceTest):
     def test_tool_execution(self):
         self.workspace.open_action.do()
         actions = self.workspace.get_actions()
-        actions_map : dict[str, ToolCall] = {action.get_name() : action for action in actions}
+        actions_map : dict[str, Tool] = {action.get_name() : action for action in actions}
 
         add, reset = None, None
         for key, value in actions_map.items():

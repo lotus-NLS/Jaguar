@@ -1,13 +1,16 @@
 from __future__ import annotations
-from abc import abstractmethod, ABC
-from PIL.Image import Image as PILImage
-from api import Entry
-from typing import Optional, Callable, Any
-import inspect
 
+import inspect
+from abc import abstractmethod, ABC
+from typing import Optional, Callable
+
+from PIL.Image import Image as PILImage
+
+from api import Entry
 from engine.l3_aos.tools import ToolDoc, ToolArg, Tool, ToolCall
-from holytools.logging import Loggable
 from holytools.devtools import ModuleInspector
+from holytools.logging import Loggable
+
 
 # ---------------------------------------------------------
 
@@ -16,24 +19,24 @@ class Workspace(Loggable):
         super().__init__()
         self.is_active : bool = False
         self.action_factory = WorkspaceToolFactory(workspace=self)
-        self.workspace_actions : list[WorkspaceTool] = self.create_workspace_actions()
-        self.open_action : WorkspaceTool = self.create_open_action()
-        self.close_action : WorkspaceTool = self.create_close_action()
+        self.workspace_actions : list[WorkspaceAction] = self.create_workspace_actions()
+        self.open_action : WorkspaceAction = self.create_open_action()
+        self.close_action : WorkspaceAction = self.create_close_tool()
 
-    def create_workspace_actions(self) -> list[WorkspaceTool]:
+    def create_workspace_actions(self) -> list[WorkspaceAction]:
         cls_mthds =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False, public_only=True)
         excluded_names = [func.__name__ for func in ModuleInspector.get_methods(obj=Workspace)]
         target_methods = [mthd for mthd in cls_mthds if not mthd.__name__ in excluded_names]
         actions = self.action_factory.create_all(target_methods=target_methods)
         return actions
 
-    def create_open_action(self) -> WorkspaceTool:
+    def create_open_action(self) -> WorkspaceAction:
         def set_active():
             self.is_active = True
         func = self.__class__.open
         return self.action_factory.create_action(mthd=func, hook=set_active)
 
-    def create_close_action(self) -> WorkspaceTool:
+    def create_close_tool(self) -> WorkspaceAction:
         def set_inactive():
             self.is_active = False
         func = self.__class__.close
@@ -82,12 +85,12 @@ class Workspace(Loggable):
 
     # ---------------------------------------------------
 
-    def get_actions(self):
+    def get_actions(self) -> list[WorkspaceAction]:
         while_open = self.workspace_actions + [self.close_action]
         while_closed = [self.open_action]
         return while_open if self.is_active else while_closed
 
-    def get_docs(self) -> list[ToolDoc]:
+    def get_action_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]
 
 
@@ -96,10 +99,10 @@ class WorkspaceToolFactory(Loggable):
         super().__init__()
         self.workspace : Workspace =  workspace
 
-    def create_all(self, target_methods : list[Callable]) -> list[WorkspaceTool]:
+    def create_all(self, target_methods : list[Callable]) -> list[WorkspaceAction]:
         return [self.create_action(mthd=method) for method in target_methods]
 
-    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> WorkspaceTool:
+    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> WorkspaceAction:
         if inspect.ismethod(mthd):
             raise TypeError(f'{WorkspaceToolFactory.create_action.__name__} only accepts unbound methods;'
                             f'Method \"{mthd.__name__}\" is bound')
@@ -108,7 +111,7 @@ class WorkspaceToolFactory(Loggable):
         conditional_hook = lambda: hook() if hook else None
         docstring = mthd.__doc__
 
-        class NewAction(WorkspaceTool):
+        class NewAction(WorkspaceAction):
             def __init__(self):
                 super().__init__(workspace=workspace)
                 args = ModuleInspector.get_args(func=mthd)
@@ -132,7 +135,7 @@ class WorkspaceToolFactory(Loggable):
         return NewAction()
 
 
-class WorkspaceTool(Tool, ABC):
+class WorkspaceAction(Tool, ABC):
     def __init__(self, workspace: Workspace, call_timeout : float = 20):
         super().__init__(call_timeout=call_timeout)
         self.workspace : Workspace = workspace

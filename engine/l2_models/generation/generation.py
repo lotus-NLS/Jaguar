@@ -103,7 +103,7 @@ class Context:
                 aos.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
             except BaseException as e:
                 aos.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
-        docs = aos.get_docs()
+        docs = aos.get_action_docs()
         return cls(entries=entries, docs=docs)
 
     def add_entry(self, entry : Entry):
