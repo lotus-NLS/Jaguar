@@ -1,10 +1,9 @@
 from enum import Enum
 
+from engine.l3_os.tools import ToolArg
 from holytools.devtools import Unittest, ModuleInspector
 
-from engine.l4_tools import ToolArg
-from tests.spoofs import ToolArgMethods, MockChoice
-
+# ----------------------------------------------------------
 
 class TestToolArg(Unittest):
     def setUp(self):
@@ -51,5 +50,44 @@ class TestToolArg(Unittest):
         self.assertTrue(len(args) == 0)
 
 
+
+class MockChoice(Enum):
+    choiceOne = 'choiceOne'
+    choiceTwo = 'choiceTwo'
+
+
+class Plant:
+    pass
+
+
+class ToolArgMethods:
+    @staticmethod
+    def valid_type_func(this : str, other : int):
+        print(f'this, other = {this}, {other}')
+
+    @staticmethod
+    def invalid_type_func(plant : Plant):
+        pass
+
+    @staticmethod
+    def enum_type_func(choice : MockChoice):
+        print(f'I decided on {choice}')
+
+    @staticmethod
+    def default_val_func(num : int = 200):
+        print(f'The number is {num}')
+
+    @staticmethod
+    def unannotated(num, the_str):
+        pass
+
+    @staticmethod
+    def no_args_func():
+        print(f'Hello world')
+
+
 if __name__ == "__main__":
     TestToolArg.execute_all()
+
+
+

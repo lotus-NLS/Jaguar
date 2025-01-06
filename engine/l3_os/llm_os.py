@@ -1,10 +1,10 @@
 from __future__ import annotations
-from holytools.logging import Loggable, LogLevel
 
 from engine.l3_os.tools import Tool, ToolCallMap, ToolDoc, ToolOutput
-from engine.l2_models import Context
 from engine.l3_os.workspaces import Workspace
-from func_timeout import func_timeout, FunctionTimedOut
+from holytools.logging import Loggable, LogLevel
+
+
 # ---------------------------------------------------------
 
 class OS(Loggable):

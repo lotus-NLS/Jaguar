@@ -1,22 +1,11 @@
-from engine.l4_tools import ToolCall
-from engine.l4_tools.tool_output import MissingArgs, ExitStatus, Progress, ToolOutput
-from holytools.devtools import Unittest
-from tests.spoofs import SpoofPrinter, SpoofErrorRaiser, SpoofToolCall
+from engine.l3_os.tools import ToolOutput
+from engine.l3_os.tools.tool_output import ExitStatus, Progress, MissingArgs
+from tests.l3.tooltest import BaseTest
 
 
-class ToolTest(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        cls.valid_tool_call = ToolCall(json_str=SpoofToolCall.valid_printer_args)
-        cls.invalid_tool_call = ToolCall(json_str=SpoofToolCall.invalid_printer_args)
-        cls.empty_tool_call = ToolCall(json_str=SpoofToolCall.empty_args_json)
+# -----------------------------------------------------
 
-    def setUp(self):
-        self.simple_tool = SpoofPrinter()
-        self.invalid_tool = SpoofErrorRaiser()
-
-
-class TestExitStatus(ToolTest):
+class TestExitStatus(BaseTest):
     def test_success(self):
         output = self.simple_tool.handle(self.valid_tool_call)
         self.assertIsInstance(output, ToolOutput)
@@ -42,7 +31,7 @@ class TestExitStatus(ToolTest):
         self.assertEqual(output.exit_status, ExitStatus.FAILED)
 
 
-class TestToolOutput(ToolTest):
+class TestToolOutput(BaseTest):
     def test_output_value(self):
         output = self.simple_tool.handle(self.valid_tool_call)
         self.assertIn("value", output.value)
@@ -50,14 +39,14 @@ class TestToolOutput(ToolTest):
     def test_report_success(self):
         output = self.simple_tool.handle(self.valid_tool_call)
         report = output.get_report()
-        self.assertIn(SpoofPrinter.get_name(), report)
+        self.assertIn(self.simple_tool.get_name(), report)
         self.assertIn(ExitStatus.SUCCESS.value, report)
 
     def test_report_exception(self):
         output = self.invalid_tool.handle(self.valid_tool_call)
         report = output.get_report()
         error_msgs = output.get_error_msgs()
-        self.assertIn(SpoofErrorRaiser.get_name(), report)
+        self.assertIn(self.invalid_tool.get_name(), report)
         self.assertIn(ExitStatus.EXCEPTION.value, report)
         self.assertTrue(any(msg for msg in error_msgs))
 
@@ -65,6 +54,7 @@ class TestToolOutput(ToolTest):
         output = self.simple_tool.handle(self.invalid_tool_call)
         error_msgs = output.get_error_msgs()
         self.assertTrue(any(f'{MissingArgs.__name__}' in msg for msg in error_msgs))
+
 
 if __name__ == "__main__":
     TestToolOutput.execute_all()
