@@ -1,6 +1,7 @@
 import time
 
 from holytools.logging import Loggable
+from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
 from engine.l2_models import OpenAIModel
 from engine.l1_agents import Agent
 
@@ -8,11 +9,8 @@ from .server import Server
 from .server import DevServer
 from .settings import LotusCredentials
 from .users.developer import DevUser
-from ..l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
-
 
 # ---------------------------------------------------------
-
 
 class LotusEngine(Loggable):
     def __init__(self, use_local_credentials : bool = True):
@@ -33,7 +31,6 @@ class LotusEngine(Loggable):
         else:
             raise NotImplementedError('Webapp not yet implemented')
         self.stop()
-
 
     def _launch_console(self):
         dev_user = DevUser(engineIO=self.engine_io)

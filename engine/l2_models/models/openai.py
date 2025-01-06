@@ -41,7 +41,7 @@ class OpenAIModel(LLM):
         }
 
         tool_options = options.call_options
-        if tool_options.call_allowed and context.docs and self.supports_tool_calls():
+        if tool_options.call_allowed and context.docs:
             args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
 
@@ -52,12 +52,6 @@ class OpenAIModel(LLM):
             return self.client.chat.completions.create(**args_dict)
         openai_stream = func_timeout(func=send_request,timeout=10)
         return openai_stream
-
-    def supports_vision(self) -> bool:
-        raise NotImplementedError
-
-    def supports_tool_calls(self) -> bool:
-        raise NotImplementedError
 
 
 class OpenAIChunk(Chunk):

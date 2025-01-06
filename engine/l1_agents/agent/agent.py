@@ -38,8 +38,9 @@ class Agent(Loggable):
             self.log(f'Attempt to retrieve generation timed out: {e}', level=LogLevel.WARNING)
             pipe = TextPipe.failed()
         except BaseException as e:
-            self.log(f'Error in getting generation: {e}', level=LogLevel.ERROR)
+            self.log(f'Error in getting generation: {e.__repr__()}', level=LogLevel.ERROR)
             pipe = TextPipe.failed()
+            raise e
         return pipe
 
 
