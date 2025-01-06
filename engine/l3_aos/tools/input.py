@@ -5,6 +5,9 @@ from json_repair import repair_json
 from dataclasses import dataclass
 from enum import Enum
 from holytools.devtools import Argument
+
+
+
 # ---------------------------------------------------
 
 @dataclass
@@ -17,16 +20,16 @@ class ToolArg:
 
     def __post_init__(self):
         self.input : Optional[Any] = None
+        self.to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean", Enum: "string"}
         if self.dtype == bool:
             self.choices = ['0', '1']
 
         if not self.is_supported(self.dtype):
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {list(to_json_type.keys())}")
+                            f"Supported types are {list(self.to_json_type.keys())}")
 
-    @staticmethod
-    def is_supported(python_type : type) -> bool:
-        return not get_json_type(python_type) is None
+    def is_supported(self, python_type : type) -> bool:
+        return not self.get_json_type(python_type) is None
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
@@ -38,7 +41,7 @@ class ToolArg:
 
     def get_arg_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': get_json_type(python_type=str),
+            'type': self.get_json_type(python_type=str),
             'description': f'{self.desc}',
         }
 
@@ -66,9 +69,13 @@ class ToolArg:
             return True
         return self.input in self.choices
 
-
     def is_set(self) -> bool:
         return not self.get_value() is None
+
+    def get_json_type(self, python_type: type) -> Optional[str]:
+        base_type = Enum if issubclass(python_type, Enum) else python_type
+        json_type = self.to_json_type.get(base_type)
+        return json_type
 
 
 class ToolCall:
@@ -100,10 +107,3 @@ class ToolCall:
         return cls(json_str=json_str)
 
 
-
-def get_json_type(python_type: type) -> Optional[str]:
-    base_type = Enum if issubclass(python_type, Enum) else python_type
-    json_type = to_json_type.get(base_type)
-    return json_type
-
-to_json_type  : dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean",Enum : "string"}
