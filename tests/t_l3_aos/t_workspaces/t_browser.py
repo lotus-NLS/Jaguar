@@ -1,13 +1,15 @@
-from engine.l0_engine.settings import LotusCredentials
-from engine.l3_aos import Browser
-from holytools.devtools import Unittest
 from pyscrape import SearchEngine, SearchResult
 
-class BrowserTest(Unittest):
+from engine.l3_aos import Browser
+from tests.credtest import CredTest
+
+# ----------------------------------------------------------------
+
+class BrowserTest(CredTest):
     def setUp(self):
         self.beaver_test = 'https://en.wikipedia.org/wiki/Beaver'
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'
-        self.browser = Browser()
+        self.browser = Browser(google_api_key=self.google_apikey, searchengine_id=self.searchengine_id)
 
     def test_beaver(self):
         self.browser.open(url=self.beaver_test)
@@ -24,13 +26,9 @@ class BrowserTest(Unittest):
         print(f'Lightning text =\n {lightning_text}')
 
 
-class SearchEngineTester(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        creds = LotusCredentials(use_local=True)
-        engine_id = creds.get_searchengine_id()
-        api_key = creds.get_google_apikey()
-        cls.search_engine = SearchEngine(searchengine_id=engine_id, google_key=api_key)
+class SearchEngineTests(CredTest):
+    def setUp(self):
+        self.search_engine = SearchEngine(searchengine_id=self.searchengine_id, google_key=self.google_apikey)
 
     def test_urls(self):
         urls = self.search_engine.get_urls(search_term='beavers')
@@ -45,5 +43,5 @@ class SearchEngineTester(Unittest):
 
 
 if __name__ == "__main__":
-    # BrowserTest.execute_all()
-    SearchEngineTester.execute_all()
+    BrowserTest.execute_all()
+    SearchEngineTests.execute_all()
