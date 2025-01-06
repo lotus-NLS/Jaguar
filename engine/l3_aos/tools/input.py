@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from holytools.devtools import Argument
 
-
+to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean", Enum: "string"}
 
 # ---------------------------------------------------
 
@@ -20,16 +20,12 @@ class ToolArg:
 
     def __post_init__(self):
         self.input : Optional[Any] = None
-        self.to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean", Enum: "string"}
         if self.dtype == bool:
             self.choices = ['0', '1']
 
-        if not self.is_supported(self.dtype):
+        if self.get_json_type(python_type=self.dtype) is None:
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {list(self.to_json_type.keys())}")
-
-    def is_supported(self, python_type : type) -> bool:
-        return not self.get_json_type(python_type) is None
+                            f"Supported types are {list(to_json_type.keys())}")
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
@@ -39,42 +35,42 @@ class ToolArg:
 
     # ---------------------------------------------------
 
-    def get_arg_json_doc(self) -> dict[str,str]:
-        arg_doc = {
-            'type': self.get_json_type(python_type=str),
-            'description': f'{self.desc}',
-        }
-
-        if not self.choices is None:
-            arg_doc['enum'] = self.choices
-
-        return arg_doc
-
     def get_value(self) -> Optional[Any]:
         val = self.input
-        if val is None:
-            return None
         try:
             if self.dtype is bool:
-                val = int(self.input)
+                val = int(val)
             if issubclass(self.dtype, Enum):
                 val =  self.dtype[val]
             val = self.dtype(val)
         except ValueError:
-            raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}.")
+            raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}, got '{self.input}'")
         return val
+
+    def is_set(self) -> bool:
+        return not self.input is None
 
     def input_is_valid(self) -> bool:
         if self.choices is None:
             return True
         return self.input in self.choices
 
-    def is_set(self) -> bool:
-        return not self.get_value() is None
+    # ---------------------------------------------------
 
-    def get_json_type(self, python_type: type) -> Optional[str]:
+    def get_json_doc(self) -> dict[str,str]:
+        arg_doc = {
+            'type': self.get_json_type(python_type=str),
+            'description': f'{self.desc}'
+        }
+
+        if not self.choices is None:
+            arg_doc['enum'] = self.choices
+        return arg_doc
+
+    @staticmethod
+    def get_json_type(python_type: type) -> Optional[str]:
         base_type = Enum if issubclass(python_type, Enum) else python_type
-        json_type = self.to_json_type.get(base_type)
+        json_type = to_json_type.get(base_type)
         return json_type
 
 

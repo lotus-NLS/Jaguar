@@ -85,7 +85,7 @@ class ToolDoc(dict[str, Any]):
     @classmethod
     def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
         required_arg_names = [arg.name for arg in args if not arg.is_optional]
-        arg_docs = {arg.name: arg.get_arg_json_doc() for arg in args}
+        arg_docs = {arg.name: arg.get_json_doc() for arg in args}
         function_doc = {
             'name': name,
             'description': desc,
