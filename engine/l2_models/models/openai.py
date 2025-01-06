@@ -7,9 +7,9 @@ from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceD
 from openai import Stream
 
 from api import Entry, APIType
-from engine.l2_models.generation import LLM, ModelCard
 from engine.l2_models.generation import Generation, Chunk, Context, Options
-from engine.l3_os.tools import ToolCallMap, ToolCall
+from engine.l2_models.models.llm import LLM
+from engine.l3_aos.tools import ToolCallMap, ToolCall
 
 
 # ---------------------------------------------------------

@@ -1,28 +1,27 @@
 from __future__ import annotations
 
 import threading
-from holytools.logging import LogLevel, Loggable
+
 from func_timeout import FunctionTimedOut
+
 from api import Entry, TextPipe
-from engine.l2_models import LLM, Context, Options, Generation
-from engine.l2_models import OpenAIModel
-from engine.l3_os import OS, Terminal, DocumentEditor, FileExplorer, Browser
 from engine.l1_agents.protocol import Identity, Task
+from engine.l2_models import Context, Options, Generation
+from engine.l2_models.models.llm import LLM
+from engine.l3_aos import AOS, Terminal, FileExplorer, Browser, TextEditor
+from holytools.logging import LogLevel, Loggable
 
 
 # ---------------------------------------------------------
 
 class Agent(Loggable):
-    def __init__(self, model : LLM = OpenAIModel.get_gpt4_turbo(), identity : Identity = Identity.GOTO()):
+    def __init__(self, model : LLM, aos : AOS, identity : Identity = Identity.GOTO()):
         super().__init__()
-        # context
-        self.identity : Identity = identity
-        self.memory: list[Entry] = []
-        # self.task_queue : TaskQueue[Task] = TaskQueue()
-
-        # processing
-        self.os : OS = OS(workspace_types=[DocumentEditor, Terminal, FileExplorer, Browser])
         self.model: LLM = model
+        self.aos : AOS = aos
+        self.identity : Identity = identity
+
+        self.memory: list[Entry] = []
 
     # ---------------------------------------------------
     # Main routine
@@ -57,7 +56,7 @@ class Agent(Loggable):
 
         call_map = generation.get_call_map()
         if not call_map.is_empty():
-            outputs = self.os.handle_calls(call_map=call_map)
+            outputs = self.aos.handle_calls(call_map=call_map)
             for out in outputs:
                 self.memory.append(out.as_entry())
             if with_report:
@@ -65,7 +64,6 @@ class Agent(Loggable):
                 feedback = self.model.get_text_generation(entries=entries)
                 self.process(generation=feedback, pipe=pipe)
         pipe.stop()
-
 
     @classmethod
     def get_feedback_request(cls) -> Entry:
@@ -78,7 +76,7 @@ class Agent(Loggable):
     def get_active_context(self) -> Context:
         context = Context()
         context.add_entry(self.get_system_prompt())
-        context += self.os.get_context()
+        context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
         return context
@@ -86,7 +84,7 @@ class Agent(Loggable):
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.get_str()}\n'
         system_msg += f'Available workspaces: \n'
-        for workspace in self.os.get_workspaces():
+        for workspace in self.aos.get_workspaces():
             system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'
         system_msg += (f'The workspace has to be opened first in order for you to make use of it. '
                        f'The outlined functionalities will only then become available')

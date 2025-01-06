@@ -4,7 +4,7 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 
 from .workspace import Workspace
-from engine.l3_os.tools import InvalidArgValue
+from ..tools import InvalidArgValue
 
 
 # ---------------------------------------------------------

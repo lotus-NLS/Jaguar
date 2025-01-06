@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from engine.l3_os.tools import Tool, ToolCallMap, ToolDoc, ToolOutput
-from engine.l3_os.workspaces import Workspace
+from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.tools import ToolCallMap, ToolOutput, Tool, ToolDoc
 from holytools.logging import Loggable, LogLevel
 
 
 # ---------------------------------------------------------
 
-class OS(Loggable):
-    def __init__(self, workspace_types : list[type[Workspace]]):
+class AOS(Loggable):
+    def __init__(self, workspaces : list[Workspace]):
         super().__init__()
-        self.workspace_map : dict[int, Workspace] = {j : workspace_type() for (j, workspace_type) in enumerate(workspace_types)}
+        self.workspace_map : dict[int, Workspace] = {j : w for (j, w) in enumerate(workspaces)}
 
     # ---------------------------------------------------
     # call updates

@@ -1,12 +1,14 @@
 import time
 
 from holytools.logging import Loggable
+from engine.l2_models import OpenAIModel
 from engine.l1_agents import Agent
 
 from .server import Server
 from .server import DevServer
 from .settings import LotusCredentials
 from .users.developer import DevUser
+from ..l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
 
 
 # ---------------------------------------------------------
@@ -15,10 +17,13 @@ from .users.developer import DevUser
 class LotusEngine(Loggable):
     def __init__(self, use_local_credentials : bool = True):
         super().__init__()
-        self.credentials = LotusCredentials(use_local=use_local_credentials)
-        self.handler: Agent = Agent()
-        self.engine_io: Server = DevServer(handler=self.handler)
+        creds = LotusCredentials(use_local=use_local_credentials)
 
+        model = OpenAIModel(name='gpt-4', api_key=creds.get_openai_apikey())
+        browser = Browser(google_api_key=creds.get_google_apikey(), searchengine_id=creds.get_searchengine_id())
+        aos: AOS = AOS(workspaces=[TextEditor(), Terminal(), FileExplorer(), browser])
+        self.handler: Agent = Agent(model=model, aos=aos)
+        self.engine_io: Server = DevServer(handler=self.handler)
 
     def launch(self, on_console : bool):
         self.log(f'Lotus started')

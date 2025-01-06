@@ -7,8 +7,8 @@ from abc import abstractmethod
 from func_timeout import func_timeout, FunctionTimedOut
 
 from api import Entry
-from engine.l3_os import OS
-from engine.l3_os.tools import ToolCallMap, ToolDoc
+from engine.l3_aos import AOS
+from engine.l3_aos.tools import ToolCallMap, ToolDoc
 
 
 # ---------------------------------------------------------
@@ -91,20 +91,20 @@ class Context:
     entries: list[Entry] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
-    @abstractmethod
-    def os_context(self, os : OS):
-        open_workspaces = [workspace for workspace in os.get_workspaces() if workspace.is_active]
+    @classmethod
+    def from_aos(cls, aos : AOS):
+        open_workspaces = [workspace for workspace in aos.get_workspaces() if workspace.is_active]
         entries = []
         for workspace in open_workspaces:
             try:
                 entry = func_timeout(func=workspace.get_entry, timeout=10)
                 entries.append(entry)
             except FunctionTimedOut:
-                os.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
+                aos.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
             except BaseException as e:
-                os.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
-        docs = os.get_docs()
-        return Context(entries=entries, docs=docs)
+                aos.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
+        docs = aos.get_docs()
+        return cls(entries=entries, docs=docs)
 
     def add_entry(self, entry : Entry):
         self.entries.append(entry)

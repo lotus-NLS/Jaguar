@@ -8,11 +8,9 @@ from holytools.fileIO import PlaintextFile
 
 from .workspace import Workspace
 
-
 # ---------------------------------------------------------
 
-
-class DocumentEditor(Workspace):
+class TextEditor(Workspace):
     def __init__(self):
         super().__init__()
         self.content : Optional[str] = None

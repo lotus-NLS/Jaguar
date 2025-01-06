@@ -1,5 +1,5 @@
 from engine.l0_engine.settings import LotusCredentials
-from engine.l3_os import Browser
+from engine.l3_aos import Browser
 from holytools.devtools import Unittest
 from pyscrape import SearchEngine, SearchResult
 

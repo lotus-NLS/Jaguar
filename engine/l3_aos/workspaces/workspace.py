@@ -5,9 +5,10 @@ from api import Entry
 from typing import Optional, Callable, Any
 import inspect
 
-from engine.l3_os.tools import ToolArg, ToolDoc, Tool, ToolCall
+from engine.l3_aos.tools import ToolDoc, ToolArg, Tool, ToolCall
 from holytools.logging import Loggable
 from holytools.devtools import ModuleInspector
+
 # ---------------------------------------------------------
 
 class Workspace(Loggable):
