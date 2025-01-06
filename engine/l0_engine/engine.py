@@ -17,7 +17,7 @@ class LotusEngine(Loggable):
         super().__init__()
         creds = LotusCredentials(use_local=use_local_credentials)
 
-        model = OpenAIModel(name='gpt-4', api_key=creds.get_openai_apikey())
+        model = OpenAIModel(name='gpt-4o', api_key=creds.get_openai_apikey())
         browser = Browser(google_api_key=creds.get_google_apikey(), searchengine_id=creds.get_searchengine_id())
         aos: AOS = AOS(workspaces=[TextEditor(), Terminal(), FileExplorer(), browser])
         self.handler: Agent = Agent(model=model, aos=aos)

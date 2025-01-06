@@ -6,7 +6,7 @@ from typing import Optional
 from engine.l2_models import Options, OpenAIModel, Context, Generation
 from engine.l3_aos.tools import ToolCallMap
 from tests.credtest import CredTest
-from tests.t_l2_models.l2_spoofs import MockEntries
+from tests.t_l2_models.l2_spoofs import MockEntries, MockToolDocs
 
 
 # ---------------------------------------------------------
@@ -36,8 +36,12 @@ class LinePrinter:
 class OpenAITest(CredTest):
     def setUp(self):
         self.mock_entries = MockEntries()
-        self.default_options = Options()
-        self.default_model = OpenAIModel(name='gpt-4', api_key=self.openai_apikey)
+        self.doc_spoof = MockToolDocs()
+
+        self.text_only = Options.text_only()
+        self.tool_allowed = Options()
+
+        self.default_model = OpenAIModel(name='gpt-4o', api_key=self.openai_apikey)
         self.lineprinter = LinePrinter()
 
     def get_result(self, context : Context, generation : Generation) -> (str, ToolCallMap):
