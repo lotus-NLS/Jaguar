@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from engine.l3_aos.tools import ToolCallMap, ToolOutput, Tool, ToolDoc
+from engine.l3_aos.tools import ToolOutput, Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import Loggable, LogLevel
 
@@ -15,7 +15,7 @@ class AOS(Loggable):
     # ---------------------------------------------------
     # call updates
 
-    def handle_actions(self, actions : ToolCallMap) -> list[ToolOutput]:
+    def handle_actions(self, actions : list[T]) -> list[ToolOutput]:
         tools_map = {tool.get_name() : tool for tool in self.get_tools()}
         outputs = []
         for tool_call in list(actions.values()):

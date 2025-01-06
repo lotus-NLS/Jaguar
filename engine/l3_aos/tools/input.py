@@ -100,26 +100,6 @@ class ToolCall:
         return cls(json_str=json_str)
 
 
-class ToolCallMap(dict[int, ToolCall]):
-    def add(self, new : ToolCallMap):
-        for index, call in new.items():
-            if not index in self:
-                self[index] = call
-            else:
-                self[index].add(partial_call=call)
-
-    def get_tool_calls(self) -> list[ToolCall]:
-        return list(self.values())
-
-    def print_info(self):
-        print(f'\n-> Generated tool calls')
-        for call in list(self.values()):
-            print(f'tool name: {call.name}')
-            print(call.get_args_dict())
-
-    def is_empty(self) -> bool:
-        return len(self) == 0
-
 
 def get_json_type(python_type: type) -> Optional[str]:
     base_type = Enum if issubclass(python_type, Enum) else python_type

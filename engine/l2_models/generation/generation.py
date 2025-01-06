@@ -8,8 +8,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 from api import Entry
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolCallMap, ToolDoc
-
+from engine.l3_aos.tools import ToolDoc, ToolCall
 
 # ---------------------------------------------------------
 
@@ -17,22 +16,16 @@ class Generation:
     def __init__(self, generator : Iterator, chunk_type : type[Chunk]):
         self.generator : Iterator = generator
         self.chunk_type : type[Chunk] = chunk_type
+
         self.is_done : bool = False
         self.text_content : str = ''
-        self.actions = ToolCallMap()
-
-    def _get_next_chunk(self, chunk_data : object):
-        return self.chunk_type(data=chunk_data)
-
-    def exhaust(self):
-        for _ in self:
-            pass
+        self.tool_call_map : dict[int, ToolCall] = {}
 
     def __iter__(self) -> Iterator[Chunk]:
         return self
 
     def __next__(self) -> Chunk:
-        chunk = self._get_next_chunk(chunk_data=self.generator.__next__())
+        chunk = self.chunk_type(data=self.generator.__next__())
         self.add_text(chunk)
         self.add_calls(chunk)
 
@@ -47,8 +40,12 @@ class Generation:
             self.text_content += text
 
     def add_calls(self, chunk : Chunk):
-        chunk_call_map = chunk.get_call_map()
-        self.actions.add(chunk_call_map)
+        multicall_chunk = chunk.get_call_map()
+        for index, call in multicall_chunk.items():
+            if not index in self:
+                self.tool_call_map[index] = call
+            else:
+                self.tool_call_map[index].add(partial_call=call)
 
     def stop(self):
         self.is_done = True
@@ -56,17 +53,21 @@ class Generation:
     # ---------------------------------------------------------
     # get
 
-    def get_actions(self) -> ToolCallMap:
+    def get_actions(self) -> list[ToolCall]:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
-        return self.actions
+        return list(self.tool_call_map.values())
 
     def get_text(self) -> str:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
         return self.text_content
 
-
+    def print_action_info(self):
+        print(f'\n-> Generated tool calls')
+        for call in self.get_actions():
+            print(f'tool name: {call.name}')
+            print(call.get_args_dict())
 
 class Chunk:
     def __init__(self, data : object):
@@ -76,13 +77,12 @@ class Chunk:
     def get_text(self) -> Optional[str]:
         pass
 
-
     @abstractmethod
     def is_final(self) -> bool:
         pass
 
     @abstractmethod
-    def get_call_map(self) -> ToolCallMap:
+    def get_call_map(self) -> dict[int, ToolCall]:
         pass
 
 

@@ -6,9 +6,9 @@ from func_timeout import FunctionTimedOut
 
 from api import Entry, TextPipe
 from engine.l1_agents.protocol import Identity, Task
-from engine.l2_models import Context, Options, Generation
+from engine.l2_models import Context, Generation
 from engine.l2_models.models.llm import LLM
-from engine.l3_aos import AOS, Terminal, FileExplorer, Browser, TextEditor
+from engine.l3_aos import AOS
 from holytools.logging import LogLevel, Loggable
 
 
@@ -63,10 +63,9 @@ class Agent(Loggable):
 
     def act(self, generation : Generation):
         actions = generation.get_actions()
-        if not actions.is_empty():
-            outputs = self.aos.handle_actions(actions=actions)
-            for out in outputs:
-                self.memory.append(out.as_entry())
+        outputs = self.aos.handle_actions(actions=actions)
+        for out in outputs:
+            self.memory.append(out.as_entry())
 
 
     # ---------------------------------------------------

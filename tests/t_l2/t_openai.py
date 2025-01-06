@@ -6,8 +6,6 @@ from tests.t_l2.base import OpenAITest
 
 # ---------------------------------------------------------
 
-
-
 class TestContextOpenAI(OpenAITest):
     def test_text_chunks(self):
         context = Context(entries=[self.example_entries.introduction],

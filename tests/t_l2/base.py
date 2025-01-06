@@ -2,11 +2,10 @@ import time
 from typing import Optional
 
 from api import Entry
-from engine.l3_aos.tools import Tool, ToolArg
+from engine.l3_aos.tools import Tool, ToolArg, ToolCall
 from holytools.fileIO import ImageFile, FileMock
 
 from engine.l2_models import Options, OpenAIModel, Context, Generation
-from engine.l3_aos.tools import ToolCallMap
 from tests.credtest import CredTest
 
 # --------------------------------------------------------------------------------
@@ -24,19 +23,16 @@ class OpenAITest(CredTest):
         self.default_model = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.textbox = TextBox()
 
-    def get_action(self, context : Context, generation : Generation) -> (str, ToolCallMap):
+    def get_action(self, context : Context, generation : Generation) -> (str, dict[int,ToolCall]):
         prompts_context = [entry.msg for entry in context.entries]
-        call_map : ToolCallMap = ToolCallMap()
+        call_map : dict = {}
 
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")
         for chunk in generation:
             self.textbox.add(chunk.get_text())
-            call_map.add(chunk.get_call_map())
-        print()
+        generation.print_action_info()
 
-        if call_map:
-            call_map.print_info()
         time.sleep(0.1)
 
         return self.textbox.total_text, call_map
