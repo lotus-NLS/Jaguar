@@ -9,6 +9,7 @@ from engine.l1_agents.protocol import Identity, Task
 from engine.l2_models import Context, Generation
 from engine.l2_models.models.llm import LLM
 from engine.l3_aos import AOS
+from engine.l3_aos.tools import ToolOutput
 from holytools.logging import LogLevel, Loggable
 
 
@@ -62,8 +63,19 @@ class Agent(Loggable):
         pipe.stop()
 
     def act(self, generation : Generation):
-        actions = generation.get_actions()
-        outputs = self.aos.handle_actions(actions=actions)
+        tool_calls = generation.get_tool_calls()
+        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
+        outputs = []
+        for call in tool_calls:
+            try:
+                tool = tools_map[call.name]
+                outputs += [tool.handle(tool_call=call)]
+            except KeyError:
+                self.log(f'No tool found with name {call.name}', level=LogLevel.ERROR)
+                outputs += [ToolOutput.not_found(name=call.name)]
+            except Exception as e:
+                outputs += [ToolOutput.failed(name=call.name, reason=e)]
+
         for out in outputs:
             self.memory.append(out.as_entry())
 

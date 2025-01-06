@@ -12,22 +12,6 @@ class AOS(Loggable):
         super().__init__()
         self.workspace_map : dict[int, Workspace] = {j : w for (j, w) in enumerate(workspaces)}
 
-    # ---------------------------------------------------
-    # call updates
-
-    def handle_actions(self, actions : list[T]) -> list[ToolOutput]:
-        tools_map = {tool.get_name() : tool for tool in self.get_tools()}
-        outputs = []
-        for tool_call in list(actions.values()):
-            try:
-                tool = tools_map[tool_call.name]
-                outputs += [tool.handle(tool_call=tool_call)]
-            except KeyError:
-                self.log(f'No tool found with name {tool_call.name}', level=LogLevel.ERROR)
-                outputs += [ToolOutput.not_found(name=tool_call.name)]
-            except Exception as e:
-                outputs += [ToolOutput.failed(name=tool_call.name, reason=e)]
-        return outputs
 
     # ---------------------------------------------------
     # get

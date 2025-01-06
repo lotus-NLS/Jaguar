@@ -53,7 +53,7 @@ class Generation:
     # ---------------------------------------------------------
     # get
 
-    def get_actions(self) -> list[ToolCall]:
+    def get_tool_calls(self) -> list[ToolCall]:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
         return list(self.tool_call_map.values())
@@ -65,7 +65,7 @@ class Generation:
 
     def print_action_info(self):
         print(f'\n-> Generated tool calls')
-        for call in self.get_actions():
+        for call in self.get_tool_calls():
             print(f'tool name: {call.name}')
             print(call.get_args_dict())
 
