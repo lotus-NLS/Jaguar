@@ -6,7 +6,7 @@ from engine.l3_aos.tools import Tool, ToolArg
 from holytools.fileIO import ImageFile, FileMock
 
 from engine.l2_models import Options, OpenAIModel, Context, Generation
-from engine.l3_aos.tools import ToolCallMap
+from engine.l3_aos.tools import Actions
 from tests.credtest import CredTest
 
 # --------------------------------------------------------------------------------
@@ -24,9 +24,9 @@ class OpenAITest(CredTest):
         self.default_model = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.textbox = TextBox()
 
-    def get_action(self, context : Context, generation : Generation) -> (str, ToolCallMap):
+    def get_action(self, context : Context, generation : Generation) -> (str, Actions):
         prompts_context = [entry.msg for entry in context.entries]
-        call_map : ToolCallMap = ToolCallMap()
+        call_map : Actions = Actions()
 
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")

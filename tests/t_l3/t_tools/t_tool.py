@@ -1,5 +1,5 @@
 from engine.l3_aos.tools import ToolOutput
-from engine.l3_aos.tools.tool_output import ExitStatus, MissingArgs, ProgressUpdate
+from engine.l3_aos.tools.output import ExitStatus, MissingArgs, ProgressUpdate
 from tests.t_l3.t_tools.tooltest import BaseTest
 
 

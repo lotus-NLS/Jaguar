@@ -101,9 +101,8 @@ class ToolCall:
         return cls(json_str=json_str)
 
 
-
-class ToolCallMap(dict[int, ToolCall]):
-    def add(self, new : ToolCallMap):
+class Actions(dict[int, ToolCall]):
+    def add(self, new : Actions):
         for index, call in new.items():
             if not index in self:
                 self[index] = call

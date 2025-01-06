@@ -7,8 +7,8 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from holytools.logging import LoggerFactory
-from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
-from .tool_input import ToolCall, ToolArg
+from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
+from .input import ToolCall, ToolArg
 
 # ---------------------------------------------------------
 
@@ -40,7 +40,6 @@ class Tool:
             output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
 
         return output
-
 
     def _set_args(self, tool_call : ToolCall):
         for arg in self.get_args():

@@ -3,8 +3,8 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
-from .workspace import Workspace
-from ..tools import InvalidArgValue
+from engine.l3_aos.tools import InvalidArgValue
+from engine.l3_aos.workspace import Workspace
 
 
 # ---------------------------------------------------------

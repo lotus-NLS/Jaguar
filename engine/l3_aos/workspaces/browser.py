@@ -3,7 +3,9 @@ from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
 from pyscrape import SiteVisitor, SearchEngine
 from urllib.parse import urlparse
-from .workspace import Workspace
+
+from engine.l3_aos.workspace import Workspace
+
 
 # ---------------------------------------------------------
 

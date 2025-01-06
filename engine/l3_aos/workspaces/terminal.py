@@ -6,8 +6,9 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 import socket
 import select
-from .workspace import Workspace
 from engine.l3_aos.tools import InvalidArgValue
+from engine.l3_aos.workspace import Workspace
+
 
 # ---------------------------------------------------------
 

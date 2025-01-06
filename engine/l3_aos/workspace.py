@@ -14,26 +14,26 @@ from holytools.devtools import ModuleInspector
 class Workspace(Loggable):
     def __init__(self):
         super().__init__()
-        self.action_factory = ActionFactory(workspace=self)
         self.is_active : bool = False
-        self.workspace_actions : list[Action] = self.create_workspace_actions()
-        self.open_action : Action = self.create_open_action()
-        self.close_action : Action = self.create_close_action()
+        self.action_factory = WorkspaceToolFactory(workspace=self)
+        self.workspace_actions : list[WorkspaceTool] = self.create_workspace_actions()
+        self.open_action : WorkspaceTool = self.create_open_action()
+        self.close_action : WorkspaceTool = self.create_close_action()
 
-    def create_workspace_actions(self) -> list[Action]:
+    def create_workspace_actions(self) -> list[WorkspaceTool]:
         cls_mthds =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False, public_only=True)
         excluded_names = [func.__name__ for func in ModuleInspector.get_methods(obj=Workspace)]
         target_methods = [mthd for mthd in cls_mthds if not mthd.__name__ in excluded_names]
         actions = self.action_factory.create_all(target_methods=target_methods)
         return actions
 
-    def create_open_action(self) -> Action:
+    def create_open_action(self) -> WorkspaceTool:
         def set_active():
             self.is_active = True
         func = self.__class__.open
         return self.action_factory.create_action(mthd=func, hook=set_active)
 
-    def create_close_action(self) -> Action:
+    def create_close_action(self) -> WorkspaceTool:
         def set_inactive():
             self.is_active = False
         func = self.__class__.close
@@ -91,41 +91,24 @@ class Workspace(Loggable):
         return [action.get_doc() for action in self.get_actions()]
 
 
-class Action(Tool, ABC):
-    def __init__(self, workspace: Workspace, call_timeout : float = 20):
-        super().__init__(call_timeout=call_timeout)
-        self.workspace : Workspace = workspace
-
-    @abstractmethod
-    def do(self):
-        pass
-
-    @abstractmethod
-    def get_desc(self) -> str:
-        pass
-
-    def _set_args(self, tool_call : ToolCall):
-        super()._set_args(tool_call=tool_call)
-
-
-class ActionFactory(Loggable):
+class WorkspaceToolFactory(Loggable):
     def __init__(self, workspace : Workspace):
         super().__init__()
         self.workspace : Workspace =  workspace
 
-    def create_all(self, target_methods : list[Callable]) -> list[Action]:
+    def create_all(self, target_methods : list[Callable]) -> list[WorkspaceTool]:
         return [self.create_action(mthd=method) for method in target_methods]
 
-    def create_action(self, mthd : Callable, hook : Optional[Callable[[], Any]] = None) -> Action:
+    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> WorkspaceTool:
         if inspect.ismethod(mthd):
-            raise TypeError(f'{ActionFactory.create_action.__name__} accept only unbound methods;'
+            raise TypeError(f'{WorkspaceToolFactory.create_action.__name__} only accepts unbound methods;'
                             f'Method \"{mthd.__name__}\" is bound')
 
         workspace = self.workspace
         conditional_hook = lambda: hook() if hook else None
         docstring = mthd.__doc__
 
-        class NewAction(Action):
+        class NewAction(WorkspaceTool):
             def __init__(self):
                 super().__init__(workspace=workspace)
                 args = ModuleInspector.get_args(func=mthd)
@@ -149,4 +132,18 @@ class ActionFactory(Loggable):
         return NewAction()
 
 
+class WorkspaceTool(Tool, ABC):
+    def __init__(self, workspace: Workspace, call_timeout : float = 20):
+        super().__init__(call_timeout=call_timeout)
+        self.workspace : Workspace = workspace
 
+    @abstractmethod
+    def do(self):
+        pass
+
+    @abstractmethod
+    def get_desc(self) -> str:
+        pass
+
+    def _set_args(self, tool_call : ToolCall):
+        super()._set_args(tool_call=tool_call)

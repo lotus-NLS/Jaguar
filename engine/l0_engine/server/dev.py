@@ -38,7 +38,7 @@ class DevServer(Server):
     # callbacks
 
     def get_context_view(self) -> Response:
-        system_context =  Context(entries=[self.handler.get_system_prompt()])
+        system_context =  Context(entries=[self.handler._get_system_prompt()])
         os_context = Context.from_aos(aos=self.handler.aos)
         memory = Context(entries=self.handler.memory)
         context_str = system_context.as_str(section_header=f'System prompt')

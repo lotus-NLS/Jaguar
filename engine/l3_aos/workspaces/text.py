@@ -4,9 +4,10 @@ import os.path
 from typing import Optional
 
 from PIL.Image import Image as PILImage
+
+from engine.l3_aos.workspace import Workspace
 from holytools.fileIO import PlaintextFile
 
-from .workspace import Workspace
 
 # ---------------------------------------------------------
 
