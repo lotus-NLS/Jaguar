@@ -7,7 +7,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from abc import abstractmethod
 
 from holytools.logging import LoggerFactory
-from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, Progress, ToolException
+from .tool_output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
 from .tool_input import ToolCall, ToolArg
 
 # ---------------------------------------------------------
@@ -22,23 +22,22 @@ class Tool:
     # call
 
     def handle(self, tool_call: ToolCall) -> ToolOutput:
-        output = ToolOutput(tool_name=self.get_name())
-        output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=Progress.START)
-        output.set_args(args=tool_call.get_args_dict())
+        output = ToolOutput(tool_name=self.get_name(), call_args=tool_call.get_args_dict())
+        output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=ProgressUpdate.START)
         try:
             self._set_args(tool_call=tool_call)
-            output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=Progress.UPDATE)
+            output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
-            output.update(msg=f'Tool \"{self.get_name()}\" completed execution', progress_type=Progress.FINISH)
+            output.update(msg=f'Tool \"{self.get_name()}\" completed execution', progress_type=ProgressUpdate.FINISH)
 
         except ToolException as e:
-            output.update(msg=f'{e.__class__.__name__}: {e}', progress_type=Progress.FAILED)
+            output.update(msg=f'{e.__class__.__name__}: {e}', progress_type=ProgressUpdate.FAILED)
         except FunctionTimedOut:
-            output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=Progress.FAILED)
+            output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=ProgressUpdate.FAILED)
         except Exception as e:
-            output.update(msg=f'Encountered exception: {e}. Aborting ...', progress_type=Progress.EXCEPTION)
+            output.update(msg=f'Encountered exception: {e}. Aborting ...', progress_type=ProgressUpdate.EXCEPTION)
         finally:
-            output.update(msg=f'Tool call finished', progress_type=Progress.FINISH)
+            output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
 
         return output
 

@@ -1,15 +1,71 @@
 from __future__ import annotations
 
-from api import Entry
+from dataclasses import dataclass
 from enum import Enum
-from dataclasses import dataclass, field
 from typing import Optional, Any
-from holytools.logging import Loggable, LogLevel
-# ---------------------------------------------------
 
-class Progress(Enum):
+from api import Entry
+from holytools.logging import Loggable, LogLevel
+
+
+# --------------------------------------------------
+
+@dataclass
+class ToolOutput(Loggable):
+    tool_name : str
+    value : Optional[Any] = None
+    call_args: Optional[dict] = None
+
+    def __post_init__(self):
+        self.progress_msgs : list[ProgressMsg] = []
+
+    @classmethod
+    def not_found(cls, name : str):
+        output = cls(tool_name='None')
+        output.update(msg=f'Tool \"{name}\" not found', progress_type=ProgressUpdate.FAILED)
+        return output
+
+    @classmethod
+    def failed(cls, name : str, reason : Optional[BaseException] = None):
+        output = cls(tool_name=name)
+        conditional_reason = f': {reason}' if reason else ''
+        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=ProgressUpdate.FAILED)
+        return output
+
+    def update(self, msg : str, progress_type : ProgressUpdate):
+        progress_msg = ProgressMsg(progress_type=progress_type, content=msg)
+        self.progress_msgs.append(progress_msg)
+        self.log(str(progress_msg), level=LogLevel.INFO)
+
+    # -----------------------------------------------------------
+
+    def get_exit_status(self) -> ExitStatus:
+        for progress in self.progress_msgs:
+            if progress.progress_type == ProgressUpdate.EXCEPTION:
+                return ExitStatus.EXCEPTION
+            if progress.progress_type in [ProgressUpdate.FAILED]:
+                return ExitStatus.FAILED
+        return ExitStatus.SUCCESS
+
+    def get_report(self) -> str:
+        exit_status = self.get_exit_status()
+        log_msg = (f'Tool \"{self.tool_name}\" finished execution with status:'
+                   f' {exit_status.value}')
+        if not exit_status == ExitStatus.SUCCESS:
+            log_msg += f'; failure/exception reason: {self.get_error_msgs()}'
+        log_msg += f'; Call arguments were {self.call_args}'
+        return log_msg
+
+    def get_error_msgs(self) -> list[str]:
+        return [progress.content for progress in self.progress_msgs if progress.progress_type in [ProgressUpdate.EXCEPTION, ProgressUpdate.FAILED]]
+
+    def as_entry(self) -> Entry:
+        return Entry.tool(msg=self.get_report(), name =self.tool_name)
+
+
+class ProgressUpdate(Enum):
     START = 'START'
-    UPDATE = 'UPDATE'
+    INFO = 'INFO'
     EXCEPTION = 'EXCEPTION'
     FAILED = 'FAILED'
     FINISH = 'FINISH'
@@ -20,74 +76,20 @@ class ExitStatus(Enum):
     FAILED = 'FAILED'
     EXCEPTION = 'EXCEPTION'
 
-
 @dataclass
 class ProgressMsg:
-    progress_type : Progress
+    progress_type : ProgressUpdate
     content : str
 
     def __str__(self):
         return f'[{self.progress_type.value}]: {self.content}'
 
-@dataclass
-class ToolOutput(Loggable):
-    tool_name : str
-    value : Optional[Any] = None
-    call_args: Optional[dict] = None
-    progress: list[ProgressMsg] = field(default_factory=list)
-    exit_status : ExitStatus = ExitStatus.SUCCESS
-
-    def __post_init__(self):
-        super().__init__()
-
-    def get_report(self) -> str:
-        log_msg = (f'Tool \"{self.tool_name}\" finished execution with status:'
-                   f' {self.exit_status.value}')
-        if not self.exit_status == ExitStatus.SUCCESS:
-            log_msg += f'; failure/exception reason: {self.get_error_msgs()}'
-        log_msg += f'; Call arguments were {self.call_args}'
-        return log_msg
-
-    def set_args(self, args : dict):
-        self.call_args = args
-
-    def get_error_msgs(self) -> list[str]:
-        return [progress.content for progress in self.progress if progress.progress_type in [Progress.EXCEPTION, Progress.FAILED]]
-
-
-    def update(self, msg : str, progress_type : Progress):
-        if progress_type == Progress.EXCEPTION:
-            self.exit_status = ExitStatus.EXCEPTION
-        if progress_type == Progress.FAILED:
-            self.exit_status = ExitStatus.FAILED
-        progress_msg = ProgressMsg(progress_type=progress_type, content=msg)
-        self.progress.append(progress_msg)
-        self.log(str(progress_msg), level=LogLevel.INFO)
-
-
-    def as_entry(self) -> Entry:
-        return Entry.tool(msg=self.get_report(), name =self.tool_name)
-
-    @classmethod
-    def not_found(cls, name : str):
-        output = cls(tool_name='None')
-        output.update(msg=f'Tool \"{name}\" not found', progress_type=Progress.FAILED)
-        return output
-
-    @classmethod
-    def failed(cls, name : str, reason : Optional[BaseException] = None):
-        output = cls(tool_name=name)
-        conditional_reason = f': {reason}' if reason else ''
-        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=Progress.FAILED)
-        return output
 
 class ToolException(Exception):
     pass
 
-
 class MissingArgs(ToolException):
     pass
-
 
 class InvalidArgValue(ToolException):
     pass
