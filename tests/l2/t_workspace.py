@@ -1,6 +1,6 @@
 from engine.l4_tools import ToolDoc, ToolCall
 from engine.l3_os import Action
-from tests.spoofs import MockWorkspace
+from tests.l2_spoofs import MockWorkspace
 from holytools.devtools import Unittest
 
 # ---------------------------------------------------------

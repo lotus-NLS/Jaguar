@@ -1,11 +1,14 @@
 from typing import Optional
+
 from PIL.Image import Image as PILImage
+
 from engine.l3_os import Workspace
-# ---------------------------------------------------------
+
 
 class Plant:
     def __init__(self):
         self.is_watered : bool = False
+
 
 class MockWorkspace(Workspace):
     def __init__(self):
@@ -32,5 +35,3 @@ class MockWorkspace(Workspace):
 
     def get_desc(self) -> str:
         return ''
-
-

@@ -1,5 +1,5 @@
+from engine.l0_engine.settings import LotusCredentials
 from engine.l3_os import Browser
-from engine.l5_settings import LotusSettings
 from holytools.devtools import Unittest
 from pyscrape import SearchEngine, SearchResult
 
@@ -27,8 +27,9 @@ class BrowserTest(Unittest):
 class SearchEngineTester(Unittest):
     @classmethod
     def setUpClass(cls):
-        engine_id = LotusSettings.get_searchengine_id()
-        api_key = LotusSettings.get_google_apikey()
+        creds = LotusCredentials(use_local=True)
+        engine_id = creds.get_searchengine_id()
+        api_key = creds.get_google_apikey()
         cls.search_engine = SearchEngine(searchengine_id=engine_id, google_key=api_key)
 
     def test_urls(self):

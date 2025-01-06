@@ -11,9 +11,3 @@ For more information see the "Wiki" section on the [Project management page](htt
 ## Setup and usage for Ubuntu 22.04
 
 This is still in flux, [TODO] later
-
-Speech recognition requires PyAudio
-```
-sudo apt-get install portaudio19-dev python3-pyaudio
-pip install PyAudio
-```
