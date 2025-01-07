@@ -24,13 +24,14 @@ class OpenAIModel(LLM):
         return cls(name='gpt-4o', api_key=api_key)
 
     def get_generation(self, context : Context, options: Options) -> Generation:
+        self.check_token_cap(context=context)
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
         self.log(f'Creating generation request')
         openai_response = self.get_response(context=context, options=options)
-        self.log(f"Received generation response. Currently at {self.tokenizer.get_tokens(context=context)} tokens")
+        self.log(f"Received generation response. Currently at {self.tokenizer.count_context_tokens(context=context)} tokens")
 
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
