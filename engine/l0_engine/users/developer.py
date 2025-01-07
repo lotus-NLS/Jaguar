@@ -12,7 +12,7 @@ class DevUser:
     def add_input(self, msg : str):
         self.buffer += msg
 
-    def fire(self):
+    def make_request(self):
         req_str = LotusRequest(msg=self.buffer).model_dump_json()
         self.buffer = ''
 
