@@ -1,13 +1,9 @@
 import html
-import os
-import sys
+import threading
 import time
-from multiprocessing import Process
-from typing import Optional, Callable
+from typing import Optional
 
-import uvicorn
-from fastapi import FastAPI
-from starlette.responses import Response
+from flask import Flask
 
 from api import Entry
 from engine.l1_agents import Agent, Task
@@ -15,8 +11,9 @@ from engine.l2_models import Context
 from engine.l2_models import OpenAIModel
 from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
 from holytools.logging import Loggable
-from holytools.network import Socket, Method
+from holytools.network import Socket
 from .settings import LotusCredentials
+
 
 # ---------------------------------------------------------
 
@@ -42,9 +39,9 @@ class LotusEngine(Loggable):
             if user_input == 'exit':
                 break
 
-            print(f'GOTO: ', end='')
             task = Task(new_entries=[Entry.user(msg=user_input)])
             response = self.agent.handle(task=task)
+            print(f'GOTO: ', end='')
             for text in response.get_text_stream():
                 print(text, end='', flush=True)
                 time.sleep(0.05)
@@ -62,48 +59,31 @@ class MonitorServer:
     def __init__(self, agent : Agent, socket : Socket = Socket.get_localhost(port=5000)):
         self.agent : Agent = agent
         self.socket : Socket = socket
-        self.app: FastAPI = FastAPI()
-        self.process: Optional[Process] = None
+        self.app: Flask = Flask(__name__)
+        self.thread: Optional[threading.Thread] = None
 
-        self.add_action(path=f'/context', method=Method.GET, callback=self.get_context_view)
+        @self.app.route(f'/context')
+        def get_context_view() -> str:
+            system_context = Context(entries=[self.agent.get_system_prompt()])
+            os_context = Context.from_aos(aos=self.agent.aos)
+            memory = Context(entries=self.agent.memory)
 
-    def add_action(self, path : str, method : Method, callback : Callable):
-        if method == Method.POST:
-            decorator = self.app.post
-        elif method == Method.GET:
-            decorator = self.app.get
-        else:
-            raise ValueError(f'Unsupported method: {method}')
-        decorator(path)(callback)
+            context_str = system_context.as_str(section_header=f'System prompt')
+            context_str += os_context.as_str(section_header=f'Lotus Operating System')
+            context_str += memory.as_str(section_header=f'Memory')
+
+            escaped_context = html.escape(context_str)
+            html_context = escaped_context.replace("\n", "<br>")
+            html_context = f'<pre> {html_context} </pre>'
+            return html_context
+
 
     def run(self):
         def do():
-            sys.stdout = open(os.devnull, 'w')
-            sys.stderr = open(os.devnull, 'w')
-            uvicorn.run(self.app, host=self.socket.ip, port=self.socket.port)
-        self.process = Process(target=do)
-        self.process.start()
+            self.app.run(host=self.socket.ip, port=self.socket.port)
+        self.thread = threading.Thread(target=do)
+        self.thread.start()
 
     def kill(self):
-        self.process.terminate()
+        self.thread._stop()
 
-    @classmethod
-    def get_protocol(cls) -> str:
-        return 'http'
-
-    # ----------------------------------
-    # callbacks
-
-    def get_context_view(self) -> Response:
-        system_context =  Context(entries=[self.agent.get_system_prompt()])
-        os_context = Context.from_aos(aos=self.agent.aos)
-        memory = Context(entries=self.agent.memory)
-
-        context_str = system_context.as_str(section_header=f'System prompt')
-        context_str += os_context.as_str(section_header=f'Lotus Operating System')
-        context_str += memory.as_str(section_header=f'Memory')
-
-        escaped_context = html.escape(context_str)
-        html_context = escaped_context.replace("\n", "<br>")
-        html_context = f'<pre> {html_context} </pre>'
-        return Response(content=html_context, media_type="text/html")

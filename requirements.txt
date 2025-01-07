@@ -2,8 +2,7 @@ distro
 func_timeout
 requests
 tiktoken
-uvicorn
-fastapi
+flask
 openai
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
 awsops @ git+https://git@github.com/Somerandomguy10111/AWSOps.git
