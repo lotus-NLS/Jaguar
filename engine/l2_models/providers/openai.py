@@ -77,7 +77,6 @@ class OpenAIChunk(Chunk):
         finish_reason_present = not self.best_choice.finish_reason is None
         return finish_reason_present
 
-
     def get_call_map(self) -> dict[int, ToolCall]:
         openai_tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
         if not openai_tool_calls:

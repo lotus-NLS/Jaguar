@@ -13,8 +13,8 @@ class Generation:
         self.chunk_type : type[Chunk] = chunk_type
 
         self.is_done : bool = False
-        self.text_content : str = ''
-        self.tool_call_map : dict[int, ToolCall] = {}
+        self.text : str = ''
+        self.toolcall_map : dict[int, ToolCall] = {}
 
     def __iter__(self) -> Iterator[Chunk]:
         return self
@@ -32,16 +32,16 @@ class Generation:
     def _add_text(self, chunk: Chunk):
         text = chunk.get_text()
         if not text is None:
-            self.text_content += text
+            self.text += text
 
     def _add_toolcalls(self, chunk : Chunk):
         toolcall_map : dict[int, ToolCall] = chunk.get_call_map()
         for idx, tool_call in toolcall_map.items():
-            print(f'idx, toolcall = {idx} {tool_call}')
-            if not idx in self.tool_call_map:
-                self.tool_call_map[idx] = tool_call
+
+            if not idx in self.toolcall_map:
+                self.toolcall_map[idx] = tool_call
             else:
-                self.tool_call_map[idx].update(tool_call)
+                self.toolcall_map[idx].update(tool_call)
 
     def _stop(self):
         self.is_done = True
@@ -52,12 +52,12 @@ class Generation:
     def get_tool_calls(self) -> list[ToolCall]:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
-        return list(self.tool_call_map.values())
+        return list(self.toolcall_map.values())
 
     def get_text(self) -> str:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
-        return self.text_content
+        return self.text
 
 
 
