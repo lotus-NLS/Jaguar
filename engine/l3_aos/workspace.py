@@ -11,7 +11,6 @@ from engine.l3_aos.tools import ToolDoc, ToolArg, Tool, ToolCall
 from holytools.devtools import ModuleInspector
 from holytools.logging import Loggable
 
-
 # ---------------------------------------------------------
 
 class Workspace(Loggable):
@@ -24,22 +23,20 @@ class Workspace(Loggable):
         self.close_action : WorkspaceAction = self.create_close_tool()
 
     def create_workspace_actions(self) -> list[WorkspaceAction]:
-        cls_mthds =  ModuleInspector.get_methods(obj=self.__class__, include_inherited=False, public_only=True)
-        excluded_names = [func.__name__ for func in ModuleInspector.get_methods(obj=Workspace)]
-        target_methods = [mthd for mthd in cls_mthds if not mthd.__name__ in excluded_names]
+        target_methods =  ModuleInspector.get_methods(obj=self, include_inherited=False, include_private=False)
         actions = self.action_factory.create_all(target_methods=target_methods)
         return actions
 
     def create_open_action(self) -> WorkspaceAction:
         def set_active():
             self.is_active = True
-        func = self.__class__.open
+        func = self.open
         return self.action_factory.create_action(mthd=func, hook=set_active)
 
     def create_close_tool(self) -> WorkspaceAction:
         def set_inactive():
             self.is_active = False
-        func = self.__class__.close
+        func = self.close
         return self.action_factory.create_action(mthd=func, hook=set_inactive)
 
     @abstractmethod
@@ -103,9 +100,9 @@ class WorkspaceToolFactory(Loggable):
         return [self.create_action(mthd=method) for method in target_methods]
 
     def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> WorkspaceAction:
-        if inspect.ismethod(mthd):
-            raise TypeError(f'{WorkspaceToolFactory.create_action.__name__} only accepts unbound methods;'
-                            f'Method \"{mthd.__name__}\" is bound')
+        if not inspect.ismethod(mthd):
+            raise TypeError(f'{WorkspaceToolFactory.create_action.__name__} only accepts bound methods;'
+                            f'Method \"{mthd.__name__}\" is unbound')
 
         workspace = self.workspace
         conditional_hook = lambda: hook() if hook else None
@@ -123,7 +120,7 @@ class WorkspaceToolFactory(Loggable):
 
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
-                mthd(workspace, **kwargs)
+                mthd(**kwargs)
                 conditional_hook()
 
             def get_desc(self) -> str:
