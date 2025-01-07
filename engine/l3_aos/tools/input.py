@@ -79,9 +79,9 @@ class ToolCall:
         self.name : str = name if name else ''
         self.json_str : str = json_str
 
-    def add(self, partial_call : ToolCall):
-        self.name += partial_call.name
-        self.json_str += partial_call.json_str
+    def __iadd__(self, other : ToolCall):
+        self.name += other.name
+        self.json_str += other.json_str
 
     def get_args_dict(self) -> dict:
         if len(self.json_str) == 0:

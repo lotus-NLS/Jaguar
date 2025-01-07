@@ -8,7 +8,8 @@ from openai import Stream
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from api import Entry, APIType
-from engine.l2_models.generation import Generation, Chunk, Context, Options
+from engine.l2_models.generation import Generation, Chunk, Options
+from engine.l2_models import Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 

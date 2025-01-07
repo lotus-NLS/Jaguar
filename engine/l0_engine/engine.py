@@ -48,7 +48,6 @@ class LotusEngine(Loggable):
 
             time.sleep(0.5)
 
-
     def request_terminal(self):
         self.launch()
         task = Task(new_entries=[Entry.user(msg='Open terminal in /home/daniel')])

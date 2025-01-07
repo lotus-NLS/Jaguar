@@ -8,7 +8,8 @@ from typing import Optional
 from tiktoken import Encoding
 
 from api import Entry
-from engine.l2_models.generation import Context, Options, Generation, CallOptions
+from engine.l2_models.generation import Options, Generation, CallOptions
+from engine.l2_models import Context
 from holytools.logging import Loggable
 
 

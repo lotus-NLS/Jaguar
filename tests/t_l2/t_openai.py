@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from engine.l2_models.generation import Context
+from engine.l2_models import Context
 from tests.t_l2.base import OpenAITest
 
 
