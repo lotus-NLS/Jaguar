@@ -18,7 +18,6 @@ from holytools.logging import Loggable
 from holytools.network import Socket, Method
 from .settings import LotusCredentials
 
-
 # ---------------------------------------------------------
 
 class LotusEngine(Loggable):
@@ -37,16 +36,20 @@ class LotusEngine(Loggable):
 
     def launch(self):
         self.log(f'Lotus started')
+        self.dev_monitor.run()
         while True:
             user_input = input(f'\nUser: ')
             if user_input == 'exit':
                 break
+
             print(f'GOTO: ', end='')
             task = Task(new_entries=[Entry.user(msg=user_input)])
             response = self.agent.handle(task=task)
             for text in response.get_text_stream():
                 print(text, end='', flush=True)
                 time.sleep(0.05)
+
+            time.sleep(0.5)
 
         self.stop()
 
@@ -57,22 +60,21 @@ class LotusEngine(Loggable):
 
 class MonitorServer:
     def __init__(self, agent : Agent, socket : Socket = Socket.get_localhost(port=5000)):
-        super().__init__(socket=socket)
         self.agent : Agent = agent
         self.socket : Socket = socket
         self.app: FastAPI = FastAPI()
         self.process: Optional[Process] = None
 
-        self.add_action(relpath=f'/context', method=Method.GET, callback=self.get_context_view)
+        self.add_action(path=f'/context', method=Method.GET, callback=self.get_context_view)
 
-    def add_action(self, relpath : str, method : Method, callback : Callable):
+    def add_action(self, path : str, method : Method, callback : Callable):
         if method == Method.POST:
             decorator = self.app.post
         elif method == Method.GET:
             decorator = self.app.get
         else:
             raise ValueError(f'Unsupported method: {method}')
-        decorator(f'{self.get_protocol()}://{self.socket}{relpath}')(callback)
+        decorator(path)(callback)
 
     def run(self):
         def do():
