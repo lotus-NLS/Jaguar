@@ -79,15 +79,14 @@ class ToolCall:
         self.name : str = name if name else ''
         self.json_str : str = json_str
 
-        if len(json_str) == 0:
-            raise ValueError('Empty json string')
-
     def add(self, partial_call : ToolCall):
         self.name += partial_call.name
         self.json_str += partial_call.json_str
 
-
     def get_args_dict(self) -> dict:
+        if len(self.json_str) == 0:
+            raise ValueError('Empty json string')
+
         try:
             tool_args_dict = self.load(s=self.json_str)
         except:

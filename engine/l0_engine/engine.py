@@ -31,11 +31,10 @@ class LotusEngine(Loggable):
         browser = Browser(google_api_key=self.creds.get_google_apikey(), searchengine_id=self.creds.get_searchengine_id())
         return AOS(workspaces=[TextEditor(), Terminal(), FileExplorer(), browser])
 
-    def launch(self):
-        self.log(f'Lotus started')
-        self.dev_monitor.run()
-        time.sleep(1)
+    # ---------------------------------------------
 
+    def conversation_routine(self):
+        self.launch()
         while True:
             user_input = input(f'\nUser: ')
             if user_input == 'exit':
@@ -43,17 +42,24 @@ class LotusEngine(Loggable):
 
             task = Task(new_entries=[Entry.user(msg=user_input)])
             response = self.agent.handle(task=task)
-            is_first = True
             for text in response.get_text_stream():
-                if is_first:
-                    print(f'GOTO: ', end='')
-                is_first = False
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 
             time.sleep(0.5)
 
-        self.stop()
+
+    def request_terminal(self):
+        self.launch()
+        task = Task(new_entries=[Entry.user(msg='Open terminal')])
+        response = self.agent.handle(task=task)
+        for text in response.get_text_stream():
+            print(text)
+
+    def launch(self):
+        self.log(f'Lotus started')
+        self.dev_monitor.run()
+        time.sleep(1)
 
     def stop(self):
         self.log(f'Lotus stopped')

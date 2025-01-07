@@ -69,7 +69,6 @@ class Agent(Loggable):
         self.memory.append(Entry.agent(msg=generation.get_text()))
         pipe.stop()
 
-
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
         tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}

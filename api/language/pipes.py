@@ -30,6 +30,8 @@ class TextPipe(Queue):
 
     def get_text_stream(self) -> Iterator[str]:
         timeout = 10
+        yield f'GOTO: '
+
         while True:
             try:
                 text = self.get(timeout=timeout)
