@@ -21,7 +21,7 @@ class Tool:
     # ---------------------------------------------------
     # call
 
-    def handle(self, tool_call: ToolCall) -> ToolOutput:
+    def execute(self, tool_call: ToolCall) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name(), call_args=tool_call.get_args_dict())
         output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=ProgressUpdate.START)
         try:
@@ -115,12 +115,12 @@ class ToolDoc(dict):
 
     def as_str(self) -> str:
         func_name = self.get_tool_name()
-        info_str = f'- {func_name}: {self.get_description()}'
+        quick_desc = f'{self.get_description()[100]}...' if len(self.get_description()) > 100 else self.get_description()
+        info_str = f'- {func_name}: {quick_desc}'
         arg_dict = self.get_parameters()
         for arg_name, arg_dict in arg_dict.items():
-            arg_str = f'  - {arg_name} ({arg_dict["type"]}): {arg_dict["description"]}'
-            if not arg_name in self.get_required():
-                arg_str += ' (optional)'
+            conditional_optional = f' (optional) ' if not arg_name in self.get_required() else ''
+            arg_str = f'  - {arg_name}{conditional_optional}: {arg_dict["description"]}'
             info_str += f'\n{arg_str}'
 
         return info_str

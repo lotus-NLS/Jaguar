@@ -11,7 +11,7 @@ class TestTextWorkspace(Unittest):
         self.test_text : File = FileMock.lend_txt()
         self.workspace = TextEditor()
         tool_call = ToolCall(json_str= json.dumps({'filepath' : self.test_text.fpath}))
-        self.workspace.open_action.handle(tool_call)
+        self.workspace.open_action.execute(tool_call)
         print(f'Test text file fpath : {self.test_text.fpath}')
 
     def test_content(self):

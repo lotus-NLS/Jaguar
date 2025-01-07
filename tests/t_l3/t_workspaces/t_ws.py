@@ -63,13 +63,13 @@ class TestActionExectuion(WorkspaceTest):
         add_json_str = '{"msg": "New text"}'
         tool_call = ToolCall(json_str=add_json_str)
 
-        add.handle(tool_call=tool_call)
+        add.execute(tool_call=tool_call)
         self.assertIn('New text', self.workspace.get_text())
         self.log(f'Window context before reset: {self.workspace.get_entry()}')
 
         reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
-        reset.handle(tool_call)
+        reset.execute(tool_call)
         self.assertEqual('', self.workspace.get_text())
         self.log(f'Window context after reset : {self.workspace.get_entry()}')
 
