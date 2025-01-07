@@ -17,39 +17,37 @@ class Workspace(Loggable):
     def __init__(self):
         super().__init__()
         self.is_active : bool = False
-        self.workspace_actions : list[WorkspaceAction] = self.create_workspace_actions()
-        self.open_action : WorkspaceAction = self.create_open_action()
-        self.close_action : WorkspaceAction = self.create_close_tool()
+        self.workspace_actions : list[Tool] = self.create_workspace_actions()
+        self.open_action : Tool = self.create_open_action()
+        self.close_action : Tool = self.create_close_tool()
 
-    def create_workspace_actions(self) -> list[WorkspaceAction]:
+    def create_workspace_actions(self) -> list[Tool]:
         target_methods =  ModuleInspector.get_methods(obj=self, include_inherited=False, include_private=False)
         actions = [self.create_action(mthd=m) for m in target_methods]
         return actions
 
-    def create_open_action(self) -> WorkspaceAction:
+    def create_open_action(self) -> Tool:
         def set_active():
             self.is_active = True
         func = self.open
         return self.create_action(mthd=func, hook=set_active)
 
-    def create_close_tool(self) -> WorkspaceAction:
+    def create_close_tool(self) -> Tool:
         def set_inactive():
             self.is_active = False
         func = self.close
         return self.create_action(mthd=func, hook=set_inactive)
 
-    def create_action(self, mthd : Callable, hook : Optional[Callable] = None) -> WorkspaceAction:
+    def create_action(self, mthd : Callable, hook : Callable = lambda *args, **kwargs : None) -> Tool:
         if not inspect.ismethod(mthd):
-            raise TypeError(f'{self.create_action.__name__} only accepts bound methods;'
-                            f'Method \"{mthd.__name__}\" is unbound')
+            raise TypeError(f'{self.create_action.__name__} only accepts bound method, method \"{mthd.__name__}\" is unbound')
 
         workspace = self
-        conditional_hook = lambda: hook() if hook else None
         docstring = mthd.__doc__
 
-        class NewAction(WorkspaceAction):
+        class WorkspaceAction(Tool):
             def __init__(self):
-                super().__init__(workspace=workspace)
+                super().__init__()
                 args = ModuleInspector.get_args(func=mthd)
                 self.tool_args: list[ToolArg] = [ToolArg.from_function_arg(arg) for arg in args]
 
@@ -60,7 +58,7 @@ class Workspace(Loggable):
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(**kwargs)
-                conditional_hook()
+                hook()
 
             def get_desc(self) -> str:
                 desc = docstring if docstring else f'Allows for operating {mthd.__name__}'
@@ -68,7 +66,8 @@ class Workspace(Loggable):
 
             def get_args(self) -> list[ToolArg]:
                 return self.tool_args
-        return NewAction()
+
+        return WorkspaceAction()
 
     @abstractmethod
     def open(self, *args, **kwargs):
@@ -78,7 +77,7 @@ class Workspace(Loggable):
     def close(self, *args, **kwargs):
         pass
 
-    def get_actions(self) -> list[WorkspaceAction]:
+    def get_actions(self) -> list[Tool]:
         while_open = self.workspace_actions + [self.close_action]
         while_closed = [self.open_action]
         return while_open if self.is_active else while_closed
@@ -118,20 +117,3 @@ class Workspace(Loggable):
     @abstractmethod
     def get_image(self) -> Optional[PILImage]:
         pass
-
-
-class WorkspaceAction(Tool, ABC):
-    def __init__(self, workspace: Workspace, call_timeout : float = 20):
-        super().__init__(call_timeout=call_timeout)
-        self.workspace : Workspace = workspace
-
-    @abstractmethod
-    def do(self):
-        pass
-
-    @abstractmethod
-    def get_desc(self) -> str:
-        pass
-
-    def _set_args(self, tool_call : ToolCall):
-        super()._set_args(tool_call=tool_call)
