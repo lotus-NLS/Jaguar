@@ -31,11 +31,17 @@ class OpenAITest(CredTest):
         print("->Generated Text Content:")
         for chunk in generation:
             self.textbox.add(chunk.get_text())
-        generation.print_action_info()
-
+        self.print_action_info(generation)
         time.sleep(0.1)
 
         return self.textbox.total_text, call_map
+
+    @staticmethod
+    def print_action_info(generation : Generation):
+        print(f'\n-> Generated tool calls')
+        for call in generation.get_tool_calls():
+            print(f'tool name: {call.name}')
+            print(call.get_args_dict())
 
 class TextBox:
     def __init__(self, logger : callable = print):

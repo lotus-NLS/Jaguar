@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from abc import abstractmethod
 
 from func_timeout import func_timeout, FunctionTimedOut
