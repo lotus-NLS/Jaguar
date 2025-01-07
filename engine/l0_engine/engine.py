@@ -34,6 +34,8 @@ class LotusEngine(Loggable):
     def launch(self):
         self.log(f'Lotus started')
         self.dev_monitor.run()
+        time.sleep(1)
+
         while True:
             user_input = input(f'\nUser: ')
             if user_input == 'exit':
@@ -41,8 +43,11 @@ class LotusEngine(Loggable):
 
             task = Task(new_entries=[Entry.user(msg=user_input)])
             response = self.agent.handle(task=task)
-            print(f'GOTO: ', end='')
+            is_first = True
             for text in response.get_text_stream():
+                if is_first:
+                    print(f'GOTO: ', end='')
+                is_first = False
                 print(text, end='', flush=True)
                 time.sleep(0.05)
 
