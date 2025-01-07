@@ -51,7 +51,7 @@ class LotusEngine(Loggable):
 
     def request_terminal(self):
         self.launch()
-        task = Task(new_entries=[Entry.user(msg='Open terminal')])
+        task = Task(new_entries=[Entry.user(msg='Open terminal in /home/daniel')])
         response = self.agent.handle(task=task)
         for text in response.get_text_stream():
             print(text)

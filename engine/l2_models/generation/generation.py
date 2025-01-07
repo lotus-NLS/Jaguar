@@ -19,7 +19,7 @@ class Generation:
 
         self.is_done : bool = False
         self.text_content : str = ''
-        self.tool_calls : dict[int, ToolCall] = {}
+        self.tool_call_map : dict[int, ToolCall] = {}
 
     def __iter__(self) -> Iterator[Chunk]:
         return self
@@ -32,9 +32,6 @@ class Generation:
         if chunk.is_final():
             self.stop()
 
-        print(f'Processsing chunk')
-        print(f'Tool call zero json str = {list(self.tool_calls.values())[0].json_str}')
-
         return chunk
 
     def add_text(self, chunk: Chunk):
@@ -44,12 +41,11 @@ class Generation:
 
     def add_args(self, chunk : Chunk):
         callmap : dict[int, ToolCall] = chunk.get_call_map()
-        print(f'Callmap = {callmap}')
-        for name, tool_call in callmap.items():
-            if not name in self.tool_calls:
-                self.tool_calls[name] = tool_call
+        for idx, tool_call in callmap.items():
+            if not idx in self.tool_call_map:
+                self.tool_call_map[idx] = tool_call
             else:
-                self.tool_calls[name].add(tool_call)
+                self.tool_call_map[idx].add(tool_call)
 
     def stop(self):
         self.is_done = True
@@ -60,7 +56,7 @@ class Generation:
     def get_tool_calls(self) -> list[ToolCall]:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
-        return list(self.tool_calls.values())
+        return list(self.tool_call_map.values())
 
     def get_text(self) -> str:
         if not self.is_done:
