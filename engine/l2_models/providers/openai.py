@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-from openai import OpenAI
-from func_timeout import func_timeout
 from typing import Optional
-from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
+
+from func_timeout import func_timeout
+from openai import OpenAI
 from openai import Stream
+from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from api import Entry, APIType
 from engine.l2_models.generation import Generation, Chunk, Context, Options
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
+
 
 # ---------------------------------------------------------
 
@@ -77,20 +79,14 @@ class OpenAIChunk(Chunk):
 
 
     def get_call_map(self) -> dict[int, ToolCall]:
-        tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
-        if not tool_calls:
+        openai_tool_calls : list[ChoiceDeltaToolCall] = self.delta.tool_calls
+        if not openai_tool_calls:
             return {}
 
-        call_map : dict = {}
-        for openai_tool_call in tool_calls:
-            index = openai_tool_call.index
-            call = call_map.get(index, ToolCall())
+        calls : dict[int, ToolCall] = {}
+        for c in openai_tool_calls:
+            f = c.function
+            calls[c.index] = ToolCall(name=f.name, json_str=f.arguments)
 
-            new_data = openai_tool_call.function
-            new = ToolCall(name=new_data.name, json_str=new_data.arguments)
-            call.add(partial_call=new)
-            if not index in call_map:
-                call_map[index] = call
-
-        return call_map
+        return calls
 

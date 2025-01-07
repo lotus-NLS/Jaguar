@@ -19,7 +19,7 @@ class Generation:
 
         self.is_done : bool = False
         self.text_content : str = ''
-        self.tool_call_map : dict[int, ToolCall] = {}
+        self.tool_calls : dict[int, ToolCall] = {}
 
     def __iter__(self) -> Iterator[Chunk]:
         return self
@@ -27,10 +27,13 @@ class Generation:
     def __next__(self) -> Chunk:
         chunk = self.chunk_type(data=self.generator.__next__())
         self.add_text(chunk)
-        self.add_calls(chunk)
+        self.add_args(chunk)
 
         if chunk.is_final():
             self.stop()
+
+        print(f'Processsing chunk')
+        print(f'Tool call zero json str = {list(self.tool_calls.values())[0].json_str}')
 
         return chunk
 
@@ -39,13 +42,14 @@ class Generation:
         if not text is None:
             self.text_content += text
 
-    def add_calls(self, chunk : Chunk):
-        multicall_chunk = chunk.get_call_map()
-        for index, call in multicall_chunk.items():
-            if not index in self:
-                self.tool_call_map[index] = call
+    def add_args(self, chunk : Chunk):
+        callmap : dict[int, ToolCall] = chunk.get_call_map()
+        print(f'Callmap = {callmap}')
+        for name, tool_call in callmap.items():
+            if not name in self.tool_calls:
+                self.tool_calls[name] = tool_call
             else:
-                self.tool_call_map[index].add(partial_call=call)
+                self.tool_calls[name].add(tool_call)
 
     def stop(self):
         self.is_done = True
@@ -56,7 +60,7 @@ class Generation:
     def get_tool_calls(self) -> list[ToolCall]:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
-        return list(self.tool_call_map.values())
+        return list(self.tool_calls.values())
 
     def get_text(self) -> str:
         if not self.is_done:
@@ -113,8 +117,6 @@ class Context:
         self.entries = []
 
     def __iadd__(self, other : Context):
-        if not isinstance(other,Context):
-            raise TypeError(f'Cannot add Context with {type(other)}')
         return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
 
     def as_str(self, section_header : str) -> str:
