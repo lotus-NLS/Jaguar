@@ -8,8 +8,7 @@ from openai import Stream
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from api import Entry, APIType
-from engine.l2_models.generation import Generation, Chunk, Options
-from engine.l2_models import Context
+from engine.l2_models.generation import Generation, Chunk, Options, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 
@@ -87,7 +86,14 @@ class OpenAIChunk(Chunk):
         calls : dict[int, ToolCall] = {}
         for c in openai_tool_calls:
             f = c.function
-            calls[c.index] = ToolCall(name=f.name, json_str=f.arguments)
+
+            name = f.name if not f.name is None else ''
+            args = f.arguments if not f.arguments is None else ''
+            if not isinstance(name, str):
+                raise ValueError(f'Invalid tool call name: {f.name}, type = {type(f.name)}')
+            if not isinstance(args, str):
+                raise ValueError(f'Invalid tool call arguments: {f.arguments}, type = {type(f.arguments)}')
+            calls[c.index] = ToolCall(name=name, json_str=args)
 
         return calls
 

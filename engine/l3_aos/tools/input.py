@@ -76,10 +76,10 @@ class ToolArg:
 
 class ToolCall:
     def __init__(self, name : str = '', json_str : str = ''):
-        self.name : str = name if name else ''
+        self.name : str = name
         self.json_str : str = json_str
 
-    def __iadd__(self, other : ToolCall):
+    def update(self, other : ToolCall):
         self.name += other.name
         self.json_str += other.json_str
 
@@ -109,4 +109,5 @@ class ToolCall:
 
         return obj
 
-
+    def __str__(self):
+        return f'{self.name}: {self.json_str}'

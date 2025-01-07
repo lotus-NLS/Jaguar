@@ -37,10 +37,11 @@ class Generation:
     def _add_toolcalls(self, chunk : Chunk):
         toolcall_map : dict[int, ToolCall] = chunk.get_call_map()
         for idx, tool_call in toolcall_map.items():
+            print(f'idx, toolcall = {idx} {tool_call}')
             if not idx in self.tool_call_map:
                 self.tool_call_map[idx] = tool_call
             else:
-                self.tool_call_map[idx] += tool_call
+                self.tool_call_map[idx].update(tool_call)
 
     def _stop(self):
         self.is_done = True
@@ -57,7 +58,6 @@ class Generation:
         if not self.is_done:
             raise ValueError('Generation is not done yet')
         return self.text_content
-
 
 
 
