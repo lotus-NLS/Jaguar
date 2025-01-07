@@ -104,7 +104,23 @@ class ToolDoc(dict):
     def get_tool_name(self) -> str:
         return self['function']['name']
 
-    def as_str(self, pretty: bool = False) -> str:
-        relevant_doc = self['function']
-        indent = 4 if pretty else None
-        return json.dumps(relevant_doc, indent=indent)
+    def get_description(self) -> str:
+        return self['function']['description']
+
+    def get_parameters(self) -> dict:
+        return self['function']['parameters']['properties']
+
+    def get_required(self) -> list[str]:
+        return self['function']['parameters']['required']
+
+    def as_str(self) -> str:
+        func_name = self.get_tool_name()
+        info_str = f'- {func_name}: {self.get_description()}'
+        arg_dict = self.get_parameters()
+        for arg_name, arg_dict in arg_dict.items():
+            arg_str = f'  - {arg_name} ({arg_dict["type"]}): {arg_dict["description"]}'
+            if not arg_name in self.get_required():
+                arg_str += ' (optional)'
+            info_str += f'\n{arg_str}'
+
+        return info_str

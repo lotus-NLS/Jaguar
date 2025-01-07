@@ -36,9 +36,6 @@ class Terminal(Workspace):
         os_type = f'{platform.system()}'
         if  os_type == 'Linux':
             shell_cmd = '/bin/bash'
-        # elif os_type == 'Windows':
-        #     shell_cmd = 'cmd.exe'
-        # Also needs adjustments in current directory printing
         else:
             raise ValueError(f'OS type {os_type} not supported')
 

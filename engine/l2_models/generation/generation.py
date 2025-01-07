@@ -129,13 +129,14 @@ class Context:
 
 
         context_str = big_seperator(name=section_header)
-        context_str += small_seperator(f'Entries') if self.docs else ''
+        context_str += small_seperator(f'Workspace context') if self.docs else ''
         for entry in self.entries:
             context_str += f'{entry.as_str()}\n'
 
         context_str += small_seperator(f'Tool docs') if self.docs else ''
+        context_str += '\n'
         for doc in self.docs:
-            context_str += f'{doc.as_str(pretty=True)}\n'
+            context_str += f'{doc.as_str()}\n\n'
         return context_str
 
 
