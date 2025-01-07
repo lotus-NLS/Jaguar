@@ -4,7 +4,8 @@ requests
 tiktoken
 flask
 openai
-holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
-awsops @ git+https://git@github.com/Somerandomguy10111/AWSOps.git
-pyscrape @ git+https://github.com/Somerandomguy10111/pyscrape
 json_repair
+pillow
+beautifulsoup4
+holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
+pyscrape @ git+https://github.com/Somerandomguy10111/pyscrape
