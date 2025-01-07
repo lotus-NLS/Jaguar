@@ -10,7 +10,7 @@ from holytools.logging import Loggable
 class AOS(Loggable):
     def __init__(self, workspaces : list[Workspace]):
         super().__init__()
-        self.workspace_map : dict[int, Workspace] = {j : w for (j, w) in enumerate(workspaces)}
+        self._workspaces : list[Workspace] = workspaces
 
     # ---------------------------------------------------
     # get
@@ -28,4 +28,4 @@ class AOS(Loggable):
         return docs
 
     def get_workspaces(self) -> list[Workspace]:
-        return [workspace for workspace in self.workspace_map.values()]
+        return self._workspaces

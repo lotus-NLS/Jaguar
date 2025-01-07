@@ -1,2 +1,2 @@
-from .llm_os import AOS
+from .aos import AOS
 from .workspaces import *

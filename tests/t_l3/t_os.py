@@ -11,7 +11,7 @@ from api import Entry
 class TestAOS(Unittest):
     def setUp(self):
         self.os = AOS(workspaces=[TextEditor()])
-        self.text_workspace = self.os.workspace_map.get(0)
+        self.text_workspace = self.os.get_workspaces()[0]
         args_dict = {'filepath' :  '/tmp/3d594cd8-1040-4546-a0b2-0242c81045aa.txt'}
         tool_call = ToolCall(json_str=json.dumps(args_dict))
         self.text_workspace.open_action.handle(tool_call)
