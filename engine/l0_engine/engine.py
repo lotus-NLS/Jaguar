@@ -1,4 +1,5 @@
 import html
+import logging
 import threading
 import time
 from typing import Optional
@@ -13,7 +14,6 @@ from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
 from holytools.logging import Loggable
 from holytools.network import Socket
 from .settings import LotusCredentials
-
 
 # ---------------------------------------------------------
 
@@ -80,6 +80,7 @@ class MonitorServer:
 
     def run(self):
         def do():
+            logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
             self.app.run(host=self.socket.ip, port=self.socket.port)
         self.thread = threading.Thread(target=do)
         self.thread.start()
