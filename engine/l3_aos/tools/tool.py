@@ -27,7 +27,7 @@ class Tool:
             self._set_args(tool_call=tool_call)
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
-            output.update(msg=f'Tool \"{self.get_name()}\" completed execution', progress_type=ProgressUpdate.FINISH)
+            output.update(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully', progress_type=ProgressUpdate.INFO)
 
         except ToolException as e:
             output.update(msg=f'{e.__class__.__name__}: {e}', progress_type=ProgressUpdate.FAILED)

@@ -33,8 +33,8 @@ class LotusEngine(Loggable):
 
     # ---------------------------------------------
 
-    def conversation_routine(self):
-        self.launch()
+    def converse(self):
+        self._launch()
         while True:
             user_input = input(f'\nUser: ')
             if user_input == 'exit':
@@ -49,13 +49,13 @@ class LotusEngine(Loggable):
             time.sleep(0.5)
 
     def request_terminal(self):
-        self.launch()
+        self._launch()
         task = Task(new_entries=[Entry.user(msg='Open terminal in /home/daniel')])
         response = self.agent.handle(task=task)
         for text in response.get_text_stream():
             print(text)
 
-    def launch(self):
+    def _launch(self):
         self.log(f'Lotus started')
         self.dev_monitor.run()
         time.sleep(1)
