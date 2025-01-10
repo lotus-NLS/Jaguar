@@ -1,11 +1,13 @@
 import os
-import subprocess
 import platform
-from subprocess import Popen, PIPE
+import subprocess
+import time
 from typing import Optional
+
+import libtmux
 from PIL.Image import Image as PILImage
-import socket
-import select
+from libtmux import Session
+
 from engine.l3_aos.tools import InvalidArgValue
 from engine.l3_aos.workspace import Workspace
 
@@ -15,54 +17,46 @@ from engine.l3_aos.workspace import Workspace
 class Terminal(Workspace):
     def __init__(self):
         super().__init__()
-        self.near_end, self.far_end = os.pipe()
-        self.session: Optional[Popen] = None
-        self.content = ''
+        self.tmux_session : Optional[Session] = None
+        self.tmux_name : str = 'lotus'
 
     def open(self, workdir_path : str = '~'):
         """Opens a terminal in the specified working directory available only to you"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
-        self.session = self._get_session(cwd=cwd)
-        self._display_prompt()
+        self.tmux_session = self._open_session(cwd=cwd)
 
     def close(self):
         """Close LotusTerminal. The session will not be saved"""
-        self.session = None
-        self.content = None
+        self.tmux_session = None
 
-    def _get_session(self, cwd : str) -> Popen:
+    def _open_session(self, cwd : str) -> Session:
         os_type = f'{platform.system()}'
         if  os_type == 'Linux':
-            shell_cmd = '/bin/bash'
+            shell_cmd = 'bash'
         else:
             raise ValueError(f'OS type {os_type} not supported')
 
         try:
-            out = self.far_end
-            return subprocess.Popen(shell_cmd, stdin=PIPE, stdout=out, stderr=out, text=True, cwd=cwd)
+            subprocess.Popen(['gnome-terminal', '--', 'tmux', 'new-session', '-s', 'lotus'], cwd=cwd)
+            time.sleep(2)
+            server = libtmux.Server()
+            return server.find_where({"session_name": self.tmux_name})
         except Exception as e:
             self.error(msg=f'An exception occured while trying to start terminal session using executable'
                            f' \"{shell_cmd}\": \"{e}\"')
             err = e
-        raise err
+            raise err
 
     # ---------------------------------------------------------
     # actions
 
     def run(self, command : str) :
         """Runs a command in the current terminal session"""
-        self.session.stdin.write(f'echo "{command}"; {command}\n')
-        self.session.stdin.flush()
-        self._display_prompt()
-
-
-    def _display_prompt(self):
-        user = 'agent'
-        hostname = socket.gethostname()
-        self.session.stdin.write(f'echo -n "{user}@{hostname}:$(pwd)$ "\n')
-        self.session.stdin.flush()
+        window = self.tmux_session.windows[0]
+        pane = window.panes[0]
+        pane.send_keys(command)
 
     # ---------------------------------------------------------
     # context
@@ -71,16 +65,29 @@ class Terminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        text = self._get_pipe_content(timeout=0.1)
-        while text:
-            self.content += text
-            text = self._get_pipe_content(timeout=0.05)
-        return self.content + f' [Waiting for input]'
+        window = self.tmux_session.windows[0]
+        pane = window.panes[0]
+        pane_content = pane.capture_pane()
 
-    def _get_pipe_content(self, timeout : float) -> Optional[str]:
-        readable, _, _ = select.select([self.near_end], [], [], timeout)
-        return os.read(self.near_end, 1024).decode() if readable else None
+        text = ''
+        for l in pane_content:
+            text += f'{l}\n'
+        return text
+
 
     @classmethod
     def get_desc(cls) -> str:
         return "A terminal in which you can freely execute commands"
+
+if __name__ == "__main__":
+    t = Terminal()
+    t.open()
+    t.run(command='asdf')
+    time.sleep(2)
+
+    print(f'Currently terminal reads {t.get_text()}')
+
+    t.run(command='echo "Hellooo from Python via tmux!"')
+    time.sleep(2)
+    print(f'Currently terminal reads {t.get_text()}')
+
