@@ -46,7 +46,7 @@ class Workflowy(Workspace):
     # -------------------------------
     # Generics
 
-    def open(self, yaml_str : str):
+    def open(self, worktime_in_minutes : int):
         # self.root = Task(content='', is_root=True)
         #TODO: This is for testing purposes
         self.root = self.get_test_task()
@@ -55,7 +55,7 @@ class Workflowy(Workspace):
     def get_test_task(cls):
         root = Task(is_root=True)
         t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
-        t1.add_subtask(msg=f'Define the task properly: What information does the user expect')
+        t1.add_subtask(msg=f'Make a list of all information I think the user requires')
         t1.add_subtask(msg=f'Acquire information')
         t1.add_subtask(msg=f'Write out summary')
         return root
@@ -97,8 +97,6 @@ class Task:
         first_num = int(identifier[0])
         partial_id = identifier[1:]
 
-        print(f'Current identifier: {self.identifier}')
-        print(f'First num: {first_num}, partial_id: {partial_id}')
         return self.subtasks[first_num-1].get_descendant(partial_id)
 
     def complete(self):
