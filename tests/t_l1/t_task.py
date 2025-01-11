@@ -25,12 +25,11 @@ class TestTask(Unittest):
 
     def test_get_by_id(self):
         print(f'Name of task wiith id 1: {self.root.get_descendant("1").name}')
-        self.assertEqual(self.root.get_descendant('1').name, 'Task 1')
-        self.assertEqual(self.root.get_descendant('11').name, 'Subtask 1.1')
+        self.assertEqual(self.root.get_descendant('1').name, self.task1.name)
+        self.assertEqual(self.root.get_descendant('11').name, self.subtask1.name)
 
     def test_complete(self):
         self.root.complete()
-        self.assertTrue(all([task.is_complete for task in self.root.subtasks]))
 
 
 

@@ -31,15 +31,6 @@ class Workflowy(Workspace):
         super().__init__()
         self.root : Optional[Task] = None
 
-    @classmethod
-    def get_test_task(cls):
-        root = Task()
-        t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
-        t1.add_subtask(msg=f'Define the task properly: What information does the user expect')
-        t1.add_subtask(msg=f'Acquire information')
-        t1.add_subtask(msg=f'Write out summary')
-        return t1
-
     def add(self, task_id : str, msg : str):
         parent = self.root.get_descendant(task_id)
         parent.add_subtask(msg)
@@ -59,6 +50,15 @@ class Workflowy(Workspace):
         # self.root = Task(content='', is_root=True)
         #TODO: This is for testing purposes
         self.root = self.get_test_task()
+
+    @classmethod
+    def get_test_task(cls):
+        root = Task(is_root=True)
+        t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
+        t1.add_subtask(msg=f'Define the task properly: What information does the user expect')
+        t1.add_subtask(msg=f'Acquire information')
+        t1.add_subtask(msg=f'Write out summary')
+        return root
 
     def close(self, *args, **kwargs):
         self.root = None
@@ -96,6 +96,9 @@ class Task:
 
         first_num = int(identifier[0])
         partial_id = identifier[1:]
+
+        print(f'Current identifier: {self.identifier}')
+        print(f'First num: {first_num}, partial_id: {partial_id}')
         return self.subtasks[first_num-1].get_descendant(partial_id)
 
     def complete(self):
@@ -117,20 +120,9 @@ class Task:
         return tree
 
 
-
-
 if __name__ == "__main__":
-    def input_generator():
-        yield "20"
-        yield ""
+    wf = Workflowy()
+    wf.open(yaml_str='')
 
-    gen = input_generator()
-    def simulated_input():
-        return next(gen)
-
-    import builtins
-    builtins.input = simulated_input
-
-    from holytools.userIO import CLI
-    cli = CLI(Workflowy)
-    cli.command_loop()
+    print(wf.root.get_tree())
+    wf.complete(task_id='11')
