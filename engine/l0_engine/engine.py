@@ -3,10 +3,11 @@ import time
 from api import Entry
 from engine.l1_agents import Agent, StepInfo
 from engine.l2_models import OpenAIModel
-from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
+from engine.l3_aos import AOS, Terminal
 from holytools.logging import Loggable
 from .dev_monitor import MonitorServer
 from .settings import LotusCredentials
+
 
 # ---------------------------------------------------------
 
@@ -22,9 +23,8 @@ class LotusEngine(Loggable):
         return OpenAIModel.default_model(api_key=self.creds.get_openai_apikey())
 
     def _get_aos(self):
-        browser = Browser(google_api_key=self.creds.get_google_apikey(),
-                          searchengine_id=self.creds.get_searchengine_id())
-        return AOS(workspaces=[TextEditor(), Terminal(), FileExplorer(), browser])
+        _ = self
+        return AOS(workspaces=[Terminal()])
 
     # ---------------------------------------------
     # run routine

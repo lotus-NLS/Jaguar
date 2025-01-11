@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import threading
-
 from func_timeout import FunctionTimedOut
 
 from api import Entry, TextPipe
@@ -45,9 +43,13 @@ class Agent(Loggable):
     def handle(self, task: StepInfo) -> TextPipe:
         if task.memory_update:
             self.memory.append(task.memory_update)
+        context = self.get_context()
+        if task.notice:
+            context += Context.singleton(entry=task.notice)
+        print(f'Task notice = {task.notice}')
 
         try:
-            step = self.model.get_generation(context=self.get_context(), options=task.get_options())
+            step = self.model.get_generation(context=context, options=task.get_options())
             pipe = TextPipe()
             self.write(generation=step, pipe=pipe)
             self.act(generation=step)
@@ -57,7 +59,6 @@ class Agent(Loggable):
         except BaseException as e:
             self.log(f'Error in getting generation: {e.__repr__()}', level=LogLevel.ERROR)
             pipe = TextPipe.failed()
-            raise e
         return pipe
 
     def get_context(self) -> Context:

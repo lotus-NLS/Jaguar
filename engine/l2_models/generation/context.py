@@ -15,6 +15,10 @@ class Context:
     docs: list[ToolDoc] = field(default_factory=list)
 
     @classmethod
+    def singleton(cls, entry : Entry) -> Context:
+        return cls(entries=[entry])
+
+    @classmethod
     def from_aos(cls, aos : AOS):
         open_workspaces = [workspace for workspace in aos.get_workspaces() if workspace.is_active]
         entries = []
@@ -36,6 +40,9 @@ class Context:
         self.entries = []
 
     def __iadd__(self, other : Context):
+        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+
+    def __add__(self, other : Context):
         return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
 
     def as_str(self, section_header : str) -> str:

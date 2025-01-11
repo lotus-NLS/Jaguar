@@ -31,6 +31,15 @@ class Workflowy(Workspace):
         super().__init__()
         self.root : Optional[Task] = None
 
+    @classmethod
+    def get_test_task(cls):
+        root = Task()
+        t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
+        t1.add_subtask(msg=f'Define the task properly: What information does the user expect')
+        t1.add_subtask(msg=f'Acquire information')
+        t1.add_subtask(msg=f'Write out summary')
+        return t1
+
     def add(self, task_id : str, msg : str):
         parent = self.root.get_descendant(task_id)
         parent.add_subtask(msg)
@@ -47,7 +56,9 @@ class Workflowy(Workspace):
     # Generics
 
     def open(self, yaml_str : str):
-        self.root = Task(content='', is_root=True)
+        # self.root = Task(content='', is_root=True)
+        #TODO: This is for testing purposes
+        self.root = self.get_test_task()
 
     def close(self, *args, **kwargs):
         self.root = None
@@ -56,13 +67,16 @@ class Workflowy(Workspace):
         return f'Provides a task list with subtask functionality. Tasks can be added, completed and deleted'
 
     def get_text(self) -> str:
-        return self.root.get_tree()
+        return (f'You are currently engaged in work mode. The user is not present and what you write will only be visible to you.\n'
+                f'These are your tasks:\n'
+                f'{self.root.get_tree()}'
+                f'Upon completing these tasks you will automatically return to conversation mode')
 
     def get_image(self) -> Optional[PILImage]:
         return None
 
 class Task:
-    def __init__(self, content : str, identifier : str = '', is_root : bool = False):
+    def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
         self.name : str = content
         self.identifier : str = identifier
