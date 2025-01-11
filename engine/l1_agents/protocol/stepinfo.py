@@ -70,6 +70,12 @@ class Task:
         self.is_complete : bool = False
         self.subtasks : list[Task] = []
 
+    def add_subtask(self, msg : str):
+        new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
+        self.subtasks.append(new_task)
+        return new_task
+
+
     def get_descendant(self, identifier : str) -> Task:
         if len(identifier) == 0:
             return self
@@ -78,16 +84,10 @@ class Task:
         partial_id = identifier[1:]
         return self.subtasks[first_num-1].get_descendant(partial_id)
 
-
     def complete(self):
         self.is_complete = True
         for st in self.subtasks:
             st.complete()
-
-    def add_subtask(self, msg : str):
-        new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
-        self.subtasks.append(new_task)
-        return new_task
 
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:

@@ -1,5 +1,3 @@
-import unittest
-
 from engine.l1_agents.protocol.stepinfo import Task
 from holytools.devtools import Unittest
 
@@ -19,7 +17,11 @@ class TestTask(Unittest):
         self.task4.complete()
 
     def test_get_Tree(self):
-        print(self.root.get_tree())
+        tree = self.root.get_tree()
+        self.assertIn(f'	[x] 12: Subtask 1.2', tree)
+        self.assertIn(f'[ ] 2: Task 2',tree)
+
+        print(f'Exmple root tree task tree:\n{tree}')
 
     def test_get_by_id(self):
         print(f'Name of task wiith id 1: {self.root.get_descendant("1").name}')
@@ -28,7 +30,6 @@ class TestTask(Unittest):
 
     def test_complete(self):
         self.root.complete()
-        print(self.root.get_tree())
         self.assertTrue(all([task.is_complete for task in self.root.subtasks]))
 
 
