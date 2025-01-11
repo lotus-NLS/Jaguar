@@ -19,7 +19,11 @@ class LLM(Loggable):
         super().__init__()
         self._name : str = name
         self.token_cap : int = token_cap
-        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
+
+        # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
+        name = name if not name == 'o1' else 'o1-'
+        self.tokenizer: Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(name))
+        # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
 
 
     @abstractmethod
