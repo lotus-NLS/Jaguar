@@ -3,7 +3,7 @@ import string
 import random
 
 from api import TextPipe
-from engine.l1_agents import Agent, Task
+from engine.l1_agents import Agent, StepInfo
 
 
 class MockPipe(TextPipe):
@@ -24,7 +24,7 @@ class MockPipe(TextPipe):
 
 
 class MockEntity(Agent):
-    def handle(self, task: Task) -> TextPipe:
+    def handle(self, task: StepInfo) -> TextPipe:
         _, __ = self, task
         return MockPipe()
 

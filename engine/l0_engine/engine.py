@@ -7,7 +7,7 @@ from typing import Optional
 from flask import Flask
 
 from api import Entry
-from engine.l1_agents import Agent, Task
+from engine.l1_agents import Agent, StepInfo
 from engine.l2_models import Context
 from engine.l2_models import OpenAIModel
 from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
@@ -40,7 +40,7 @@ class LotusEngine(Loggable):
             if user_input == 'exit':
                 break
 
-            task = Task(new_entries=[Entry.user(msg=user_input)])
+            task = StepInfo(memory=Entry.user(msg=user_input))
             response = self.agent.handle(task=task)
             for text in response.get_text_stream():
                 print(text, end='', flush=True)
@@ -49,11 +49,12 @@ class LotusEngine(Loggable):
             time.sleep(0.5)
 
     def work(self):
-        while self.agent.
+        while self.agent.is_working():
+            self.agent.work()
 
     def request_terminal(self):
         self._launch()
-        task = Task(new_entries=[Entry.user(msg='Open terminal in /home/daniel')])
+        task = StepInfo(memory=Entry.user(msg='Open terminal in /home/daniel'))
         response = self.agent.handle(task=task)
         for text in response.get_text_stream():
             print(text)

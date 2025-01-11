@@ -18,7 +18,6 @@ class Identity:
         msg += f'You operate on the OS: {self.os_information}'
         return msg
 
-
     @staticmethod
     def get_os_info():
         system = f'{platform.system()}'

@@ -5,7 +5,7 @@ import threading
 from func_timeout import FunctionTimedOut
 
 from api import Entry, TextPipe
-from engine.l1_agents.protocol import Identity, Task
+from engine.l1_agents.protocol import Identity, StepInfo
 from engine.l2_models import Context, Generation
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
@@ -21,6 +21,7 @@ class Agent(Loggable):
         self.model: LLM = model
         self.aos : AOS = aos
         self.identity : Identity = identity
+        self.workflowy : Workflowy = Workflowy()
 
         self.memory: list[Entry] = []
 
@@ -38,8 +39,10 @@ class Agent(Loggable):
     #     log_msg = '##Automatic message: Provide the user with an update'
     #     return Entry.user(msg=log_msg)
 
-    def handle(self, task: Task) -> TextPipe:
-        self.memory += task.new_entries
+    def handle(self, task: StepInfo) -> TextPipe:
+        if task.memory_update:
+            self.memory.append(task.memory_update)
+
         try:
             step = self.model.get_generation(context=self.get_context(), options=task.get_options())
             pipe = TextPipe()
@@ -91,6 +94,7 @@ class Agent(Loggable):
     # context
 
     def is_working(self) -> bool:
+        pass
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'
