@@ -25,8 +25,7 @@ class MonitorServer:
             html_context = f'<pre> {html_context} </pre>'
             return html_context
 
-
-    def run(self):
+    def serve(self):
         def do():
             logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
             self.app.run(host=self.socket.ip, port=self.socket.port)
