@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+from io import StringIO
 from typing import Optional
 
 from PIL.Image import Image as PILImage
@@ -108,8 +110,17 @@ class Workflowy(Workspace):
 
 
 if __name__ == "__main__":
-    ws = Workflowy()
-    ws.open(yaml_str='')
+    def input_generator():
+        yield "20"
+        yield ""
+
+    gen = input_generator()
+
+    def simulated_input():
+        return next(gen)
+
+    import builtins
+    builtins.input = simulated_input
 
     from holytools.userIO import CLI
     cli = CLI(Workflowy)
