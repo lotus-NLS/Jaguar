@@ -1,18 +1,11 @@
-import html
-import logging
-import threading
 import time
-from typing import Optional
-
-from flask import Flask
 
 from api import Entry
 from engine.l1_agents import Agent, StepInfo
-from engine.l2_models import Context
 from engine.l2_models import OpenAIModel
 from engine.l3_aos import AOS, TextEditor, Terminal, FileExplorer, Browser
 from holytools.logging import Loggable
-from holytools.network import Socket
+from .dev_monitor import MonitorServer
 from .settings import LotusCredentials
 
 # ---------------------------------------------------------
@@ -23,6 +16,7 @@ class LotusEngine(Loggable):
         self.creds = LotusCredentials(use_local=use_local_credentials)
         self.agent: Agent = Agent(model=self.get_model(), aos=self.get_aos())
         self.dev_monitor : MonitorServer = MonitorServer(agent=self.agent)
+        self.is_alive : bool = True
 
     def get_model(self):
         return OpenAIModel.default_model(api_key=self.creds.get_openai_apikey())
@@ -33,24 +27,33 @@ class LotusEngine(Loggable):
 
     # ---------------------------------------------
 
-    def converse(self):
+    def run(self):
         self._launch()
-        while True:
-            user_input = input(f'\nUser: ')
-            if user_input == 'exit':
-                break
+        while self.is_alive:
+            if self.agent.is_working():
+                self.work_step()
+            else:
+                self.converse_step()
 
-            task = StepInfo(memory=Entry.user(msg=user_input))
-            response = self.agent.handle(task=task)
-            for text in response.get_text_stream():
-                print(text, end='', flush=True)
-                time.sleep(0.05)
+        self.stop()
 
-            time.sleep(0.5)
+    def work_step(self):
+        work_task = StepInfo(notice=Entry.agent(msg=f'My current todo list:\n'
+                                                    f'{self.agent.workflowy.root_objective.get_tree()}'))
+        self.agent.handle(task=work_task)
 
-    def work(self):
-        while self.agent.is_working():
-            self.agent.work()
+
+    def converse_step(self):
+        user_input = input(f'\nUser: ')
+        if user_input == 'exit':
+            self.is_alive = False
+
+        task = StepInfo(memory=Entry.user(msg=user_input))
+        response = self.agent.handle(task=task)
+        for text in response.get_text_stream():
+            print(text, end='', flush=True)
+            time.sleep(0.05)
+
 
     def request_terminal(self):
         self._launch()
@@ -68,31 +71,4 @@ class LotusEngine(Loggable):
         self.log(f'Lotus stopped')
         self.dev_monitor.kill()
 
-
-class MonitorServer:
-    def __init__(self, agent : Agent, socket : Socket = Socket.get_localhost(port=5000)):
-        self.agent : Agent = agent
-        self.socket : Socket = socket
-        self.app: Flask = Flask(__name__)
-        self.thread: Optional[threading.Thread] = None
-
-        @self.app.route(f'/context')
-        def get_context_view() -> str:
-            context = agent.get_context()
-            context_str = context.as_str(section_header=f'Agent context')
-            escaped_context = html.escape(context_str)
-            html_context = escaped_context.replace("\n", "<br>")
-            html_context = f'<pre> {html_context} </pre>'
-            return html_context
-
-
-    def run(self):
-        def do():
-            logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-            self.app.run(host=self.socket.ip, port=self.socket.port)
-        self.thread = threading.Thread(target=do)
-        self.thread.start()
-
-    def kill(self):
-        self.thread._stop()
 
