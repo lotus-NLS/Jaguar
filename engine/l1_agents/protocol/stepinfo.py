@@ -74,9 +74,6 @@ class Workflowy(Workspace):
         super().__init__()
         self.root_objective : Optional[Objective] = None
 
-    def _is_active(self) -> bool:
-        return not self.root_objective is None
-
     def add(self, task_id : str, msg : str):
         parent = self.root_objective.get_descendant(task_id)
         parent.add_subtask(msg)

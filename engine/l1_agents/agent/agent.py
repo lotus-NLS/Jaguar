@@ -6,6 +6,7 @@ from func_timeout import FunctionTimedOut
 
 from api import Entry, TextPipe
 from engine.l1_agents.protocol import Identity, StepInfo
+from engine.l1_agents.protocol.stepinfo import Workflowy
 from engine.l2_models import Context, Generation
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
@@ -94,7 +95,7 @@ class Agent(Loggable):
     # context
 
     def is_working(self) -> bool:
-        pass
+        return not self.workflowy.root_objective is None
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'
