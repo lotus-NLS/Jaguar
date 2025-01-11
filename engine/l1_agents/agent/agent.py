@@ -99,9 +99,4 @@ class Agent(Loggable):
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'
-        system_msg += f'Available workspaces: \n'
-        for workspace in self.aos.get_workspaces():
-            system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'
-        system_msg += (f'The workspace has to be opened first in order for you to make use of it. '
-                       f'The outlined functionalities will only then become available')
         return Entry.system(msg=system_msg)
