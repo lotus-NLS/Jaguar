@@ -65,7 +65,6 @@ class LotusEngine(Loggable):
     def _launch(self):
         self.log(f'Lotus started')
         self.dev_monitor.run()
-        time.sleep(1)
 
     def stop(self):
         self.log(f'Lotus stopped')

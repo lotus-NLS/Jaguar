@@ -22,7 +22,9 @@ class Agent(Loggable):
         self.model: LLM = model
         self.aos : AOS = aos
         self.identity : Identity = identity
+
         self.workflowy : Workflowy = Workflowy()
+        self.aos.add_workspace(ws=self.workflowy)
 
         self.memory: list[Entry] = []
 
@@ -47,10 +49,8 @@ class Agent(Loggable):
         try:
             step = self.model.get_generation(context=self.get_context(), options=task.get_options())
             pipe = TextPipe()
-            def do():
-                self.write(generation=step, pipe=pipe)
-                self.act(generation=step)
-            threading.Thread(target=do).start()
+            self.write(generation=step, pipe=pipe)
+            self.act(generation=step)
         except FunctionTimedOut as e:
             self.log(f'Attempt to retrieve generation timed out: {e}', level=LogLevel.WARNING)
             pipe = TextPipe.failed()

@@ -23,7 +23,7 @@ class OpenAIModel(LLM):
 
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
-        return cls(name='o1', api_key=api_key)
+        return cls(name='gpt-4o-2024-08-06', api_key=api_key)
 
     def get_generation(self, context : Context, options: Options) -> Generation:
         self.check_token_cap(context=context)

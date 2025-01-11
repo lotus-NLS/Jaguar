@@ -11,13 +11,22 @@ class AOS(Loggable):
     def __init__(self, workspaces : list[Workspace]):
         super().__init__()
         self._workspaces : list[Workspace] = workspaces
-        ws_namelist = [workspace.get_name() for workspace in workspaces]
+        self._check_ws_uniqueness()
+
+    def add_workspace(self, ws : Workspace):
+        self._workspaces.append(ws)
+        self._check_ws_uniqueness()
+
+    def _check_ws_uniqueness(self):
+        ws_namelist = [workspace.get_name() for workspace in self._workspaces]
         ws_nameset = set(ws_namelist)
         if len(ws_namelist) != len(ws_nameset):
             raise ValueError('Workspace names must be unique')
 
     # ---------------------------------------------------
     # get
+
+
 
     def get_tools(self) -> list[Tool]:
         tools = []
