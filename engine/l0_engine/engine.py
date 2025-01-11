@@ -39,7 +39,7 @@ class LotusEngine(Loggable):
 
     def work_step(self):
         work_task = StepInfo(notice=Entry.agent(msg=f'My current todo list:\n'
-                                                    f'{self.agent.workflowy.root_objective.get_tree()}'))
+                                                    f'{self.agent.workflowy.root.get_tree()}'))
         self.agent.handle(task=work_task)
 
 

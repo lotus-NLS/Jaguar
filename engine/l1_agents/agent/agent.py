@@ -95,7 +95,7 @@ class Agent(Loggable):
     # context
 
     def is_working(self) -> bool:
-        return not self.workflowy.root_objective is None
+        return not self.workflowy.root is None
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'

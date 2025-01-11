@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sys
-from io import StringIO
 from typing import Optional
 
 from PIL.Image import Image as PILImage
@@ -9,6 +7,7 @@ from PIL.Image import Image as PILImage
 from api import Entry
 from engine.l2_models import Options, CallOptions
 from engine.l3_aos.workspace import Workspace
+
 
 # ------------------------------------------------------------------------
 
@@ -27,16 +26,51 @@ class StepInfo:
         return Options(call_options=call_options)
 
 
-class Objective:
+class Workflowy(Workspace):
+    def __init__(self):
+        super().__init__()
+        self.root : Optional[Task] = None
+
+    def add(self, task_id : str, msg : str):
+        parent = self.root.get_descendant(task_id)
+        parent.add_subtask(msg)
+
+    def complete(self, task_id : str):
+        self.root.get_descendant(task_id).complete()
+
+    def delete(self, task_id : str):
+        partial_id = task_id[:-1]
+        parent = self.root.get_descendant(partial_id)
+        del parent.subtasks[int(task_id[-1])]
+
+    # -------------------------------
+    # Generics
+
+    def open(self, yaml_str : str):
+        self.root = Task(content='', is_root=True)
+
+    def close(self, *args, **kwargs):
+        self.root = None
+
+    def get_desc(self) -> str:
+        return f'Provides a task list with subtask functionality. Tasks can be added, completed and deleted'
+
+    def get_text(self) -> str:
+        return self.root.get_tree()
+
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+class Task:
     def __init__(self, content : str, identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
-        self.content : str = content
+        self.name : str = content
         self.identifier : str = identifier
 
         self.is_complete : bool = False
-        self.subtasks : list[Objective] = []
+        self.subtasks : list[Task] = []
 
-    def get_descendant(self, identifier : str) -> Objective:
+    def get_descendant(self, identifier : str) -> Task:
         if len(identifier) == 0:
             return self
 
@@ -51,14 +85,14 @@ class Objective:
             st.complete()
 
     def add_subtask(self, msg : str):
-        new_task = Objective(content=msg, identifier=f'{self.identifier}{len(self.subtasks)+1}')
+        new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)
         return new_task
 
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:
             conditional_mark = 'x' if self.is_complete else ' '
-            tree = f'{pre_indent}[{conditional_mark}] {self.identifier}: {self.content}\n'
+            tree = f'{pre_indent}[{conditional_mark}] {self.identifier}: {self.name}\n'
         else:
             tree = ''
 
@@ -69,41 +103,6 @@ class Objective:
         return tree
 
 
-class Workflowy(Workspace):
-    def __init__(self):
-        super().__init__()
-        self.root_objective : Optional[Objective] = None
-
-    def add(self, task_id : str, msg : str):
-        parent = self.root_objective.get_descendant(task_id)
-        parent.add_subtask(msg)
-
-    def complete(self, task_id : str):
-        self.root_objective.get_descendant(task_id).complete()
-
-    def delete(self, task_id : str):
-        partial_id = task_id[:-1]
-        parent = self.root_objective.get_descendant(partial_id)
-        del parent.subtasks[int(task_id[-1])]
-
-    # -------------------------------
-    # Generics
-
-    def open(self, yaml_str : str):
-        self.root_objective = Objective(content='', is_root=True)
-
-    def close(self, *args, **kwargs):
-        self.root_objective = None
-
-    def get_desc(self) -> str:
-        return f'Provides a task list with subtask functionality. Tasks can be added, completed and deleted'
-
-    def get_text(self) -> str:
-        return self.root_objective.get_tree()
-
-    def get_image(self) -> Optional[PILImage]:
-        return None
-
 
 
 if __name__ == "__main__":
@@ -112,7 +111,6 @@ if __name__ == "__main__":
         yield ""
 
     gen = input_generator()
-
     def simulated_input():
         return next(gen)
 
