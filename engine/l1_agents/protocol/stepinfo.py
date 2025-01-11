@@ -8,6 +8,7 @@ from api import Entry
 from engine.l2_models import Options, CallOptions
 from engine.l3_aos.workspace import Workspace
 
+# ------------------------------------------------------------------------
 
 class StepInfo:
     def __init__(self, memory : Optional[Entry] = None, notice :  Optional[Entry] = None, required_tool_name : Optional[str] = None):
@@ -23,14 +24,24 @@ class StepInfo:
         call_options = CallOptions(call_allowed=True, required_tool_name=self.required_tool)
         return Options(call_options=call_options)
 
+
 class Objective:
-    def __init__(self, content : str, identifier : str = 'A', is_root : bool = False):
+    def __init__(self, content : str, identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
         self.content : str = content
         self.identifier : str = identifier
 
         self.is_complete : bool = False
         self.subtasks : list[Objective] = []
+
+    def get_descendant(self, identifier : str) -> Objective:
+        if len(identifier) == 0:
+            return self
+
+        first_num = int(identifier[0])
+        partial_id = identifier[1:]
+        return self.subtasks[first_num-1].get_descendant(partial_id)
+
 
     def complete(self):
         self.is_complete = True
@@ -59,20 +70,47 @@ class Objective:
 class Workflowy(Workspace):
     def __init__(self):
         super().__init__()
-        self.root_objective : Objective = Objective()
+        self.root_objective : Optional[Objective] = None
+
+    def _is_active(self) -> bool:
+        return not self.root_objective is None
+
+    def add(self, task_id : str, msg : str):
+        parent = self.root_objective.get_descendant(task_id)
+        parent.add_subtask(msg)
+
+    def complete(self, task_id : str):
+        self.root_objective.get_descendant(task_id).complete()
+
+    def delete(self, task_id : str):
+        partial_id = task_id[:-1]
+        parent = self.root_objective.get_descendant(partial_id)
+        del parent.subtasks[int(task_id[-1])]
+
+    # -------------------------------
+    # Generics
+
+    def open(self, yaml_str : str):
+        self.root_objective = Objective(content='', is_root=True)
 
     def close(self, *args, **kwargs):
-        pass
+        self.root_objective = None
 
     def get_desc(self) -> str:
-        pass
+        return f'Provides a task list with subtask functionality. Tasks can be added, completed and deleted'
 
     def get_text(self) -> str:
-        pass
+        return self.root_objective.get_tree()
 
     def get_image(self) -> Optional[PILImage]:
         return None
 
 
-    def open(self, yaml_str : str):
-        pass
+
+if __name__ == "__main__":
+    ws = Workflowy()
+    ws.open(yaml_str='')
+
+    from holytools.userIO import CLI
+    cli = CLI(Workflowy)
+    cli.command_loop()
