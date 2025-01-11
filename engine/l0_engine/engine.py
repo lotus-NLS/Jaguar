@@ -48,6 +48,9 @@ class LotusEngine(Loggable):
 
             time.sleep(0.5)
 
+    def work(self):
+        while self.agent.
+
     def request_terminal(self):
         self._launch()
         task = Task(new_entries=[Entry.user(msg='Open terminal in /home/daniel')])
@@ -74,14 +77,8 @@ class MonitorServer:
 
         @self.app.route(f'/context')
         def get_context_view() -> str:
-            system_context = Context(entries=[self.agent.get_system_prompt()])
-            os_context = Context.from_aos(aos=self.agent.aos)
-            memory = Context(entries=self.agent.memory)
-
-            context_str = system_context.as_str(section_header=f'System prompt')
-            context_str += os_context.as_str(section_header=f'Lotus Operating System')
-            context_str += memory.as_str(section_header=f'Memory')
-
+            context = agent.get_context()
+            context_str = context.as_str(section_header=f'Agent context')
             escaped_context = html.escape(context_str)
             html_context = escaped_context.replace("\n", "<br>")
             html_context = f'<pre> {html_context} </pre>'

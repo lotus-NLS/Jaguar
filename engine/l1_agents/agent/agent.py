@@ -90,8 +90,10 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # context
 
+    def is_working(self) -> bool:
+
     def get_system_prompt(self) -> Entry:
-        system_msg = f'{self.identity.get_str()}\n'
+        system_msg = f'{self.identity.as_str()}\n'
         system_msg += f'Available workspaces: \n'
         for workspace in self.aos.get_workspaces():
             system_msg += f'- {workspace.get_name()}: {workspace.get_desc()}\n'

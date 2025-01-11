@@ -7,20 +7,20 @@ from enum import Enum
 class Identity:
     def __init__(self, core : Core):
         self.core : Core = core
-        self.os_information : str = self.get_detailed_os_info()
+        self.os_information : str = self.get_os_info()
 
     @classmethod
     def GOTO(cls):
         return cls(core=Core.GOTO)
 
-    def get_str(self) -> str:
+    def as_str(self) -> str:
         msg = f'{self.core.value}\n'
         msg += f'You operate on the OS: {self.os_information}'
         return msg
 
 
     @staticmethod
-    def get_detailed_os_info():
+    def get_os_info():
         system = f'{platform.system()}'
         detail = system
 
@@ -40,11 +40,7 @@ class Identity:
 
 
 class Core(Enum):
-    GOTO = ("You are 'GOTO' a software development and system management agent based on a LLM,"
-            "embedded in the Lotus framework."
-            "You provide concise and actionable information, and talk only in very essential bullet points, "
-            "whenever you give information you are straight to the point "
-            "You are designed to be an expert at planning and performing actions with a high degree of independence"
-            "and you are *very, very* thorough in verify your work after completion "
-            "The Lotus framework provides you with workspaces specfically for you, not for the user."
-            "They enable you to interact with and navigate the system you're deployed independently of the user")
+    GOTO = ("You are 'GOTO' a software development and system management agent."
+            "At any time you have the option available to you to enter work mode, which decouples"
+            "you from the user and allows you to freely perform tasks and take as many steps and time"
+            "as you need to work on your current objective")

@@ -10,15 +10,14 @@ from engine.l2_models import Options, CallOptions
 class Task:
     def __init__(self, new_entries : list[Entry] = None, required_tool_name : Optional[str] = None):
         self.new_entries : list[Entry] = new_entries if new_entries else []
-        self.selected_tool : Optional[str] = required_tool_name
-        self.skip_feedback : bool = False if self.selected_tool is None else True
+        self.required_tool : Optional[str] = required_tool_name
 
     @classmethod
     def make_default(cls, msg : str):
         return cls(new_entries=[Entry.user(msg=msg)])
 
     def get_options(self) -> Options:
-        call_options = CallOptions(call_allowed=True, required_tool_name=self.selected_tool)
+        call_options = CallOptions(call_allowed=True, required_tool_name=self.required_tool)
         return Options(call_options=call_options)
 
 
