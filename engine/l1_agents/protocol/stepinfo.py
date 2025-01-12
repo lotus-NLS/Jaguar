@@ -84,6 +84,28 @@ class Task:
         self.is_complete : bool = False
         self.subtasks : list[Task] = []
 
+    @classmethod
+    def from_yaml(cls, s : str):
+        lines = s.split('\n')
+        root = Task(is_root=True)
+        ancestors = [root]
+
+        def get_ancestor_indent():
+            return len(ancestors) - 2
+
+        for l in lines:
+            indentation = len(l) - len(l.lstrip(' '))
+            if indentation > get_ancestor_indent() + 1:
+                raise ValueError(f'Indentation error at line: {l}')
+
+            while indentation < get_ancestor_indent() + 1:
+                ancestors.pop()
+            if indentation == get_ancestor_indent() + 1:
+                a = ancestors[-1]
+                new = a.add_subtask(msg=l.strip(' -'))
+                ancestors.append(new)
+        return root
+
     def add_subtask(self, msg : str):
         new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)

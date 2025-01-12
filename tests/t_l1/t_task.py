@@ -13,6 +13,12 @@ class TestTask(Unittest):
         self.subtask2 = self.task1.add_subtask("Subtask 1.2")
         self.subtask3 = self.task1.add_subtask("Subtask 1.3")
 
+        self.yaml_tree= (f'- Task 1\n'
+                    f' -Subtask 1.1\n'
+                    f' -Subtask 1.2\n'
+                    f' -Subtask 1.3\n'
+                    f'- Task 2')
+
         self.task1.complete()
         self.task4.complete()
 
@@ -31,6 +37,19 @@ class TestTask(Unittest):
     def test_complete(self):
         self.root.complete()
 
+
+    def test_from_yaml_str(self):
+        yaml_str = (f'- Task 1\n'
+                    f' -Subtask 1.1\n'
+                    f'- Task 2')
+        root = Task.from_yaml(yaml_str)
+        tree = root.get_tree()
+
+        lines = yaml_str.split()
+        print(f'Yaml generated task tree: \n{tree}')
+        for l in lines:
+            l = l.strip(f' -')
+            self.assertIn(l, tree)
 
 
 if __name__ == '__main__':
