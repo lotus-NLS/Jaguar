@@ -45,7 +45,7 @@ class LLM(Loggable):
 
 
 
-class Tokenizer(Loggable):
+class Tokenizer:
     def __init__(self, encoding : Encoding):
         super().__init__()
         self.encoding : encoding = encoding
