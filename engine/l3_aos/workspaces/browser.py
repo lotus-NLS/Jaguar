@@ -102,3 +102,66 @@ class Browser(Workspace):
 
     def get_desc(self) -> str:
         return f"A browser allowing you to perform a google search and visit sites"
+
+
+# Draft for selenium based browing tool
+# import time
+#
+# from bs4 import BeautifulSoup
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.keys import Keys
+#
+#
+# # Create a new Chrome session
+# driver = webdriver.Chrome()
+# driver.get("https://www.google.com/")
+#
+# # Find the search bar, enter text, and submit the search
+# # search_bar = driver.find_element(By.NAME, "q")
+# # search_bar.send_keys("Selenium WebDriver")  # Change your search query here
+# # search_bar.send_keys(Keys.RETURN)  # Pressing the Enter key
+#
+# # Wait for the cookie message
+# time.sleep(1)  # Pause to allow the page and its elements to load fully
+#
+# # Try to find and click the 'Accept all' button for cookies
+# try:
+#     accept_cookies_button = driver.find_element(By.XPATH, r'//*[@id="L2AGLb"]/div')
+#     accept_cookies_button.click()
+# except Exception as e:
+#     print("Cookie acceptance button not found:", e)
+#
+# search_bar = driver.find_element(By.NAME, "q")
+# search_bar.send_keys("Selenium WebDriver")  # Change your search query here
+# search_bar.send_keys(Keys.RETURN)  # Pressing the Enter key
+#
+# # Optionally, print the current URL to verify the search
+# print(driver.current_url)
+#
+#
+# html_content = driver.page_source
+# soup = BeautifulSoup(html_content, 'html.parser')
+#
+# links = soup.find_all('a', href=True)
+#
+# # Additionally, find all clickable elements like buttons
+# buttons = soup.find_all('button')
+# clickable_divs = soup.find_all('button')
+#
+# # Print all found elements
+# print("Links:")
+# for link in links:
+#     print(link)
+#
+# print("\nButtons and other clickable elements:")
+# for button in buttons:
+#     print(button.text)
+#
+# for div in clickable_divs:
+#     print(div)
+#
+# input()
+# driver.quit()
+#
+#
