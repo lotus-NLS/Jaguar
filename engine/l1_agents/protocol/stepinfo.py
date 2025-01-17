@@ -49,10 +49,10 @@ class Workflowy(Workspace):
     def open(self):
         # self.root = Task(content='', is_root=True)
         #TODO: This is for testing purposes
-        self.root = self.get_test_task()
+        self.root = self._get_test_task()
 
     @classmethod
-    def get_test_task(cls):
+    def _get_test_task(cls):
         root = Task(is_root=True)
         t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
         t1.add_subtask(msg=f'Make a list of all information I think the user requires')

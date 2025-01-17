@@ -2,7 +2,7 @@ import openai
 import requests
 from func_timeout import func_timeout, FunctionTimedOut
 
-from holytools.configs import PassConfigs
+from holytools.configs import FileConfigs
 from holytools.logging import Loggable
 
 # --------------------------------------------
@@ -11,7 +11,7 @@ class LotusCredentials(Loggable):
     def __init__(self, use_local : bool, enable_validation : bool = False):
         super().__init__()
         if use_local:
-            self.configs = PassConfigs()
+            self.configs = FileConfigs.credentials()
         else:
             raise NotImplementedError
 
