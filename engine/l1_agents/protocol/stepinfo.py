@@ -50,7 +50,10 @@ class Workflowy(Workspace):
         self.root = Task(content='', is_root=True)
 
     @classmethod
-    def hardware_summary(cls):
+    def _hardware_summary(cls):
+        wf = Workflowy()
+        wf.open()
+
         root = Task(is_root=True)
         t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
         subtask = t1.add_subtask(msg=f'Acquire information')
@@ -60,9 +63,8 @@ class Workflowy(Workspace):
         subtask.add_subtask(msg=f'Disk information')
         subtask.add_subtask(msg=f'Motherboard information')
         t1.add_subtask(msg=f'Write out summary')
-        
-        wf = Workflowy()
         wf.root = root
+
         return wf
 
     def close(self, *args, **kwargs):

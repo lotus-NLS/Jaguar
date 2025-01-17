@@ -48,11 +48,12 @@ class SemanticUnittest(Unittest):
         print(f'\"{property_query}\": {yn.y_n_arg.get_value()}')
         self.assertTrue(yn.y_n_arg.get_value() == 'y')
 
+
 class HardwareTask(SemanticUnittest):
     def test_components_there(self):
         engine = LotusEngine()
-        answer = engine.query_routine(workflowy=Workflowy.hardware_summary(),
-                                      query=f'Please give me a summary of my hardware', max_steps=5)
+        answer = engine.resarch_routine(workflowy=Workflowy._hardware_summary(),
+                                        query=f'Please give me a summary of my hardware', max_steps=5)
 
         property_query = (f'The given answer provdes information about the following hardware devices:'
                           f'CPU, GPU, RAM, Disks and Motherboard')

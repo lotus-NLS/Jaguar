@@ -35,8 +35,9 @@ class LotusEngine(Loggable):
 
         self._stop()
 
-    def query_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
+    def resarch_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
         self._agent.workflowy = workflowy
+
         num_steps = 0
         while self._agent.is_working() and num_steps < max_steps:
             self._work_step()
@@ -46,6 +47,7 @@ class LotusEngine(Loggable):
         answer = ''
         for text in response.get_text_stream():
             answer += text
+        print(f'The following answer was provided: {answer}')
         return answer
 
     # ---------------------------------------------
