@@ -1,4 +1,5 @@
 from api import Entry
+from engine import LotusEngine
 from holytools.devtools import Unittest
 
 from engine.l0_engine.settings import LotusCredentials
@@ -46,10 +47,14 @@ class SemanticUnittest(Unittest):
         print(f'\"{property_query}\": {yn.y_n_arg.get_value()}')
         self.assertTrue(yn.y_n_arg.get_value() == 'y')
 
-class ExampleTest(SemanticUnittest):
+class HardwareTask(SemanticUnittest):
+    def setUp(self):
+        engine = LotusEngine()
+        engine.query_routine()
+
     def test_simple(self):
         self.assertProperty(msg=f'3', property_query=f'The given number is larger than two')
 
 
 if __name__ == "__main__":
-    ExampleTest.execute_all()
+    HardwareTask.execute_all()
