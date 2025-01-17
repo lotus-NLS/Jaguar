@@ -16,6 +16,10 @@ class Generation:
         self.text : str = ''
         self.toolcall_map : dict[int, ToolCall] = {}
 
+    def exhaust(self):
+        for _ in self:
+            pass
+
     def __iter__(self) -> Iterator[Chunk]:
         return self
 

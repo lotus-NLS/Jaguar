@@ -1,8 +1,8 @@
 import time
-from typing import Optional
+from typing import Optional, Tuple
 
 from api import Entry
-from engine.l3_aos.tools import Tool, ToolArg, ToolCall
+from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, FileMock
 
 from engine.l2_models import Options, OpenAIModel, Context, Generation
@@ -20,12 +20,13 @@ class OpenAITest(CredTest):
         self.text_only = Options.text_only()
         self.tool_allowed = Options()
 
-        self.default_model = OpenAIModel.default_model(api_key=self.openai_apikey)
+        self.default_model : OpenAIModel = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.textbox = TextBox()
 
-    def get_action(self, context : Context, generation : Generation) -> (str, dict[int,ToolCall]):
+    def get_results(self, entries : list[Entry], docs : list[ToolDoc], options : Options) -> tuple[str, list[ToolCall]]:
+        context = Context(entries=entries, docs=docs)
+        generation = self.default_model.get_generation(context=context, options=options)
         prompts_context = [entry.msg for entry in context.entries]
-        call_map : dict = {}
 
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")
@@ -33,8 +34,7 @@ class OpenAITest(CredTest):
             self.textbox.add(chunk.get_text())
         self.print_action_info(generation)
         time.sleep(0.1)
-
-        return self.textbox.total_text, call_map
+        return generation.get_text(), generation.get_tool_calls()
 
     @staticmethod
     def print_action_info(generation : Generation):
