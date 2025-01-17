@@ -1,5 +1,6 @@
 from api import Entry
 from engine import LotusEngine
+from engine.l1_agents import Workflowy
 from holytools.devtools import Unittest
 
 from engine.l0_engine.settings import LotusCredentials
@@ -48,12 +49,14 @@ class SemanticUnittest(Unittest):
         self.assertTrue(yn.y_n_arg.get_value() == 'y')
 
 class HardwareTask(SemanticUnittest):
-    def setUp(self):
+    def test_components_there(self):
         engine = LotusEngine()
-        engine.query_routine()
+        answer = engine.query_routine(workflowy=Workflowy.hardware_summary(),
+                                      query=f'Please give me a summary of my hardware', max_steps=5)
 
-    def test_simple(self):
-        self.assertProperty(msg=f'3', property_query=f'The given number is larger than two')
+        property_query = (f'The given answer provdes information about the following hardware devices:'
+                          f'CPU, GPU, RAM, Disks and Motherboard')
+        self.assertProperty(msg=answer, property_query=property_query)
 
 
 if __name__ == "__main__":

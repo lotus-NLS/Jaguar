@@ -53,8 +53,12 @@ class Workflowy(Workspace):
     def hardware_summary(cls):
         root = Task(is_root=True)
         t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
-        t1.add_subtask(msg=f'Make a list of all information I think the user requires')
-        t1.add_subtask(msg=f'Acquire information')
+        subtask = t1.add_subtask(msg=f'Acquire information')
+        subtask.add_subtask(msg=f'CPU information')
+        subtask.add_subtask(msg=f'GPU information')
+        subtask.add_subtask(msg=f'RAM information')
+        subtask.add_subtask(msg=f'Disk information')
+        subtask.add_subtask(msg=f'Motherboard information')
         t1.add_subtask(msg=f'Write out summary')
         
         wf = Workflowy()
