@@ -7,6 +7,7 @@ from engine.l3_aos import AOS, Terminal
 from holytools.logging import Loggable
 from .dev_monitor import MonitorServer
 from .settings import LotusCredentials
+from ..l1_agents.protocol.stepinfo import Workflowy
 
 
 # ---------------------------------------------------------
@@ -15,21 +16,16 @@ class LotusEngine(Loggable):
     def __init__(self):
         super().__init__()
         self.creds = LotusCredentials()
-        self.agent: Agent = Agent(model=self._get_model(), aos=self._get_aos())
+        model = OpenAIModel.default_model(api_key=self.creds.get_openai_apikey())
+        aos = AOS(workspaces=[Terminal()])
+        self.agent: Agent = Agent(model=model, aos=aos)
         self.dev_monitor : MonitorServer = MonitorServer(agent=self.agent)
         self.is_alive : bool = True
 
-    def _get_model(self):
-        return OpenAIModel.default_model(api_key=self.creds.get_openai_apikey())
-
-    def _get_aos(self):
-        _ = self
-        return AOS(workspaces=[Terminal()])
-
     # ---------------------------------------------
-    # run routine
+    # routines
 
-    def run(self):
+    def user_routine(self):
         self._launch()
         while self.is_alive:
             if self.agent.is_working():
@@ -38,6 +34,22 @@ class LotusEngine(Loggable):
                 self._converse_step()
 
         self._stop()
+
+    def query_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
+        self.agent.workflowy = workflowy
+        num_steps = 0
+        while self.agent.is_working() and num_steps < max_steps:
+            self._work_step()
+            num_steps += 1
+        task = StepInfo(memory=Entry.user(msg=query))
+        response = self.agent.handle(task=task)
+        answer = ''
+        for text in response.get_text_stream():
+            answer += text
+        return answer
+
+    # ---------------------------------------------
+    # subroutines
 
     def _launch(self):
         self.log(f'Lotus started')
