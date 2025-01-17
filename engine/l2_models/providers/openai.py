@@ -12,7 +12,6 @@ from engine.l2_models.generation import Generation, Chunk, Options, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 
-
 # ---------------------------------------------------------
 
 class OpenAIModel(LLM):
@@ -71,7 +70,6 @@ class OpenAIChunk(Chunk):
         if not self.delta is None:
             text_content = self.delta.content
         return text_content
-
 
     def is_final(self) -> bool:
         finish_reason_present = not self.best_choice.finish_reason is None

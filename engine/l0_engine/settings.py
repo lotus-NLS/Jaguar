@@ -8,16 +8,11 @@ from holytools.logging import Loggable
 # --------------------------------------------
 
 class LotusCredentials(Loggable):
-    def __init__(self, use_local : bool, enable_validation : bool = False):
+    def __init__(self, enable_validation : bool = False):
         super().__init__()
-        if use_local:
-            self.configs = FileConfigs.credentials()
-        else:
-            raise NotImplementedError
-
+        self.configs = FileConfigs.credentials()
         if enable_validation:
             self.perform_validation()
-
         self.info(msg=f'Completed setup for all Settings')
 
     def get_openai_apikey(self) -> str:
