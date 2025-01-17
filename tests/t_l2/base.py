@@ -78,6 +78,9 @@ class Greet(Tool):
     def get_desc(self) -> str:
         return "This tool is connected with a monitor in our house and allows you to send a message to our guests"
 
+    def get_args(self) -> list[ToolArg]:
+        return [self.text_arg]
+
 class NotifyChef(Tool):
     def __init__(self, call_timeout: float = 1):
         super().__init__(call_timeout=call_timeout)
@@ -88,6 +91,9 @@ class NotifyChef(Tool):
 
     def get_desc(self) -> str:
         return "This tool will notify the chec of the number of guests that we need to prepare food for"
+
+    def get_args(self) -> list[ToolArg]:
+        return [self.number_of_guests_arg]
 
 class ExampleEntries:
     def __init__(self):

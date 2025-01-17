@@ -33,6 +33,9 @@ class InvalidTool(Tool):
     def do(self):
         raise ValueError
 
+    def get_args(self) -> list[ToolArg]:
+        return []
+
 
 class PrinterTool(Tool):
     def __init__(self, call_timeout: float = 60):
@@ -48,3 +51,6 @@ class PrinterTool(Tool):
 
     def get_desc(self) -> str:
         return "SimpleTool is a basic implementation for testing."
+
+    def get_args(self) -> list[ToolArg]:
+        return [self.text_arg, self.text_arg_two]

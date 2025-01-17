@@ -12,9 +12,9 @@ from .settings import LotusCredentials
 # ---------------------------------------------------------
 
 class LotusEngine(Loggable):
-    def __init__(self, use_local_credentials : bool = True):
+    def __init__(self):
         super().__init__()
-        self.creds = LotusCredentials(use_local=use_local_credentials)
+        self.creds = LotusCredentials()
         self.agent: Agent = Agent(model=self._get_model(), aos=self._get_aos())
         self.dev_monitor : MonitorServer = MonitorServer(agent=self.agent)
         self.is_alive : bool = True

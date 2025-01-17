@@ -8,7 +8,6 @@ from holytools.logging import LoggerFactory
 from .input import ToolCall, ToolArg
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
 
-
 # ---------------------------------------------------------
 
 class Tool:
@@ -66,6 +65,10 @@ class Tool:
     def get_desc(self) -> str:
         pass
 
+    @abstractmethod
+    def get_args(self) -> list[ToolArg]:
+        pass
+
     # ---------------------------------------------------
     # Get
 
@@ -76,8 +79,7 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-    def get_args(self) -> list[ToolArg]:
-        return [attr for attr in self.__dict__.values() if isinstance(attr, ToolArg)]
+
 
 
 class ToolDoc(dict):

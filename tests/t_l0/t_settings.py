@@ -5,7 +5,7 @@ from holytools.events import Timer
 
 class TestLotusCredentials(Unittest):
     def setUp(self):
-        self.credentials = LotusCredentials(use_local=True)
+        self.credentials = LotusCredentials()
 
     @classmethod
     def setUpClass(cls):
@@ -29,7 +29,7 @@ class TestLotusCredentials(Unittest):
     def measure_startup_time():
         timer = Timer()
         print(f'- Measuring LotusCredentials startup time')
-        LotusCredentials(use_local=True)
+        LotusCredentials()
         print(f'Setting up credentials took {timer.capture(verbose=False)} seconds')
 
 if __name__ == "__main__":

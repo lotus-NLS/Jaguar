@@ -33,4 +33,6 @@ class MonitorServer:
         self.thread.start()
 
     def kill(self):
+        # TODO: This is temporary anyway. I'll fine another way to run the dev server
+        # noinspection PyUnresolvedReferences,PyProtectedMember
         self.thread._stop()

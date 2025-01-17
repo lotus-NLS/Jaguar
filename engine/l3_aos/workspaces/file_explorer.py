@@ -6,7 +6,6 @@ from PIL.Image import Image as PILImage
 from engine.l3_aos.tools import InvalidArgValue
 from engine.l3_aos.workspace import Workspace
 
-
 # ---------------------------------------------------------
 
 class FileExplorer(Workspace):
