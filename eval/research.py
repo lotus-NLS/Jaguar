@@ -36,8 +36,14 @@ class SemanticUnittest(Unittest):
         docs = [yn.get_doc()]
         contet = Context(entries=entries, docs=docs)
 
-        self.model.get_generation(context=contet, options=Options.require_call(tool_name=f'YesNoTool'))
-        print(f'Value of property \"{property_query}\" is {yn.y_n_arg.get_value()}')
+        generation = self.model.get_generation(context=contet, options=Options.require_call(tool_name=f'YesNoTool'))
+        generation.exhaust()
+        text, calls = generation.get_text(), generation.get_tool_calls()
+
+        self.assertTrue(len(calls) == 1)
+        yn.execute(tool_call=calls[0])
+
+        print(f'\"{property_query}\": {yn.y_n_arg.get_value()}')
         self.assertTrue(yn.y_n_arg.get_value() == 'y')
 
 class ExampleTest(SemanticUnittest):

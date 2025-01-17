@@ -23,7 +23,6 @@ class Agent(Loggable):
 
         self.workflowy : Workflowy = Workflowy()
         self.aos.add_workspace(ws=self.workflowy)
-
         self.memory: list[Entry] = []
 
     # ---------------------------------------------------

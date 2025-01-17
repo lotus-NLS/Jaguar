@@ -26,8 +26,6 @@ class AOS(Loggable):
     # ---------------------------------------------------
     # get
 
-
-
     def get_tools(self) -> list[Tool]:
         tools = []
         for workspace in self.get_workspaces():
