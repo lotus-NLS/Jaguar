@@ -47,18 +47,19 @@ class Workflowy(Workspace):
     # Generics
 
     def open(self):
-        # self.root = Task(content='', is_root=True)
-        #TODO: This is for testing purposes
-        self.root = self._get_test_task()
+        self.root = Task(content='', is_root=True)
 
     @classmethod
-    def _get_test_task(cls):
+    def hardware_summary(cls):
         root = Task(is_root=True)
         t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
         t1.add_subtask(msg=f'Make a list of all information I think the user requires')
         t1.add_subtask(msg=f'Acquire information')
         t1.add_subtask(msg=f'Write out summary')
-        return root
+        
+        wf = Workflowy()
+        wf.root = root
+        return wf
 
     def close(self, *args, **kwargs):
         self.root = None
@@ -142,8 +143,8 @@ class Task:
 
 
 if __name__ == "__main__":
-    wf = Workflowy()
-    wf.open()
+    workflowy = Workflowy()
+    workflowy.open()
 
-    print(wf.root.get_tree())
-    wf.complete(task_id='11')
+    print(workflowy.root.get_tree())
+    workflowy.complete(task_id='11')
