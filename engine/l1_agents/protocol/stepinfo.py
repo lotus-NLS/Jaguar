@@ -46,7 +46,7 @@ class Workflowy(Workspace):
     # -------------------------------
     # Generics
 
-    def open(self, worktime_in_minutes : int):
+    def open(self):
         # self.root = Task(content='', is_root=True)
         #TODO: This is for testing purposes
         self.root = self.get_test_task()
@@ -74,6 +74,7 @@ class Workflowy(Workspace):
 
     def get_image(self) -> Optional[PILImage]:
         return None
+
 
 class Task:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
@@ -142,7 +143,7 @@ class Task:
 
 if __name__ == "__main__":
     wf = Workflowy()
-    wf.open(yaml_str='')
+    wf.open()
 
     print(wf.root.get_tree())
     wf.complete(task_id='11')
