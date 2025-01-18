@@ -3,7 +3,7 @@ from __future__ import annotations
 from openai import APITimeoutError
 
 from api import Entry, TextPipe
-from engine.l1_agents.protocol import Identity, StepInfo
+from engine.l1_agents.guidance import Identity, StepInfo
 from engine.l2_models import Context, Generation
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
