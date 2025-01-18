@@ -57,3 +57,4 @@ class SemanticUnittest(Unittest):
               f'Answer: {yn.y_n_arg.get_value()}')
         return yn.y_n_arg.get_value() == 'y'
 
+
