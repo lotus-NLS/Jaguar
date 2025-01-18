@@ -20,7 +20,7 @@ class YesNoTool(Tool):
         pass
 
     def get_desc(self) -> str:
-        return f'Answer a query with yes or no'
+        return f'Answers the user query about the target message with yes(y) or no(n)'
 
     def get_args(self) -> list[ToolArg]:
         return [self.y_n_arg]
@@ -34,7 +34,7 @@ class SemanticUnittest(Unittest):
 
     def assertProperty(self, msg : str, property_query : str):
         yn = YesNoTool()
-        entries = [Entry.agent(msg=msg), Entry.agent(msg=property_query)]
+        entries = [Entry.agent(msg=msg), Entry.user(msg=property_query)]
         docs = [yn.get_doc()]
         contet = Context(entries=entries, docs=docs)
 
