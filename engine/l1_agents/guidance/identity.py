@@ -1,6 +1,10 @@
 from __future__ import annotations
 import platform, distro
 from enum import Enum
+
+from api import Entry
+
+
 # ----------------------------------------------------
 
 
@@ -12,6 +16,9 @@ class Identity:
     @classmethod
     def GOTO(cls):
         return cls(core=Core.GOTO)
+
+    def as_system_entry(self) -> Entry:
+        return Entry.system(msg=self.as_str())
 
     def as_str(self) -> str:
         msg = f'{self.core.value}\n'

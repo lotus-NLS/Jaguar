@@ -56,7 +56,7 @@ class Agent(Loggable):
         return pipe
 
     def get_context(self) -> Context:
-        context = Context(entries=[self.get_system_prompt()])
+        context = Context(entries=[self.identity.as_system_entry()])
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
