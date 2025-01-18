@@ -1,12 +1,12 @@
 import time
-from typing import Optional, Tuple
+from typing import Optional
 
 from api import Entry
+from engine.l2_models import Options, OpenAIModel, Context, Generation
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, FileMock
-
-from engine.l2_models import Options, OpenAIModel, Context, Generation
 from tests.credtest import CredTest
+
 
 # --------------------------------------------------------------------------------
 
