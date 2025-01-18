@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from openai import APITimeoutError
 
-from api import Entry, TextPipe
 from engine.l1_agents.guidance import Identity, StepInfo
-from engine.l2_models import Context, Generation
+from engine.l2_models import Generation
+from engine.l2_models.context import Entry, Context
+from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput

@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Any
 
-from api import Entry
 from holytools.logging import Loggable, LogLevel
 
 
@@ -60,8 +59,6 @@ class ToolOutput(Loggable):
     def get_error_msgs(self) -> list[str]:
         return [progress.content for progress in self.progress_msgs if progress.progress_type in [ProgressUpdate.EXCEPTION, ProgressUpdate.FAILED]]
 
-    def as_entry(self) -> Entry:
-        return Entry.tool(msg=self.get_report(), name =self.tool_name)
 
 
 class ProgressUpdate(Enum):

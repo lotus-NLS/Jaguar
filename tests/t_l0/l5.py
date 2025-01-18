@@ -2,8 +2,8 @@ from __future__ import annotations
 import string
 import random
 
-from api import TextPipe
 from engine.l1_agents import Agent, StepInfo
+from engine.l2_models.generation.pipe import TextPipe
 
 
 class MockPipe(TextPipe):

@@ -1,6 +1,6 @@
-from api import Entry
 from engine.l0_engine.settings import LotusCredentials
-from engine.l2_models import OpenAIModel, Context, Options
+from engine.l2_models import OpenAIModel, Options
+from engine.l2_models.context import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
 from holytools.devtools import Unittest

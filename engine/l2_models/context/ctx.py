@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from func_timeout import func_timeout, FunctionTimedOut
-
-from api import Entry
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc
+from .entry import Entry
 
+
+# -------------------------------------------------
 
 @dataclass
 class Context:
@@ -24,10 +24,8 @@ class Context:
         entries = []
         for workspace in open_workspaces:
             try:
-                entry = func_timeout(func=workspace.get_entry, timeout=10)
+                entry = Entry.from_workspace(workspace=workspace)
                 entries.append(entry)
-            except FunctionTimedOut:
-                aos.error(f'Workspace get entry out timed for workspace \"{workspace.get_name()}\"')
             except BaseException as e:
                 aos.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
         docs = aos.get_action_docs()

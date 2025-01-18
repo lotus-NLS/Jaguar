@@ -7,8 +7,8 @@ from typing import Optional
 
 from tiktoken import Encoding
 
-from api import Entry
-from engine.l2_models.generation import Options, Generation, CallOptions, Context
+from engine.l2_models.context import Entry, Context
+from engine.l2_models.generation import Options, Generation, CallOptions
 from holytools.logging import Loggable
 
 

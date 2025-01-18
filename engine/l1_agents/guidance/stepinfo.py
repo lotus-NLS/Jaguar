@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from api import Entry
 from engine.l2_models import Options, CallOptions
+from engine.l2_models.context import Entry
 
 
 # ------------------------------------------------------------------------

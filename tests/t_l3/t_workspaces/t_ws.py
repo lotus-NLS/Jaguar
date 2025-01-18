@@ -1,5 +1,6 @@
 from typing import Optional
 
+from engine.l2_models.context import Entry
 from engine.l3_aos.tools import ToolDoc, ToolCall, Tool
 from engine.l3_aos.workspace import Workspace
 from holytools.devtools import Unittest
@@ -65,13 +66,13 @@ class TestActionExectuion(WorkspaceTest):
 
         add.execute(tool_call=tool_call)
         self.assertIn('New text', self.workspace.get_text())
-        self.log(f'Window context before reset: {self.workspace.get_entry()}')
+        self.log(f'Window context before reset: {Entry.from_workspace(workspace=self.workspace)}')
 
         reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.execute(tool_call)
         self.assertEqual('', self.workspace.get_text())
-        self.log(f'Window context after reset : {self.workspace.get_entry()}')
+        self.log(f'Window context after reset : {Entry.from_workspace(workspace=self.workspace)}')
 
 
     def test_open_application(self):
@@ -90,10 +91,10 @@ class MockWorkspace(Workspace):
         super().__init__()
         self.text_content = 'Initial'
 
-    def open(self, *args, **kwargs):
+    def on_open(self, *args, **kwargs):
         pass
 
-    def close(self, *args, **kwargs):
+    def on_close(self, *args, **kwargs):
         pass
 
     def get_text(self) -> str:

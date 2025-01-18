@@ -1,10 +1,9 @@
 import json
 
-from engine.l2_models import Context
+from engine.l2_models.context import Context, Entry
 from engine.l3_aos import AOS, TextEditor
 from engine.l3_aos.tools import ToolCall, Tool
 from holytools.devtools import Unittest
-from api import Entry
 # --------------------------------------------------
 
 

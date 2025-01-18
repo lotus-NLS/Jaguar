@@ -5,9 +5,8 @@ from typing import Optional
 
 from flask import Flask
 
-from api import Entry
 from engine.l1_agents import Identity
-from engine.l2_models import Context
+from engine.l2_models.context import Context, Entry
 from engine.l3_aos import AOS
 from holytools.network import Socket
 

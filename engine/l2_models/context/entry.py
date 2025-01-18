@@ -3,6 +3,8 @@ from typing import Optional
 from enum import Enum
 
 from PIL.Image import Image as PILImage
+
+from engine.l3_aos.workspace import Workspace
 from holytools.fileIO.converters import ImageConverter
 from dataclasses import dataclass
 
@@ -37,6 +39,19 @@ class Entry:
 
     def add_text(self, msg : str):
         self.msg += msg
+
+    @classmethod
+    def from_workspace(cls, workspace : Workspace):
+        def big_seperator(name: str) -> str:
+            max_len = 50
+            num_dashes = max(0, max_len - len(name))
+            dashes = '-' * int(num_dashes / 2.)
+            return '\n+' + dashes + f' {name} ' + dashes + '+\n'
+
+        msg = big_seperator(f'Workspace: \"{workspace.get_name()}\"')
+        msg += workspace.get_text()
+
+        return Entry.tool(name=workspace.get_name(), msg=msg, image=workspace.get_image())
 
     @classmethod
     def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:
@@ -120,3 +135,4 @@ class Role(Enum):
 
     def __str__(self):
         return self.value
+

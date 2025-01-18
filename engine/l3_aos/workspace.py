@@ -6,7 +6,6 @@ from typing import Optional, Callable
 
 from PIL.Image import Image as PILImage
 
-from api import Entry
 from engine.l3_aos.tools import ToolDoc, ToolArg, Tool
 from holytools.devtools import ModuleInspector
 from holytools.logging import Loggable
@@ -22,10 +21,12 @@ class Workspace(Loggable):
         self.close_action : Tool = self.create_action(mthd=self.close)
 
     def open(self, *args, **kwargs):
+        _, __ = args, kwargs
         self.is_active = True
         self.on_open()
 
     def close(self, *args, **kwargs):
+        _, __ = args, kwargs
         self.is_active  = False
         self.on_close()
 
@@ -85,21 +86,6 @@ class Workspace(Loggable):
         return [action.get_doc() for action in self.get_actions()]
 
     # ---------------------------------------------------
-    # context
-
-    def get_entry(self) -> Entry:
-        def big_seperator(name : str) -> str:
-            max_len = 50
-            num_dashes = max(0, max_len-len(name))
-            dashes = '-'*int(num_dashes/2.)
-            return '\n+' + dashes + f' {name} '+ dashes + '+\n'
-
-        msg = big_seperator(f'Workspace: \"{self.get_name()}\"')
-        msg += self.get_text()
-        msg += big_seperator(f'')
-
-        return  Entry.tool(name=self.get_name(), msg=msg, image = self.get_image())
-
 
     @classmethod
     def get_name(cls) -> str:
