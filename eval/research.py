@@ -1,5 +1,7 @@
 from api import Entry
+from engine import LotusEngine
 from engine.l0_engine.settings import LotusCredentials
+from engine.l1_agents import Workflowy
 from engine.l2_models import OpenAIModel, Context, Options
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
@@ -55,16 +57,18 @@ class SemanticUnittest(Unittest):
               f'Answer: {yn.y_n_arg.get_value()}')
         return yn.y_n_arg.get_value() == 'y'
 
-# class HardwareTask(SemanticUnittest):
-#     def test_components_there(self):
-#         engine = LotusEngine()
-#         #answer = engine.resarch_routine(workflowy=Workflowy._hardware_summary(),
-#         #                                query=f'Please give me a summary of my hardware', max_steps=5)
-#
-#         property_query = (f'The #msg gives information about each of the following hardware devices:'
-#                           f'CPU, GPU, RAM, Disks and Motherboard')
-#         answer = 'GOTO: '
-#         self.evaluateProperty(msg=answer, prop=property_query)
+
+class HardwareTask(SemanticUnittest):
+    def test_components_there(self):
+        engine = LotusEngine()
+        answer = engine.resarch_routine(workflowy=Workflowy._hardware_summary(),
+                                       query=f'Please give me a summary of my hardware', max_steps=5)
+
+        property_query = ('The #msg gives information about each of the following hardware devices:'
+                          f'CPU, GPU, RAM, Disks and Motherboard')
+        answer = 'GOTO: '
+        self.evaluateProperty(msg=answer, prop=property_query)
+
 
 class EvaluationTask(SemanticUnittest):
     def test_spelling(self):
@@ -94,4 +98,4 @@ class EvaluationTask(SemanticUnittest):
         self.assertTrue(self.evaluateProperty(msg=msg, prop=prop) == True)
 
 if __name__ == "__main__":
-    EvaluationTask.execute_all()
+    HardwareTask.execute_all()

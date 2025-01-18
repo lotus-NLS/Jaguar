@@ -15,10 +15,11 @@ from holytools.logging import Loggable
 # ---------------------------------------------------------
 
 class LLM(Loggable):
-    def __init__(self, name : str, token_cap : int = 8192):
+    def __init__(self, name : str, token_cap : int = 8192, inference_timeout : float = 10):
         super().__init__()
         self._name : str = name
         self.token_cap : int = token_cap
+        self.inf_timeout : float = inference_timeout
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'

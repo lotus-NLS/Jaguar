@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from func_timeout import FunctionTimedOut
+from openai import APITimeoutError
 
 from api import Entry, TextPipe
 from engine.l1_agents.protocol import Identity, StepInfo
@@ -45,19 +45,17 @@ class Agent(Loggable):
         context = self.get_context()
         if task.notice:
             context += Context.singleton(entry=task.notice)
-        print(f'Task notice = {task.notice}')
 
         try:
-            step = self.model.get_generation(context=context, options=task.get_options())
             pipe = TextPipe()
+            step = self.model.get_generation(context=context, options=task.get_options())
             self.write(generation=step, pipe=pipe)
             self.act(generation=step)
-        except FunctionTimedOut as e:
-            self.log(f'Attempt to retrieve generation timed out: {e}', level=LogLevel.WARNING)
+        except APITimeoutError:
+            error_msg = f'OpenAI API request timed out after {self.model.inf_timeout} seconds'
+            self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             pipe = TextPipe.failed()
-        except BaseException as e:
-            self.log(f'Error in getting generation: {e.__repr__()}', level=LogLevel.ERROR)
-            pipe = TextPipe.failed()
+
         return pipe
 
     def get_context(self) -> Context:

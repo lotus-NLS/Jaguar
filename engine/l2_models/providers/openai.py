@@ -18,7 +18,7 @@ class OpenAIModel(LLM):
     def __init__(self, name : str, api_key : str):
         super().__init__(name=name)
         self.openai_api_key : str = api_key
-        self.client : OpenAI = OpenAI(api_key=api_key)
+        self.client : OpenAI = OpenAI(api_key=api_key, timeout=self.inf_timeout)
 
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
