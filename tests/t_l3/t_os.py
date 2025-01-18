@@ -15,10 +15,9 @@ class TestAOS(Unittest):
         tool_call = ToolCall(json_str=json.dumps(args_dict))
         self.text_workspace.open_action.execute(tool_call)
 
-
     def test_context(self):
         context = Context.from_aos(aos=self.os)
-        self.assertEqual(len(context.docs),3)
+        self.assertEqual(len(context.docs),4)
         self.assertEqual(len(context.entries),1)
         entry = context.entries[0]
         self.assertIsInstance(obj=entry, cls=Entry)
@@ -27,7 +26,7 @@ class TestAOS(Unittest):
 
     def test_tools(self):
         tools = self.os.get_tools()
-        self.assertTrue(len(tools) == 3)
+        self.assertTrue(len(tools) == 4)
         for tool in tools:
             self.assertIsInstance(tool, Tool)
 

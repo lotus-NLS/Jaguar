@@ -19,7 +19,7 @@ class Browser(Workspace):
         self.search_engine : SearchEngine = SearchEngine(google_key=google_api_key, searchengine_id=searchengine_id)
         self.search_context : Optional[str] = None
 
-    def on_open(self, url: str):
+    def open(self, url: str):
         """Opens the specified site. Use url=search://{search_term} to perform a google search insted"""
         if url.startswith('search://'):
             search_tearm = url.replace(f'search://','')
@@ -28,7 +28,7 @@ class Browser(Workspace):
             self.visit_site(url=url)
 
 
-    def on_close(self):
+    def close(self):
         """Close Browser"""
         self.currrent_url = None
         if self.site_visitor:

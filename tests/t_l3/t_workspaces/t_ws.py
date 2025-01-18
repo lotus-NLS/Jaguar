@@ -91,10 +91,10 @@ class MockWorkspace(Workspace):
         super().__init__()
         self.text_content = 'Initial'
 
-    def on_open(self, *args, **kwargs):
+    def open(self, *args, **kwargs):
         pass
 
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         pass
 
     def get_text(self) -> str:

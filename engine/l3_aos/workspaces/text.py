@@ -17,13 +17,13 @@ class TextEditor(Workspace):
         self.content : Optional[str] = None
         self.text_file : Optional[PlaintextFile] = None
 
-    def on_open(self, filepath : str, require_writable : bool = False):
+    def open(self, filepath : str, require_writable : bool = False):
         """Allowd you to view and edit plain Text files. A view-only mode allows for also viewing text in .pdfs, .doc, .docx and even handwritten text in .jpg and .png images """
         self.text_file = PlaintextFile(fpath=filepath, require_writable=require_writable)
         if self.text_file.exists_on_disk():
             self.text_file.read() # one test run to check if the file can be read
 
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         """Closes LotusText. Once closed you can open another file"""
         pass
 

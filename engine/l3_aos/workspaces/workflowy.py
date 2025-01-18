@@ -44,10 +44,10 @@ class Workflowy(Workspace):
     # -------------------------------
     # Generics
 
-    def on_open(self):
+    def open(self):
         self.root = Task(content='', is_root=True)
 
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         self.root = None
 
     def get_desc(self) -> str:

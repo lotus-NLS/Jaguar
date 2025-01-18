@@ -20,22 +20,12 @@ class Workspace(Loggable):
         self.open_action : Tool = self.create_action(mthd=self.open)
         self.close_action : Tool = self.create_action(mthd=self.close)
 
-    def open(self, *args, **kwargs):
-        _, __ = args, kwargs
-        self.is_active = True
-        self.on_open()
-
-    def close(self, *args, **kwargs):
-        _, __ = args, kwargs
-        self.is_active  = False
-        self.on_close()
-
     @abstractmethod
-    def on_open(self, *args, **kwargs):
+    def open(self, *args, **kwargs):
         pass
 
     @abstractmethod
-    def on_close(self, *args, **kwargs):
+    def close(self, *args, **kwargs):
         pass
 
     def create_workspace_actions(self) -> list[Tool]:
@@ -49,10 +39,6 @@ class Workspace(Loggable):
 
         workspace = self
         docstring = mthd.__doc__
-        if mthd.__name__ == self.open.__name__:
-            docstring = self.on_open.__doc__
-        elif mthd.__name__ == self.close.__name__:
-            docstring = self.on_close.__doc__
 
         class WorkspaceAction(Tool):
             def __init__(self):
@@ -67,6 +53,10 @@ class Workspace(Loggable):
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(**kwargs)
+                if mthd.__name__ == workspace.open.__name__:
+                    workspace.is_active = True
+                if mthd.__name__ == workspace.close.__name__:
+                    workspace.is_active = False
 
             def get_desc(self) -> str:
                 desc = docstring if docstring else f'Allows for operating {mthd.__name__}'
