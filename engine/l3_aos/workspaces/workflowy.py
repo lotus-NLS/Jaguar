@@ -11,24 +11,6 @@ class Workflowy(Workspace):
         super().__init__()
         self.root : Optional[Task] = None
 
-    def add(self, task_id : str, msg : str):
-        parent = self.root.get_descendant(task_id)
-        parent.add_subtask(msg)
-
-    def complete(self, task_id : str):
-        self.root.get_descendant(task_id).complete()
-
-    def delete(self, task_id : str):
-        partial_id = task_id[:-1]
-        parent = self.root.get_descendant(partial_id)
-        del parent.subtasks[int(task_id[-1])]
-
-    # -------------------------------
-    # Generics
-
-    def open(self):
-        self.root = Task(content='', is_root=True)
-
     @classmethod
     def _hardware_summary(cls):
         wf = Workflowy()
@@ -47,7 +29,25 @@ class Workflowy(Workspace):
 
         return wf
 
-    def close(self, *args, **kwargs):
+    def add(self, task_id : str, msg : str):
+        parent = self.root.get_descendant(task_id)
+        parent.add_subtask(msg)
+
+    def complete(self, task_id : str):
+        self.root.get_descendant(task_id).complete()
+
+    def delete(self, task_id : str):
+        partial_id = task_id[:-1]
+        parent = self.root.get_descendant(partial_id)
+        del parent.subtasks[int(task_id[-1])]
+
+    # -------------------------------
+    # Generics
+
+    def on_open(self):
+        self.root = Task(content='', is_root=True)
+
+    def on_close(self, *args, **kwargs):
         self.root = None
 
     def get_desc(self) -> str:
@@ -61,6 +61,7 @@ class Workflowy(Workspace):
 
     def get_image(self) -> Optional[PILImage]:
         return None
+
 
 
 class Task:
