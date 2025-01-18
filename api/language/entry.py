@@ -30,6 +30,11 @@ class Entry:
             self.image = new_img
         return self
 
+    def __eq__(self, other):
+        if not isinstance(other, Entry):
+            return False
+        return self.msg == other.msg and self.role == other.role and self.name == other.name
+
     def add_text(self, msg : str):
         self.msg += msg
 

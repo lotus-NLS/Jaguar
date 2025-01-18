@@ -66,3 +66,12 @@ class Context:
             context_str += f'{entry.as_str()}\n'
 
         return context_str
+
+    def __eq__(self, other : Context):
+        entry_lens_eq = len(self.entries) == len(other.entries)
+        entries_equal = all([e1 == e2 for e1,e2 in zip(self.entries, other.entries)])
+
+        doc_lens_eq = len(self.docs) == len(other.docs)
+        docs_equal = all([d1 == d2 for d1,d2 in zip(self.docs, other.docs)])
+
+        return entry_lens_eq and entries_equal and doc_lens_eq and docs_equal

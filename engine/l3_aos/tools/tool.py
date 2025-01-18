@@ -102,26 +102,29 @@ class ToolDoc(dict):
 
         return cls(tool_doc)
 
-    def get_tool_name(self) -> str:
-        return self['function']['name']
-
-    def get_description(self) -> str:
-        return self['function']['description']
-
-    def get_parameters(self) -> dict:
-        return self['function']['parameters']['properties']
-
-    def get_required(self) -> list[str]:
-        return self['function']['parameters']['required']
+    def __eq__(self, other):
+        return self.as_str() == other.as_str()
 
     def as_str(self) -> str:
-        func_name = self.get_tool_name()
-        quick_desc = f'{self.get_description()[100]}...' if len(self.get_description()) > 100 else self.get_description()
+        func_name = self._get_tool_name()
+        quick_desc = f'{self._get_desc()[100]}...' if len(self._get_desc()) > 100 else self._get_desc()
         info_str = f'- {func_name}: {quick_desc}'
-        arg_dict = self.get_parameters()
+        arg_dict = self._get_parameters()
         for arg_name, arg_dict in arg_dict.items():
-            conditional_optional = f' (optional) ' if not arg_name in self.get_required() else ''
+            conditional_optional = f' (optional) ' if not arg_name in self._get_required() else ''
             arg_str = f'  - {arg_name}{conditional_optional}: {arg_dict["description"]}'
             info_str += f'\n{arg_str}'
 
         return info_str
+
+    def _get_tool_name(self) -> str:
+        return self['function']['name']
+
+    def _get_desc(self) -> str:
+        return self['function']['description']
+
+    def _get_parameters(self) -> dict:
+        return self['function']['parameters']['properties']
+
+    def _get_required(self) -> list[str]:
+        return self['function']['parameters']['required']
