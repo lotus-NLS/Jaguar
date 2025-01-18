@@ -41,10 +41,9 @@ class SemanticUnittest(Unittest):
 
         generation = self.model.get_generation(context=context, options=Options.text_only())
         generation.exhaust()
-        text, calls = generation.get_text(), generation.get_tool_calls()
-        print(f'-> Generated text: {text}')
+        eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
-        context += Context.singleton(entry=Entry.agent(msg=text))
+        context += Context.singleton(entry=Entry.agent(msg=eval_text))
         options = Options.require_call(tool_name=yn.get_name())
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
@@ -54,6 +53,7 @@ class SemanticUnittest(Unittest):
         yn.execute(tool_call=calls[0])
 
         print(f'Query: {query}\n'
+              f'Eval : {eval_text}\n'
               f'Answer: {yn.y_n_arg.get_value()}')
         return yn.y_n_arg.get_value() == 'y'
 
@@ -66,7 +66,8 @@ class HardwareTask(SemanticUnittest):
 
         property_query = ('The #msg gives information about each of the following hardware devices:'
                           f'CPU, GPU, RAM, Disks and Motherboard')
-        self.evaluateProperty(msg=answer, prop=property_query)
+        evaluation = self.evaluateProperty(msg=answer, prop=property_query)
+        self.assertTrue(evaluation == 'y')
 
 
 class EvaluationTask(SemanticUnittest):

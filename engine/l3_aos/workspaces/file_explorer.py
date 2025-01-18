@@ -14,11 +14,11 @@ class FileExplorer(Workspace):
         self.current_dir_path: Optional[str] = None
         self.show_hidden : bool = True
 
-    def open(self, directory_path: str = '~'):
+    def on_open(self, directory_path: str = '~'):
         """Opens a file explorer in the specified directory available only to you"""
         self.change_dir(directory_path=directory_path)
 
-    def close(self):
+    def on_close(self):
         """Close LotusFileExplorer"""
         self.current_dir_path = None
 

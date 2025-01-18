@@ -20,14 +20,14 @@ class Terminal(Workspace):
         self.tmux_session : Optional[Session] = None
         self.tmux_name : str = 'lotus'
 
-    def open(self, workdir_path : str = '~'):
+    def on_open(self, workdir_path : str = '~'):
         """Opens a terminal in the specified working directory available only to you"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.tmux_session = self._open_session(cwd=cwd)
 
-    def close(self):
+    def on_close(self):
         """Close LotusTerminal. The session will not be saved"""
         self.tmux_session = None
 
