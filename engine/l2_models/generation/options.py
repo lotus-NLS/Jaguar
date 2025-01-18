@@ -36,7 +36,7 @@ class CallOptions:
 class Options:
     call_options: CallOptions = field(default_factory=CallOptions.auto)
     max_tokens : Optional[int] = None
-    temp : float = 0.3
+    temp : float = 0.7
 
     def get_call_allowed(self) -> bool:
         return self.call_options.call_allowed
