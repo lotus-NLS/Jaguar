@@ -28,7 +28,7 @@ class Terminal(Workspace):
         self.tmux_session = self._open_session(cwd=cwd)
 
     def on_close(self):
-        """Close LotusTerminal. The session will not be saved"""
+        """Closes the terminal. You will lose all information provided by the terminal."""
         self.tmux_session = None
 
     def _open_session(self, cwd : str) -> Session:

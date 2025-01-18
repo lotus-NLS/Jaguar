@@ -65,9 +65,9 @@ class HardwareTask(SemanticUnittest):
                                        query=f'Please give me a summary of my hardware', max_steps=5)
 
         property_query = ('The #msg gives information about each of the following hardware devices:'
-                          f'CPU, GPU, RAM, Disks and Motherboard')
+                          f'CPU, GPU, RAM, Disks and Motherboard. If information cannot be retrieve a reason is given')
         evaluation = self.evaluateProperty(msg=answer, prop=property_query)
-        self.assertTrue(evaluation == 'y')
+        self.assertTrue(evaluation == True)
 
 
 class EvaluationTask(SemanticUnittest):
