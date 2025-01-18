@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from engine.l1_agents import Workflowy
 from engine.l3_aos.tools import Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import Loggable
@@ -8,14 +9,18 @@ from holytools.logging import Loggable
 # ---------------------------------------------------------
 
 class AOS(Loggable):
-    def __init__(self, workspaces : list[Workspace]):
+    def __init__(self, workspaces : list[Workspace], workflowy : Workflowy = Workflowy()):
         super().__init__()
-        self._workspaces : list[Workspace] = workspaces
+        self._workspaces : list[Workspace] = workspaces + [workflowy]
+        self.workflowy : Workflowy = workflowy
         self._check_ws_uniqueness()
 
     def add_workspace(self, ws : Workspace):
         self._workspaces.append(ws)
         self._check_ws_uniqueness()
+
+    def workspace_engage(self) -> bool:
+        return not self.workflowy.root is None
 
     def _check_ws_uniqueness(self):
         ws_namelist = [workspace.get_name() for workspace in self._workspaces]

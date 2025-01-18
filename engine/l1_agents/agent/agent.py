@@ -4,7 +4,6 @@ from openai import APITimeoutError
 
 from api import Entry, TextPipe
 from engine.l1_agents.protocol import Identity, StepInfo
-from engine.l1_agents.protocol.stepinfo import Workflowy
 from engine.l2_models import Context, Generation
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
@@ -21,8 +20,6 @@ class Agent(Loggable):
         self.aos : AOS = aos
         self.identity : Identity = identity
 
-        self.workflowy : Workflowy = Workflowy()
-        self.aos.add_workspace(ws=self.workflowy)
         self.memory: list[Entry] = []
 
     # ---------------------------------------------------
@@ -93,7 +90,7 @@ class Agent(Loggable):
     # context
 
     def is_working(self) -> bool:
-        return not self.workflowy.root is None
+        return self.aos.workspace_engage()
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'

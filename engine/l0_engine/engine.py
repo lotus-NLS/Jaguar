@@ -21,19 +21,17 @@ class LotusEngine(Loggable):
         self._agent: Agent = Agent(model=model, aos=aos)
         self._dev_monitor : MonitorServer = MonitorServer(agent=self._agent)
         self._is_alive : bool = True
+        self._launch()
 
     # ---------------------------------------------
     # routines
 
     def user_routine(self):
-        self._launch()
         while self._is_alive:
             if self._agent.is_working():
                 self._work_step()
             else:
                 self._converse_step()
-
-        self._stop()
 
     def resarch_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
         self._agent.workflowy = workflowy
@@ -48,6 +46,7 @@ class LotusEngine(Loggable):
         for text in response.get_text_stream():
             answer += text
         print(f'The following answer was provided: {answer}')
+
         return answer
 
     # ---------------------------------------------

@@ -59,14 +59,13 @@ class SemanticUnittest(Unittest):
 
 
 class HardwareTask(SemanticUnittest):
-    def test_components_there(self):
+    def test_research(self):
         engine = LotusEngine()
         answer = engine.resarch_routine(workflowy=Workflowy._hardware_summary(),
                                        query=f'Please give me a summary of my hardware', max_steps=5)
 
         property_query = ('The #msg gives information about each of the following hardware devices:'
                           f'CPU, GPU, RAM, Disks and Motherboard')
-        answer = 'GOTO: '
         self.evaluateProperty(msg=answer, prop=property_query)
 
 
