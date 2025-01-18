@@ -1,10 +1,10 @@
 from api import Entry
 from engine import LotusEngine
 from engine.l0_engine.settings import LotusCredentials
-from engine.l1_agents import Workflowy
 from engine.l2_models import OpenAIModel, Context, Options
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
+from engine.l3_aos.workspaces.workflowy import Workflowy
 from holytools.devtools import Unittest
 
 # ---------------------------------------------------

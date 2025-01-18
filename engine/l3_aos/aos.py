@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from engine.l1_agents import Workflowy
 from engine.l3_aos.tools import Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
+from engine.l3_aos.workspaces.workflowy import Workflowy
 from holytools.logging import Loggable
 
 
