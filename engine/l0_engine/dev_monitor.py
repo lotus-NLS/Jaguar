@@ -22,7 +22,7 @@ class DevServer:
 
         @self.app.route(f'/context')
         def get_context_view() -> str:
-            context_str = self.context.as_str(section_header=f'Agent context')
+            context_str = self.context.get_view(section_header=f'Agent context')
             escaped_context = html.escape(context_str)
             html_context = escaped_context.replace("\n", "<br>")
             html_context = f'<pre> {html_context} </pre>'

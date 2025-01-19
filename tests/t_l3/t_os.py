@@ -22,7 +22,7 @@ class TestAOS(Unittest):
         entry = context.entries[0]
         self.assertIsInstance(obj=entry, cls=Entry)
         self.assertIsInstance(obj=entry.msg, cls=str)
-        print(f'Context is : {context.as_str(section_header="Lotus OS")}')
+        print(f'Context is : {context.get_view(section_header="Lotus OS")}')
 
     def test_tools(self):
         tools = self.os.get_tools()

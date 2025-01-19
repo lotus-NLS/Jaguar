@@ -103,9 +103,9 @@ class ToolDoc(dict):
         return cls(tool_doc)
 
     def __eq__(self, other):
-        return self.as_str() == other.as_str()
+        return self.get_view() == other.get_view()
 
-    def as_str(self) -> str:
+    def get_view(self) -> str:
         func_name = self._get_tool_name()
         quick_desc = f'{self._get_desc()[100]}...' if len(self._get_desc()) > 100 else self._get_desc()
         info_str = f'- {func_name}: {quick_desc}'

@@ -4,13 +4,14 @@ from dataclasses import dataclass, field
 
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc
+from holytools.abstract import Serializable
 from .entry import Entry
 
 
 # -------------------------------------------------
 
 @dataclass
-class Context:
+class Context(Serializable):
     entries: list[Entry] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
@@ -31,19 +32,16 @@ class Context:
         docs = aos.get_action_docs()
         return cls(entries=entries, docs=docs)
 
-    def add_entry(self, entry : Entry):
-        self.entries.append(entry)
+    @classmethod
+    def from_str(cls, s: str):
+        pass
 
-    def reset(self):
-        self.entries = []
+    def to_str(self) -> str:
+        pass
 
-    def __iadd__(self, other : Context):
-        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+    # ---------------------------------------------------
 
-    def __add__(self, other : Context):
-        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
-
-    def as_str(self, section_header : str) -> str:
+    def get_view(self, section_header : str) -> str:
         def big_seperator(name : str) -> str:
             max_len = 100
             num_dashes = max(0, max_len-len(name))
@@ -57,13 +55,19 @@ class Context:
         context_str += small_seperator(f'Tool docs') if self.docs else ''
         context_str += '\n'
         for doc in self.docs:
-            context_str += f'{doc.as_str()}\n\n'
+            context_str += f'{doc.get_view()}\n\n'
 
         context_str += small_seperator(f'Memory')
         for entry in self.entries:
-            context_str += f'{entry.as_str()}\n'
+            context_str += f'{entry.get_view()}\n'
 
         return context_str
+
+    def __iadd__(self, other : Context):
+        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+
+    def __add__(self, other : Context):
+        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
 
     def __eq__(self, other : Context):
         entry_lens_eq = len(self.entries) == len(other.entries)

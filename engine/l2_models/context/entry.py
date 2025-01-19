@@ -22,24 +22,6 @@ class Entry:
         if not self.name and self.role == Role.TOOL:
             raise ValueError('Tool must have a name')
 
-    def __iadd__(self, other : Entry) -> Entry:
-        if not isinstance(other, Entry):
-            raise ValueError(f'Entry can only be added to another Entry. Got {type(other)}')
-
-        self.msg += other.msg
-        new_img = other.image
-        if new_img:
-            self.image = new_img
-        return self
-
-    def __eq__(self, other):
-        if not isinstance(other, Entry):
-            return False
-        return self.msg == other.msg and self.role == other.role and self.name == other.name
-
-    def add_text(self, msg : str):
-        self.msg += msg
-
     @classmethod
     def from_workspace(cls, workspace : Workspace):
         def big_seperator(name: str) -> str:
@@ -69,8 +51,13 @@ class Entry:
     def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Entry:
         return cls(role=Role.TOOL, name=name, msg=msg, image=image)
 
-    # ----------------------------------------------------
-    # view
+    def __eq__(self, other):
+        if not isinstance(other, Entry):
+            return False
+        return self.msg == other.msg and self.role == other.role and self.name == other.name
+
+     # ----------------------------------------------------
+    # get
 
     def as_dict(self, api_type: APIType) -> dict:
         if api_type == APIType.OPENAI:
@@ -78,26 +65,9 @@ class Entry:
         else:
             raise ValueError(f'API type {api_type} not supported')
 
-    def get_image_as_base64(self) -> Optional[str]:
-        img_fmt = self.image.format
-        image = self.image
-        if image.mode != 'RGB':
-            image = ImageConverter.to_rgb(image=image)
-        base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
-        return base64_image
-
-    def as_str(self):
-        name_str = f'Unnamed' if not self.name else self.name
-        as_str = f'{self.role.value}({name_str}): {self.msg}'
-        if self.image:
-            as_str += f'\n{self.get_image_as_base64()}'
-        return as_str
-
-    def __str__(self):
-        return self.as_str()
-
-    # ----------------------------------------------------
-    # get
+    def get_view(self) -> str:
+        name_str = f'({self.name})' if not self.name is None else ''
+        return f'{self.role.value}{name_str}: {self.msg}'
 
     def as_openai_dict(self) -> dict:
         data = {'role': self.role.value}
@@ -119,6 +89,15 @@ class Entry:
 
         data['content'] = content
         return data
+
+    def get_image_as_base64(self) -> Optional[str]:
+        img_fmt = self.image.format
+        image = self.image
+        if image.mode != 'RGB':
+            image = ImageConverter.to_rgb(image=image)
+        base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
+        return base64_image
+
 
 
 class APIType(Enum):
