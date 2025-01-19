@@ -9,3 +9,4 @@ pillow
 beautifulsoup4
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
 pyscrape @ git+https://github.com/Somerandomguy10111/pyscrape
+libtmux
