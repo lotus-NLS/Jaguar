@@ -53,7 +53,7 @@ class Workspace(Loggable):
             def do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(**kwargs)
-                if mthd.__name__ == workspace.ope3n.__name__:
+                if mthd.__name__ == workspace.open.__name__:
                     workspace.is_active = True
                 if mthd.__name__ == workspace.close.__name__:
                     workspace.is_active = False

@@ -2,7 +2,7 @@ from engine.l0_engine.settings import LotusCredentials
 from holytools.devtools import Unittest
 
 
-class CredTest(Unittest):
+class CredentialDependentTest(Unittest):
     @classmethod
     def setUpClass(cls):
         credentials : LotusCredentials = LotusCredentials()

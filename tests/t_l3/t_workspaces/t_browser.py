@@ -1,11 +1,11 @@
 from pyscrape import SearchEngine, SearchResult
 
 from engine.l3_aos import Browser
-from tests.credtest import CredTest
+from tests.credentialdependenttest import CredentialDependentTest
 
 # ----------------------------------------------------------------
 
-class BrowserTest(CredTest):
+class BrowserTest(CredentialDependentTest):
     def setUp(self):
         self.beaver_test = 'https://en.wikipedia.org/wiki/Beaver'
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'
@@ -16,17 +16,17 @@ class BrowserTest(CredTest):
         beaver_text = self.browser.get_text()
         self.assertIn('beaver', beaver_text.lower())
         self.assertIn(f'https://en.wikipedia.org/wiki/Talk:Beaver'.lower(), beaver_text.lower())
-        print(f'Beaver text =\n {beaver_text}')
+        # print(f'Beaver text =\n {beaver_text}')
 
     def test_lightning(self):
         self.browser.open(url=self.lightning_site)
         lightning_text = self.browser.get_text()
         self.assertIn('lightning', lightning_text.lower())
         self.assertIn(self.lightning_site, lightning_text.lower())
-        print(f'Lightning text =\n {lightning_text}')
+        # print(f'Lightning text =\n {lightning_text}')
 
 
-class SearchEngineTests(CredTest):
+class SearchEngineTests(CredentialDependentTest):
     def setUp(self):
         self.search_engine = SearchEngine(searchengine_id=self.searchengine_id, google_key=self.google_apikey)
 
