@@ -5,28 +5,29 @@ from dataclasses import dataclass, field
 
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc
-from holytools.abstract import Serializable
+from holytools.abstract import Serializable, JsonDataclass
 from .entry import Entry
 
 
 # -------------------------------------------------
 
 @dataclass
-class Context(Serializable):
+class Context(JsonDataclass):
     entries: list[Entry] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
-    def to_str(self) -> str:
-        the_dict = {'entries' : [entry.to_str() for entry in self.entries],
-                    'docs' : [json.dumps(doc) for doc in self.docs]}
-        return json.dumps(the_dict)
+    @staticmethod
+    def get_basic_entry(obj):
+        if isinstance(obj, ToolDoc):
+            return json.dumps(obj)
+        return JsonDataclass.get_basic_entry(obj)
 
-    @classmethod
-    def from_str(cls, s: str):
-        the_dict = json.loads(s)
-        entries = [Entry.from_str(json_str=entry_str) for entry_str in the_dict['entries']]
-        docs = [ToolDoc(json.loads(s=doc_str)) for doc_str in the_dict['docs']]
-        return cls(entries=entries, docs=docs)
+    @staticmethod
+    def make_basic(basic_cls, s : str):
+        if basic_cls == ToolDoc:
+            the_dict = json.loads(s)
+            return ToolDoc(the_dict)
+        return JsonDataclass.make_basic(basic_cls, s)
 
     @classmethod
     def singleton(cls, entry : Entry) -> Context:

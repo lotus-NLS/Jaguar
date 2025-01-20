@@ -1,3 +1,5 @@
+from typing import get_origin
+
 from engine.l1_agents import Identity
 from engine.l2_models.context import Context, Entry
 from engine.l3_aos import AOS
