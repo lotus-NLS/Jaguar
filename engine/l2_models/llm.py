@@ -15,11 +15,11 @@ from holytools.network import Endpoint
 # ---------------------------------------------------------
 
 class LLM(Loggable):
-    def __init__(self, name : str, api_key : Optional[str] = None, dev_endpoint : Optional[Endpoint] = None):
+    def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
         self._name : str = name
         self.client = self.make_client(api_key=api_key)
-        self.dev_endpoint : Endpoint = dev_endpoint
+        self.context_endpoint : Endpoint = self.dev_endpoint()
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
@@ -33,6 +33,10 @@ class LLM(Loggable):
     @abstractmethod
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         pass
+
+    @classmethod
+    def dev_endpoint(cls) -> Endpoint:
+        return Endpoint.make_localhost(port=5000, path=f'/update')
 
     def get_text_generation(self, entries: list[Entry]) -> Generation:
         context = Context(entries=entries, docs=[])

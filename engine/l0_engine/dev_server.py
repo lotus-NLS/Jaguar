@@ -30,11 +30,8 @@ class DevServer:
 
         @self.app.route('/update', methods=['POST'])
         def update():
-            if not request.is_json:
-                return jsonify({"error": "Missing JSON in request"}), 400
-
-            data = request.get_json()
-            s = data.get('data')
+            data = request.get_data()
+            s = data.decode()
             self.context = Context.from_str(json_str=s)
             return jsonify({"received": s}), 200
 
@@ -55,7 +52,7 @@ class DevServer:
     # -----------------------------------------------------
 
     def serve(self):
-        logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+        # logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
         self.app.run(host=self.ip, port=self.port)
 
 if __name__ == "__main__":

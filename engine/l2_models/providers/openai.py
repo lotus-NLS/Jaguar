@@ -12,7 +12,6 @@ from engine.l2_models.generation import Generation, Chunk, InfOptions
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 
-
 # ---------------------------------------------------------
 
 class OpenAIModel(LLM):
@@ -25,8 +24,10 @@ class OpenAIModel(LLM):
 
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         self.check_token_cap(context=context, token_cap=options.max_input_tokens)
-        if self.dev_endpoint:
-            self.dev_endpoint.post(msg=context.to_str())
+        try:
+            self.context_endpoint.post(msg=context.to_str(), secure=False)
+        except:
+            self.warning(f'Context update endpoint {self.context_endpoint.get_url(protocol=f"https")} unresponsive')
 
         for entry in context.entries:
             if not isinstance(entry, Entry):
