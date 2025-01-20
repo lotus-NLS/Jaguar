@@ -1,2 +1,2 @@
 from .identity import Identity, Core
-from .stepinfo import StepInfo
+from .step import Step

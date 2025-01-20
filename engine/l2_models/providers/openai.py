@@ -25,6 +25,9 @@ class OpenAIModel(LLM):
 
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         self.check_token_cap(context=context, token_cap=options.max_input_tokens)
+        if self.dev_endpoint:
+            self.dev_endpoint.send(msg=context.to_str())
+
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')

@@ -63,7 +63,6 @@ class Workflowy(Workspace):
         return None
 
 
-
 class Task:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root

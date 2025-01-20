@@ -2,7 +2,7 @@ from __future__ import annotations
 import string
 import random
 
-from engine.l1_agents import Agent, StepInfo
+from engine.l1_agents import Agent, Step
 from engine.l2_models.generation.pipe import TextPipe
 
 
@@ -24,7 +24,7 @@ class MockPipe(TextPipe):
 
 
 class MockEntity(Agent):
-    def handle(self, task: StepInfo) -> TextPipe:
-        _, __ = self, task
+    def handle(self, step: Step) -> TextPipe:
+        _, __ = self, step
         return MockPipe()
 

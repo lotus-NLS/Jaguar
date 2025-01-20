@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 
 from engine.l2_models import InfOptions, CallOptions
@@ -8,11 +9,11 @@ from engine.l2_models.context import Entry
 
 # ------------------------------------------------------------------------
 
-class StepInfo:
-    def __init__(self, memory : Optional[Entry] = None, notice :  Optional[Entry] = None, required_tool_name : Optional[str] = None):
-        self.memory_update : Entry = memory
-        self.notice : Entry = notice
-        self.required_tool : Optional[str] = required_tool_name
+@dataclass
+class Step:
+    memory: Optional[Entry] = None
+    notice: Optional[Entry] = None
+    required_tool: Optional[str] = None
 
     @classmethod
     def make_default(cls, msg : str):

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from openai import APITimeoutError
 
-from engine.l1_agents.guidance import Identity, StepInfo
+from engine.l1_agents.guidance import Identity, Step
 from engine.l2_models import Generation
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
@@ -26,13 +26,13 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, task: StepInfo) -> TextPipe:
-        if task.memory_update:
-            self.memory.append(task.memory_update)
+    def handle(self, step: Step) -> TextPipe:
+        if step.memory:
+            self.memory.append(step.memory)
         context = self.get_context()
-        if task.notice:
-            context += Context.singleton(entry=task.notice)
-        inf_options = task.get_options()
+        if step.notice:
+            context += Context.singleton(entry=step.notice)
+        inf_options = step.get_options()
 
         try:
             pipe = TextPipe()

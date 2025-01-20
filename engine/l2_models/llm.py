@@ -10,14 +10,16 @@ from tiktoken import Encoding
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation import InfOptions, Generation, CallOptions
 from holytools.logging import Loggable
+from holytools.network import Endpoint
 
 # ---------------------------------------------------------
 
 class LLM(Loggable):
-    def __init__(self, name : str, api_key : Optional[str] = None):
+    def __init__(self, name : str, api_key : Optional[str] = None, dev_endpoint : Optional[Endpoint] = None):
         super().__init__()
         self._name : str = name
         self.client = self.make_client(api_key=api_key)
+        self.dev_endpoint : Endpoint = dev_endpoint
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
