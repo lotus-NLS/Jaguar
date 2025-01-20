@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 
 from engine.l3_aos import AOS
@@ -14,6 +15,18 @@ from .entry import Entry
 class Context(Serializable):
     entries: list[Entry] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
+
+    def to_str(self) -> str:
+        the_dict = {'entries' : [entry.to_str() for entry in self.entries],
+                    'docs' : [json.dumps(doc) for doc in self.docs]}
+        return json.dumps(the_dict)
+
+    @classmethod
+    def from_str(cls, s: str):
+        the_dict = json.loads(s)
+        entries = [Entry.from_str(json_str=entry_str) for entry_str in the_dict['entries']]
+        docs = [ToolDoc(json.loads(s=doc_str)) for doc_str in the_dict['docs']]
+        return cls(entries=entries, docs=docs)
 
     @classmethod
     def singleton(cls, entry : Entry) -> Context:
@@ -31,13 +44,6 @@ class Context(Serializable):
                 aos.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
         docs = aos.get_action_docs()
         return cls(entries=entries, docs=docs)
-
-    @classmethod
-    def from_str(cls, s: str):
-        pass
-
-    def to_str(self) -> str:
-        pass
 
     # ---------------------------------------------------
 
