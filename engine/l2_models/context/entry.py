@@ -5,6 +5,7 @@ from enum import Enum
 from PIL.Image import Image as PILImage
 
 from engine.l3_aos.workspace import Workspace
+from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
 from dataclasses import dataclass
 
@@ -12,7 +13,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Entry:
+class Entry(JsonDataclass):
     msg : str
     role: Role
     name : Optional[str] = None
@@ -54,7 +55,7 @@ class Entry:
     def __eq__(self, other):
         if not isinstance(other, Entry):
             return False
-        return self.msg == other.msg and self.role == other.role and self.name == other.name
+        return self.msg == other.msg and self.role == other.role and self.name == other.name and self.image == other.image
 
      # ----------------------------------------------------
     # get
@@ -91,11 +92,10 @@ class Entry:
         return data
 
     def get_image_as_base64(self) -> Optional[str]:
-        img_fmt = self.image.format
         image = self.image
         if image.mode != 'RGB':
-            image = ImageConverter.to_rgb(image=image)
-        base64_image = ImageConverter.as_base64_str(image, img_format=img_fmt)
+            image = ImageConverter.to_rgb(img=image)
+        base64_image = ImageConverter.to_base64_str(image)
         return base64_image
 
 
