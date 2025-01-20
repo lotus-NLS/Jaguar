@@ -32,14 +32,15 @@ class Agent(Loggable):
         context = self.get_context()
         if task.notice:
             context += Context.singleton(entry=task.notice)
+        inf_options = task.get_options()
 
         try:
             pipe = TextPipe()
-            step = self.model.get_generation(context=context, options=task.get_options())
+            step = self.model.get_generation(context=context, options=inf_options)
             self.write(generation=step, pipe=pipe)
             self.act(generation=step)
         except APITimeoutError:
-            error_msg = f'OpenAI API request timed out after {self.model.inf_timeout} seconds'
+            error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             pipe = TextPipe.failed()
 
