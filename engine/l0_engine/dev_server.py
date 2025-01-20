@@ -3,7 +3,7 @@ import logging
 import threading
 from typing import Optional
 
-from flask import Flask
+from flask import Flask, request, jsonify
 
 from engine.l1_agents import Identity
 from engine.l2_models.context import Context, Entry
@@ -28,6 +28,16 @@ class DevServer:
             html_context = f'<pre> {html_context} </pre>'
             return html_context
 
+        @self.app.route('/update', methods=['POST'])
+        def update():
+            if not request.is_json:
+                return jsonify({"error": "Missing JSON in request"}), 400
+
+            data = request.get_json()
+            s = data.get('data')
+            self.context = Context.from_str(json_str=s)
+            return jsonify({"received": s}), 200
+
     @staticmethod
     def get_example_context() -> Context:
         system_entry = Identity.GOTO().as_system_entry()
@@ -41,16 +51,8 @@ class DevServer:
     # -----------------------------------------------------
 
     def serve(self):
-        def do():
-            logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-            self.app.run(host=self.socket.ip, port=self.socket.port)
-        self.thread = threading.Thread(target=do)
-        self.thread.start()
-
-    def kill(self):
-        # TODO: This is temporary anyway. I'll fine another way to run the dev server
-        # noinspection PyUnresolvedReferences,PyProtectedMember
-        self.thread._stop()
+        logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+        self.app.run(host=self.socket.ip, port=self.socket.port)
 
 if __name__ == "__main__":
     server = DevServer()

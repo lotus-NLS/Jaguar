@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import json
-import tiktoken
 from abc import abstractmethod
 from typing import Optional
 
+import tiktoken
 from tiktoken import Encoding
 
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation import Options, Generation, CallOptions
 from holytools.logging import Loggable
-
 
 # ---------------------------------------------------------
 

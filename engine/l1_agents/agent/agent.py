@@ -26,17 +26,6 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    # TODO: Re-introduce reports on task level
-    #             if with_report:
-    #                 entries = self.get_active_context().entries+[self.get_feedback_request()]
-    #                 evaluation = self.model.get_text_generation(entries=entries)
-    #                 self.process(generation=evaluation, pipe=pipe)
-
-    # @classmethod
-    # def get_feedback_request(cls) -> Entry:
-    #     log_msg = '##Automatic message: Provide the user with an update'
-    #     return Entry.user(msg=log_msg)
-
     def handle(self, task: StepInfo) -> TextPipe:
         if task.memory_update:
             self.memory.append(task.memory_update)
@@ -85,7 +74,6 @@ class Agent(Loggable):
 
         for out in outputs:
             self.memory.append(Entry.from_tool_output(out))
-
 
     # ---------------------------------------------------
     # context

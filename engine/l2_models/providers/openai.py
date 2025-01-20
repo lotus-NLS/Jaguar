@@ -21,6 +21,7 @@ class OpenAIModel(LLM):
         self.openai_api_key : str = api_key
         self.client : OpenAI = OpenAI(api_key=api_key, timeout=self.inf_timeout)
 
+
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
         return cls(name='gpt-4o', api_key=api_key)
