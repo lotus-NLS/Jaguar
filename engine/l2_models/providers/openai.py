@@ -25,9 +25,9 @@ class OpenAIModel(LLM):
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         self.check_token_cap(context=context, token_cap=options.max_input_tokens)
         try:
-            self.context_endpoint.post(msg=context.to_str(), secure=False)
+            self._dev_endpoint.post(msg=context.to_str(), secure=False)
         except:
-            self.warning(f'Context update endpoint {self.context_endpoint.get_url(protocol=f"https")} unresponsive')
+            self.warning(f'Context update endpoint {self._dev_endpoint.get_url(protocol=f"https")} unresponsive')
 
         for entry in context.entries:
             if not isinstance(entry, Entry):
@@ -55,7 +55,7 @@ class OpenAIModel(LLM):
         if not options.max_output_tokens is None:
             args_dict['max_tokens'] = options.max_output_tokens
 
-        return self.client.chat.completions.create(**args_dict)
+        return self._client.chat.completions.create(**args_dict)
 
 
 class OpenAIChunk(Chunk):

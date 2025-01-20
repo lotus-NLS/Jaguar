@@ -18,8 +18,8 @@ class LLM(Loggable):
     def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
         self._name : str = name
-        self.client = self.make_client(api_key=api_key)
-        self.context_endpoint : Endpoint = self.dev_endpoint()
+        self._client = self.make_client(api_key=api_key)
+        self._dev_endpoint : Endpoint = self.dev_endpoint()
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
