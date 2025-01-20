@@ -11,9 +11,9 @@ class TestContextOpenAI(OpenAITest):
         entries = [self.example_entries.introduction]
         self.get_results(entries=entries, docs=[], options=self.text_only)
 
-    # def test_image_context(self):
-    #     entries = [self.example_entries.image_entry]
-    #     self.get_results(entries=entries, docs=[], options=self.text_only)
+    def test_image_context(self):
+        entries = [self.example_entries.image_entry]
+        self.get_results(entries=entries, docs=[], options=self.text_only)
 
 
 class TestToolCallOpenAI(OpenAITest):
