@@ -5,7 +5,7 @@ from engine.l2_models import Options, OpenAIModel, Generation
 from engine.l2_models.context import Entry, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, FileMock
-from tests.credentialdependenttest import CredentialDependentTest
+from tests.credtest import CredentialDependentTest
 
 
 # --------------------------------------------------------------------------------

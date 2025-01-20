@@ -1,7 +1,7 @@
 from pyscrape import SearchEngine, SearchResult
 
 from engine.l3_aos import Browser
-from tests.credentialdependenttest import CredentialDependentTest
+from tests.credtest import CredentialDependentTest
 
 # ----------------------------------------------------------------
 
