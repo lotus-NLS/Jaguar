@@ -1,5 +1,5 @@
-from engine.l0_engine.dev_monitor import DevServer
+from engine import LotusEngine
 
 if __name__ == "__main__":
-    server = DevServer()
-    server.serve()
+    engine = LotusEngine()
+    engine.user_routine()

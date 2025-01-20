@@ -4,7 +4,7 @@ from typing import Optional
 from engine.l2_models import Options, OpenAIModel, Generation
 from engine.l2_models.context import Entry, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
-from holytools.fileIO import ImageFile, FileMock
+from holytools.fileIO import ImageFile, ExampleFiles
 from tests.credtest import CredentialDependentTest
 
 
@@ -100,7 +100,7 @@ class ExampleEntries:
         self.introduction = Entry.user(msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
         self.repetition = Entry.user(msg='Can you please repeat what I said above in its entirety?')
 
-        fpath = FileMock.lend_png().fpath
+        fpath = ExampleFiles.lend_png().fpath
         img_io = ImageFile(fpath=fpath)
         img_content = img_io.read()
         self.image_entry = Entry.user(msg='Can you describe what\'s in this image?', image=img_content)

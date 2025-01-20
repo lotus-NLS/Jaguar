@@ -18,7 +18,7 @@ class LotusEngine(Loggable):
         self._is_alive : bool = True
 
     def user_routine(self):
-        agent = self.get_default_agent(aos=self.get_default_aos())
+        agent = self._get_default_agent(aos=self._get_default_aos())
         while self._is_alive:
             if agent.is_working():
                 self._work_step(agent=agent)
@@ -27,7 +27,7 @@ class LotusEngine(Loggable):
 
     def resarch_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
         aos = AOS(workspaces=[Terminal()], workflowy=workflowy)
-        agent = self.get_default_agent(aos=aos)
+        agent = self._get_default_agent(aos=aos)
 
         num_steps = 0
         while agent.is_working() and num_steps < max_steps:
@@ -43,10 +43,10 @@ class LotusEngine(Loggable):
         return answer
 
     @staticmethod
-    def get_default_aos() -> AOS:
+    def _get_default_aos() -> AOS:
         return AOS(workspaces=[Terminal()])
 
-    def get_default_agent(self, aos : AOS):
+    def _get_default_agent(self, aos : AOS):
         model = OpenAIModel.default_model(api_key=self._creds.get_openai_apikey())
         return Agent(model=model, aos=aos)
 

@@ -1,6 +1,6 @@
 from engine.l3_aos import TextEditor
 from engine.l3_aos.tools import ToolCall
-from holytools.fileIO import File, FileMock
+from holytools.fileIO import File, ExampleFiles
 from holytools.devtools import Unittest
 import json
 
@@ -8,7 +8,7 @@ import json
 
 class TestTextWorkspace(Unittest):
     def setUp(self):
-        self.test_text : File = FileMock.lend_txt()
+        self.test_text : File = ExampleFiles.lend_txt()
         self.workspace = TextEditor()
         tool_call = ToolCall(json_str= json.dumps({'filepath' : self.test_text.fpath}))
         self.workspace.open_action.execute(tool_call)

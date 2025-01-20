@@ -72,7 +72,7 @@ class Agent(Loggable):
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
         tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
-        outputs = []
+        outputs : list[ToolOutput] = []
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
@@ -84,7 +84,7 @@ class Agent(Loggable):
                 outputs += [ToolOutput.failed(name=call.name, reason=e)]
 
         for out in outputs:
-            self.memory.append(out.as_entry())
+            self.memory.append(Entry.from_tool_output(out))
 
 
     # ---------------------------------------------------

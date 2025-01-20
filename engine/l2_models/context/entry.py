@@ -4,6 +4,7 @@ from enum import Enum
 
 from PIL.Image import Image as PILImage
 
+from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
@@ -35,6 +36,10 @@ class Entry(JsonDataclass):
         msg += workspace.get_text()
 
         return Entry.tool(name=workspace.get_name(), msg=msg, image=workspace.get_image())
+
+    @classmethod
+    def from_tool_output(cls, tool_output : ToolOutput) -> Entry:
+        return Entry.tool(msg=tool_output.get_report(), name=tool_output.tool_name)
 
     @classmethod
     def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:

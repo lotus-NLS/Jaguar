@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc
-from holytools.abstract import Serializable, JsonDataclass
+from holytools.abstract import JsonDataclass
 from .entry import Entry
 
 
