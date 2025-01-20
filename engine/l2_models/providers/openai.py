@@ -2,29 +2,29 @@ from __future__ import annotations
 
 from typing import Optional
 
-from func_timeout import func_timeout
 from openai import OpenAI
 from openai import Stream
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from engine.l2_models.context.ctx import Context
 from engine.l2_models.context.entry import APIType, Entry
-from engine.l2_models.generation import Generation, Chunk, Options
+from engine.l2_models.generation import Generation, Chunk, InfOptions
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
+
 
 # ---------------------------------------------------------
 
 class OpenAIModel(LLM):
-    def make_client(self, api_key : Optional[str] = None, timeout : float = 10):
-        return OpenAI(api_key=api_key, timeout=timeout)
+    def make_client(self, api_key : Optional[str] = None):
+        return OpenAI(api_key=api_key)
 
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
         return cls(name='gpt-4o', api_key=api_key)
 
-    def get_generation(self, context : Context, options: Options) -> Generation:
-        self.check_token_cap(context=context)
+    def get_generation(self, context : Context, options: InfOptions) -> Generation:
+        self.check_token_cap(context=context, token_cap=options.max_input_tokens)
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
@@ -35,11 +35,12 @@ class OpenAIModel(LLM):
 
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
-    def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
+    def get_response(self, context : Context, options: InfOptions) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self._name,
             'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
-            'stream' : True
+            'stream' : True,
+            'timeout' : options.timeout
         }
 
         tool_options = options.call_options
@@ -47,13 +48,10 @@ class OpenAIModel(LLM):
             args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
 
-        if not options.max_tokens is None:
-            args_dict['max_tokens'] = options.max_tokens
+        if not options.max_output_tokens is None:
+            args_dict['max_tokens'] = options.max_output_tokens
 
-        def send_request():
-            return self.client.chat.completions.create(**args_dict)
-        openai_stream = func_timeout(func=send_request,timeout=10)
-        return openai_stream
+        return self.client.chat.completions.create(**args_dict)
 
 
 class OpenAIChunk(Chunk):

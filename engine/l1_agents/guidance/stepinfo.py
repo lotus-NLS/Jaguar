@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from engine.l2_models import Options, CallOptions
+from engine.l2_models import InfOptions, CallOptions
 from engine.l2_models.context import Entry
 
 
@@ -18,9 +18,9 @@ class StepInfo:
     def make_default(cls, msg : str):
         return cls(memory=Entry.user(msg=msg))
 
-    def get_options(self) -> Options:
+    def get_options(self) -> InfOptions:
         call_options = CallOptions(call_allowed=True, required_tool_name=self.required_tool)
-        return Options(call_options=call_options)
+        return InfOptions(call_options=call_options)
 
 
 

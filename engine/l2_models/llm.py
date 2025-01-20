@@ -8,18 +8,16 @@ import tiktoken
 from tiktoken import Encoding
 
 from engine.l2_models.context import Entry, Context
-from engine.l2_models.generation import Options, Generation, CallOptions
+from engine.l2_models.generation import InfOptions, Generation, CallOptions
 from holytools.logging import Loggable
 
 # ---------------------------------------------------------
 
 class LLM(Loggable):
-    def __init__(self, name : str, input_token_cap : int = 8192, api_key : Optional[str] = None, timeout : Optional[int] = None):
+    def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
         self._name : str = name
-        self._token_cap : int = input_token_cap
-        self.inf_timeout : float = timeout
-        self.client = self.make_client(api_key=api_key, timeout=timeout)
+        self.client = self.make_client(api_key=api_key)
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
@@ -27,24 +25,22 @@ class LLM(Loggable):
         # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
 
     @abstractmethod
-    def make_client(self, api_key : Optional[str] = None, timeout : Optional[float] = None):
+    def make_client(self, api_key : Optional[str] = None):
         pass
 
     @abstractmethod
-    def get_generation(self, context : Context, options: Options) -> Generation:
+    def get_generation(self, context : Context, options: InfOptions) -> Generation:
         pass
 
     def get_text_generation(self, entries: list[Entry]) -> Generation:
         context = Context(entries=entries, docs=[])
-        options = Options(call_options=CallOptions.no_call())
+        options = InfOptions(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)
 
-
-    def check_token_cap(self, context : Context):
+    def check_token_cap(self, context : Context, token_cap : int):
         num_tokens = self.tokenizer.count_context_tokens(context=context)
-        if num_tokens > self._token_cap:
-            raise ValueError(f'Token cap exceeded: {num_tokens} > {self._token_cap}')
-
+        if num_tokens > token_cap:
+            raise ValueError(f'Token cap exceeded: {num_tokens} > {token_cap}')
 
 
 class Tokenizer:

@@ -33,9 +33,11 @@ class CallOptions:
 
 
 @dataclass
-class Options:
+class InfOptions:
     call_options: CallOptions = field(default_factory=CallOptions.auto)
-    max_tokens : Optional[int] = None
+    timeout : float = 10
+    max_input_tokens: int = 8192
+    max_output_tokens : Optional[int] = None
 
     def get_call_allowed(self) -> bool:
         return self.call_options.call_allowed

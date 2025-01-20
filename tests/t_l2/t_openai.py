@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from engine.l2_models import Options
+from engine.l2_models import InfOptions
 from tests.t_l2.base import OpenAITest
 
 
@@ -46,7 +46,7 @@ class TestToolCallOpenAI(OpenAITest):
     def test_require_call(self):
         entries = [self.example_entries.welcome_request]
         docs = [self.greet_tool.get_doc()]
-        options = Options.require_call(tool_name=self.greet_tool.get_name())
+        options = InfOptions.require_call(tool_name=self.greet_tool.get_name())
         text, calls = self.get_results(entries=entries, docs=docs, options=options)
 
         self.assertTrue(len(calls) == 1)

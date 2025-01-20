@@ -1,5 +1,5 @@
 from engine.l0_engine.settings import LotusCredentials
-from engine.l2_models import OpenAIModel, Options
+from engine.l2_models import OpenAIModel, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
@@ -39,12 +39,12 @@ class SemanticUnittest(Unittest):
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)
 
-        generation = self.model.get_generation(context=context, options=Options.text_only())
+        generation = self.model.get_generation(context=context, options=InfOptions.text_only())
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
         context += Context.singleton(entry=Entry.agent(msg=eval_text))
-        options = Options.require_call(tool_name=yn.get_name())
+        options = InfOptions.require_call(tool_name=yn.get_name())
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
