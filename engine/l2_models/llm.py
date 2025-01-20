@@ -14,17 +14,21 @@ from holytools.logging import Loggable
 # ---------------------------------------------------------
 
 class LLM(Loggable):
-    def __init__(self, name : str, token_cap : int = 8192, inference_timeout : float = 10):
+    def __init__(self, name : str, input_token_cap : int = 8192, api_key : Optional[str] = None, timeout : Optional[int] = None):
         super().__init__()
         self._name : str = name
-        self.token_cap : int = token_cap
-        self.inf_timeout : float = inference_timeout
+        self._token_cap : int = input_token_cap
+        self.inf_timeout : float = timeout
+        self.client = self.make_client(api_key=api_key, timeout=timeout)
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
         self.tokenizer: Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(name))
         # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
 
+    @abstractmethod
+    def make_client(self, api_key : Optional[str] = None, timeout : Optional[float] = None):
+        pass
 
     @abstractmethod
     def get_generation(self, context : Context, options: Options) -> Generation:
@@ -35,13 +39,11 @@ class LLM(Loggable):
         options = Options(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)
 
-    def get_name(self) -> str:
-        return self._name
 
     def check_token_cap(self, context : Context):
         num_tokens = self.tokenizer.count_context_tokens(context=context)
-        if num_tokens > self.token_cap:
-            raise ValueError(f'Token cap exceeded: {num_tokens} > {self.token_cap}')
+        if num_tokens > self._token_cap:
+            raise ValueError(f'Token cap exceeded: {num_tokens} > {self._token_cap}')
 
 
 

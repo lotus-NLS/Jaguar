@@ -16,11 +16,8 @@ from engine.l3_aos.tools import ToolCall
 # ---------------------------------------------------------
 
 class OpenAIModel(LLM):
-    def __init__(self, name : str, api_key : str):
-        super().__init__(name=name)
-        self.openai_api_key : str = api_key
-        self.client : OpenAI = OpenAI(api_key=api_key, timeout=self.inf_timeout)
-
+    def make_client(self, api_key : Optional[str] = None, timeout : float = 10):
+        return OpenAI(api_key=api_key, timeout=timeout)
 
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
@@ -40,7 +37,7 @@ class OpenAIModel(LLM):
 
     def get_response(self, context : Context, options: Options) -> Stream[ChatCompletionChunk]:
         args_dict = {
-            'model': self.get_name(),
+            'model': self._name,
             'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
             'stream' : True
         }
