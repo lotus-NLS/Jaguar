@@ -29,14 +29,17 @@ class Workflowy(Workspace):
 
         return wf
 
-    def add(self, task_id : str, msg : str):
-        parent = self.root.get_descendant(task_id)
+    def add(self, parent_task_id : str, msg : str):
+        """Adds a subtask to parent task with [parent_task_id]"""
+        parent = self.root.get_descendant(parent_task_id)
         parent.add_subtask(msg)
 
     def complete(self, task_id : str):
+        """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
     def delete(self, task_id : str):
+        """Deletes task [task_id]"""
         partial_id = task_id[:-1]
         parent = self.root.get_descendant(partial_id)
         del parent.subtasks[int(task_id[-1])]
@@ -51,7 +54,8 @@ class Workflowy(Workspace):
         self.root = None
 
     def get_desc(self) -> str:
-        return f'Provides a task list with subtask functionality. Tasks can be added, completed and deleted'
+        return (f'Provides a task list with subtask functionality. '
+                f'Each task is assigned a task_id e.g. 12 for the second subtask of the first task.')
 
     def get_text(self) -> str:
         return (f'You are currently engaged in work mode. The user is not present and what you write will only be visible to you.\n'
