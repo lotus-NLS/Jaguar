@@ -52,11 +52,14 @@ class Terminal(Workspace):
     # ---------------------------------------------------------
     # actions
 
-    def run(self, command : str) :
-        """Runs a command in the current terminal session"""
+    def type(self, content : str) :
+        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text files"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
-        pane.send_keys(command)
+        parts = content.split('\n')
+        for p in parts:
+            pane.send_keys(p, enter=False)
+            pane.enter()
 
     # ---------------------------------------------------------
     # context
@@ -82,12 +85,4 @@ class Terminal(Workspace):
 if __name__ == "__main__":
     t = Terminal()
     t.open()
-    t.run(command='asdf')
-    time.sleep(2)
-
-    print(f'Currently terminal reads {t.get_text()}')
-
-    t.run(command='echo "Hellooo from Python via tmux!"')
-    time.sleep(2)
-    print(f'Currently terminal reads {t.get_text()}')
-
+    t.type(content='asdf\nasdf')
