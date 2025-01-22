@@ -53,11 +53,12 @@ class Terminal(Workspace):
     # actions
 
     def type(self, content : str) :
-        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text files"""
+        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text files.
+        Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
         parts = content.split('\n')
-        for p in parts:
+        for p in [p for p in  parts if not len(p) == 0]:
             pane.send_keys(p, enter=False)
             pane.enter()
 
@@ -85,4 +86,4 @@ class Terminal(Workspace):
 if __name__ == "__main__":
     t = Terminal()
     t.open()
-    t.type(content='asdf\nasdf')
+    t.type(content='line1\nline2\n')
