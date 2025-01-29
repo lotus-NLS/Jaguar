@@ -53,8 +53,7 @@ class Terminal(Workspace):
     # actions
 
     def type(self, content : str) :
-        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text files.
-        Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively"""
+        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text file. Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
         parts = content.split('\n')
@@ -81,7 +80,8 @@ class Terminal(Workspace):
 
     @classmethod
     def get_desc(cls) -> str:
-        return "A terminal in which you can freely execute commands"
+        return "A terminal in which you can freely interact with and execute commands in"
+
 
 if __name__ == "__main__":
     t = Terminal()
