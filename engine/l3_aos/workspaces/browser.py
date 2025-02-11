@@ -105,28 +105,28 @@ class Browser(Workspace):
 
 
 
-#
+
 # # Draft for selenium based browing tool
 # import time
 #
 # import undetected_chromedriver as uc
 # from selenium.webdriver import Keys
+# from selenium.webdriver.chrome.options import Options
 # from selenium.webdriver.common.by import By
 #
 #
 # # setting the driver path and requesting a page
-# driver = uc.Chrome()
+#
 #
 # w1 = "https://docs.ros.org/en/foxy/index.html"
 # w2 = 'https://platform.openai.com/docs/libraries#community-libraries'
 # w3 = 'https://www.youtube.com/'
 # w4 = 'https://stackexchange.com/'
 #
-# # stealth(driver,
-# #         languages=["en-US", "en"],
-# #         platform="Linux",
-# #         )
+# chrome_options = Options()
+# chrome_options.add_argument("--load-extension=/home/daniel/.config/google-chrome/Default/Extensions/edibdbjcniadpccecjdfdjjppcpchdlm/1.1.4_0")
 #
+# driver = uc.Chrome(options=chrome_options)
 # driver.get(w3)
 # time.sleep(2)
 #
@@ -160,3 +160,6 @@ class Browser(Workspace):
 # print('done')
 #
 # driver.quit()
+#
+
+
