@@ -1,7 +1,8 @@
 from typing import Optional
 from PIL.Image import Image as PILImage
 from bs4 import BeautifulSoup
-from pyscrape import SiteVisitor, SearchEngine
+from pyscrape.site import SiteVisitor
+from pyscrape.search import SearchEngine
 from urllib.parse import urlparse
 
 from engine.l3_aos.workspace import Workspace
@@ -103,64 +104,59 @@ class Browser(Workspace):
         return f"A browser allowing you to perform a google search and visit sites"
 
 
-# Draft for selenium based browing tool
+
+#
+# # Draft for selenium based browing tool
 # import time
 #
-# from bs4 import BeautifulSoup
-# from selenium import webdriver
+# import undetected_chromedriver as uc
+# from selenium.webdriver import Keys
 # from selenium.webdriver.common.by import By
-# from selenium.webdriver.common.keys import Keys
 #
 #
-# # Create a new Chrome session
-# driver = webdriver.Chrome()
-# driver.get("https://www.google.com/")
+# # setting the driver path and requesting a page
+# driver = uc.Chrome()
 #
-# # Find the search bar, enter text, and submit the search
-# # search_bar = driver.find_element(By.NAME, "q")
-# # search_bar.send_keys("Selenium WebDriver")  # Change your search query here
-# # search_bar.send_keys(Keys.RETURN)  # Pressing the Enter key
+# w1 = "https://docs.ros.org/en/foxy/index.html"
+# w2 = 'https://platform.openai.com/docs/libraries#community-libraries'
+# w3 = 'https://www.youtube.com/'
+# w4 = 'https://stackexchange.com/'
 #
-# # Wait for the cookie message
-# time.sleep(1)  # Pause to allow the page and its elements to load fully
+# # stealth(driver,
+# #         languages=["en-US", "en"],
+# #         platform="Linux",
+# #         )
 #
-# # Try to find and click the 'Accept all' button for cookies
-# try:
-#     accept_cookies_button = driver.find_element(By.XPATH, r'//*[@id="L2AGLb"]/div')
-#     accept_cookies_button.click()
-# except Exception as e:
-#     print("Cookie acceptance button not found:", e)
-#
-# search_bar = driver.find_element(By.NAME, "q")
-# search_bar.send_keys("Selenium WebDriver")  # Change your search query here
-# search_bar.send_keys(Keys.RETURN)  # Pressing the Enter key
-#
-# # Optionally, print the current URL to verify the search
-# print(driver.current_url)
+# driver.get(w3)
+# time.sleep(2)
 #
 #
-# html_content = driver.page_source
-# soup = BeautifulSoup(html_content, 'html.parser')
+# # Recognizing (visible) links
+# # links = driver.find_elements(By.TAG_NAME, 'a')
+# # visible_links = [link for link in links if link.is_displayed()]
+# # invisble_links = [link for link in links if not link.is_displayed()]
+# #
+# # print(f'- Visible links')
+# # for link in visible_links:
+# #     print(link.get_attribute('href'))
+# #
+# # print(f'- Invisible links')
+# # for link in invisble_links:
+# #     print(link.get_attribute('href'))
 #
-# links = soup.find_all('a', href=True)
 #
-# # Additionally, find all clickable elements like buttons
-# buttons = soup.find_all('button')
-# clickable_divs = soup.find_all('button')
+# # Recognizing and interacting with (visible) text inputs
+# text_inputs = driver.find_elements(By.CSS_SELECTOR, 'input[type="text"]')
+# visible_text_inputs = [input_box for input_box in text_inputs if input_box.is_displayed()]
 #
-# # Print all found elements
-# print("Links:")
-# for link in links:
-#     print(link)
+# search_box = visible_text_inputs[0]
+# search_box.send_keys("my_username" + Keys.RETURN)
 #
-# print("\nButtons and other clickable elements:")
-# for button in buttons:
-#     print(button.text)
+# time.sleep(2)
 #
-# for div in clickable_divs:
-#     print(div)
+# for input_box in text_inputs:
+#     print(input_box.get_attribute('accessible_name'))
 #
-# input()
+# print('done')
+#
 # driver.quit()
-#
-#

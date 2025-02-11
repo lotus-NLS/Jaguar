@@ -1,3 +1,5 @@
+import sys
+
 from eval.baseval import SemanticUnittest
 
 
