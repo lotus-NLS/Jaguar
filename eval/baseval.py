@@ -1,4 +1,4 @@
-from engine.l0_engine.settings import LotusCredentials
+from engine.l0_main.settings import LotusCredentials
 from engine.l2_models import OpenAIModel, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.llm import LLM

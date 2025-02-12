@@ -1,4 +1,4 @@
-from engine.l0_engine.settings import LotusCredentials
+from engine.l0_main.settings import LotusCredentials
 from holytools.devtools import Unittest
 
 
