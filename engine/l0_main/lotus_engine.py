@@ -15,20 +15,20 @@ class LotusEngine(Loggable):
     def __init__(self):
         super().__init__()
         self._creds = LotusCredentials()
-        self._is_alive : bool = True
-
         aos = self._get_default_aos()
-        self.agent = self._get_default_agent(aos=aos)
+        self._agent = self._get_default_agent(aos=aos)
 
     def run(self):
-        while self._is_alive:
-            user_input = input('User:')
+        while True:
+            user_input = input('User: ')
+            if user_input == 'exit':
+                break
             converse_step =  Step(memory=Entry.user(msg=user_input))
-            self.agent.step_queue.put(converse_step)
-            while not self.agent.step_queue.empty():
-                response = self.agent.step()
+            self._agent.step_queue.put(converse_step)
+            while not self._agent.step_queue.empty():
+                response = self._agent.step()
                 self.observe_response(response=response)
-
+                print()
 
     @staticmethod
     def observe_response(response : TextPipe):
