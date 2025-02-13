@@ -33,7 +33,8 @@ class Browser(Workspace):
             for index, scrape in enumerate(results):
                 search_results += f'({index}): {scrape}\n'
             self.search_context = search_results
-        self.emulator.visit(url=url)
+        else:
+            self.emulator.visit(url=url)
 
     def get_text(self):
         text = f'+------------------- {self.__class__.__name__} --------------------+\n'
@@ -41,6 +42,9 @@ class Browser(Workspace):
         text += f'+------------------- Site Content: -------------------------+\n'
         # print(f'Content = {content}')
         text += self.emulator.get_markdown()
+
+        text += f'+-------- Search engine --------+'
+        text += self.search_context
 
         return text
 
