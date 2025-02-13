@@ -11,3 +11,29 @@ For more information see the "Wiki" section on the [Project management page](htt
 ## Setup and usage for Ubuntu 22.04
 
 This is still in flux, [TODO] later
+
+Requires chrome installation. For can use below ansible playbook:
+
+```
+- name: Install Google Chrome
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Download Google Chrome .deb package
+      get_url:
+        url: "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        dest: "/tmp/google-chrome-stable_current_amd64.deb"
+
+    - name: Install Google Chrome
+      apt:
+        deb: "/tmp/google-chrome-stable_current_amd64.deb"
+
+    - name: Ensure Google Chrome is installed
+      command: google-chrome --version
+      register: chrome_version
+      changed_when: false
+
+    - name: Display Chrome version
+      debug:
+        msg: "{{ chrome_version.stdout }}"
+```
