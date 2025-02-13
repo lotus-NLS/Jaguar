@@ -16,7 +16,5 @@ class HardwareTask(SemanticUnittest):
         self.assertTrue(evaluation == True)
 
 
-
-
 if __name__ == "__main__":
     HardwareTask.execute_all()

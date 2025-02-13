@@ -3,6 +3,7 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 
 from engine.l3_aos.workspace import Workspace
+
 from pyscrape.search import SearchEngine
 from pyscrape.browse import BrowserEmulator
 
@@ -13,7 +14,7 @@ class Browser(Workspace):
     def __init__(self, google_api_key : str, searchengine_id : str):
         super().__init__()
         self.search_engine : SearchEngine = SearchEngine(google_api_key=google_api_key, searchengine_id=searchengine_id)
-        self.emulator : BrowserEmulator = BrowserEmulator()
+        self.emulator : BrowserEmulator = BrowserEmulator(headless=False)
         self.search_context : str = ''
 
     def open(self, url: str):
@@ -35,10 +36,27 @@ class Browser(Workspace):
         self.emulator.visit(url=url)
 
     def get_text(self):
-        return self.emulator.get_markdown()
+        text = f'+------------------- {self.__class__.__name__} --------------------+\n'
+        text += f'| Currently visiting site: {self.emulator.driver.current_url} |\n'
+        text += f'+------------------- Site Content: -------------------------+\n'
+        # print(f'Content = {content}')
+        text += self.emulator.get_markdown()
+
+        return text
 
     def get_image(self) -> Optional[PILImage]:
         return None
 
     def get_desc(self) -> str:
         return f"A browser allowing you to search google and browse sites"
+
+if __name__ == "__main__":
+    from holytools.configs import FileConfigs
+    creds = FileConfigs.credentials()
+
+    google_api_key = creds.get(key='google_api_key')
+    search_engine_id = creds.get(key='search_engine_id')
+
+    br = Browser(google_api_key=google_api_key, searchengine_id=search_engine_id)
+    br.open(url=f'https://www.google.com/')
+    print(br.get_text())
