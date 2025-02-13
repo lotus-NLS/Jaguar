@@ -34,8 +34,7 @@ class Tool:
             output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=ProgressUpdate.FAILED)
         except Exception as e:
             output.update(msg=f'Encountered exception: {e}. Aborting ...', progress_type=ProgressUpdate.EXCEPTION)
-        finally:
-            output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
+        output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
 
         return output
 

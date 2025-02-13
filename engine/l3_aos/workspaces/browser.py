@@ -10,7 +10,6 @@ from pyscrape.browse import BrowserEmulator
 # ---------------------------------------------------------
 
 class Browser(Workspace):
-
     def __init__(self, google_api_key : str, searchengine_id : str):
         super().__init__()
         self.search_engine : SearchEngine = SearchEngine(google_api_key=google_api_key, searchengine_id=searchengine_id)

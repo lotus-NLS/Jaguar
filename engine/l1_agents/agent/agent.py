@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from queue import Queue
+
 from openai import APITimeoutError
 
 from engine.l1_agents.guidance import Identity, Step
@@ -20,11 +22,21 @@ class Agent(Loggable):
         self.model: LLM = model
         self.aos : AOS = aos
         self.identity : Identity = identity
+        self.step_queue : Queue[Step] = Queue()
 
         self.memory: list[Entry] = []
 
     # ---------------------------------------------------
     # Main routine
+
+    def step(self):
+        if self.is_working():
+            work_step = Step(notice=Entry.agent(msg=f'My current todo list:\n {self.aos.workflowy.root.get_tree()}'))
+            self.step_queue.put(work_step)
+
+        step = self.step_queue.get()
+        return self.handle(step=step)
+
 
     def handle(self, step: Step) -> TextPipe:
         if step.memory:
