@@ -3,6 +3,7 @@ from typing import Optional
 from enum import Enum
 
 from PIL.Image import Image as PILImage
+from pkg_resources import working_set
 
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
@@ -26,15 +27,8 @@ class Entry(JsonDataclass):
 
     @classmethod
     def from_workspace(cls, workspace : Workspace):
-        def big_seperator(name: str) -> str:
-            max_len = 50
-            num_dashes = max(0, max_len - len(name))
-            dashes = '-' * int(num_dashes / 2.)
-            return '\n+' + dashes + f' {name} ' + dashes + '+\n'
-
-        msg = big_seperator(f'Workspace: \"{workspace.get_name()}\"')
-        msg += workspace.get_text()
-
+        msg = f'{workspace.get_desc()}\n'
+        msg += cls.get_boxed(text=workspace.get_text(), headline=workspace.get_name())
         return Entry.tool(name=workspace.get_name(), msg=msg, image=workspace.get_image())
 
     @classmethod
@@ -103,6 +97,16 @@ class Entry(JsonDataclass):
         base64_image = ImageConverter.to_base64_str(image)
         return base64_image
 
+
+    @staticmethod
+    def get_boxed(text: str, headline: str = "") -> str:
+        lines = text.split("\n")
+        max_length = max(max(len(line) for line in lines), len(headline))
+        border = "+" + "-" * (max_length + 2) + "+"
+        headline = f' {headline} '
+        headline_line = f"+{headline.center(max_length + 2, '-')}+" if headline else border
+        boxed_text = [headline_line] + [f"| {line.ljust(max_length)} |" for line in lines] + [border]
+        return "\n".join(boxed_text)
 
 
 class APIType(Enum):

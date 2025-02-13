@@ -92,3 +92,4 @@ class Workspace(Loggable):
     @abstractmethod
     def get_image(self) -> Optional[PILImage]:
         pass
+

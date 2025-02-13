@@ -60,8 +60,8 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
+        context += Context.from_aos(aos=self.aos)
 
         return context
 

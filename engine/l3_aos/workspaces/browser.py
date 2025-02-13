@@ -40,23 +40,32 @@ class Browser(Workspace):
         self.emulator.type(text_box_idx=input_field_idx, content=content)
 
     def get_text(self):
-        text = f'+------------------- {self.__class__.__name__} --------------------+\n'
-        text += f'| Current site: {self.emulator.driver.current_url} |\n'
-        text += f'+------------------- Site Content: -------------------------+\n'
+        md_text = self.emulator.get_markdown()
+        h1 = f'Current site'
+        h2 = f'Site content'
+        h3 = f'Available text input fields'
+        h4 = f'Search engine'
+        lines = [line for line in md_text.split('\n')] + [h1, h2, h3, h4]
+        longest_line_length = max([len(l) for l in lines])
+
+        text = ''
+        separator = f'-' * longest_line_length + '\n'
+        text += h1.center(longest_line_length, '-') + '\n'
+        text += f'{self.emulator.driver.current_url} \n'
+
+
+        text += f'{h2.center(longest_line_length, "-")}\n'
         text += f'{self.emulator.get_markdown()}\n'
 
-
         textinput_fields  = self.emulator.get_textinputs()
-        text += f'+------------------- Available text input fields: -------------------------+\n'
-        text += f'Available text inputs:\n'
+        text += f'{h3.center(longest_line_length, "-")}\n'
         for j, t in enumerate(textinput_fields):
             placeholder = t.get_attribute(name="placeholder")
             text += f'- Input field Index=[{j}]: | {placeholder} | \n'
 
         if self.search_context:
-            text += f'+-------- Search engine --------+'
+            text += f'{h4.center(longest_line_length, "-")}\n'
             text += self.search_context
-        text += f'+------------------- /{self.__class__.__name__} --------------------+\n'
 
         return text
 
@@ -74,5 +83,10 @@ if __name__ == "__main__":
     search_engine_id = creds.get(key='search_engine_id')
 
     br = Browser(google_api_key=g_api_key, searchengine_id=search_engine_id)
-    print(f'Current URL:')
-    print(br.emulator.driver.current_url)
+
+    br.visit(url=f'https://en.wikipedia.org/wiki/Beaver')
+    # print(f'Current URL:')
+    # print(br.emulator.driver.current_url)
+
+
+    print(f'{br.get_text()}')
