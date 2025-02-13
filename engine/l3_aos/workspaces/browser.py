@@ -36,15 +36,27 @@ class Browser(Workspace):
         else:
             self.emulator.visit(url=url)
 
+    def enter_text(self, input_field_idx : int, content : str):
+        self.emulator.type(text_box_idx=input_field_idx, content=content)
+
     def get_text(self):
         text = f'+------------------- {self.__class__.__name__} --------------------+\n'
-        text += f'| Currently visiting site: {self.emulator.driver.current_url} |\n'
+        text += f'| Current site: {self.emulator.driver.current_url} |\n'
         text += f'+------------------- Site Content: -------------------------+\n'
-        # print(f'Content = {content}')
-        text += self.emulator.get_markdown()
+        text += f'{self.emulator.get_markdown()}\n'
 
-        text += f'+-------- Search engine --------+'
-        text += self.search_context
+
+        textinput_fields  = self.emulator.get_textinputs()
+        text += f'+------------------- Available text input fields: -------------------------+\n'
+        text += f'Available text inputs:\n'
+        for j, t in enumerate(textinput_fields):
+            placeholder = t.get_attribute(name="placeholder")
+            text += f'- Input field Index=[{j}]: | {placeholder} | \n'
+
+        if self.search_context:
+            text += f'+-------- Search engine --------+'
+            text += self.search_context
+        text += f'+------------------- /{self.__class__.__name__} --------------------+\n'
 
         return text
 
@@ -58,9 +70,9 @@ if __name__ == "__main__":
     from holytools.configs import FileConfigs
     creds = FileConfigs.credentials()
 
-    google_api_key = creds.get(key='google_api_key')
+    g_api_key = creds.get(key='google_api_key')
     search_engine_id = creds.get(key='search_engine_id')
 
-    br = Browser(google_api_key=google_api_key, searchengine_id=search_engine_id)
-    br.open(url=f'https://www.google.com/')
-    print(br.get_text())
+    br = Browser(google_api_key=g_api_key, searchengine_id=search_engine_id)
+    print(f'Current URL:')
+    print(br.emulator.driver.current_url)
