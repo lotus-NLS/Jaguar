@@ -1,10 +1,10 @@
 from engine import LotusEngine
 from engine.l3_aos.workspaces.workflowy import Workflowy
-from eval.baseval import SemanticUnittest
+from eval.nlunittest import NLUnittest
 
 # ---------------------------------------------------
 
-class HardwareTask(SemanticUnittest):
+class HardwareTask(NLUnittest):
     def test_research(self):
         engine = LotusEngine()
         answer = engine.resarch_routine(workflowy=Workflowy._hardware_summary(),
@@ -18,3 +18,21 @@ class HardwareTask(SemanticUnittest):
 
 if __name__ == "__main__":
     HardwareTask.execute_all()
+
+
+
+
+    # def resarch_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
+    #     aos = AOS(workspaces=[browser], workflowy=workflowy)
+    #     agent = self._get_default_agent(aos=aos)
+    #
+    #     num_steps = 0
+    #     while agent.is_working() and num_steps < max_steps:
+    #         self._work_step(agent)
+    #         num_steps += 1
+    #     task = Step(memory=Entry.user(msg=query))
+    #     response = agent.handle(step=task)
+    #     answer = ''
+    #     for text in response.get_text_stream():
+    #         answer += text
+    #     print(f'The following answer was provided: {answer}')
