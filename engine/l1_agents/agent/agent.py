@@ -29,21 +29,8 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def step(self):
-        if self.is_working():
-            work_step = Step(notice=Entry.agent(msg=f'My current todo list:\n {self.aos.workflowy.root.get_tree()}'))
-            self.step_queue.put(work_step)
-
-        step = self.step_queue.get()
-        return self.handle(step=step)
-
-
     def handle(self, step: Step) -> TextPipe:
-        if step.memory:
-            self.memory.append(step.memory)
-        context = self.get_context()
-        if step.notice:
-            context += Context.singleton(entry=step.notice)
+        context = self.get_context(work_mode=step.mode == 'work')
         inf_options = step.get_options()
 
         try:
@@ -58,17 +45,25 @@ class Agent(Loggable):
 
         return pipe
 
-    def get_context(self) -> Context:
+    def update_memory(self, entry : Entry):
+        self.memory.append(entry)
+
+    def get_context(self, work_mode : bool = False) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
         context += Context(entries=self.memory)
         context += Context.from_aos(aos=self.aos)
+
+        if work_mode:
+            work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user')
+            context += Context.singleton(entry=work_entry)
 
         return context
 
     def write(self, generation : Generation, pipe : TextPipe):
         for chunk in generation:
             pipe.put(chunk.get_text())
-        self.memory.append(Entry.agent(msg=generation.get_text()))
+        response_entry = Entry.agent(msg=generation.get_text())
+        self.update_memory(entry=response_entry)
         pipe.stop()
 
     def act(self, generation : Generation):
@@ -86,13 +81,11 @@ class Agent(Loggable):
                 outputs += [ToolOutput.failed(name=call.name, reason=e)]
 
         for out in outputs:
-            self.memory.append(Entry.from_tool_output(out))
+            output_entry = Entry.from_tool_output(out)
+            self.update_memory(output_entry)
 
     # ---------------------------------------------------
     # context
-
-    def is_working(self) -> bool:
-        return self.aos.workspace_engage()
 
     def get_system_prompt(self) -> Entry:
         system_msg = f'{self.identity.as_str()}\n'

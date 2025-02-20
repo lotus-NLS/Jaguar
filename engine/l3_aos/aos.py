@@ -13,7 +13,6 @@ class AOS(Loggable):
     def __init__(self, workspaces : list[Workspace], mandate : TaskWS = TaskWS()):
         super().__init__()
         self._workspaces : list[Workspace] = workspaces + [mandate]
-        self.workflowy : TaskWS = mandate
         self._check_ws_uniqueness()
 
     @classmethod
@@ -23,9 +22,6 @@ class AOS(Loggable):
     def add_workspace(self, ws : Workspace):
         self._workspaces.append(ws)
         self._check_ws_uniqueness()
-
-    def workspace_engage(self) -> bool:
-        return not self.workflowy.root is None
 
     def _check_ws_uniqueness(self):
         ws_namelist = [workspace.get_name() for workspace in self._workspaces]
