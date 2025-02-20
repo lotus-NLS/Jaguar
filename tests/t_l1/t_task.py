@@ -1,4 +1,4 @@
-from engine.l3_aos.workspaces.workflowy import Task
+from engine.l3_aos.workspaces.mandate import Task
 from holytools.devtools import Unittest
 
 

@@ -3,17 +3,17 @@ from __future__ import annotations
 from engine.l3_aos.workspaces.terminal import Terminal
 from engine.l3_aos.tools import Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
-from engine.l3_aos.workspaces.workflowy import Workflowy
+from engine.l3_aos.workspaces.mandate import Mandate
 from holytools.logging import Loggable
 
 
 # ---------------------------------------------------------
 
 class AOS(Loggable):
-    def __init__(self, workspaces : list[Workspace], workflowy : Workflowy = Workflowy()):
+    def __init__(self, workspaces : list[Workspace], mandate : Mandate = Mandate()):
         super().__init__()
-        self._workspaces : list[Workspace] = workspaces + [workflowy]
-        self.workflowy : Workflowy = workflowy
+        self._workspaces : list[Workspace] = workspaces + [mandate]
+        self.workflowy : Mandate = mandate
         self._check_ws_uniqueness()
 
     @classmethod

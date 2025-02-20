@@ -6,28 +6,10 @@ from PIL.Image import Image as PILImage
 from engine.l3_aos.workspace import Workspace
 
 
-class Workflowy(Workspace):
+class Mandate(Workspace):
     def __init__(self):
         super().__init__()
         self.root : Optional[Task] = None
-
-    @classmethod
-    def _hardware_summary(cls):
-        wf = Workflowy()
-        wf.open()
-
-        root = Task(is_root=True)
-        t1 = root.add_subtask(msg=f'Provide user with summary of hardware')
-        subtask = t1.add_subtask(msg=f'Acquire information')
-        subtask.add_subtask(msg=f'CPU information')
-        subtask.add_subtask(msg=f'GPU information')
-        subtask.add_subtask(msg=f'RAM information')
-        subtask.add_subtask(msg=f'Disk information')
-        subtask.add_subtask(msg=f'Motherboard information')
-        t1.add_subtask(msg=f'Write out summary')
-        wf.root = root
-
-        return wf
 
     def add(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""
@@ -67,6 +49,7 @@ class Workflowy(Workspace):
         return None
 
 
+
 class Task:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
@@ -86,9 +69,12 @@ class Task:
             return len(ancestors) - 2
 
         for l in lines:
-            indentation = len(l) - len(l.lstrip(' '))
+            blank_spaces = len(l) - len(l.lstrip(' '))
+            if not blank_spaces % 4 == 0:
+                raise ValueError(f'Indentation error at line: {l}. Indentation must be multiple of 4, is {blank_spaces}')
+            indentation = blank_spaces // 4
             if indentation > get_ancestor_indent() + 1:
-                raise ValueError(f'Indentation error at line: {l}')
+                raise ValueError(f'Indentation is more than two increments larger than parent at line: {l}')
 
             while indentation < get_ancestor_indent() + 1:
                 ancestors.pop()
