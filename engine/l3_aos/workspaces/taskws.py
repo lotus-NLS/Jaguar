@@ -6,10 +6,10 @@ from PIL.Image import Image as PILImage
 from engine.l3_aos.workspace import Workspace
 
 
-class Mandate(Workspace):
+class TaskWS(Workspace):
     def __init__(self):
         super().__init__()
-        self.root : Optional[Task] = None
+        self.root : Optional[Mandate] = None
 
     def add(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""
@@ -30,7 +30,7 @@ class Mandate(Workspace):
     # Generics
 
     def open(self):
-        self.root = Task(content='', is_root=True)
+        self.root = Mandate(content='', is_root=True)
 
     def close(self, *args, **kwargs):
         self.root = None
@@ -49,20 +49,19 @@ class Mandate(Workspace):
         return None
 
 
-
-class Task:
+class Mandate:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
         self.name : str = content
         self.identifier : str = identifier
 
         self.is_complete : bool = False
-        self.subtasks : list[Task] = []
+        self.subtasks : list[Mandate] = []
 
     @classmethod
     def from_yaml(cls, s : str):
         lines = s.split('\n')
-        root = Task(is_root=True)
+        root = Mandate(is_root=True)
         ancestors = [root]
 
         def get_ancestor_indent():
@@ -85,12 +84,12 @@ class Task:
         return root
 
     def add_subtask(self, msg : str):
-        new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
+        new_task = Mandate(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)
         return new_task
 
 
-    def get_descendant(self, identifier : str) -> Task:
+    def get_descendant(self, identifier : str) -> Mandate:
         if len(identifier) == 0:
             return self
 

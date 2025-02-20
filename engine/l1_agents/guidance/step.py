@@ -5,19 +5,21 @@ from typing import Optional
 
 from engine.l2_models import InfOptions, CallOptions
 from engine.l2_models.context import Entry
+from engine.l3_aos.workspaces.taskws import Mandate
 
 
 # ------------------------------------------------------------------------
 
 @dataclass
 class Step:
-    memory: Optional[Entry] = None
-    notice: Optional[Entry] = None
+    mode : str = 'work'
+    task : Optional[Mandate] = None
     required_tool: Optional[str] = None
 
-    @classmethod
-    def make_default(cls, msg : str):
-        return cls(memory=Entry.user(msg=msg))
+    def __post_init__(self):
+        valid_mode_options = ['work', 'converse']
+        if not self.mode in valid_mode_options:
+            raise ValueError(f'Invalid mode: {self.mode}; Mode options are {valid_mode_options}')
 
     def get_options(self) -> InfOptions:
         call_options = CallOptions(call_allowed=True, required_tool_name=self.required_tool)
