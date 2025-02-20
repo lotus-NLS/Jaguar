@@ -18,7 +18,7 @@ class LotusEngine(Loggable):
         aos = self._get_default_aos()
         self._agent = self._get_default_agent(aos=aos)
 
-    def run(self):
+    def converse(self):
         while True:
             user_input = input('User: ')
             if user_input == 'exit':
