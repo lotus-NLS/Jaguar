@@ -23,12 +23,10 @@ class LotusEngine(Loggable):
             user_input = input('User: ')
             if user_input == 'exit':
                 break
-            converse_step =  Step(memory=Entry.user(msg=user_input))
-            self._agent.step_queue.put(converse_step)
-            while not self._agent.step_queue.empty():
-                response = self._agent.step()
-                self.observe_response(response=response)
-                print()
+
+            user_entry = Entry.user(msg=user_input)
+            self._agent.update_memory(user_entry)
+            self._agent.handle(step=Step.converse())
 
     @staticmethod
     def observe_response(response : TextPipe):

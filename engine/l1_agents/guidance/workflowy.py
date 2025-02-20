@@ -6,7 +6,7 @@ from PIL.Image import Image as PILImage
 from engine.l3_aos.workspace import Workspace
 
 
-class TaskWS(Workspace):
+class Workflowy(Workspace):
     def __init__(self):
         super().__init__()
         self.root : Optional[Mandate] = None

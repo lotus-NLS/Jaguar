@@ -5,6 +5,7 @@ from queue import Queue
 from openai import APITimeoutError
 
 from engine.l1_agents.guidance import Identity, Step
+from engine.l1_agents.guidance.workflowy import Workflowy
 from engine.l2_models import Generation
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
@@ -21,8 +22,8 @@ class Agent(Loggable):
         super().__init__()
         self.model: LLM = model
         self.aos : AOS = aos
+        self.workflowy : Workflowy = Workflowy()
         self.identity : Identity = identity
-        self.step_queue : Queue[Step] = Queue()
 
         self.memory: list[Entry] = []
 
@@ -35,9 +36,9 @@ class Agent(Loggable):
 
         try:
             pipe = TextPipe()
-            step = self.model.get_generation(context=context, options=inf_options)
-            self.write(generation=step, pipe=pipe)
-            self.act(generation=step)
+            generation = self.model.get_generation(context=context, options=inf_options)
+            self.write(generation=generation, pipe=pipe)
+            self.act(generation=generation)
         except APITimeoutError:
             error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
@@ -54,6 +55,8 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
 
         if work_mode:
+            context += Context.
+
             work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user')
             context += Context.singleton(entry=work_entry)
 
