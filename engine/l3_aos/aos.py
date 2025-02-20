@@ -10,9 +10,9 @@ from holytools.logging import Loggable
 # ---------------------------------------------------------
 
 class AOS(Loggable):
-    def __init__(self, workspaces : list[Workspace], mandate : TaskWS = TaskWS()):
+    def __init__(self, workspaces : list[Workspace]):
         super().__init__()
-        self._workspaces : list[Workspace] = workspaces + [mandate]
+        self._workspaces : list[Workspace] = workspaces
         self._check_ws_uniqueness()
 
     @classmethod

@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
+from engine.l1_agents.guidance.taskws import Mandate
 from engine.l2_models import InfOptions, CallOptions
-from engine.l3_aos.workspaces.taskws import Mandate
 
 
 # ------------------------------------------------------------------------
