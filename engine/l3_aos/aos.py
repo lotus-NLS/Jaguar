@@ -3,7 +3,6 @@ from __future__ import annotations
 from engine.l3_aos.workspaces.terminal import Terminal
 from engine.l3_aos.tools import Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
-from engine.l3_aos.workspaces.taskws import TaskWS
 from holytools.logging import Loggable
 
 

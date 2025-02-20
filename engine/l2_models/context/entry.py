@@ -1,15 +1,16 @@
 from __future__ import annotations
-from typing import Optional
+
+from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 from PIL.Image import Image as PILImage
-from pkg_resources import working_set
 
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
-from dataclasses import dataclass
+
 
 # ----------------------------------------------
 

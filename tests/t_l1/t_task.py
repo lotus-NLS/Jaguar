@@ -1,4 +1,4 @@
-from engine.l3_aos.workspaces.taskws import Mandate
+from engine.l1_agents.guidance.workflowy import Mandate
 from holytools.devtools import Unittest
 
 

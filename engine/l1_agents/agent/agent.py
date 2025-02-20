@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from queue import Queue
-
 from openai import APITimeoutError
 
-from engine.l1_agents.guidance import Identity, Step
+from engine.l1_agents.guidance import Identity
 from engine.l1_agents.guidance.workflowy import Workflowy
-from engine.l2_models import Generation
+from engine.l2_models import Generation, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
@@ -30,9 +28,8 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, step: Step) -> TextPipe:
-        context = self.get_context(work_mode=step.mode == 'work')
-        inf_options = step.get_options()
+    def handle(self, inf_options : InfOptions) -> TextPipe:
+        context = self.get_context()
 
         try:
             pipe = TextPipe()
@@ -55,8 +52,6 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
 
         if work_mode:
-            context += Context.
-
             work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user')
             context += Context.singleton(entry=work_entry)
 
