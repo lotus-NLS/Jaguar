@@ -24,10 +24,11 @@ class OpenAIModel(LLM):
 
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         self.check_token_cap(context=context, token_cap=options.max_input_tokens)
-        try:
-            self._dev_endpoint.post(msg=context.to_str(), secure=False)
-        except:
-            self.warning(f'Context update endpoint {self._dev_endpoint.get_url(protocol=f"https")} unresponsive')
+        if self.enable_debug:
+            try:
+                self._dev_endpoint.post(msg=context.to_str(), secure=False)
+            except:
+                self.warning(f'Context update endpoint {self._dev_endpoint.get_url(protocol=f"https")} unresponsive')
 
         for entry in context.entries:
             if not isinstance(entry, Entry):

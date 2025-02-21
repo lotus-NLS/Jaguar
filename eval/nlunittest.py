@@ -12,6 +12,7 @@ class NLUnittest(Unittest):
     def setUpClass(cls):
         configs = LotusCredentials()
         cls.model : LLM = OpenAIModel.default_model(api_key=configs.get_openai_apikey())
+        cls.model.disable_debug()
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
         yn = YesNoTool()
@@ -22,7 +23,7 @@ class NLUnittest(Unittest):
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)
 
-        generation = self.model.get_generation(context=context, options=InfOptions.text_only(debugging=False))
+        generation = self.model.get_generation(context=context, options=InfOptions.text_only())
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 

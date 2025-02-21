@@ -17,6 +17,7 @@ from holytools.network import Endpoint
 class LLM(Loggable):
     def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
+        self.enable_debug : bool = True
         self._name : str = name
         self._client = self.make_client(api_key=api_key)
         self._dev_endpoint : Endpoint = self.dev_endpoint()
@@ -25,6 +26,9 @@ class LLM(Loggable):
         name = name if not name == 'o1' else 'o1-'
         self.tokenizer: Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(name))
         # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
+
+    def disable_debug(self):
+        self.enable_debug = False
 
     @abstractmethod
     def make_client(self, api_key : Optional[str] = None):

@@ -29,8 +29,7 @@ class HardwareTask(NLUnittest):
 
     def test_research(self):
         engine = LotusEngine()
-        engine.work(mandate=self.mandate_dict['hardware'], max_steps=5)
-
+        engine.work(mandate=self.mandate_dict['hardware'], max_steps=10)
         user_msg = f'Please give me a summary of my hardware'
         answer = engine.converse(msg=user_msg)
 
@@ -41,7 +40,6 @@ class HardwareTask(NLUnittest):
                           f'CPU, GPU, RAM, Disks and Motherboard. If information cannot be retrieve a reason is given')
         evaluation = self.evaluateProperty(msg=answer, prop=property_query)
         self.assertTrue(evaluation == True)
-
 
 
 if __name__ == "__main__":
