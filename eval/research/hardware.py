@@ -21,7 +21,7 @@ class HardwareTask(NLUnittest):
         for p in parts:
             lines = p.split('\n')
             name = lines[0]
-            remaining = '\n'.join(lines[1:])
+            remaining = '\n'.join(lines[1:-1])
             mandate = Mandate.from_yaml(s=remaining)
             cls.mandate_dict[name] = mandate
             print(f'Mandate {name}:\n {mandate.get_tree()}')
