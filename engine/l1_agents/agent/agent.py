@@ -10,6 +10,7 @@ from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
 
 
@@ -69,6 +70,10 @@ class Agent(Loggable):
         tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
         outputs : list[ToolOutput] = []
         for call in tool_calls:
+            if 'close' in call.name:
+                _, ws_name = call.name.split('_')
+                ws = self.aos.get_ws(name=ws_name)
+                self.freeze_final_state(ws)
             try:
                 tool = tools_map[call.name]
                 outputs += [tool.execute(tool_call=call)]
@@ -81,6 +86,12 @@ class Agent(Loggable):
         for out in outputs:
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
+
+    def freeze_final_state(self, ws : Workspace):
+        e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:')
+        e2 = Entry.from_workspace(workspace=ws)
+        self.update_memory(entry=e1)
+        self.update_memory(entry=e2)
 
     # ---------------------------------------------------
     # context
