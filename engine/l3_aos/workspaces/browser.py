@@ -30,8 +30,8 @@ class Browser(Workspace):
             search_tearm = url.replace(f'search://','')
             results = self.search_engine.get_results(search_term=search_tearm, num_results=5)
             search_results = f'Results for search term \"{search_tearm}\"\n'
-            for index, scrape in enumerate(results):
-                search_results += f'({index}): {scrape}\n'
+            for index, r in enumerate(results):
+                search_results += f'({index}): {r}\n'
             self.search_context = search_results
         else:
             self.emulator.visit(url=url)
@@ -40,7 +40,7 @@ class Browser(Workspace):
         self.emulator.type(text_box_idx=input_field_idx, content=content)
 
     def get_text(self):
-        md_text = self.emulator.get_markdown()
+        md_text = self.emulator.get_markdown(max_width=150)
         h1 = f'Current site'
         h2 = f'Site content'
         h3 = f'Available text input fields'
@@ -49,13 +49,12 @@ class Browser(Workspace):
         longest_line_length = max([len(l) for l in lines])
 
         text = ''
-        separator = f'-' * longest_line_length + '\n'
         text += h1.center(longest_line_length, '-') + '\n'
         text += f'{self.emulator.driver.current_url} \n'
 
 
         text += f'{h2.center(longest_line_length, "-")}\n'
-        text += f'{self.emulator.get_markdown()}\n'
+        text += f'{md_text}\n'
 
         textinput_fields  = self.emulator.get_textinputs()
         text += f'{h3.center(longest_line_length, "-")}\n'
@@ -74,6 +73,7 @@ class Browser(Workspace):
 
     def get_desc(self) -> str:
         return f"A browser allowing you to search google and browse sites"
+
 
 if __name__ == "__main__":
     from holytools.configs import FileConfigs
