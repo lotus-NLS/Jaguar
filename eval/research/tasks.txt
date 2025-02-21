@@ -1,4 +1,4 @@
-++ hardware
+++hardware
 - Provide user with summary of hardware
     - Acquire information
         - CPU information
@@ -7,3 +7,8 @@
         - Disk information
         - Motherboard information
     - Write out summary
+++debug
+- Search online
+    - On Stackexchange
+    - Other resources if any appear noteworthy
+- Try out hypothesis
