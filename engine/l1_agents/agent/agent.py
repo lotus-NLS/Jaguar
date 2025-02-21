@@ -10,6 +10,7 @@ from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
 
 
@@ -94,14 +95,14 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context(entries=self.memory)
         context += Context.from_aos(aos=self.aos)
+        context += Context(entries=self.memory)
 
         if self.is_working():
+            workflowy_content = Entry.tool(self.workflowy.get_text(), name=self.workflowy.get_name())
+            context += Context(entries=[workflowy_content], docs=self.workflowy.get_action_docs())
             work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user. '
                                           'Your current tasks are outlined in the Workflowy workspace')
             context += Context.singleton(entry=work_entry)
-            entry = Entry.tool(self.workflowy.get_text(), name=self.workflowy.get_name())
-            context += Context(entries=[entry], docs=self.workflowy.get_action_docs())
 
         return context
