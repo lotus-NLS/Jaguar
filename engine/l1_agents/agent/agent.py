@@ -90,7 +90,7 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_workspaces(workspaces=self.get_workspaces())
+        context += Context.from_workspaces(workspaces=self.get_active_workspaces())
         context += Context(entries=self.memory)
 
         if self.workflowy.is_active:
@@ -106,14 +106,18 @@ class Agent(Loggable):
     # tools
 
     def get_tools(self) -> list[Tool]:
-        workspaces = self.get_workspaces()
+        workspaces = self.get_active_workspaces()
         tools = []
         for ws in workspaces:
             tools += ws.get_actions()
         return tools
 
-    def get_workspaces(self) -> list[Workspace]:
-        workspaces = self.aos.get_workspaces()
+    def get_ws(self, name : str) -> Workspace:
+        ws_map = {ws.get_name(): ws for ws in self.get_active_workspaces()}
+        return ws_map[name]
+
+    def get_active_workspaces(self) -> list[Workspace]:
+        workspaces = [ws for ws in  self.aos.workspaces if ws.is_active]
         if self.workflowy.is_active:
             workspaces += [self.workflowy]
         return workspaces
