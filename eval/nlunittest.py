@@ -22,7 +22,7 @@ class NLUnittest(Unittest):
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)
 
-        generation = self.model.get_generation(context=context, options=InfOptions.text_only())
+        generation = self.model.get_generation(context=context, options=InfOptions.text_only(debugging=False))
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 

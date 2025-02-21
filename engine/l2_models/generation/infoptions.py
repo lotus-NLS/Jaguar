@@ -39,6 +39,7 @@ class InfOptions:
     timeout : float = 10
     max_input_tokens: int = 8192
     max_output_tokens : Optional[int] = None
+    debugging : bool = True
 
     def get_call_allowed(self) -> bool:
         return self.call_options.call_allowed

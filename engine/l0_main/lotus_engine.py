@@ -1,5 +1,4 @@
 import time
-
 from engine.l1_agents import Agent
 from engine.l2_models import OpenAIModel
 from engine.l3_aos import AOS, Terminal, Browser
@@ -21,21 +20,19 @@ class LotusEngine(Loggable):
     def work(self, mandate : Mandate, max_steps : int):
         self._agent.work(mandate=mandate, max_steps=max_steps)
 
-    def converse(self):
-        while True:
-            user_input = input('User: ')
-            if user_input == 'exit':
-                break
-
-            user_entry = Entry.user(msg=user_input)
-            self._agent.update_memory(user_entry)
-            self._agent.handle(step=Step.converse())
+    def converse(self, msg : str) -> str:
+        text_pipe = self._agent.converse(msg=msg)
+        return self.observe_response(pipe=text_pipe)
 
     @staticmethod
-    def observe_response(response : TextPipe):
-        for text in response.get_text_stream():
-            print(text, end='', flush=True)
-            time.sleep(0.05)
+    def observe_response(pipe : TextPipe, print_chunks : bool = True) -> str:
+        response_text = ''
+        for text in pipe.get_text_stream():
+            response_text += text
+            if print_chunks:
+                print(text, end='', flush=True)
+                time.sleep(0.05)
+        return response_text
 
     # ---------------------------------------------------------------
 
