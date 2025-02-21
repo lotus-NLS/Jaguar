@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from typing import Optional
-
 from PIL.Image import Image as PILImage
 from engine.l3_aos.workspace import Workspace
 
+# -------------------------------------------------------
 
 class Workflowy(Workspace):
     def __init__(self):

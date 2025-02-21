@@ -3,7 +3,7 @@ from __future__ import annotations
 from openai import APITimeoutError
 
 from engine.l1_agents.guidance import Identity
-from engine.l1_agents.guidance.workflowy import Workflowy
+from engine.l1_agents.guidance.workflowy import Workflowy, Mandate
 from engine.l2_models import Generation, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
@@ -25,10 +25,23 @@ class Agent(Loggable):
 
         self.memory: list[Entry] = []
 
+    def converse(self, msg : str) -> TextPipe:
+        self.memory.append(Entry.user(msg=msg))
+        return self.handle()
+
+    def work(self, mandate : Mandate, max_steps : int):
+        self.workflowy.root = mandate
+        for j in range(max_steps):
+            self.handle()
+            if not self.is_working():
+                print(f'Finished work mode after {j+1} steps')
+                break
+        self.workflowy.root = None
+
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_options : InfOptions) -> TextPipe:
+    def handle(self, inf_options : InfOptions = InfOptions()) -> TextPipe:
         context = self.get_context()
 
         try:
@@ -42,20 +55,6 @@ class Agent(Loggable):
             pipe = TextPipe.failed()
 
         return pipe
-
-    def update_memory(self, entry : Entry):
-        self.memory.append(entry)
-
-    def get_context(self, work_mode : bool = False) -> Context:
-        context = Context(entries=[self.identity.as_system_entry()])
-        context += Context(entries=self.memory)
-        context += Context.from_aos(aos=self.aos)
-
-        if work_mode:
-            work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user')
-            context += Context.singleton(entry=work_entry)
-
-        return context
 
     def write(self, generation : Generation, pipe : TextPipe):
         for chunk in generation:
@@ -82,9 +81,23 @@ class Agent(Loggable):
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
 
+
     # ---------------------------------------------------
     # context
 
-    def get_system_prompt(self) -> Entry:
-        system_msg = f'{self.identity.as_str()}\n'
-        return Entry.system(msg=system_msg)
+    def update_memory(self, entry : Entry):
+        self.memory.append(entry)
+
+    def is_working(self):
+        return not self.workflowy.root is None
+
+    def get_context(self, work_mode: bool = False) -> Context:
+        context = Context(entries=[self.identity.as_system_entry()])
+        context += Context(entries=self.memory)
+        context += Context.from_aos(aos=self.aos)
+
+        if work_mode:
+            work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user')
+            context += Context.singleton(entry=work_entry)
+
+        return context
