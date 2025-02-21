@@ -8,43 +8,10 @@ from PIL.Image import Image as PILImage
 
 # ---------------------------------------------------------
 
-class WorkspaceTest(Unittest):
+class TestWorkspace(Unittest):
     def setUp(self):
         self.workspace = MockWorkspace()
 
-
-class TestActionProperties(WorkspaceTest):
-    def test_basic_properties(self):
-        self.assertIsInstance(self.workspace.get_desc(), str)
-        self.assertFalse(self.workspace.is_active)
-
-    def test_action_generation(self):
-        self.workspace.open_action.do()
-        action_names = [action.get_name() for action in self.workspace.get_actions()]
-        print(f'Action names are: {action_names}')
-        for text in ['add', 'reset']:
-            contains_keyword = any([text in action.get_name() for action in self.workspace.get_actions()])
-            self.assertTrue(contains_keyword)
-
-    def test_action_docs(self):
-        actions = self.workspace.get_actions()
-        for action in actions:
-            self.assertIsInstance(action.get_doc(), ToolDoc)
-
-    def test_action_type(self):
-        actions = self.workspace.get_actions()
-        for action in actions:
-            self.assertIsInstance(action, Tool)
-
-    def test_num_actions(self):
-        self.workspace.open_action.do()
-        actions = self.workspace.get_actions()
-        actions_info = [action.get_name() for action in actions]
-        self.log(f'Actions are : {actions_info}')
-        self.assertEqual(3, len(actions))
-
-
-class TestActionExectuion(WorkspaceTest):
     def test_tool_execution(self):
         self.workspace.open_action.do()
         actions = self.workspace.get_actions()
@@ -60,7 +27,6 @@ class TestActionExectuion(WorkspaceTest):
         if add is None or reset is None:
             raise ValueError('Add or reset action not found')
 
-
         add_json_str = '{"msg": "New text"}'
         tool_call = ToolCall(json_str=add_json_str)
 
@@ -74,16 +40,46 @@ class TestActionExectuion(WorkspaceTest):
         self.assertEqual('', self.workspace.get_text())
         self.log(f'Window context after reset : {Entry.from_workspace(workspace=self.workspace)}')
 
-
-    def test_open_application(self):
-        self.workspace.open_action.do()
-        self.assertTrue(self.workspace.is_active)
-        self.assertIsInstance(self.workspace, MockWorkspace)
-
-    def test_close_application(self):
-        self.workspace.open_action.do()
-        self.workspace.close_action.do()
+    def test_toggle_active_inactive(self):
+        print(f'Workspace active = {self.workspace.is_active}')
         self.assertFalse(self.workspace.is_active)
+        self.workspace.open_action.do()
+        print(f'Workspace active after open actio = {self.workspace.is_active}')
+        self.assertTrue(self.workspace.is_active)
+        self.workspace.close_action.do()
+        print(f'Workspace active after close actio = {self.workspace.is_active}')
+        self.assertFalse(self.workspace.is_active)
+
+    def test_get_actions(self):
+        while_open_actions = ['add', 'reset', 'close']
+        while_closed_actions = ['open']
+
+        action_names = [action.get_name() for action in self.workspace.get_actions()]
+        print(f'Actions while open = {action_names}')
+        for keyword in while_open_actions:
+            contains_keyword = any([keyword in name for name in action_names])
+            self.assertFalse(contains_keyword)
+        for keyword in while_closed_actions:
+            contains_keyword = any([keyword in name for name in action_names])
+            self.assertTrue(contains_keyword)
+
+        self.workspace.open_action.do()
+        action_names = [action.get_name() for action in self.workspace.get_actions()]
+        print(f'Actions while open = {action_names}')
+        for keyword in while_open_actions:
+            contains_keyword = any([keyword in name for name in action_names])
+            self.assertTrue(contains_keyword)
+        for keyword in while_closed_actions:
+            contains_keyword = any([keyword in name for name in action_names])
+            self.assertFalse(contains_keyword)
+
+    def test_get_actiondocs(self):
+        actions_docs = self.workspace.get_action_docs()
+        for docs in actions_docs:
+            self.assertIsInstance(docs, ToolDoc)
+
+    def test_get_desc(self):
+        self.assertIsInstance(self.workspace.get_desc(), str)
 
 
 class MockWorkspace(Workspace):
@@ -98,7 +94,7 @@ class MockWorkspace(Workspace):
         pass
 
     def get_text(self) -> str:
-        return self.text_content
+            return self.text_content
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -113,5 +109,4 @@ class MockWorkspace(Workspace):
         return ''
 
 if __name__ == '__main__':
-    TestActionProperties.execute_all()
-    TestActionExectuion.execute_all()
+    TestWorkspace.execute_all()

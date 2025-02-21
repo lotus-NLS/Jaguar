@@ -32,7 +32,7 @@ class Agent(Loggable):
         return self.handle()
 
     def work(self, mandate : Mandate, max_steps : int):
-        self.workflowy.is_active = True
+        self.workflowy.open_action.do()
         self.workflowy.root = mandate
         for j in range(max_steps):
             self.handle()
@@ -42,8 +42,7 @@ class Agent(Loggable):
 
         if self.workflowy.is_active:
             self.freeze_final_state(ws=self.workflowy)
-            self.workflowy.root = None
-            self.workflowy.is_active = False
+            self.workflowy.close_action.do()
 
     # ---------------------------------------------------
     # Main routine
