@@ -106,7 +106,7 @@ class ToolDoc(dict):
 
     def get_view(self) -> str:
         func_name = self._get_tool_name()
-        quick_desc = f'{self._get_desc()[100]}...' if len(self._get_desc()) > 100 else self._get_desc()
+        quick_desc = self._get_desc()
         info_str = f'- {func_name}: {quick_desc}'
         arg_dict = self._get_parameters()
         for arg_name, arg_dict in arg_dict.items():
