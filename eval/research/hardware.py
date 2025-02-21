@@ -31,25 +31,9 @@ if __name__ == "__main__":
         lines = p.split('\n')
         name = lines[0]
         remaining = '\n'.join(lines[1:])
-        mandate_dict[name] = remaining
         mandate = Mandate.from_yaml(s=remaining)
-        print(mandate.get_tree())
+        mandate_dict[name] = mandate
+        print(f'Mandate {name}:\n {mandate.get_tree()}')
 
-
-
-
-
-    # def resarch_routine(self, workflowy : Workflowy, query : str, max_steps : int) -> str:
-    #     aos = AOS(workspaces=[browser], workflowy=workflowy)
-    #     agent = self._get_default_agent(aos=aos)
-    #
-    #     num_steps = 0
-    #     while agent.is_working() and num_steps < max_steps:
-    #         self._work_step(agent)
-    #         num_steps += 1
-    #     task = Step(memory=Entry.user(msg=query))
-    #     response = agent.handle(step=task)
-    #     answer = ''
-    #     for text in response.get_text_stream():
-    #         answer += text
-    #     print(f'The following answer was provided: {answer}')
+    engine = LotusEngine()
+    engine.work(mandate=mandate_dict['hardware'], max_steps=5)
