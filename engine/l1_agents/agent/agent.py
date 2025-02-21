@@ -106,11 +106,11 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
-        if self.workflowy.is_active:
-            workflowy_content = Entry.tool(self.workflowy.get_text(), name=self.workflowy.get_name())
-            context += Context(entries=[workflowy_content], docs=self.workflowy.get_action_docs())
-            work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user. '
-                                          'Your current tasks are outlined in the Workflowy workspace')
-            context += Context.singleton(entry=work_entry)
+        # if self.workflowy.is_active:
+        #     workflowy_content = Entry.tool(self.workflowy.get_text(), name=self.workflowy.get_name())
+        #     context += Context(entries=[workflowy_content], docs=self.workflowy.get_action_docs())
+        #     work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user. '
+        #                                   'Your current tasks are outlined in the Workflowy workspace')
+        #     context += Context.singleton(entry=work_entry)
 
         return context
