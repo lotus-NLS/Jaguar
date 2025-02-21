@@ -9,8 +9,7 @@ from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolOutput, Tool
-from engine.l3_aos.workspace import Workspace
+from engine.l3_aos.tools import ToolOutput
 from holytools.logging import LogLevel, Loggable
 
 
@@ -25,6 +24,7 @@ class Agent(Loggable):
         self.identity : Identity = identity
 
         self.memory: list[Entry] = []
+        self.aos.add_workspace(ws=self.workflowy)
 
     def converse(self, msg : str) -> TextPipe:
         self.memory.append(Entry.user(msg=msg))
@@ -66,7 +66,7 @@ class Agent(Loggable):
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
-        tools_map = {tool.get_name(): tool for tool in self.get_tools()}
+        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
         outputs : list[ToolOutput] = []
         for call in tool_calls:
             try:
@@ -90,7 +90,7 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_workspaces(workspaces=self.get_workspaces(active_only=True))
+        context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
         if self.workflowy.is_active:
@@ -101,26 +101,3 @@ class Agent(Loggable):
             context += Context.singleton(entry=work_entry)
 
         return context
-
-    # ---------------------------------------------------
-    # tools
-
-    def get_tools(self) -> list[Tool]:
-        workspaces = self.get_workspaces()
-        tools = []
-        for ws in workspaces:
-            tools += ws.get_actions()
-        return tools
-
-    def get_ws(self, name : str) -> Workspace:
-        ws_map = {ws.get_name(): ws for ws in self.get_workspaces()}
-        return ws_map[name]
-
-    def get_workspaces(self, active_only : bool = False) -> list[Workspace]:
-        workspaces = []
-        workspaces += self.aos.workspaces
-        workspaces += [self.workflowy]
-        if active_only:
-            workspaces = [ws for ws in workspaces if ws.is_active]
-
-        return workspaces

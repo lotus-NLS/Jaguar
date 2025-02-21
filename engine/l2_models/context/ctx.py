@@ -38,8 +38,8 @@ class Context(JsonDataclass):
         return cls(entries=[entry])
 
     @classmethod
-    def from_workspaces(cls, workspaces : list[Workspace]):
-        open_workspaces = [workspace for workspace in workspaces if workspace.is_active]
+    def from_aos(cls, aos : AOS):
+        open_workspaces = [workspace for workspace in aos.workspaces if workspace.is_active]
         entries, docs = [], []
         for ws in open_workspaces:
             try:
