@@ -37,11 +37,11 @@ class LotusEngine(Loggable):
     # ---------------------------------------------------------------
 
     def _get_default_aos(self) -> AOS:
-        google_api_key = self._creds.get_google_apikey()
-        searchengine_id = self._creds.get_searchengine_id()
-        browser = Browser(google_api_key=google_api_key, searchengine_id=searchengine_id)
+        # google_api_key = self._creds.get_google_apikey()
+        # searchengine_id = self._creds.get_searchengine_id()
+        # browser = Browser(google_api_key=google_api_key, searchengine_id=searchengine_id)
         terminal = Terminal()
-        return AOS(workspaces=[browser, terminal])
+        return AOS(workspaces=[terminal])
 
     def _get_default_agent(self, aos : AOS):
         model = OpenAIModel.default_model(api_key=self._creds.get_openai_apikey())

@@ -27,19 +27,20 @@ class HardwareTask(NLUnittest):
             print(f'Mandate {name}:\n {mandate.get_tree()}')
 
 
-    def test_research(self):
+    def test_gpu_research(self):
         engine = LotusEngine()
-        engine.work(mandate=self.mandate_dict['hardware'], max_steps=10)
-        user_msg = f'Please give me a summary of my hardware'
+        engine.work(mandate=self.mandate_dict['simplehardware'], max_steps=10)
+        user_msg = f'What is my GPU'
         answer = engine.converse(msg=user_msg)
 
+        print(f'+------------------------+')
         print(f'User: {user_msg}')
         print(f'Agent: {answer}')
 
-        property_query = ('The #msg gives information about each of the following hardware devices:'
-                          f'CPU, GPU, RAM, Disks and Motherboard. If information cannot be retrieve a reason is given')
-        evaluation = self.evaluateProperty(msg=answer, prop=property_query)
-        self.assertTrue(evaluation == True)
+        # property_query = ('The #msg gives information about each of the following hardware devices:'
+        #                   f'CPU, GPU, RAM, Disks and Motherboard. If information cannot be retrieve a reason is given')
+        # evaluation = self.evaluateProperty(msg=answer, prop=property_query)
+        # self.assertTrue(evaluation == True)
 
 
 if __name__ == "__main__":

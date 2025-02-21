@@ -7,6 +7,11 @@
         - Disk information
         - Motherboard information
     - Write out summary
+++simplehardware
+- Determine system GPU?
+    - Open Terminal
+    - Launch command to determine GPU
+- Write out summary
 ++debug
 - Search online
     - On Stackexchange

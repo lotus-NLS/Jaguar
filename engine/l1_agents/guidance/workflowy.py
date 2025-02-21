@@ -11,16 +11,16 @@ class Workflowy(Workspace):
         super().__init__()
         self.root : Optional[Mandate] = None
 
-    def add(self, parent_task_id : str, msg : str):
+    def add_task(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""
         parent = self.root.get_descendant(parent_task_id)
         parent.add_subtask(msg)
 
-    def complete(self, task_id : str):
+    def complete_task(self, task_id : str):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
-    def delete(self, task_id : str):
+    def delete_task(self, task_id : str):
         """Deletes task [task_id]"""
         partial_id = task_id[:-1]
         parent = self.root.get_descendant(partial_id)

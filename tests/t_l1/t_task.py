@@ -19,8 +19,8 @@ class TestTask(Unittest):
                     f' -Subtask 1.3\n'
                     f'- Task 2')
 
-        self.task1.complete()
-        self.task4.complete()
+        self.task1.complete_task()
+        self.task4.complete_task()
 
     def test_get_Tree(self):
         tree = self.root.get_tree()
