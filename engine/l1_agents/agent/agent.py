@@ -32,6 +32,7 @@ class Agent(Loggable):
         return self.handle()
 
     def work(self, mandate : Mandate, max_steps : int):
+        self.workflowy.is_active = True
         self.workflowy.root = mandate
         for j in range(max_steps):
             self.handle()
@@ -39,6 +40,7 @@ class Agent(Loggable):
                 print(f'Finished work mode after {j+1} steps')
                 break
         self.workflowy.root = None
+        self.workflowy.is_active = False
 
     # ---------------------------------------------------
     # Main routine
@@ -88,7 +90,7 @@ class Agent(Loggable):
             self.update_memory(output_entry)
 
     def freeze_final_state(self, ws : Workspace):
-        e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:')
+        e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:', name=ws.get_name())
         e2 = Entry.from_workspace(workspace=ws)
         self.update_memory(entry=e1)
         self.update_memory(entry=e2)

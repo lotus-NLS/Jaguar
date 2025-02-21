@@ -1,7 +1,8 @@
 import time
+
 from engine.l1_agents import Agent
 from engine.l2_models import OpenAIModel
-from engine.l3_aos import AOS, Terminal, Browser
+from engine.l3_aos import AOS, Terminal
 from holytools.logging import Loggable
 from .settings import LotusCredentials
 from ..l1_agents.guidance.workflowy import Mandate
