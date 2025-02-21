@@ -48,6 +48,9 @@ class Workflowy(Workspace):
     def get_image(self) -> Optional[PILImage]:
         return None
 
+    @property
+    def is_active(self):
+        return not self.root is None
 
 class Mandate:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):

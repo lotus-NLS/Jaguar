@@ -7,7 +7,11 @@ from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc
 from holytools.abstract import JsonDataclass
 from .entry import Entry
+from ...l3_aos.workspace import Workspace
 
+from holytools.logging import LoggerFactory
+
+logger = LoggerFactory.get_logger(name=__name__)
 
 # -------------------------------------------------
 
@@ -34,16 +38,17 @@ class Context(JsonDataclass):
         return cls(entries=[entry])
 
     @classmethod
-    def from_aos(cls, aos : AOS):
-        open_workspaces = [workspace for workspace in aos.get_workspaces() if workspace.is_active]
-        entries = []
-        for workspace in open_workspaces:
+    def from_workspaces(cls, workspaces : list[Workspace]):
+        open_workspaces = [workspace for workspace in workspaces if workspace.is_active]
+        entries, docs = [], []
+        for ws in open_workspaces:
             try:
-                entry = Entry.from_workspace(workspace=workspace)
+                entry = Entry.from_workspace(workspace=ws)
                 entries.append(entry)
             except BaseException as e:
-                aos.error(f'Error in getting entry for app \"{workspace.get_name()}\": {e}')
-        docs = aos.get_action_docs()
+                logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
+            docs += ws.get_action_docs()
+
         return cls(entries=entries, docs=docs)
 
     # ---------------------------------------------------

@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from engine.l3_aos.workspaces.terminal import Terminal
-from engine.l3_aos.tools import Tool, ToolDoc
 from engine.l3_aos.workspace import Workspace
-from holytools.logging import Loggable
+from engine.l3_aos.workspaces.terminal import Terminal
 
 
 # ---------------------------------------------------------
 
-class AOS(Loggable):
+class AOS:
     def __init__(self, workspaces : list[Workspace]):
         super().__init__()
         self._workspaces : list[Workspace] = workspaces
@@ -30,18 +28,6 @@ class AOS(Loggable):
 
     # ---------------------------------------------------
     # get
-
-    def get_tools(self) -> list[Tool]:
-        tools = []
-        for workspace in self.get_workspaces():
-            tools += workspace.get_actions()
-        return tools
-
-    def get_action_docs(self) -> list[ToolDoc]:
-        docs = []
-        for workspace in self.get_workspaces():
-            docs += workspace.get_action_docs()
-        return docs
 
     def get_workspaces(self) -> list[Workspace]:
         return self._workspaces

@@ -9,7 +9,7 @@ from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.tools import ToolOutput, Tool
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
 
@@ -32,10 +32,9 @@ class Agent(Loggable):
 
     def work(self, mandate : Mandate, max_steps : int):
         self.workflowy.root = mandate
-        self.workflowy.is_active = True
         for j in range(max_steps):
             self.handle()
-            if not self.is_working():
+            if not self.workflowy.is_active:
                 print(f'Finished work mode after {j+1} steps')
                 break
         self.workflowy.root = None
@@ -67,7 +66,7 @@ class Agent(Loggable):
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
-        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools() + self.workflowy.get_actions()}
+        tools_map = {tool.get_name(): tool for tool in self.get_tools()}
         outputs : list[ToolOutput] = []
         for call in tool_calls:
             try:
@@ -83,22 +82,18 @@ class Agent(Loggable):
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
 
-
     # ---------------------------------------------------
     # context
 
     def update_memory(self, entry : Entry):
         self.memory.append(entry)
 
-    def is_working(self):
-        return not self.workflowy.root is None
-
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos)
+        context += Context.from_workspaces(workspaces=self.get_workspaces())
         context += Context(entries=self.memory)
 
-        if self.is_working():
+        if self.workflowy.is_active:
             workflowy_content = Entry.tool(self.workflowy.get_text(), name=self.workflowy.get_name())
             context += Context(entries=[workflowy_content], docs=self.workflowy.get_action_docs())
             work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user. '
@@ -106,3 +101,19 @@ class Agent(Loggable):
             context += Context.singleton(entry=work_entry)
 
         return context
+
+    # ---------------------------------------------------
+    # tools
+
+    def get_tools(self) -> list[Tool]:
+        workspaces = self.get_workspaces()
+        tools = []
+        for ws in workspaces:
+            tools += ws.get_actions()
+        return tools
+
+    def get_workspaces(self) -> list[Workspace]:
+        workspaces = self.aos.get_workspaces()
+        if self.workflowy.is_active:
+            workspaces += [self.workflowy]
+        return workspaces
