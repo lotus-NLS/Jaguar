@@ -30,6 +30,7 @@ class Agent(Loggable):
         return self.handle()
 
     def work(self, mandate : Mandate, max_steps : int):
+        self.workflowy.open()
         self.workflowy.root = mandate
         for j in range(max_steps):
             self.handle()
