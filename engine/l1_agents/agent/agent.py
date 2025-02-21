@@ -30,8 +30,8 @@ class Agent(Loggable):
         return self.handle()
 
     def work(self, mandate : Mandate, max_steps : int):
-        self.workflowy.open()
         self.workflowy.root = mandate
+        self.workflowy.is_active = True
         for j in range(max_steps):
             self.handle()
             if not self.is_working():
@@ -66,7 +66,7 @@ class Agent(Loggable):
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
-        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
+        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools() + self.workflowy.get_actions()}
         outputs : list[ToolOutput] = []
         for call in tool_calls:
             try:
