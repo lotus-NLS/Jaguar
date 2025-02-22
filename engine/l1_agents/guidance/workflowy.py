@@ -20,11 +20,9 @@ class Workflowy(Workspace):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
-    def delete_task(self, task_id : str):
-        """Deletes task [task_id]"""
-        partial_id = task_id[:-1]
-        parent = self.root.get_descendant(partial_id)
-        del parent.subtasks[int(task_id[-1])]
+    def fail_task(self, task_id : str):
+        """Marks [task_id] as failed, unnecessary or discarded"""
+        self.root.get_descendant(task_id).fail()
 
     # -------------------------------
     # Generics
@@ -55,6 +53,7 @@ class Mandate:
         self.identifier : str = identifier
 
         self.is_complete : bool = False
+        self.is_failed : bool = False
         self.subtasks : list[Mandate] = []
 
     @classmethod
@@ -102,10 +101,20 @@ class Mandate:
         for st in self.subtasks:
             st.complete()
 
+    def fail(self):
+        self.is_failed = True
+        for st in self.subtasks:
+            st.fail()
+
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:
-            conditional_mark = 'x' if self.is_complete else ' '
-            tree = f'{pre_indent}[{conditional_mark}] {self.identifier}: {self.name}\n'
+            if self.is_complete:
+                mark = '✗'
+            elif self.is_failed:
+                mark = '🚫'
+            else:
+                mark = ' '
+            tree = f'{pre_indent}[{mark}] {self.identifier}: {self.name}\n'
         else:
             tree = ''
 

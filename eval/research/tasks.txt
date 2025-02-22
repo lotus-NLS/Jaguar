@@ -8,10 +8,10 @@
         - Motherboard information
     - Write out summary
 ++simplehardware
-- Determine system GPU?
+- Determine system GPU
     - Open Terminal
     - Launch command to determine GPU
-- Write out summary
+- Model
 ++debug
 - Search online
     - On Stackexchange
