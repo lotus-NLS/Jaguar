@@ -35,7 +35,7 @@ class AOS:
         for ws in workspaces:
             tools += ws.get_actions()
         if with_update:
-            tools += self.update_tool
+            tools += [self.update_tool]
         return tools
 
     def get_ws(self, name : str) -> Workspace:

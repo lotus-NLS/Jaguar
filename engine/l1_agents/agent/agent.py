@@ -9,6 +9,7 @@ from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
+from engine.l3_aos.aos import UpdateTool
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
@@ -112,12 +113,13 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos)
+        context += Context.from_aos(aos=self.aos, with_update=self.is_working())
         context += Context(entries=self.memory)
 
         if self.is_working():
             work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
-                                          f'Your current tasks are outlined in the {TaskTracker.__name__} workspace.'
+                                          f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
+                                          f'Please finish off each action step through using the {UpdateTool.get_name()} to label your action on this step'
                                           'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
             context += Context.singleton(entry=work_entry)
 
