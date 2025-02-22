@@ -32,13 +32,13 @@ class TestWorkspace(Unittest):
 
         add.execute(tool_call=tool_call)
         self.assertIn('New text', self.workspace.get_text())
-        self.log(f'Window context before reset: {Entry.from_workspace(workspace=self.workspace)}')
+        self.log(f'Window context before reset: {Entry.from_workspace(ws=self.workspace)}')
 
         reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.execute(tool_call)
         self.assertEqual('', self.workspace.get_text())
-        self.log(f'Window context after reset : {Entry.from_workspace(workspace=self.workspace)}')
+        self.log(f'Window context after reset : {Entry.from_workspace(ws=self.workspace)}')
 
     def test_toggle_active_inactive(self):
         print(f'Workspace active = {self.workspace.is_active}')

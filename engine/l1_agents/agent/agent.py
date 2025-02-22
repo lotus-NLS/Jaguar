@@ -93,7 +93,7 @@ class Agent(Loggable):
 
     def freeze_final_state(self, ws : Workspace):
         e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:', name=ws.get_name())
-        e2 = Entry.from_workspace(workspace=ws)
+        e2 = Entry.from_workspace(ws=ws)
         self.update_memory(entry=e1)
         self.update_memory(entry=e2)
 

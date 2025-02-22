@@ -7,8 +7,7 @@ from engine.l3_aos.workspace import Workspace
 # -------------------------------------------------------
 
 class TaskTracker(Workspace):
-    """This workspace provides a task list with subtask functionality.
-    Each task is assigned a task_id e.g. 12 for the second subtask of the first task."""
+    """This workspace provides a task list with subtask functionality. Each task is assigned a task_id e.g. 12 for the second subtask of the first task."""
     def __init__(self):
         super().__init__()
         self.root : Optional[Task] = None

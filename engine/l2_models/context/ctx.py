@@ -40,7 +40,7 @@ class Context(JsonDataclass):
         entries = []
         for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
             try:
-                entry = Entry.from_workspace(workspace=ws)
+                entry = Entry.from_workspace(ws=ws)
                 entries.append(entry)
             except BaseException as e:
                 logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
