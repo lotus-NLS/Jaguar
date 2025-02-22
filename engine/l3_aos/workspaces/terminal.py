@@ -87,11 +87,11 @@ if __name__ == "__main__":
     t.open_action.do()
 
     t.type(content='echo Hellomydude')
-    text = t.get_text()
-    print(f'After typing: {text}')
+    t1 = t.get_text()
+    print(f'After typing: {t1}')
 
     t.close_action.do()
     t.open_action.do()
 
-    text = t.get_text()
-    print(f'After re-opening: {text}')
+    t2 = t.get_text()
+    print(f'After re-opening: {t2}')
