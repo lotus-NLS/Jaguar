@@ -19,7 +19,7 @@ class LotusEngine(Loggable):
         self._agent = self._get_default_agent(aos=aos)
 
     def work(self, mandate : Task, max_steps : int):
-        self._agent.work(mandate=mandate, max_steps=max_steps)
+        self._agent.work(task=mandate, max_steps=max_steps)
 
     def converse(self, msg : str) -> str:
         text_pipe = self._agent.converse(msg=msg)

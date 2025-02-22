@@ -11,10 +11,10 @@ from libtmux import Session
 from engine.l3_aos.tools import InvalidArgValue
 from engine.l3_aos.workspace import Workspace
 
-
 # ---------------------------------------------------------
 
 class Terminal(Workspace):
+    """A terminal in which you can freely interact with and execute commands in"""
     def __init__(self):
         super().__init__()
         self.tmux_session : Optional[Session] = None
@@ -69,14 +69,12 @@ class Terminal(Workspace):
         return None
 
     def get_text(self) -> str:
-        text = 'A terminal in which you can freely interact with and execute commands in'
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
         pane_content = pane.capture_pane(start=-10000)
 
-        text += '\n'.join(pane_content)
+        text = '\n'.join(pane_content)
         return text
-
 
 
 

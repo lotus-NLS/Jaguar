@@ -21,28 +21,28 @@ class Agent(Loggable):
         super().__init__()
         self.model: LLM = model
         self.aos : AOS = aos
-        self.workflowy : TaskTracker = TaskTracker()
+        self.task_tracker : TaskTracker = TaskTracker()
         self.identity : Identity = identity
 
         self.memory: list[Entry] = []
-        self.aos.add_workspace(ws=self.workflowy)
+        self.aos.add_workspace(ws=self.task_tracker)
 
     def converse(self, msg : str) -> TextPipe:
         self.memory.append(Entry.user(msg=msg))
         return self.handle()
 
-    def work(self, mandate : Task, max_steps : int):
-        self.workflowy.open_action.do()
-        self.workflowy.root = mandate
+    def work(self, task : Task, max_steps : int):
+        self.task_tracker.open_action.do()
+        self.task_tracker.root = task
         for j in range(max_steps):
             self.handle()
-            if not self.workflowy.is_active:
+            if not self.task_tracker.is_active:
                 print(f'Finished work mode after {j+1} steps')
                 break
 
-        if self.workflowy.is_active:
-            self.freeze_final_state(ws=self.workflowy)
-            self.workflowy.close_action.do()
+        if self.task_tracker.is_active:
+            self.freeze_final_state(ws=self.task_tracker)
+            self.task_tracker.close_action.do()
 
     # ---------------------------------------------------
     # Main routine
@@ -108,7 +108,7 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
-        if self.workflowy.is_active:
+        if self.task_tracker.is_active:
             work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
                                           f'Your current tasks are outlined in the {TaskTracker.__name__} workspace.'
                                           'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')

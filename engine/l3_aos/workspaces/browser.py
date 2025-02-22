@@ -11,6 +11,7 @@ from pyscrape.browse import BrowserEmulator
 # ---------------------------------------------------------
 
 class Browser(Workspace):
+    """A browser allowing you to search google and browse sites"""
     def __init__(self, google_api_key : str, searchengine_id : str):
         super().__init__()
         self.search_engine : SearchEngine = SearchEngine(google_api_key=google_api_key, searchengine_id=searchengine_id)
@@ -48,7 +49,7 @@ class Browser(Workspace):
         lines = [line for line in md_text.split('\n')] + [h1, h2, h3, h4]
         longest_line_length = max([len(l) for l in lines])
 
-        text = 'f"A browser allowing you to search google and browse sites"'
+        text = ''
         text += h1.center(longest_line_length, '-') + '\n'
         text += f'{self.emulator.driver.current_url} \n'
 
@@ -71,19 +72,6 @@ class Browser(Workspace):
     def get_image(self) -> Optional[PILImage]:
         return None
 
-
 if __name__ == "__main__":
-    from holytools.configs import FileConfigs
-    creds = FileConfigs.credentials()
-
-    g_api_key = creds.get(key='google_api_key')
-    search_engine_id = creds.get(key='search_engine_id')
-
-    br = Browser(google_api_key=g_api_key, searchengine_id=search_engine_id)
-
-    br.visit(url=f'https://en.wikipedia.org/wiki/Beaver')
-    # print(f'Current URL:')
-    # print(br.emulator.driver.current_url)
-
-
-    print(f'{br.get_text()}')
+    docstring = Browser.__doc__
+    print(docstring)

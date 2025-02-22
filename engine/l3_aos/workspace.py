@@ -88,3 +88,7 @@ class Workspace(Loggable):
     @abstractmethod
     def get_image(self) -> Optional[PILImage]:
         pass
+
+    @classmethod
+    def get_desc(cls) -> str:
+        return cls.__doc__
