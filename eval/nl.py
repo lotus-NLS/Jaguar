@@ -1,4 +1,7 @@
+import os
+
 from engine.l0_main.settings import LotusCredentials
+from engine.l1_agents.guidance.tasktracker import Task
 from engine.l2_models import OpenAIModel, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.llm import LLM
@@ -7,7 +10,7 @@ from holytools.devtools import Unittest
 
 # ---------------------------------------------------
 
-class NLUnittest(Unittest):
+class NLU(Unittest):
     @classmethod
     def setUpClass(cls):
         configs = LotusCredentials()
@@ -57,7 +60,28 @@ class YesNoTool(Tool):
         return [self.y_n_arg]
 
 
-class EvaluationTask(NLUnittest):
+class TaskProvider:
+    def __init__(self):
+        script_dirpath = os.path.dirname(__file__)
+        tasks_fpath = os.path.join(script_dirpath, 'tasks.txt')
+        with open(tasks_fpath, 'r') as f:
+            content = f.read()
+            parts = content.split('++')
+            parts = parts[1:]
+
+        self.mandate_dict = {}
+        for p in parts:
+            lines = p.split('\n')
+            name = lines[0]
+            remaining = '\n'.join(lines[1:-1])
+            task = Task.from_yaml(s=remaining)
+            self.mandate_dict[name] = task
+
+    def get_task(self, name : str) -> Task:
+        return self.mandate_dict[name]
+
+
+class EvaluationTask(NLU):
     def test_spelling(self):
         msg = """The newly estbalsihed estate is one of the most luxurious in the entire region."""
         prop = f'The #msg contains no spelling errors'

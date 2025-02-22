@@ -8,12 +8,16 @@
         - Motherboard information
     - Write out summary
 ++simplehardware
-- Determine system GPU
+- Determine GPU model
     - Open Terminal
     - Launch command to determine GPU
-- Model
+    - Determine model
 ++debug
 - Search online
     - On Stackexchange
     - Other resources if any appear noteworthy
 - Try out hypothesis
+++cat
+- Search for cat videos
+    - Open Youtube
+    - Enter 'cat videos' in search bar

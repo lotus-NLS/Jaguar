@@ -2,28 +2,14 @@ import os.path
 
 from engine import LotusEngine
 from engine.l1_agents.guidance.tasktracker import Task
-from eval.nlunittest import NLUnittest
+from eval.nl import NLU
 
 # ---------------------------------------------------
 
-class HardwareTask(NLUnittest):
+class HardwareTask(NLU):
     def setUp(self):
         super().setUpClass()
-        script_dirpath = os.path.dirname(__file__)
-        tasks_fpath = os.path.join(script_dirpath, 'tasks.txt')
-        with open(tasks_fpath, 'r') as f:
-            content = f.read()
-            parts = content.split('++')
-            parts = parts[1:]
 
-        self.mandate_dict = {}
-        for p in parts:
-            lines = p.split('\n')
-            name = lines[0]
-            remaining = '\n'.join(lines[1:-1])
-            mandate = Task.from_yaml(s=remaining)
-            self.mandate_dict[name] = mandate
-            print(f'Mandate {name}:\n {mandate.get_tree()}')
 
         self.engine = LotusEngine()
 
@@ -57,4 +43,6 @@ class HardwareTask(NLUnittest):
 
 
 if __name__ == "__main__":
-    HardwareTask.execute_all()
+    hw_test = HardwareTask()
+    hw_test.setUp()
+    hw_test.test_gpu_research()
