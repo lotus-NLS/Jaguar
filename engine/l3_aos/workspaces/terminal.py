@@ -28,7 +28,7 @@ class Terminal(Workspace):
         self.tmux_session = self._open_session(cwd=cwd)
 
     def close(self):
-        """Closes the terminal. You will lose all information provided by the terminal."""
+        """Closes the terminal"""
         self.type(content='clear')
         self.tmux_session = None
 

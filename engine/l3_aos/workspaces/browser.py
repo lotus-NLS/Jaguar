@@ -19,10 +19,11 @@ class Browser(Workspace):
         self.search_context : str = ''
 
     def open(self, url: str):
-        """Starts a text based browser and opens the given URL. Use URL=search://{search_term} to perform a google search insted"""
+        """Starts a text based browser and opens the given URL. Use URL=search://{search_term} to perform a google search instead"""
         self.visit(url=url)
 
     def close(self):
+        """Closes the browser"""
         pass
 
     def visit(self, url : str):
@@ -38,6 +39,7 @@ class Browser(Workspace):
             self.emulator.visit(url=url)
 
     def enter_text(self, input_field_idx : int, content : str):
+        """Enters text and into the specified input field"""
         self.emulator.type(text_box_idx=input_field_idx, content=content)
 
     def get_text(self):

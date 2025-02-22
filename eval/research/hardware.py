@@ -27,7 +27,6 @@ class HardwareTask(NLUnittest):
 
         self.engine = LotusEngine()
 
-
     def test_gpu_research(self):
         self.engine.work(mandate=self.mandate_dict['simplehardware'], max_steps=10)
         user_msg = f'What is the model of my GPU?'
