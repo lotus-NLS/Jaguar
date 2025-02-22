@@ -82,10 +82,6 @@ class Workspace(Loggable):
         return cls.__name__
 
     @abstractmethod
-    def get_desc(self) -> str:
-        pass
-
-    @abstractmethod
     def get_text(self) -> str:
         pass
 
