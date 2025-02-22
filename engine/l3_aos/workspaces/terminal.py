@@ -69,17 +69,15 @@ class Terminal(Workspace):
         return None
 
     def get_text(self) -> str:
+        text = 'A terminal in which you can freely interact with and execute commands in'
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
         pane_content = pane.capture_pane(start=-10000)
 
-        text = '\n'.join(pane_content)
+        text += '\n'.join(pane_content)
         return text
 
 
-    @classmethod
-    def get_desc(cls) -> str:
-        return "A terminal in which you can freely interact with and execute commands in"
 
 
 if __name__ == "__main__":
