@@ -1,7 +1,4 @@
-import os.path
-
 from engine import LotusEngine
-from engine.l1_agents.guidance.tasktracker import Task
 from eval.nl import NLU
 
 # ---------------------------------------------------
@@ -9,12 +6,11 @@ from eval.nl import NLU
 class HardwareTask(NLU):
     def setUp(self):
         super().setUpClass()
-
-
         self.engine = LotusEngine()
 
     def test_gpu_research(self):
-        self.engine.work(mandate=self.mandate_dict['simplehardware'], max_steps=10)
+        task = self.task_provider.get_task('simplehardware')
+        self.engine.work(task=task, max_steps=10)
         user_msg = f'What is the model of my GPU?'
         answer = self.engine.converse(msg=user_msg)
 
@@ -28,7 +24,8 @@ class HardwareTask(NLU):
 
 
     def test_hardware_summary(self):
-        self.engine.work(mandate=self.mandate_dict['hardware'], max_steps=10)
+        task = self.task_provider.get_task('simplehardware')
+        self.engine.work(task=task, max_steps=10)
         user_msg = f'Please provide me with a summary of my hardwrae including CPU, GPU, RAM, disks and motherboard'
         answer = self.engine.converse(msg=user_msg)
 

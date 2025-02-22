@@ -16,6 +16,7 @@ class NLU(Unittest):
         configs = LotusCredentials()
         cls.model : LLM = OpenAIModel.default_model(api_key=configs.get_openai_apikey())
         cls.model.disable_debug()
+        cls.task_provider : TaskProvider = TaskProvider()
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
         yn = YesNoTool()
