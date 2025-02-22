@@ -19,7 +19,9 @@ class Step:
     generation_ctx : Context
     step_label : str
 
-
+    @classmethod
+    def failed(cls, context : Context):
+        return cls(text_pipe=TextPipe.failed(), generation_ctx=context, step_label='failed')
 
 
 class TextPipe(Queue):

@@ -16,7 +16,6 @@ from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
 
-
 # ---------------------------------------------------------
 
 class Agent(Loggable):
@@ -54,19 +53,21 @@ class Agent(Loggable):
         context = self.get_context()
 
         try:
-            pipe = TextPipe()
             generation = self.model.get_generation(context=context, options=inf_options)
-            self.write(generation=generation, pipe=pipe)
-            self.act(generation=generation)
+            pipe = self.write(generation=generation)
+            outputs = self.act(generation=generation)
         except APITimeoutError:
             error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
-            pipe = TextPipe.failed()
+            return Step.failed(context=context)
 
-        step = Step(text_pipe=pipe, step_label=self.aos.get_steplabel(), generation_ctx=context)
-        return step
+        step_label = self.aos.get_steplabel()
+        if not step_label:
+            step_label = f'Perfomed actions: {", ".join([out.tool_name for out in outputs])}'
+        return Step(text_pipe=pipe, step_label=step_label, generation_ctx=context)
 
-    def write(self, generation : Generation, pipe : TextPipe):
+    def write(self, generation : Generation):
+        pipe = TextPipe()
         for chunk in generation:
             pipe.put(chunk.get_text())
         pipe.stop()
@@ -75,7 +76,9 @@ class Agent(Loggable):
         if text:
             self.update_memory(entry=Entry.agent(msg=text))
 
-    def act(self, generation : Generation):
+        return pipe
+
+    def act(self, generation : Generation) -> list[ToolOutput]:
         tool_calls = generation.get_tool_calls()
         tools_map = {t.get_name(): t for t in self.aos.get_tools(with_update=self.is_working())}
         outputs : list[ToolOutput] = []
@@ -98,6 +101,8 @@ class Agent(Loggable):
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
 
+        return outputs
+
     def freeze_final_state(self, ws : Workspace):
         e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:', name=ws.get_name())
         e2 = Entry.from_workspace(ws=ws)
@@ -106,7 +111,6 @@ class Agent(Loggable):
 
     # ---------------------------------------------------
     # context
-
 
     def is_working(self) -> bool:
         return self.task_tracker.is_active
