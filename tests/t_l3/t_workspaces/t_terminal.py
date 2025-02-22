@@ -1,0 +1,24 @@
+from engine.l3_aos import Browser, Terminal
+from holytools.devtools import Unittest
+from tests.credtest import CredentialDependentTest
+
+# ----------------------------------------------------------------
+
+class TerminalText(Unittest):
+    def setUp(self):
+        self.terminal : Terminal = Terminal()
+
+    def test_get_text(self):
+        self.terminal.open_action.do()
+        text = self.terminal.get_text()
+        self.assertTrue('@' in text)
+
+    def test_hello_world(self):
+        self.terminal.open_action.do()
+        echo_text = 'Hello World'
+        self.terminal.type(content=f'echo "{echo_text}"')
+        text = self.terminal.get_text()
+        self.assertTrue(echo_text in text)
+
+if __name__ == "__main__":
+    TerminalText.execute_all()
