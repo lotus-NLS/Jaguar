@@ -75,7 +75,7 @@ class Agent(Loggable):
         outputs : list[ToolOutput] = []
         for call in tool_calls:
             if 'close' in call.name:
-                _, ws_name = call.name.split('_')
+                ws_name, _ = call.name.split('_')
                 ws = self.aos.get_ws(name=ws_name)
                 self.freeze_final_state(ws)
             try:
