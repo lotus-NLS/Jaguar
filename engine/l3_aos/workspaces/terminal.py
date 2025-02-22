@@ -29,6 +29,7 @@ class Terminal(Workspace):
 
     def close(self):
         """Closes the terminal. You will lose all information provided by the terminal."""
+        self.type(content='clear')
         self.tmux_session = None
 
     def _open_session(self, cwd : str) -> Session:
@@ -83,6 +84,14 @@ class Terminal(Workspace):
 
 if __name__ == "__main__":
     t = Terminal()
-    t.open()
+    t.open_action.do()
+
+    t.type(content='echo Hellomydude')
     text = t.get_text()
-    print(text)
+    print(f'After typing: {text}')
+
+    t.close_action.do()
+    t.open_action.do()
+
+    text = t.get_text()
+    print(f'After re-opening: {text}')
