@@ -15,16 +15,19 @@ class Browser(Workspace):
     def __init__(self, google_api_key : str, searchengine_id : str):
         super().__init__()
         self.search_engine : SearchEngine = SearchEngine(google_api_key=google_api_key, searchengine_id=searchengine_id)
-        self.emulator : BrowserEmulator = BrowserEmulator(headless=False)
+        self.emulator : Optional[BrowserEmulator] = None
+
         self.search_context : str = ''
 
     def open(self, url: str):
         """Starts a text based browser and opens the given URL. Use URL=search://{search_term} to perform a google search instead"""
+        self.emulator = BrowserEmulator(headless=False)
         self.visit(url=url)
 
     def close(self):
         """Closes the browser"""
-        pass
+        self.emulator.quit()
+        self.emulator = None
 
     def visit(self, url : str):
         """Opens the specified url. Use url=search://{search_term} to perform a google search insted"""
