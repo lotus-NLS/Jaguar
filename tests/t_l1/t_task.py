@@ -4,7 +4,7 @@ from holytools.devtools import Unittest
 
 class TestTask(Unittest):
     def setUp(self):
-        self.root = Mandate("Main Task", is_root=True)
+        self.root : Mandate = Mandate("Main Task", is_root=True)
         self.task1 = self.root.add_subtask("Task 1")
         self.task2 = self.root.add_subtask("Task 2")
         self.task3 = self.root.add_subtask("Task 3")
@@ -19,8 +19,8 @@ class TestTask(Unittest):
                     f' -Subtask 1.3\n'
                     f'- Task 2')
 
-        self.task1.complete_task()
-        self.task4.complete_task()
+        self.task1.complete()
+        self.task4.complete()
 
     def test_get_Tree(self):
         tree = self.root.get_tree()
@@ -40,7 +40,7 @@ class TestTask(Unittest):
 
     def test_from_yaml_str(self):
         yaml_str = (f'- Task 1\n'
-                    f' -Subtask 1.1\n'
+                    f'    -Subtask 1.1\n'
                     f'- Task 2')
         root = Mandate.from_yaml(yaml_str)
         tree = root.get_tree()

@@ -46,6 +46,7 @@ class Workflowy(Workspace):
     def get_image(self) -> Optional[PILImage]:
         return None
 
+
 class Mandate:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
@@ -81,7 +82,7 @@ class Mandate:
                 ancestors.append(new)
         return root
 
-    def add_subtask(self, msg : str):
+    def add_subtask(self, msg : str) -> Mandate:
         new_task = Mandate(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)
         return new_task
@@ -109,7 +110,7 @@ class Mandate:
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:
             if self.is_complete:
-                mark = '✗'
+                mark = 'x'
             elif self.is_failed:
                 mark = '🚫'
             else:
