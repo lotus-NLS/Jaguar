@@ -18,8 +18,8 @@ class LLM(Loggable):
     def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
         self.enable_debug : bool = True
+        self.api_key : str = api_key
         self._name : str = name
-        self._client = self.make_client(api_key=api_key)
         self._dev_endpoint : Endpoint = self.dev_endpoint()
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
@@ -30,28 +30,22 @@ class LLM(Loggable):
     def disable_debug(self):
         self.enable_debug = False
 
-    @abstractmethod
-    def make_client(self, api_key : Optional[str] = None):
-        pass
+    @classmethod
+    def dev_endpoint(cls) -> Endpoint:
+        return Endpoint.make_localhost(port=5000, path=f'/update')
 
     @abstractmethod
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
         pass
-
-    @classmethod
-    def dev_endpoint(cls) -> Endpoint:
-        return Endpoint.make_localhost(port=5000, path=f'/update')
 
     def get_text_generation(self, entries: list[Entry]) -> Generation:
         context = Context(entries=entries, docs=[])
         options = InfOptions(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)
 
-    def check_token_cap(self, context : Context, token_cap : int):
+    def check_token_cap_ok(self, context : Context, token_cap : int) -> bool:
         num_tokens = self.tokenizer.count_context_tokens(context=context)
-        if num_tokens > token_cap:
-            raise ValueError(f'Token cap exceeded: {num_tokens} > {token_cap}')
-
+        return num_tokens <= token_cap
 
 class Tokenizer:
     def __init__(self, encoding : Encoding):

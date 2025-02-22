@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from openai import OpenAI
-from openai import Stream
+from openai import Stream, OpenAI
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from engine.l2_models.context.ctx import Context
@@ -12,18 +11,23 @@ from engine.l2_models.generation import Generation, Chunk, InfOptions
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 
+
 # ---------------------------------------------------------
 
 class OpenAIModel(LLM):
-    def make_client(self, api_key : Optional[str] = None):
-        return OpenAI(api_key=api_key)
+    def __init__(self, name : str, api_key : str):
+        super().__init__(name=name, api_key=api_key)
+        self._client = OpenAI(api_key=api_key)
 
     @classmethod
     def default_model(cls, api_key : str) -> OpenAIModel:
         return cls(name='gpt-4o', api_key=api_key)
 
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
-        self.check_token_cap(context=context, token_cap=options.max_input_tokens)
+        token_cap_ok = self.check_token_cap_ok(context=context, token_cap=options.max_input_tokens)
+        if not token_cap_ok:
+            raise ValueError(f'Context exceeds token cap of {options.max_input_tokens}')
+
         if self.enable_debug:
             try:
                 self._dev_endpoint.post(msg=context.to_str(), secure=False)
