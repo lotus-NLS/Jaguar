@@ -3,7 +3,7 @@ from __future__ import annotations
 from openai import APITimeoutError
 
 from engine.l1_agents.guidance import Identity
-from engine.l1_agents.guidance.workflowy import Workflowy, Mandate
+from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfOptions
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.pipe import TextPipe
@@ -21,7 +21,7 @@ class Agent(Loggable):
         super().__init__()
         self.model: LLM = model
         self.aos : AOS = aos
-        self.workflowy : Workflowy = Workflowy()
+        self.workflowy : TaskTracker = TaskTracker()
         self.identity : Identity = identity
 
         self.memory: list[Entry] = []
@@ -31,7 +31,7 @@ class Agent(Loggable):
         self.memory.append(Entry.user(msg=msg))
         return self.handle()
 
-    def work(self, mandate : Mandate, max_steps : int):
+    def work(self, mandate : Task, max_steps : int):
         self.workflowy.open_action.do()
         self.workflowy.root = mandate
         for j in range(max_steps):
@@ -110,7 +110,7 @@ class Agent(Loggable):
 
         if self.workflowy.is_active:
             work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
-                                          f'Your current tasks are outlined in the {Workflowy.__name__} workspace.'
+                                          f'Your current tasks are outlined in the {TaskTracker.__name__} workspace.'
                                           'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
             context += Context.singleton(entry=work_entry)
 

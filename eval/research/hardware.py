@@ -1,7 +1,7 @@
 import os.path
 
 from engine import LotusEngine
-from engine.l1_agents.guidance.workflowy import Mandate
+from engine.l1_agents.guidance.tasktracker import Task
 from eval.nlunittest import NLUnittest
 
 # ---------------------------------------------------
@@ -21,7 +21,7 @@ class HardwareTask(NLUnittest):
             lines = p.split('\n')
             name = lines[0]
             remaining = '\n'.join(lines[1:-1])
-            mandate = Mandate.from_yaml(s=remaining)
+            mandate = Task.from_yaml(s=remaining)
             self.mandate_dict[name] = mandate
             print(f'Mandate {name}:\n {mandate.get_tree()}')
 

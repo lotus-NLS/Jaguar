@@ -6,10 +6,10 @@ from engine.l3_aos.workspace import Workspace
 
 # -------------------------------------------------------
 
-class Workflowy(Workspace):
+class TaskTracker(Workspace):
     def __init__(self):
         super().__init__()
-        self.root : Optional[Mandate] = None
+        self.root : Optional[Task] = None
 
     def add_task(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""
@@ -33,7 +33,7 @@ class Workflowy(Workspace):
     # Generics
 
     def open(self):
-        self.root = Mandate(content='', is_root=True)
+        self.root = Task(content='', is_root=True)
 
     def close(self, *args, **kwargs):
         self.root = None
@@ -47,7 +47,7 @@ class Workflowy(Workspace):
         return None
 
 
-class Mandate:
+class Task:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
         self.name : str = content
@@ -56,12 +56,12 @@ class Mandate:
         self.comment : str = ''
         self.is_complete : bool = False
         self.is_failed : bool = False
-        self.subtasks : list[Mandate] = []
+        self.subtasks : list[Task] = []
 
     @classmethod
     def from_yaml(cls, s : str):
         lines = s.split('\n')
-        root = Mandate(is_root=True)
+        root = Task(is_root=True)
         ancestors = [root]
 
         def get_ancestor_indent():
@@ -86,8 +86,8 @@ class Mandate:
     def add_comment(self, msg : str):
         self.comment += msg
 
-    def add_subtask(self, msg : str) -> Mandate:
-        new_task = Mandate(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
+    def add_subtask(self, msg : str) -> Task:
+        new_task = Task(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)
         return new_task
 
@@ -104,7 +104,7 @@ class Mandate:
     # --------------------------------------------
     # get
 
-    def get_descendant(self, identifier : str) -> Mandate:
+    def get_descendant(self, identifier : str) -> Task:
         if len(identifier) == 0:
             return self
 

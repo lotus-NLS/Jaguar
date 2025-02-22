@@ -1,10 +1,10 @@
-from engine.l1_agents.guidance.workflowy import Mandate
+from engine.l1_agents.guidance.tasktracker import Task
 from holytools.devtools import Unittest
 
 
 class TestTask(Unittest):
     def setUp(self):
-        self.root : Mandate = Mandate("Main Task", is_root=True)
+        self.root : Task = Task("Main Task", is_root=True)
         self.task1 = self.root.add_subtask("Task 1")
         self.task2 = self.root.add_subtask("Task 2")
         self.task3 = self.root.add_subtask("Task 3")
@@ -42,7 +42,7 @@ class TestTask(Unittest):
         yaml_str = (f'- Task 1\n'
                     f'    -Subtask 1.1\n'
                     f'- Task 2')
-        root = Mandate.from_yaml(yaml_str)
+        root = Task.from_yaml(yaml_str)
         tree = root.get_tree()
 
         lines = yaml_str.split()
