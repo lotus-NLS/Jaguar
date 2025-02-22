@@ -16,6 +16,11 @@ class Workflowy(Workspace):
         parent = self.root.get_descendant(parent_task_id)
         parent.add_subtask(msg)
 
+    def add_comment(self, task_id : str, msg : str):
+        """Adds a comment to task [task_id].
+        Use this to store updates, relevant information or reason about why this task should be marked as done or discarded"""
+        self.root.get_descendant(task_id).add_comment(msg)
+
     def complete_task(self, task_id : str):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
@@ -53,6 +58,7 @@ class Mandate:
         self.name : str = content
         self.identifier : str = identifier
 
+        self.comment : str = ''
         self.is_complete : bool = False
         self.is_failed : bool = False
         self.subtasks : list[Mandate] = []
@@ -82,20 +88,13 @@ class Mandate:
                 ancestors.append(new)
         return root
 
+    def add_comment(self, msg : str):
+        self.comment += msg
+
     def add_subtask(self, msg : str) -> Mandate:
         new_task = Mandate(content=msg, identifier=f'{self.identifier}{len(self.subtasks) + 1}')
         self.subtasks.append(new_task)
         return new_task
-
-
-    def get_descendant(self, identifier : str) -> Mandate:
-        if len(identifier) == 0:
-            return self
-
-        first_num = int(identifier[0])
-        partial_id = identifier[1:]
-
-        return self.subtasks[first_num-1].get_descendant(partial_id)
 
     def complete(self):
         self.is_complete = True
@@ -107,6 +106,18 @@ class Mandate:
         for st in self.subtasks:
             st.fail()
 
+    # --------------------------------------------
+    # get
+
+    def get_descendant(self, identifier : str) -> Mandate:
+        if len(identifier) == 0:
+            return self
+
+        first_num = int(identifier[0])
+        partial_id = identifier[1:]
+
+        return self.subtasks[first_num-1].get_descendant(partial_id)
+
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:
             if self.is_complete:
@@ -115,7 +126,8 @@ class Mandate:
                 mark = '🚫'
             else:
                 mark = ' '
-            tree = f'{pre_indent}[{mark}] {self.identifier}: {self.name}\n'
+            tree = (f'{pre_indent}[{mark}] {self.identifier}: {self.name}\n'
+                    f'{pre_indent} {self.comment}\n')
         else:
             tree = ''
 
