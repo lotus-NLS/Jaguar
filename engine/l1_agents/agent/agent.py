@@ -65,9 +65,11 @@ class Agent(Loggable):
     def write(self, generation : Generation, pipe : TextPipe):
         for chunk in generation:
             pipe.put(chunk.get_text())
-        response_entry = Entry.agent(msg=generation.get_text())
-        self.update_memory(entry=response_entry)
         pipe.stop()
+
+        text = generation.get_text()
+        if text:
+            self.update_memory(entry=Entry.agent(msg=text))
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
