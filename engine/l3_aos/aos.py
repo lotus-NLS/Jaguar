@@ -49,8 +49,10 @@ class AOS:
 
         return workspaces
 
-    def get_headline(self) -> str:
-        return self.update_tool.headline.get_value()
+    def get_steplabel(self) -> str:
+        value = self.update_tool.headline.get_value()
+        self.update_tool.headline.input = None
+        return value
 
 
 class UpdateTool(Tool):

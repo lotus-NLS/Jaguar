@@ -14,7 +14,6 @@ from holytools.fileIO.converters import ImageConverter
 
 # ----------------------------------------------
 
-
 @dataclass
 class Entry(JsonDataclass):
     msg : str

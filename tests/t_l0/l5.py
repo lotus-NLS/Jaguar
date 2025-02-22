@@ -4,7 +4,7 @@ import random
 
 from engine.l1_agents import Agent
 from engine.l2_models import InfOptions
-from engine.l2_models.generation.pipe import TextPipe
+from engine.l2_models.generation.step import TextPipe
 
 
 class MockPipe(TextPipe):

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from typing import Iterator
+
 from openai import APITimeoutError
 
 from engine.l1_agents.guidance import Identity
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfOptions
 from engine.l2_models.context import Entry, Context
-from engine.l2_models.generation.pipe import TextPipe
+from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.aos import UpdateTool
@@ -28,15 +30,15 @@ class Agent(Loggable):
         self.memory: list[Entry] = []
         self.aos.add_workspace(ws=self.task_tracker)
 
-    def converse(self, msg : str) -> TextPipe:
+    def converse(self, msg : str) -> Step:
         self.memory.append(Entry.user(msg=msg))
         return self.handle()
 
-    def work(self, task : Task, max_steps : int):
+    def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
         for j in range(max_steps):
-            self.handle()
+            yield self.handle()
             if not self.is_working():
                 print(f'Finished work mode after {j+1} steps')
                 break
@@ -48,7 +50,7 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_options : InfOptions = InfOptions()) -> TextPipe:
+    def handle(self, inf_options : InfOptions = InfOptions()) -> Step:
         context = self.get_context()
 
         try:
@@ -61,7 +63,8 @@ class Agent(Loggable):
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             pipe = TextPipe.failed()
 
-        return pipe
+        step = Step(text_pipe=pipe, step_label=self.aos.get_steplabel(), generation_ctx=context)
+        return step
 
     def write(self, generation : Generation, pipe : TextPipe):
         for chunk in generation:

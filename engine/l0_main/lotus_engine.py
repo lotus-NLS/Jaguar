@@ -6,7 +6,7 @@ from engine.l3_aos import AOS, Terminal, Browser
 from holytools.logging import Loggable
 from .settings import LotusCredentials
 from ..l1_agents.guidance.tasktracker import Task
-from ..l2_models.generation.pipe import TextPipe
+from ..l2_models.generation.step import TextPipe
 
 # ---------------------------------------------------------
 
@@ -21,8 +21,8 @@ class LotusEngine(Loggable):
         self._agent.work(task=task, max_steps=max_steps)
 
     def converse(self, msg : str) -> str:
-        text_pipe = self._agent.converse(msg=msg)
-        return self.observe_response(pipe=text_pipe)
+        step = self._agent.converse(msg=msg)
+        return self.observe_response(pipe=step.text_pipe)
 
     @staticmethod
     def observe_response(pipe : TextPipe, print_chunks : bool = True) -> str:

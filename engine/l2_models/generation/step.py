@@ -1,14 +1,25 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Optional
 from queue import Queue, Empty
 from typing import Iterator
+
+from engine.l2_models.context import Context
 from holytools.logging import LoggerFactory
 
 
 pipeLogger = LoggerFactory.get_logger(name=__name__)
 
 # ----------------------------------------------
+
+@dataclass
+class Step:
+    text_pipe : TextPipe
+    generation_ctx : Context
+    step_label : str
+
+
 
 
 class TextPipe(Queue):
@@ -49,7 +60,7 @@ class TextPipe(Queue):
             yield text
 
     @classmethod
-    def failed(cls, msg: Optional[str] = None):
+    def failed(cls, msg: Optional[str] = None) -> TextPipe:
         pipeline: TextPipe = TextPipe()
         conditional_msg = f':{msg}'
         pipeline.put(f'Pipeline failed{conditional_msg}')
