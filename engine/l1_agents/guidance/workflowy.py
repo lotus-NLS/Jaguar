@@ -126,8 +126,10 @@ class Mandate:
                 mark = '🚫'
             else:
                 mark = ' '
-            tree = (f'{pre_indent}[{mark}] {self.identifier}: {self.name}\n'
-                    f'{pre_indent} {self.comment}\n')
+            status_and_id = f'[{mark}] {self.identifier}: '
+            tree = f'{pre_indent}{status_and_id}{self.name}\n'
+            if self.comment:
+                tree += f'{pre_indent}{len(status_and_id)*" "}{self.comment}\n'
         else:
             tree = ''
 

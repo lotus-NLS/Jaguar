@@ -51,8 +51,12 @@ class TestTask(Unittest):
             l = l.strip(f' -')
             self.assertIn(l, tree)
 
+    def test_comment(self):
+        self.task1.add_comment("This is a comment")
+        root_tree = self.root.get_tree()
+        print(f'Root Tree:\n{root_tree}')
+        self.assertIn("This is a comment",root_tree)
+
 
 if __name__ == '__main__':
     TestTask.execute_all()
-
-
