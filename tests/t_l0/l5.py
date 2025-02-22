@@ -25,7 +25,7 @@ class MockPipe(TextPipe):
 
 
 class MockEntity(Agent):
-    def handle(self, inf_options : InfOptions) -> TextPipe:
+    def handle(self, inf_options : InfOptions = InfOptions()) -> TextPipe:
         _, __ = self, inf_options
         return MockPipe()
 

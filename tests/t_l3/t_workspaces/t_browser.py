@@ -1,5 +1,4 @@
 from engine.l3_aos import Browser
-from engine.l3_aos.tools import ToolCall
 from tests.credtest import CredentialDependentTest
 
 # ----------------------------------------------------------------

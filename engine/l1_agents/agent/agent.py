@@ -109,8 +109,9 @@ class Agent(Loggable):
         context += Context(entries=self.memory)
 
         if self.workflowy.is_active:
-            work_entry = Entry.system(msg='You are currently in work mode and cannot converse with the user. '
-                                          'Your current tasks are outlined in the Workflowy workspace')
+            work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
+                                          f'Your current tasks are outlined in the {Workflowy.__name__} workspace.'
+                                          'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
             context += Context.singleton(entry=work_entry)
 
         return context

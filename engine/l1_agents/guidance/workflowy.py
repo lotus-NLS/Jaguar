@@ -38,15 +38,10 @@ class Workflowy(Workspace):
     def close(self, *args, **kwargs):
         self.root = None
 
-    def get_desc(self) -> str:
-        return (f'Provides a task list with subtask functionality. '
-                f'Each task is assigned a task_id e.g. 12 for the second subtask of the first task.')
-
     def get_text(self) -> str:
-        return (f'You are currently engaged in work mode. The user is not present and what you write will only be visible to you.\n'
-                f'These are your tasks:\n'
-                f'{self.root.get_tree()}'
-                f'Upon completing these tasks you will automatically return to conversation mode')
+        return (f'This workspace provides a task list with subtask functionality.'
+                f'Each task is assigned a task_id e.g. 12 for the second subtask of the first task.'
+                f'{self.root.get_tree()}')
 
     def get_image(self) -> Optional[PILImage]:
         return None

@@ -78,9 +78,6 @@ class TestWorkspace(Unittest):
         for docs in actions_docs:
             self.assertIsInstance(docs, ToolDoc)
 
-    def test_get_desc(self):
-        self.assertIsInstance(self.workspace.get_desc(), str)
-
 
 class MockWorkspace(Workspace):
     def __init__(self):
@@ -104,9 +101,6 @@ class MockWorkspace(Workspace):
 
     def reset(self):
         self.text_content = ''
-
-    def get_desc(self) -> str:
-        return ''
 
 if __name__ == '__main__':
     TestWorkspace.execute_all()

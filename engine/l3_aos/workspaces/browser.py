@@ -48,7 +48,7 @@ class Browser(Workspace):
         lines = [line for line in md_text.split('\n')] + [h1, h2, h3, h4]
         longest_line_length = max([len(l) for l in lines])
 
-        text = ''
+        text = 'f"A browser allowing you to search google and browse sites"'
         text += h1.center(longest_line_length, '-') + '\n'
         text += f'{self.emulator.driver.current_url} \n'
 
@@ -70,9 +70,6 @@ class Browser(Workspace):
 
     def get_image(self) -> Optional[PILImage]:
         return None
-
-    def get_desc(self) -> str:
-        return f"A browser allowing you to search google and browse sites"
 
 
 if __name__ == "__main__":

@@ -28,8 +28,7 @@ class Entry(JsonDataclass):
 
     @classmethod
     def from_workspace(cls, workspace : Workspace):
-        msg = f'{workspace.get_desc()}\n'
-        msg += cls.get_boxed(text=workspace.get_text(), headline=workspace.get_name())
+        msg = cls.get_boxed(text=workspace.get_text(), headline=workspace.get_name())
         return Entry.tool(name=workspace.get_name(), msg=msg, image=workspace.get_image())
 
     @classmethod

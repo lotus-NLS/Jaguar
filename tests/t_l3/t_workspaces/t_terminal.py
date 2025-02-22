@@ -1,6 +1,6 @@
-from engine.l3_aos import Browser, Terminal
+from engine.l3_aos import Terminal
 from holytools.devtools import Unittest
-from tests.credtest import CredentialDependentTest
+
 
 # ----------------------------------------------------------------
 
