@@ -3,8 +3,6 @@ import os.path
 from engine import LotusEngine
 from engine.l1_agents.guidance.workflowy import Mandate
 from eval.nlunittest import NLUnittest
-from holytools.configs import FileConfigs
-
 
 # ---------------------------------------------------
 

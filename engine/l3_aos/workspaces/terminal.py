@@ -20,7 +20,7 @@ class Terminal(Workspace):
         self.tmux_session : Optional[Session] = None
         self.tmux_name : str = 'lotus'
 
-    def open(self, workdir_path : str = '~'):
+    def open(self, workdir_path : str = '~/testdir'):
         """Opens a terminal in the specified working directory available only to you"""
         cwd = os.path.expanduser(workdir_path)
         if not os.path.isdir(cwd):
