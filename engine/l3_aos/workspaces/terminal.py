@@ -70,11 +70,9 @@ class Terminal(Workspace):
     def get_text(self) -> str:
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
-        pane_content = pane.capture_pane()
+        pane_content = pane.capture_pane(start=-10000)
 
-        text = ''
-        for l in pane_content:
-            text += f'{l}\n'
+        text = '\n'.join(pane_content)
         return text
 
 
@@ -86,4 +84,5 @@ class Terminal(Workspace):
 if __name__ == "__main__":
     t = Terminal()
     t.open()
-    t.type(content='line1\nline2\n')
+    text = t.get_text()
+    print(text)
