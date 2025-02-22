@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from engine.l3_aos.tools import Tool
+from engine.l3_aos.tools import Tool, ToolArg
 from engine.l3_aos.workspace import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
 
@@ -13,6 +13,7 @@ class AOS:
         self.workspaces : list[Workspace] = []
         for ws in workspaces:
             self.add_workspace(ws)
+        self.update_tool : UpdateTool = UpdateTool()
 
     def add_workspace(self, ws : Workspace):
         self.workspaces.append(ws)
@@ -28,11 +29,13 @@ class AOS:
     # ------------------------------------------------------------------
     # get
 
-    def get_tools(self) -> list[Tool]:
+    def get_tools(self, with_update : bool = False) -> list[Tool]:
         workspaces = self.get_workspaces()
         tools = []
         for ws in workspaces:
             tools += ws.get_actions()
+        if with_update:
+            tools += self.update_tool
         return tools
 
     def get_ws(self, name : str) -> Workspace:
@@ -45,3 +48,22 @@ class AOS:
             workspaces = [ws for ws in workspaces if ws.is_active]
 
         return workspaces
+
+    def get_headline(self) -> str:
+        return self.update_tool.headline.get_value()
+
+
+class UpdateTool(Tool):
+    def  __init__(self):
+        super().__init__()
+        self.headline : ToolArg = ToolArg(name='Action headline')
+
+    def do(self):
+        pass
+
+    def get_desc(self) -> str:
+        return (f'Allows you to report the current action youre taking in this step. '
+                f'Collectively these updates generate a timeline of your actions.')
+
+    def get_args(self) -> list[ToolArg]:
+        return [self.headline]

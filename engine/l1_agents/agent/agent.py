@@ -36,11 +36,11 @@ class Agent(Loggable):
         self.task_tracker.root = task
         for j in range(max_steps):
             self.handle()
-            if not self.task_tracker.is_active:
+            if not self.is_working():
                 print(f'Finished work mode after {j+1} steps')
                 break
 
-        if self.task_tracker.is_active:
+        if self.is_working():
             self.freeze_final_state(ws=self.task_tracker)
             self.task_tracker.close_action.do()
 
@@ -73,8 +73,9 @@ class Agent(Loggable):
 
     def act(self, generation : Generation):
         tool_calls = generation.get_tool_calls()
-        tools_map = {tool.get_name(): tool for tool in self.aos.get_tools()}
+        tools_map = {t.get_name(): t for t in self.aos.get_tools(with_update=self.is_working())}
         outputs : list[ToolOutput] = []
+
         for call in tool_calls:
             if 'close' in call.name:
                 ws_name, _ = call.name.split('_')
@@ -102,6 +103,10 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # context
 
+
+    def is_working(self) -> bool:
+        return self.task_tracker.is_active
+
     def update_memory(self, entry : Entry):
         self.memory.append(entry)
 
@@ -110,7 +115,7 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
-        if self.task_tracker.is_active:
+        if self.is_working():
             work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
                                           f'Your current tasks are outlined in the {TaskTracker.__name__} workspace.'
                                           'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
