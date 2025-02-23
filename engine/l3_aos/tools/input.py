@@ -41,9 +41,11 @@ class ToolArg:
         val = self.input
 
         try:
-            required_conversion = self.dtype is int or self.dtype is bool
-            if required_conversion and not val is None:
+            requires_conversion = self.dtype is int or self.dtype is bool
+            if requires_conversion and not val is None:
                 val = int(val)
+                if self.dtype is bool:
+                    val = bool(val)
         except ValueError:
             raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}, got '{self.input}'")
         return val
@@ -112,3 +114,5 @@ if __name__ == "__main__":
     ta = ToolArg(name='test', dtype=int, is_optional=True)
     testval = ta.get_value()
     print('done')
+
+    bool(3)

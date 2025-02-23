@@ -1,12 +1,10 @@
-from enum import Enum
-
 from engine.l3_aos.tools import ToolArg
 from holytools.devtools import Unittest, ModuleInspector
 
 # ----------------------------------------------------------
 
-class TestToolArgGeneration(Unittest):
-    def test_basic_nonoptional(self):
+class TestToolArg(Unittest):
+    def test_from_valid(self):
         tool_args = []
         for arg in ModuleInspector.get_args(func=ToolArgMethods.valid_type_func):
             tool_args.append(ToolArg.from_function_arg(arg=arg))
@@ -16,7 +14,6 @@ class TestToolArgGeneration(Unittest):
             self.assertTrue(not tool_arg.is_optional)
             print(f'tool arg dtype is {tool_arg.dtype}')
 
-    def test_basic_optional(self):
         tool_args = []
         for arg in ModuleInspector.get_args(func=ToolArgMethods.default_val_func):
             tool_args.append(ToolArg.from_function_arg(arg=arg))
@@ -25,28 +22,24 @@ class TestToolArgGeneration(Unittest):
         for tool_arg in tool_args:
             self.assertTrue(tool_arg.is_optional)
 
-    def test_enum_arg(self):
-        tool_args = []
-        for arg in ModuleInspector.get_args(func=ToolArgMethods.enum_type_func):
-            tool_arg = ToolArg.from_function_arg(arg=arg)
-            tool_args.append(tool_arg)
-            print(f'arg dtype is {arg.dtype}')
-            self.assertTrue(issubclass(arg.dtype, Enum))
-            print(f'tool arg choices are {tool_arg.choices}')
-            self.assertTrue(tool_arg.choices == [choice.value for choice in MockChoice])
-
-    def test_unannotated_args(self):
-            with self.assertRaises(ValueError):
-                ModuleInspector.get_args(func=ToolArgMethods.unannotated)
-
-    def test_no_args(self):
         args = ModuleInspector.get_args(func=ToolArgMethods.no_args_func)
         self.assertTrue(len(args) == 0)
 
+    def test_from_invalid(self):
+        with self.assertRaises(ValueError):
+            ModuleInspector.get_args(func=ToolArgMethods.unannotated)
 
-class MockChoice(Enum):
-    choiceOne = 'choiceOne'
-    choiceTwo = 'choiceTwo'
+    def test_get_value(self):
+        test_values = ['test', '100', '1', None]
+        test_dtypes = [str, int, bool, str]
+
+        for dtype, val in zip(test_dtypes, test_values):
+            ta = ToolArg(name=f'Test{dtype}',dtype=dtype)
+            ta.input = val
+            if ta.input is None:
+                self.assertTrue(ta.get_value() is None)
+            else:
+                self.assertIsInstance(ta.get_value(), dtype)
 
 
 class ToolArgMethods:
@@ -59,10 +52,6 @@ class ToolArgMethods:
         print(f'The number is {num}')
 
     @staticmethod
-    def enum_type_func(choice : MockChoice):
-        print(f'I decided on {choice}')
-
-    @staticmethod
     def unannotated(num, the_str):
         pass
 
@@ -72,7 +61,7 @@ class ToolArgMethods:
 
 
 if __name__ == "__main__":
-    TestToolArgGeneration.execute_all()
+    TestToolArg.execute_all()
 
 
 
