@@ -1,3 +1,5 @@
+from enum import Enum
+
 from engine.l3_aos.tools import ToolArg
 from holytools.devtools import Unittest, ModuleInspector
 
@@ -41,6 +43,9 @@ class TestToolArg(Unittest):
             else:
                 self.assertIsInstance(ta.get_value(), dtype)
 
+    def test_invalid_dtype(self):
+        with self.assertRaises(TypeError):
+            ToolArg(name='Test', dtype=Enum)
 
 class ToolArgMethods:
     @staticmethod
