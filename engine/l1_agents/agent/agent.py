@@ -35,11 +35,15 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
+        require_report = InfOptions.require_call(tool_name=self.aos.update_tool.get_name())
+        report_frequency = 4
 
         for j in range(max_steps):
-            self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
-            step = self.handle()
-            yield step
+            # self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
+            inf_options = require_report if (j+1) % report_frequency == 0 else InfOptions()
+            if (j+1) % report_frequency == 0:
+                pass
+            yield self.handle(inf_options)
 
             if not self.is_working():
                 break
@@ -121,7 +125,6 @@ class Agent(Loggable):
         context = Context(entries=[self.identity.as_system_entry()])
         context += Context.from_aos(aos=self.aos, with_update=self.is_working())
         context += Context(entries=self.memory)
-
 
         msg = (f'You are currently in work mode and cannot converse with the user. '
               f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '

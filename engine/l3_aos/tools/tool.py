@@ -80,7 +80,6 @@ class Tool:
 
 
 
-
 class ToolDoc(dict):
     @classmethod
     def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:

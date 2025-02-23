@@ -13,7 +13,7 @@ class AOS:
         self.workspaces : list[Workspace] = []
         for ws in workspaces:
             self.add_workspace(ws)
-        self.update_tool : UpdateTool = UpdateTool()
+        self.update_tool : ActionUpdate = ActionUpdate()
 
     def add_workspace(self, ws : Workspace):
         self.workspaces.append(ws)
@@ -55,7 +55,7 @@ class AOS:
         return value
 
 
-class UpdateTool(Tool):
+class ActionUpdate(Tool):
     def  __init__(self):
         super().__init__()
         self.headline : ToolArg = ToolArg(name='Action headline')
@@ -64,8 +64,9 @@ class UpdateTool(Tool):
         pass
 
     def get_desc(self) -> str:
-        return (f'Allows you to report the current action youre taking in this step. '
-                f'Collectively these updates generate a timeline of your actions.')
+        return (f'Allows you to report the actions youve taken since your last call of this update tool. '
+                f'Collectively these updates generate a timeline of your actions.'
+                f'Focus on your actions rather than the results. The results will be discussed in a report later on.'                )
 
     def get_args(self) -> list[ToolArg]:
         return [self.headline]
