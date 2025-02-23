@@ -1,10 +1,14 @@
 from __future__ import annotations
+
 import json
-from typing import Optional, Any, Union
-from json_repair import repair_json
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
+
+from json_repair import repair_json
+
 from holytools.devtools import Argument
+
 
 # ---------------------------------------------------
 
@@ -18,13 +22,12 @@ class ToolArg:
 
     def __post_init__(self):
         self.input : Optional[str] = None
-        self.to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean"}
 
-        if self.dtype == bool:
-            self.choices = ['0', '1']
-        if not isinstance(self.dtype, (int, bool, str)):
+        if not self.dtype in [int, bool, str]:
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
                             f"Only basic dtypes {(int, bool, str)} are supported")
+        if self.dtype == bool:
+            self.choices = ['0', '1']
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
@@ -36,7 +39,7 @@ class ToolArg:
 
     def get_value(self) -> Optional[int, bool, str]:
         val = self.input
-        
+
         try:
             required_conversion = self.dtype is int or self.dtype is bool
             if required_conversion and not val is None:
@@ -57,7 +60,7 @@ class ToolArg:
 
     def get_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': self.to_json_type[self.dtype],
+            'type': 'string',
             'description': f'{self.desc}'
         }
 
@@ -106,4 +109,6 @@ class ToolCall:
 
 
 if __name__ == "__main__":
-    pass
+    ta = ToolArg(name='test', dtype=int, is_optional=True)
+    testval = ta.get_value()
+    print('done')
