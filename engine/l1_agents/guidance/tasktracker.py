@@ -11,6 +11,7 @@ class TaskTracker(Workspace):
     def __init__(self):
         super().__init__()
         self.root : Optional[Task] = None
+        self.unreported_steps: list[int] = []
 
     def add_task(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""

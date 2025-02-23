@@ -21,8 +21,12 @@ class LotusEngine(Loggable):
         self.dev_endpoint : Endpoint = Endpoint.make_localhost(port=5000, path=f'/update')
 
     def work(self, task : Task, max_steps : int):
+        work_steps = 0
         for step in self._agent.work(task=task, max_steps=max_steps):
             self.observe_step(step=step)
+            work_steps += 1
+
+        print(f'Finished work mode after {work_steps} steps')
 
     def converse(self, msg : str) -> str:
         step = self._agent.converse(msg=msg)

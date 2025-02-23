@@ -24,7 +24,6 @@ class Agent(Loggable):
         self.model: LLM = model
         self.aos : AOS = aos
         self.task_tracker : TaskTracker = TaskTracker()
-        self.unreported_work_steps : list[int]= []
         self.identity : Identity = identity
 
         self.memory: list[Entry] = []
@@ -37,24 +36,19 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        steps_taken = 0
 
         for j in range(max_steps):
             self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
-            self.unreported_work_steps.append(j)
+            self.task_tracker.unreported_steps.append(j)
             step = self.handle()
             yield step
-            steps_taken = j+1
+
             if not self.is_working():
                 break
+
             if step.step_label:
                 print(f'Step label = {step.step_label}')
-                self.unreported_work_steps = []
-
-        if self.is_working():
-            self.freeze_final_state(ws=self.task_tracker)
-            self.task_tracker.close_action.do()
-        print(f'Finished work mode after {steps_taken} steps')
+                self.task_tracker.unreported_steps = []
 
         if self.is_working():
             self.freeze_final_state(ws=self.task_tracker)
@@ -69,7 +63,7 @@ class Agent(Loggable):
         try:
             generation = self.model.get_generation(context=context, options=inf_options)
             pipe = self.write(generation=generation)
-            outputs = self.act(generation=generation)
+            self.act(generation=generation)
         except APITimeoutError:
             error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
@@ -79,10 +73,7 @@ class Agent(Loggable):
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
 
-        step_label = self.aos.get_steplabel()
-        # if not step_label:
-        #     step_label = f'Perfomed actions: {", ".join([out.tool_name for out in outputs])}'
-        return Step(text_pipe=pipe, step_label=step_label, generation_ctx=context)
+        return Step(text_pipe=pipe, step_label=self.aos.get_steplabel(), generation_ctx=context)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
@@ -122,16 +113,12 @@ class Agent(Loggable):
         return outputs
 
     def freeze_final_state(self, ws : Workspace):
-        e1 = Entry.tool(f'Closed workspace {ws.get_name()} with following final state:', name=ws.get_name())
-        e2 = Entry.from_workspace(ws=ws)
-        self.update_memory(entry=e1)
-        self.update_memory(entry=e2)
+        entry = Entry.from_workspace(ws=ws)
+        entry.add(msg=f'Closed workspace {ws.get_name()} with following final state:', at_start=True)
+        self.update_memory(entry=entry)
 
     # ---------------------------------------------------
     # context
-
-    def is_working(self) -> bool:
-        return self.task_tracker.is_active
 
     def update_memory(self, entry : Entry):
         self.memory.append(entry)
@@ -141,12 +128,17 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos, with_update=self.is_working())
         context += Context(entries=self.memory)
 
+
+        msg = (f'You are currently in work mode and cannot converse with the user. '
+              f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
+              f'Please report your setps using the {UpdateTool.get_name()}. Use a <= 5 words headline to describe them.'
+              f'The unreported steps should not exceed 4 steps. Currently the following steps are unreported {self.task_tracker.unreported_steps}'
+              'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
         if self.is_working():
-            work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
-                                          f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
-                                          f'Please report your setps using the {UpdateTool.get_name()}. Use a <= 5 words headline to describe them.'
-                                          f'The unreported steps should not exceed 4 steps. Currently the following steps are unreported {self.unreported_work_steps}'
-                                          'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
+            work_entry = Entry.system(msg=msg)
             context += Context.singleton(entry=work_entry)
 
         return context
+
+    def is_working(self) -> bool:
+        return self.task_tracker.is_active

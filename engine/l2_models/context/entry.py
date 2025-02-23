@@ -56,6 +56,11 @@ class Entry(JsonDataclass):
             return False
         return self.msg == other.msg and self.role == other.role and self.name == other.name and self.image == other.image
 
+    def add(self, msg : str, at_start : bool = False):
+        first = self.msg if not at_start else msg
+        second = msg if not at_start else self.msg
+        self.msg = f'{first}\n{second}'
+
      # ----------------------------------------------------
     # get
 
