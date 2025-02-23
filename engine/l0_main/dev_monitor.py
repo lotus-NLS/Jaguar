@@ -47,7 +47,7 @@ class DevMonitor:
 
         escaped_str = html.escape(plain_str)
         html_code = escaped_str.replace("\n", "<br>")
-        html_code = f'<pre> {html_code} </pre>'
+        html_code = f'<pre>{html_code}</pre>'
         return html_code
 
     # -----------------------------------------------------
