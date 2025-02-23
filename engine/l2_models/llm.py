@@ -10,7 +10,7 @@ from tiktoken import Encoding
 from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation import InfOptions, Generation, CallOptions
 from holytools.logging import Loggable
-from holytools.network import Endpoint
+
 
 # ---------------------------------------------------------
 

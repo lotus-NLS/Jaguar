@@ -17,7 +17,7 @@ class TestContext(Unittest):
         basic_context = Context(entries=[system_entry, hello_entry])
 
         aos = AOS.terminal_only()
-        aos_context = Context.from_aos(aos=aos)
+        aos_context = Context.from_aos(aos=aos, with_update=False)
         return aos_context + basic_context
 
 if __name__ == "__main__":
