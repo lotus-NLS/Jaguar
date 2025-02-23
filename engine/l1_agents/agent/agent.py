@@ -36,11 +36,19 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
+        steps_taken = 0
+
         for j in range(max_steps):
+            self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
             yield self.handle()
+            steps_taken = j+1
             if not self.is_working():
-                print(f'Finished work mode after {j+1} steps')
                 break
+
+        if self.is_working():
+            self.freeze_final_state(ws=self.task_tracker)
+            self.task_tracker.close_action.do()
+        print(f'Finished work mode after {steps_taken} steps')
 
         if self.is_working():
             self.freeze_final_state(ws=self.task_tracker)
