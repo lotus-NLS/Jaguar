@@ -36,12 +36,11 @@ class ToolArg:
 
     def get_value(self) -> Optional[int, bool, str]:
         val = self.input
+        
         try:
-            if self.dtype is bool:
+            required_conversion = self.dtype is int or self.dtype is bool
+            if required_conversion and not val is None:
                 val = int(val)
-            if issubclass(self.dtype, Enum):
-                val =  self.dtype[val]
-            val = self.dtype(val)
         except ValueError:
             raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}, got '{self.input}'")
         return val
