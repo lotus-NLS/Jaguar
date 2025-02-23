@@ -34,9 +34,11 @@ class TaskTracker(Workspace):
     # Generics
 
     def open(self):
+        """Opens task tracker"""
         self.root = Task(content='', is_root=True)
 
     def close(self, *args, **kwargs):
+        """Closes task tracker"""
         self.root = None
 
     def get_text(self) -> str:
