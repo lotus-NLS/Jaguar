@@ -6,6 +6,7 @@ from queue import Queue, Empty
 from typing import Iterator
 
 from engine.l2_models.language import Context
+from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
 
 
@@ -16,12 +17,21 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 @dataclass
 class Step:
     text_pipe : TextPipe
-    generation_ctx : Context
-    ckpt_label : str
+    generation_ctx: Context
+    ckpt_label: str
+
+    def get_state(self) -> StepState:
+        return StepState(generation_ctx=self.generation_ctx, cpkt_label=self.ckpt_label)
 
     @classmethod
     def failed(cls, context : Context):
         return cls(text_pipe=TextPipe.failed(), generation_ctx=context, ckpt_label='failed')
+
+
+@dataclass
+class StepState(JsonDataclass):
+    generation_ctx : Context
+    cpkt_label : str
 
 
 class TextPipe(Queue):

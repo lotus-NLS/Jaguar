@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 from engine.l1_agents import Identity
 from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
+from holytools.userIO import MessageFormatter
 
 
 # --------------------------------------------------------------
@@ -19,13 +20,11 @@ class DevMonitor:
         self.thread: Optional[threading.Thread] = None
         self.context = self.get_example_context()
 
+        self.checkpoints : list[str] = []
+
         @self.app.route(f'/context')
         def get_context_view() -> str:
-            context_str = self.context.get_view(section_header=f'Agent context')
-            escaped_context = html.escape(context_str)
-            html_context = escaped_context.replace("\n", "<br>")
-            html_context = f'<pre> {html_context} </pre>'
-            return html_context
+            return self.get_html()
 
         @self.app.route('/update', methods=['POST'])
         def update():
@@ -47,6 +46,14 @@ class DevMonitor:
         aos = AOS.terminal_only()
         aos_context = Context.from_aos(aos=aos, with_update=False)
         return aos_context + basic_context
+
+    def get_html(self) -> str:
+        checkpoint_section = MessageFormatter.get_boxed_train(messages=self.checkpoints)
+        context_str = self.context.get_view(section_header=f'Agent context')
+        escaped_context = html.escape(context_str)
+        html_code = escaped_context.replace("\n", "<br>")
+        html_code = f'<pre> {checkpoint_section} {html_code} </pre>'
+        return html_code
 
     # -----------------------------------------------------
 
