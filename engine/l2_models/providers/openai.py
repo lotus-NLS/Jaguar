@@ -28,12 +28,6 @@ class OpenAIModel(LLM):
         if not token_cap_ok:
             raise ValueError(f'Context exceeds token cap of {options.max_input_tokens}')
 
-        if self.enable_debug:
-            try:
-                self._dev_endpoint.post(msg=context.to_str(), secure=False)
-            except:
-                self.warning(f'Context update endpoint {self._dev_endpoint.get_url(protocol=f"https")} unresponsive')
-
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')

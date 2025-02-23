@@ -17,22 +17,13 @@ from holytools.network import Endpoint
 class LLM(Loggable):
     def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
-        self.enable_debug : bool = True
         self.api_key : str = api_key
         self._name : str = name
-        self._dev_endpoint : Endpoint = self.dev_endpoint()
 
         # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
         name = name if not name == 'o1' else 'o1-'
         self.tokenizer: Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(name))
         # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
-
-    def disable_debug(self):
-        self.enable_debug = False
-
-    @classmethod
-    def dev_endpoint(cls) -> Endpoint:
-        return Endpoint.make_localhost(port=5000, path=f'/update')
 
     @abstractmethod
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
