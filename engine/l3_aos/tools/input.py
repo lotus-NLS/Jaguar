@@ -1,12 +1,10 @@
 from __future__ import annotations
 import json
-from typing import Optional,Any
+from typing import Optional, Any, Union
 from json_repair import repair_json
 from dataclasses import dataclass
 from enum import Enum
 from holytools.devtools import Argument
-
-to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean", Enum: "string"}
 
 # ---------------------------------------------------
 
@@ -19,13 +17,14 @@ class ToolArg:
     choices : Optional[list[str]] = None
 
     def __post_init__(self):
-        self.input : Optional[Any] = None
+        self.input : Optional[str] = None
+        self.to_json_type: dict[type, str] = {int: "number", float: "number", str: "string", bool: "boolean"}
+
         if self.dtype == bool:
             self.choices = ['0', '1']
-
-        if self.get_json_type(python_type=self.dtype) is None:
+        if not isinstance(self.dtype, (int, bool, str)):
             raise TypeError(f"Unsupported type '{self.dtype.__name__}' for argument '{self.name}'."
-                            f"Supported types are {list(to_json_type.keys())}")
+                            f"Only basic dtypes {(int, bool, str)} are supported")
 
     @classmethod
     def from_function_arg(cls, arg: Argument):
@@ -35,7 +34,7 @@ class ToolArg:
 
     # ---------------------------------------------------
 
-    def get_value(self) -> Optional[Any]:
+    def get_value(self) -> Optional[int, bool, str]:
         val = self.input
         try:
             if self.dtype is bool:
@@ -59,19 +58,13 @@ class ToolArg:
 
     def get_json_doc(self) -> dict[str,str]:
         arg_doc = {
-            'type': self.get_json_type(python_type=str),
+            'type': self.to_json_type[self.dtype],
             'description': f'{self.desc}'
         }
 
         if not self.choices is None:
             arg_doc['enum'] = self.choices
         return arg_doc
-
-    @staticmethod
-    def get_json_type(python_type: type) -> Optional[str]:
-        base_type = Enum if issubclass(python_type, Enum) else python_type
-        json_type = to_json_type.get(base_type)
-        return json_type
 
 
 class ToolCall:
@@ -111,3 +104,7 @@ class ToolCall:
 
     def __str__(self):
         return f'{self.name}: {self.json_str}'
+
+
+if __name__ == "__main__":
+    pass
