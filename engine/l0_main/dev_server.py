@@ -5,13 +5,13 @@ from typing import Optional
 from flask import Flask, request, jsonify
 
 from engine.l1_agents import Identity
-from engine.l2_models.context import Context, Entry
+from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
 
 
 # --------------------------------------------------------------
 
-class DevServer:
+class DevMonitor:
     def __init__(self, ip : str, port : int):
         self.ip : str = ip
         self.port : int = port
@@ -55,5 +55,5 @@ class DevServer:
         self.app.run(host=self.ip, port=self.port)
 
 if __name__ == "__main__":
-    server = DevServer.localhost()
+    server = DevMonitor.localhost()
     server.serve()

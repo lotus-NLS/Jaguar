@@ -3,7 +3,7 @@ import os
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents.guidance.tasktracker import Task
 from engine.l2_models import OpenAIModel, InfOptions
-from engine.l2_models.context import Entry, Context
+from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
 from holytools.devtools import Unittest

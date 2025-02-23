@@ -7,7 +7,7 @@ from openai import APITimeoutError, APIError
 from engine.l1_agents.guidance import Identity
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfOptions
-from engine.l2_models.context import Entry, Context
+from engine.l2_models.language import Entry, Context
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
@@ -71,7 +71,7 @@ class Agent(Loggable):
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
 
-        return Step(text_pipe=pipe, step_label=self.aos.get_steplabel(), generation_ctx=context)
+        return Step(text_pipe=pipe, ckpt_label=self.aos.get_steplabel(), generation_ctx=context)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
@@ -116,7 +116,7 @@ class Agent(Loggable):
         self.update_memory(entry=entry)
 
     # ---------------------------------------------------
-    # context
+    # language
 
     def update_memory(self, entry : Entry):
         self.memory.append(entry)

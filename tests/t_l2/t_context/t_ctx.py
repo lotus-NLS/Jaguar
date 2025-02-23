@@ -1,5 +1,5 @@
 from engine.l1_agents import Identity
-from engine.l2_models.context import Context, Entry
+from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
 from holytools.devtools import Unittest
 

@@ -5,8 +5,8 @@ from typing import Optional
 from openai import Stream, OpenAI
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
-from engine.l2_models.context.ctx import Context
-from engine.l2_models.context.entry import APIType, Entry
+from engine.l2_models.language.context import Context
+from engine.l2_models.language.entry import APIType, Entry
 from engine.l2_models.generation import Generation, Chunk, InfOptions
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall

@@ -2,7 +2,7 @@ from __future__ import annotations
 import platform, distro
 from enum import Enum
 
-from engine.l2_models.context import Entry
+from engine.l2_models.language import Entry
 
 
 # ----------------------------------------------------

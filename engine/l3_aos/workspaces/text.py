@@ -56,7 +56,7 @@
 #         self.text_file.write(newcontent)
 #
 #     # ---------------------------------------------------------
-#     # context
+#     # language
 #
 #     def get_text(self) -> str:
 #         fpath = self.text_file.fpath

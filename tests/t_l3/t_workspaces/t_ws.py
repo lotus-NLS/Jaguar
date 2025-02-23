@@ -1,6 +1,6 @@
 from typing import Optional
 
-from engine.l2_models.context import Entry
+from engine.l2_models.language import Entry
 from engine.l3_aos.tools import ToolDoc, ToolCall, Tool
 from engine.l3_aos.workspace import Workspace
 from holytools.devtools import Unittest

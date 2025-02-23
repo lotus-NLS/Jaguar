@@ -1,6 +1,6 @@
 # import json
 #
-# from engine.l2_models.context import Context, Entry
+# from engine.l2_models.language import Context, Entry
 # from engine.l3_aos import AOS
 # from engine.l3_aos.tools import ToolCall, Tool
 # from holytools.devtools import Unittest
@@ -16,13 +16,13 @@
 #         self.text_workspace.open_action.execute(tool_call)
 #
 #     def test_context(self):
-#         context = Context.from_aos(aos=self.os)
-#         self.assertEqual(len(context.docs),4)
-#         self.assertEqual(len(context.entries),1)
-#         entry = context.entries[0]
+#         language = Context.from_aos(aos=self.os)
+#         self.assertEqual(len(language.docs),4)
+#         self.assertEqual(len(language.entries),1)
+#         entry = language.entries[0]
 #         self.assertIsInstance(obj=entry, cls=Entry)
 #         self.assertIsInstance(obj=entry.msg, cls=str)
-#         print(f'Context is : {context.get_view(section_header="Lotus OS")}')
+#         print(f'Context is : {language.get_view(section_header="Lotus OS")}')
 #
 #     def test_tools(self):
 #         tools = self.os.get_tools()

@@ -37,7 +37,7 @@
 #         self.show_hidden = visibility
 #
 #     # ---------------------------------------------------------
-#     # context
+#     # language
 #
 #     def get_image(self) -> Optional[PILImage]:
 #         return None

@@ -8,14 +8,14 @@
 # class TestAgentContext(Unittest):
 #     def setUp(self):
 #         self.agent = Agent(model=OpenAIModel.get_gpt4_turbo(), identity=Identity.GOTO())
-#         self.context = self.agent.get_active_context()
+#         self.language = self.agent.get_active_context()
 #
 #
 #     def test_context_ok(self):
-#         entries = self.context.entries
+#         entries = self.language.entries
 #         self.assertTrue(len(entries) > 0)
-#         self.assertTrue(len(self.context.docs) > 0)
-#         # print(f'Tools are {self.context.docs} and entries are {entries}')
+#         self.assertTrue(len(self.language.docs) > 0)
+#         # print(f'Tools are {self.language.docs} and entries are {entries}')
 #         first_entry = entries[0]
 #         self.assertIsInstance(obj=first_entry.msg, cls=str)
 #         self.assertIn(self.agent.identity.get_str(), first_entry.msg)
@@ -45,7 +45,7 @@
 # class TestApplicationUsage(Unittest):
 #     def setUp(self):
 #         self.agent = Agent(model=OpenAIModel.get_gpt4_turbo(), identity=Identity.GOTO())
-#         self.context = self.agent.get_active_context()
+#         self.language = self.agent.get_active_context()
 #
 #
 #     def test_text_application(self):

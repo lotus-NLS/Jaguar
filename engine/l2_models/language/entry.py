@@ -10,6 +10,7 @@ from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
+from holytools.userIO import MessageFormatter
 
 
 # ----------------------------------------------
@@ -28,7 +29,7 @@ class Entry(JsonDataclass):
     @classmethod
     def from_workspace(cls, ws : Workspace):
         msg = f'{ws.get_desc()}\n'
-        msg += cls.get_boxed(text=ws.get_text(), headline=ws.get_name())
+        msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=ws.get_name())
         return Entry.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
 
     @classmethod
@@ -102,16 +103,6 @@ class Entry(JsonDataclass):
         base64_image = ImageConverter.to_base64_str(image)
         return base64_image
 
-
-    @staticmethod
-    def get_boxed(text: str, headline: str = "") -> str:
-        lines = text.split("\n")
-        max_length = max(max(len(line) for line in lines), len(headline))
-        border = "+" + "-" * (max_length + 2) + "+"
-        headline = f' {headline} '
-        headline_line = f"+{headline.center(max_length + 2, '-')}+" if headline else border
-        boxed_text = [headline_line] + [f"| {line.ljust(max_length)} |" for line in lines] + [border]
-        return "\n".join(boxed_text)
 
 
 class APIType(Enum):

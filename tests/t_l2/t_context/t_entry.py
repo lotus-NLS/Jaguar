@@ -1,4 +1,4 @@
-from engine.l2_models.context import Entry
+from engine.l2_models.language import Entry
 from holytools.devtools import Unittest
 from holytools.fileIO import ExampleFiles
 

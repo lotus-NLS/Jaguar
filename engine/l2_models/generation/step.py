@@ -5,7 +5,7 @@ from typing import Optional
 from queue import Queue, Empty
 from typing import Iterator
 
-from engine.l2_models.context import Context
+from engine.l2_models.language import Context
 from holytools.logging import LoggerFactory
 
 
@@ -17,11 +17,11 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 class Step:
     text_pipe : TextPipe
     generation_ctx : Context
-    step_label : str
+    ckpt_label : str
 
     @classmethod
     def failed(cls, context : Context):
-        return cls(text_pipe=TextPipe.failed(), generation_ctx=context, step_label='failed')
+        return cls(text_pipe=TextPipe.failed(), generation_ctx=context, ckpt_label='failed')
 
 
 class TextPipe(Queue):

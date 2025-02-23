@@ -63,7 +63,7 @@ class Terminal(Workspace):
             pane.enter()
 
     # ---------------------------------------------------------
-    # context
+    # language
 
     def get_image(self) -> Optional[PILImage]:
         return None
