@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterator
 
-from openai import APITimeoutError
+from openai import APITimeoutError, APIError
 
 from engine.l1_agents.guidance import Identity
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
@@ -58,6 +58,10 @@ class Agent(Loggable):
             outputs = self.act(generation=generation)
         except APITimeoutError:
             error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
+            self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
+            return Step.failed(context=context)
+        except APIError:
+            error_msg = f'OpenAI API request failed'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
 
