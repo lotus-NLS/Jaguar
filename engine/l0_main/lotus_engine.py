@@ -40,7 +40,7 @@ class LotusEngine(Loggable):
                 print(text, end='', flush=True)
                 time.sleep(0.05)
         try:
-            self.dev_endpoint.post(msg=step.generation_ctx.to_str(), secure=False)
+            self.dev_endpoint.post(msg=step.get_state().to_str(), secure=False)
         except:
             self.warning(f'Context update endpoint {self.dev_endpoint.get_url(protocol=f"https")} unresponsive')
 
