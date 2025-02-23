@@ -11,7 +11,6 @@ from engine.l2_models.context import Entry, Context
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.aos import UpdateTool
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspace import Workspace
 from holytools.logging import LogLevel, Loggable
@@ -39,16 +38,11 @@ class Agent(Loggable):
 
         for j in range(max_steps):
             self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
-            self.task_tracker.unreported_steps.append(j)
             step = self.handle()
             yield step
 
             if not self.is_working():
                 break
-
-            if step.step_label:
-                print(f'Step label = {step.step_label}')
-                self.task_tracker.unreported_steps = []
 
         if self.is_working():
             self.freeze_final_state(ws=self.task_tracker)
@@ -131,8 +125,6 @@ class Agent(Loggable):
 
         msg = (f'You are currently in work mode and cannot converse with the user. '
               f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
-              f'Please report your setps using the {UpdateTool.get_name()}. Use a <= 5 words headline to describe them.'
-              f'The unreported steps should not exceed 4 steps. Currently the following steps are unreported {self.task_tracker.unreported_steps}'
               'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
         if self.is_working():
             work_entry = Entry.system(msg=msg)

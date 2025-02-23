@@ -25,7 +25,7 @@ class HardwareTask(NLU):
 
     def test_hardware_summary(self):
         task = self.task_provider.get_task('hardware')
-        self.engine.work(task=task, max_steps=10)
+        self.engine.work(task=task, max_steps=15)
         user_msg = f'Please provide me with a summary of my hardwrae including CPU, GPU, RAM, disks and motherboard'
         answer = self.engine.converse(msg=user_msg)
 
