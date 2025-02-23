@@ -59,7 +59,7 @@ class Workspace(Loggable):
                     workspace.is_active = False
 
             def get_desc(self) -> str:
-                desc = docstring if docstring else f'Allows for operating {mthd.__name__}'
+                desc = docstring if docstring else ''
                 return desc
 
             def get_args(self) -> list[ToolArg]:
