@@ -24,6 +24,7 @@ class Agent(Loggable):
         self.model: LLM = model
         self.aos : AOS = aos
         self.task_tracker : TaskTracker = TaskTracker()
+        self.unreported_work_steps : list[int]= []
         self.identity : Identity = identity
 
         self.memory: list[Entry] = []
@@ -40,10 +41,15 @@ class Agent(Loggable):
 
         for j in range(max_steps):
             self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
-            yield self.handle()
+            self.unreported_work_steps.append(j)
+            step = self.handle()
+            yield step
             steps_taken = j+1
             if not self.is_working():
                 break
+            if step.step_label:
+                print(f'Step label = {step.step_label}')
+                self.unreported_work_steps = []
 
         if self.is_working():
             self.freeze_final_state(ws=self.task_tracker)
@@ -74,8 +80,8 @@ class Agent(Loggable):
             return Step.failed(context=context)
 
         step_label = self.aos.get_steplabel()
-        if not step_label:
-            step_label = f'Perfomed actions: {", ".join([out.tool_name for out in outputs])}'
+        # if not step_label:
+        #     step_label = f'Perfomed actions: {", ".join([out.tool_name for out in outputs])}'
         return Step(text_pipe=pipe, step_label=step_label, generation_ctx=context)
 
     def write(self, generation : Generation):
@@ -138,7 +144,8 @@ class Agent(Loggable):
         if self.is_working():
             work_entry = Entry.system(msg=f'You are currently in work mode and cannot converse with the user. '
                                           f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
-                                          f'Please finish off each action step through using the {UpdateTool.get_name()} to label your action on this step'
+                                          f'Please report your setps using the {UpdateTool.get_name()}. Use a <= 5 words headline to describe them.'
+                                          f'The unreported steps should not exceed 4 steps. Currently the following steps are unreported {self.unreported_work_steps}'
                                           'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
             context += Context.singleton(entry=work_entry)
 
