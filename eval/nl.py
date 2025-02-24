@@ -13,7 +13,7 @@ from holytools.devtools import Unittest
 class NLU(Unittest):
     @classmethod
     def setUpClass(cls):
-        configs = LotusCredentials()
+        configs = LotusCredentials.from_file()
         cls.model : LLM = OpenAIModel.default_model(api_key=configs.get_openai_apikey())
         cls.task_provider : TaskProvider = TaskProvider()
 

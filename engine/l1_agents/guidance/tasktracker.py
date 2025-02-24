@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 from PIL.Image import Image as PILImage
-from engine.l3_aos.workspace import Workspace
+from engine.l3_aos.workspaces import Workspace
 
 # -------------------------------------------------------
 
@@ -37,7 +37,7 @@ class TaskTracker(Workspace):
         """Opens task tracker"""
         self.root = Task(content='', is_root=True)
 
-    def close(self, *args, **kwargs):
+    def close(self):
         """Closes task tracker"""
         self.root = None
 

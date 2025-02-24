@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from engine.l3_aos.tools import Tool, ToolArg
-from engine.l3_aos.workspace import Workspace
+from engine.l3_aos.workspaces import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
 
 

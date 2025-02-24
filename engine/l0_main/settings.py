@@ -8,12 +8,18 @@ from holytools.logging import Loggable
 # --------------------------------------------
 
 class LotusCredentials(Loggable):
-    def __init__(self, enable_validation : bool = False):
+    def __init__(self, cred_dict : dict[str, str], enable_validation : bool = False):
         super().__init__()
-        self.configs = FileConfigs.credentials()
+        self.cred_dict : dict[str, str] = cred_dict
         if enable_validation:
             self.perform_validation()
         self.info(msg=f'Completed setup for all Settings')
+
+    @classmethod
+    def from_file(cls):
+        configs = FileConfigs.credentials()
+        cred_map = configs.get_general_section()
+        return cls(cred_dict=cred_map)
 
     def get_openai_apikey(self) -> str:
         return self._get('openai_api_key')
@@ -25,7 +31,7 @@ class LotusCredentials(Loggable):
         return self._get('search_engine_id')
 
     def _get(self, key: str) -> str:
-        return self.configs.get(key)
+        return self.cred_dict[key]
 
     # ----------------------------------------------
     # validation

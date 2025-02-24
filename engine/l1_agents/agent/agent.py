@@ -12,7 +12,7 @@ from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput
-from engine.l3_aos.workspace import Workspace
+from engine.l3_aos.workspaces import Workspace
 from holytools.logging import LogLevel, Loggable
 
 # ---------------------------------------------------------

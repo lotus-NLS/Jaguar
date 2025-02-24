@@ -15,7 +15,7 @@ class LotusEngine(Loggable):
         super().__init__()
         self.dev_endpoint: Endpoint = Endpoint.make_localhost(port=5000, path=f'/update')
         self.session_uuid: str = self.generate_session_uuid()
-        self._creds = LotusCredentials()
+        self._creds = LotusCredentials.from_file()
         self._agent = Agent(aos=self._get_default_aos(), model=self._get_default_model())
         self._evalutor : Evaluator = Evaluator(model=self._get_default_model())
 
