@@ -1,4 +1,5 @@
 import time
+import uuid
 
 from engine.l1_agents import Agent
 from engine.l2_models import OpenAIModel
@@ -19,6 +20,7 @@ class LotusEngine(Loggable):
         aos = self._get_default_aos()
         self._agent = self._get_default_agent(aos=aos)
         self.dev_endpoint : Endpoint = Endpoint.make_localhost(port=5000, path=f'/update')
+        self.session_uuid : str = self.generate_session_uuid()
 
     def work(self, task : Task, max_steps : int):
         work_steps = 0
@@ -40,7 +42,7 @@ class LotusEngine(Loggable):
                 print(text, end='', flush=True)
                 time.sleep(0.05)
         try:
-            self.dev_endpoint.post(msg=step.get_state().to_str(), secure=False)
+            self.dev_endpoint.post(msg=step.get_state(uuid=self.session_uuid).to_str(), secure=False)
         except:
             self.warning(f'Context update endpoint {self.dev_endpoint.get_url(protocol=f"https")} unresponsive')
 
@@ -48,6 +50,10 @@ class LotusEngine(Loggable):
 
     # ---------------------------------------------------------------
     # build
+
+    @staticmethod
+    def generate_session_uuid() -> str:
+        return str(uuid.uuid4()) + str(uuid.uuid4())
 
     def _get_default_aos(self) -> AOS:
         google_api_key = self._creds.get_google_apikey()

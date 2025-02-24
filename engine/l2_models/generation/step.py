@@ -20,8 +20,8 @@ class Step:
     generation_ctx: Context
     ckpt_label: str
 
-    def get_state(self) -> StepState:
-        return StepState(generation_ctx=self.generation_ctx, cpkt_label=self.ckpt_label)
+    def get_state(self, uuid : str) -> StepState:
+        return StepState(generation_ctx=self.generation_ctx, cpkt_label=self.ckpt_label, session_uuid=uuid)
 
     @classmethod
     def failed(cls, context : Context):
@@ -32,6 +32,7 @@ class Step:
 class StepState(JsonDataclass):
     generation_ctx : Context
     cpkt_label : str
+    session_uuid : str
 
 
 class TextPipe(Queue):
