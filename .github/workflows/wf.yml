@@ -1,0 +1,22 @@
+name: Workflows
+
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  ToxTests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Somerandomguy10111/devops/actions/basepy@main
+      - uses: Somerandomguy10111/devops/actions/toxtests@main
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          SEARCH_ENGINE_ID: ${{ secrets.SEARCH_ENGINE_ID }}
+  Dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Somerandomguy10111/devops/actions/basepy@main
+      - uses: Somerandomguy10111/devops/actions/deptry@main
