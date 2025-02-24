@@ -3,10 +3,12 @@ from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
 
+# ---------------------------------------------------------
 
 class Evaluator:
     def __init__(self, model: LLM):
         self.model : LLM = model
+
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
         yn = YesNoTool()

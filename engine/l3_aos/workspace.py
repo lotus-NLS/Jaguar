@@ -6,10 +6,10 @@ from typing import Optional, Callable
 
 from PIL.Image import Image as PILImage
 
-from engine.l2_models.language import Entry
 from engine.l3_aos.tools import ToolDoc, ToolArg, Tool
 from holytools.devtools import ModuleInspector
 from holytools.logging import Loggable
+
 
 # ---------------------------------------------------------
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable, Optional
+from typing import Callable
 
 from func_timeout import func_timeout, FunctionTimedOut
 
@@ -9,6 +9,7 @@ from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
 from .input import ToolCall, ToolArg
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
+
 
 # ---------------------------------------------------------
 
