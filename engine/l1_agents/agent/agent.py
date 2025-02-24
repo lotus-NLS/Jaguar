@@ -38,17 +38,23 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        require_report = InfOptions.require_call(tool_name=self.aos.update_tool.get_name())
+        require_update = InfOptions.require_call(tool_name=self.aos.update_tool.get_name())
         report_frequency = 4
 
+        self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
         for j in range(max_steps):
-            inf_options = require_report if (j+1) % report_frequency == 0 else InfOptions()
-            yield self.handle(inf_options)
+            inf_options = require_update if (j+1) % report_frequency == 0 else InfOptions()
+            yield self.handle(inf_options=inf_options)
             if not self.is_working():
                 break
 
         if self.is_working():
             self.task_tracker.close_action.do()
+
+        self.update_memory(entry=Entry.system(msg=f'Now leaving work mode. Please provide the a report'
+                                                  f'of your actions and include any relevant evidence for the completion of the outlined task'
+                                                  f'This report will be used to evaluate the success or failure of the task.'))
+        yield self.handle(inf_options=InfOptions.text_only())
 
     # ---------------------------------------------------
     # Main routine
