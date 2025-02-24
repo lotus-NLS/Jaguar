@@ -1,3 +1,6 @@
+import dataclasses
+from dataclasses import dataclass
+
 import openai
 import requests
 from func_timeout import func_timeout, FunctionTimedOut
@@ -5,33 +8,29 @@ from func_timeout import func_timeout, FunctionTimedOut
 from holytools.configs import FileConfigs
 from holytools.logging import Loggable
 
+
 # --------------------------------------------
 
+@dataclass
 class LotusCredentials(Loggable):
-    def __init__(self, cred_dict : dict[str, str], enable_validation : bool = False):
+    openai_api_key : str
+    google_api_key : str
+    search_engine_id : str
+    enable_validation : bool = False
+
+    def __post_init__(self):
         super().__init__()
-        self.cred_dict : dict[str, str] = cred_dict
-        if enable_validation:
+        if self.enable_validation:
             self.perform_validation()
         self.info(msg=f'Completed setup for all Settings')
 
     @classmethod
     def from_file(cls):
         configs = FileConfigs.credentials()
-        cred_map = configs.get_general_section()
-        return cls(cred_dict=cred_map)
-
-    def get_openai_apikey(self) -> str:
-        return self._get('openai_api_key')
-
-    def get_google_apikey(self) -> str:
-        return self._get('google_api_key')
-
-    def get_searchengine_id(self) -> str:
-        return self._get('search_engine_id')
-
-    def _get(self, key: str) -> str:
-        return self.cred_dict[key]
+        keys = set([f.name for f in dataclasses.fields(LotusCredentials) if f.init ])
+        keys = [k for k in keys if not "enable_validation" in k]
+        kwargs = {k : configs.get(k) for k in keys}
+        return cls(**kwargs)
 
     # ----------------------------------------------
     # validation
@@ -57,7 +56,7 @@ class LotusCredentials(Loggable):
         timeout = 5
 
         try:
-            openai.api_key = self.get_openai_apikey()
+            openai.api_key = self.openai_api_key
             test_entry = {'role' : 'user', 'content' : 'This is a test'}
             args_dict = {'model': 'gpt-3.5-turbo','messages': [test_entry],'stream' : True}
             func_timeout(timeout=timeout, func=openai.chat.completions.create, kwargs=args_dict)
@@ -81,8 +80,8 @@ class LotusCredentials(Loggable):
             url = "https://www.googleapis.com/customsearch/v1"
             params = {
                 'q': 'snails',
-                'key': self.get_google_apikey(),
-                'cx': self.get_searchengine_id(),
+                'key': self.google_api_key,
+                'cx': self.search_engine_id,
                 'num' : 5
             }
             response = requests.get(url, params=params)
@@ -105,3 +104,5 @@ class LotusCredentials(Loggable):
             return is_successful
 
 
+if __name__ == "__main__":
+    creds = LotusCredentials.from_file()
