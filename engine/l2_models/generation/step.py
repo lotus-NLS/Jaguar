@@ -20,8 +20,8 @@ class Step:
     generation_ctx: Context
     ckpt_label: str
 
-    def get_state(self, uuid : str) -> StepState:
-        return StepState(generation_ctx=self.generation_ctx, cpkt_label=self.ckpt_label, session_uuid=uuid)
+    def get_state(self, uuid : str, writing : Optional[str]) -> StepState:
+        return StepState(generation_ctx=self.generation_ctx, cpkt_label=self.ckpt_label, session_uuid=uuid, writing=writing)
 
     @classmethod
     def failed(cls, context : Context):
@@ -31,6 +31,7 @@ class Step:
 @dataclass
 class StepState(JsonDataclass):
     generation_ctx : Context
+    writing : str
     cpkt_label : str
     session_uuid : str
 
