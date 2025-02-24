@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Callable
+
 from engine.l3_aos.tools import Tool, ToolArg
 from engine.l3_aos.workspace import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
@@ -38,7 +40,7 @@ class AOS:
             tools += [self.update_tool]
         return tools
 
-    def get_ws(self, name : str) -> Workspace:
+    def find_ws(self, name : str) -> Workspace:
         ws_map = {ws.get_name(): ws for ws in self.get_workspaces()}
         return ws_map[name]
 

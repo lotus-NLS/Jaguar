@@ -21,12 +21,15 @@ class Agent(Loggable):
     def __init__(self, model : LLM, aos : AOS, identity : Identity = Identity.GOTO()):
         super().__init__()
         self.model: LLM = model
-        self.aos : AOS = aos
         self.task_tracker : TaskTracker = TaskTracker()
+        self.aos : AOS = aos
         self.identity : Identity = identity
-
         self.memory: list[Entry] = []
+
         self.aos.add_workspace(ws=self.task_tracker)
+        for ws in self.aos.get_workspaces(active_only=False):
+            hook = self.get_freeze_hook(ws=ws)
+            ws.close_action.add_hook(hook)
 
     def converse(self, msg : str) -> Step:
         self.memory.append(Entry.user(msg=msg))
@@ -39,17 +42,12 @@ class Agent(Loggable):
         report_frequency = 4
 
         for j in range(max_steps):
-            # self.update_memory(entry=Entry.system(msg=f'Work step No. {j}:'))
             inf_options = require_report if (j+1) % report_frequency == 0 else InfOptions()
-            if (j+1) % report_frequency == 0:
-                pass
             yield self.handle(inf_options)
-
             if not self.is_working():
                 break
 
         if self.is_working():
-            self.freeze_final_state(ws=self.task_tracker)
             self.task_tracker.close_action.do()
 
     # ---------------------------------------------------
@@ -91,10 +89,6 @@ class Agent(Loggable):
         outputs : list[ToolOutput] = []
 
         for call in tool_calls:
-            if 'close' in call.name:
-                ws_name, _ = call.name.split('_')
-                ws = self.aos.get_ws(name=ws_name)
-                self.freeze_final_state(ws)
             try:
                 tool = tools_map[call.name]
                 outputs += [tool.execute(tool_call=call)]
@@ -110,13 +104,16 @@ class Agent(Loggable):
 
         return outputs
 
-    def freeze_final_state(self, ws : Workspace):
-        entry = Entry.from_workspace(ws=ws)
-        entry.add(msg=f'Closed workspace {ws.get_name()} with following final state:', at_start=True)
-        self.update_memory(entry=entry)
-
     # ---------------------------------------------------
     # language
+
+    def get_freeze_hook(self, ws : Workspace):
+        def freeze_ws(frozen_ws: Workspace = ws):
+            entry = Entry.from_workspace(ws=frozen_ws)
+            entry.add(msg=f'Closed workspace {frozen_ws.get_name()} with following final state:', at_start=True)
+            self.update_memory(entry=entry)
+            return frozen_ws
+        return freeze_ws
 
     def update_memory(self, entry : Entry):
         self.memory.append(entry)

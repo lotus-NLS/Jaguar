@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import Callable, Optional
 
 from func_timeout import func_timeout, FunctionTimedOut
 
+from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
 from .input import ToolCall, ToolArg
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
@@ -15,9 +17,16 @@ class Tool:
         self.is_active : bool = True
         self.logger = LoggerFactory.get_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
+        self.hook : Callable  = lambda *args, **kwargs : None
 
     # ---------------------------------------------------
     # call
+
+    def add_hook(self, hook : Callable):
+        args = ModuleInspector.get_args(hook, exclude_self=True)
+        if len(args) > 0:
+            raise ValueError(f'Hook function \"{hook.__name__}\" must not have any arguments')
+        self.hook = hook
 
     def execute(self, tool_call: ToolCall) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name(), call_args=tool_call.get_args_dict())
@@ -26,6 +35,7 @@ class Tool:
             self._set_args(tool_call=tool_call)
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
+            self.hook()
             output.update(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully', progress_type=ProgressUpdate.INFO)
 
         except ToolException as e:
