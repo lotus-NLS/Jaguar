@@ -18,26 +18,26 @@ class Tool:
         self.is_active : bool = True
         self.logger = LoggerFactory.get_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
-        self.hook : Callable  = lambda *args, **kwargs : None
+        self.prehook : Callable  = lambda *args, **kwargs : None
 
     # ---------------------------------------------------
     # call
 
-    def add_hook(self, hook : Callable):
-        args = ModuleInspector.get_args(hook, exclude_self=True)
+    def add_prehook(self, pre_hook : Callable):
+        args = ModuleInspector.get_args(pre_hook, exclude_self=True)
         non_default_args = [arg for arg in args if not arg.has_default_val()]
         if len(non_default_args) > 0:
-            raise ValueError(f'Hook function \"{hook.__name__}\" must not have any non-default arguments')
-        self.hook = hook
+            raise ValueError(f'Hook function \"{pre_hook.__name__}\" must not have any non-default arguments')
+        self.prehook = pre_hook
 
     def execute(self, tool_call: ToolCall) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name(), call_args=tool_call.get_args_dict())
         output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=ProgressUpdate.START)
         try:
             self._set_args(tool_call=tool_call)
+            self.prehook()
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
-            self.hook()
             output.update(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully', progress_type=ProgressUpdate.INFO)
 
         except ToolException as e:

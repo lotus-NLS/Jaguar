@@ -2,8 +2,7 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
-from engine.l3_aos.workspace import Workspace
-
+from engine.l3_aos.workspaces.workspace import Workspace
 from pyscrape.search import SearchEngine
 from pyscrape.browse import BrowserEmulator
 

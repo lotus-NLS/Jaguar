@@ -29,7 +29,7 @@ class Agent(Loggable):
         self.aos.add_workspace(ws=self.task_tracker)
         for ws in self.aos.get_workspaces(active_only=False):
             hook = self.get_freeze_hook(ws=ws)
-            ws.close_action.add_hook(hook)
+            ws.close_action.add_prehook(hook)
 
     def converse(self, msg : str) -> Step:
         self.memory.append(Entry.user(msg=msg))

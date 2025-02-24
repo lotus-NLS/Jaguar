@@ -1,4 +1,5 @@
 import html
+from typing import Optional
 
 from flask import Flask, request, jsonify
 
@@ -18,7 +19,8 @@ class DevMonitor:
         self.app: Flask = Flask(__name__)
 
         self.context : Context = self.get_example_context()
-        self.checkpoints : list[str] = []
+        self.checkpoints : dict[str, list[str]] = {}
+        self.latest_session_uuid : Optional[str] = None
 
         @self.app.route(f'/context')
         def get_context_view() -> str:
@@ -29,6 +31,7 @@ class DevMonitor:
             data = request.get_data()
             s = data.decode()
             step_state = StepState.from_str(json_str=s)
+            self.latest_session_uuid = step_state.session_uuid
             self.context = step_state.generation_ctx
             if step_state.cpkt_label:
                 self.checkpoints += [step_state.cpkt_label]
@@ -41,7 +44,8 @@ class DevMonitor:
 
 
     def get_html(self) -> str:
-        ckpt_str = MessageFormatter.get_boxed_train(messages=self.checkpoints) if self.checkpoints else ''
+        checkpoints = self.checkpoints.get(self.latest_session_uuid, None)
+        ckpt_str = MessageFormatter.get_boxed_train(messages=checkpoints) if checkpoints else ''
         context_str = self.context.get_view(section_header=f'Agent context')
         plain_str = f'{ckpt_str}\n{context_str}'
 
