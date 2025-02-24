@@ -51,12 +51,10 @@ class Agent(Loggable):
         if self.is_working():
             self.task_tracker.close_action.do()
 
-        self.update_memory(entry=Entry.system(msg=f'Now leaving work mode. Please provide a report'
-                                                  f'of your actions and include any relevant evidence for the successful completion of the outlined task'
-                                                  f'If the given task failed then you can point this out as well. The accuracy of your report and not a'
-                                                  f'positive result is paramount.'
-                                                  f'This report will be used to evaluate the success or failure of the task.'))
-        yield self.handle(inf_options=InfOptions.text_only())
+        self.update_memory(entry=Entry.system(msg=f'Now leaving work mode. Please review the objective and provide an execute summary of your results '
+                                                  f'with regard to this objective. Keep it to 60 words or less, so about 3-4 sentences.'
+                                                  f'This report will be used to evaluate the success or failure of the objective.'))
+        yield self.handle(inf_options=InfOptions.text_only(max_output_tokens=100))
 
     # ---------------------------------------------------
     # Main routine

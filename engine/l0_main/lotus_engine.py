@@ -22,7 +22,7 @@ class LotusEngine(Loggable):
     def work(self, task : Task, max_steps : int, dos : str = ''):
         states : list[StepState] = []
         for s in self._agent.work(task=task, max_steps=max_steps):
-            states += self.observe_step(step=s)
+            states += [self.observe_step(step=s)]
         print(f'Finished work mode after {len(states)} steps')
 
         if dos:

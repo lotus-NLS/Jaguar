@@ -24,9 +24,9 @@ class OpenAIModel(LLM):
         return cls(name='gpt-4o', api_key=api_key)
 
     def get_generation(self, context : Context, options: InfOptions) -> Generation:
-        token_cap_ok = self.check_token_cap_ok(context=context, token_cap=options.max_input_tokens)
+        token_cap_ok = self.check_token_cap_ok(context=context, token_cap=options.input_tokens_max)
         if not token_cap_ok:
-            raise ValueError(f'Context exceeds token cap of {options.max_input_tokens}')
+            raise ValueError(f'Context exceeds token cap of {options.input_tokens_max}')
 
         for entry in context.entries:
             if not isinstance(entry, Entry):
@@ -51,8 +51,8 @@ class OpenAIModel(LLM):
             args_dict['tools'] = context.docs
             args_dict['tool_choice'] = tool_options.get_openai_syntax()
 
-        if not options.max_output_tokens is None:
-            args_dict['max_tokens'] = options.max_output_tokens
+        if not options.output_tokens_max is None:
+            args_dict['max_tokens'] = options.output_tokens_max
 
         return self._client.chat.completions.create(**args_dict)
 

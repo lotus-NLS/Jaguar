@@ -42,4 +42,4 @@ class HardwareTask(NLU):
 if __name__ == "__main__":
     hw_test = HardwareTask()
     hw_test.setUp()
-    hw_test.test_hardware_summary()
+    hw_test.test_gpu_research()

@@ -39,16 +39,16 @@ class CallOptions:
 class InfOptions:
     call_options: CallOptions = field(default_factory=CallOptions.auto)
     timeout : float = 10
-    max_input_tokens: int = 8192
-    max_output_tokens : Optional[int] = None
+    input_tokens_max: int = 8192
+    output_tokens_max : Optional[int] = None
     debugging : bool = True
 
     def get_call_allowed(self) -> bool:
         return self.call_options.call_allowed
 
     @classmethod
-    def text_only(cls, **kwargs):
-        return cls(call_options=CallOptions.no_call(), **kwargs)
+    def text_only(cls, max_output_tokens : Optional[int] = None):
+        return cls(call_options=CallOptions.no_call(), output_tokens_max=max_output_tokens)
 
     @classmethod
     def require_call(cls, tool_name: Optional[str] = None, **kwargs):
