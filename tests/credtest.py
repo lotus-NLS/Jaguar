@@ -1,3 +1,5 @@
+import os
+
 from engine.l0_main.settings import LotusCredentials
 from holytools.devtools import Unittest
 
@@ -5,7 +7,14 @@ from holytools.devtools import Unittest
 class CredentialDependentTest(Unittest):
     @classmethod
     def setUpClass(cls):
-        credentials : LotusCredentials = LotusCredentials()
-        cls.searchengine_id = credentials.get_searchengine_id()
-        cls.google_apikey = credentials.get_google_apikey()
-        cls.openai_apikey = credentials.get_openai_apikey()
+        try:
+            kwargs = {'openai_api_key': os.environ['OPENAI_API_KEY'],
+                      'google_api_key': os.environ['GOOGLE_API_KEY'],
+                      'search_engine_id': os.environ['SEARCH_ENGINE_ID']}
+            credentials = LotusCredentials(**kwargs)
+        except:
+            credentials : LotusCredentials = LotusCredentials.from_file()
+
+        cls.searchengine_id : str = credentials.search_engine_id
+        cls.google_apikey : str = credentials.google_api_key
+        cls.openai_apikey : str = credentials.openai_api_key
