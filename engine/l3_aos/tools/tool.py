@@ -25,8 +25,9 @@ class Tool:
 
     def add_hook(self, hook : Callable):
         args = ModuleInspector.get_args(hook, exclude_self=True)
-        if len(args) > 0:
-            raise ValueError(f'Hook function \"{hook.__name__}\" must not have any arguments')
+        non_default_args = [arg for arg in args if not arg.has_default_val()]
+        if len(non_default_args) > 0:
+            raise ValueError(f'Hook function \"{hook.__name__}\" must not have any non-default arguments')
         self.hook = hook
 
     def execute(self, tool_call: ToolCall) -> ToolOutput:
