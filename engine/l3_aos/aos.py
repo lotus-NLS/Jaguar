@@ -8,12 +8,13 @@ from engine.l3_aos.workspaces.terminal import Terminal
 # ---------------------------------------------------------
 
 class AOS:
-    def __init__(self, workspaces : list[Workspace]):
+    def __init__(self, workspaces : list[Workspace], cautious_mode : bool = False):
         super().__init__()
         self.workspaces : list[Workspace] = []
         for ws in workspaces:
             self.add_workspace(ws)
         self.update_tool : ActionUpdate = ActionUpdate()
+        self.cautious_mode : bool = False
 
     def add_workspace(self, ws : Workspace):
         self.workspaces.append(ws)
