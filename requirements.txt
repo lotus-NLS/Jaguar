@@ -7,5 +7,5 @@ openai
 json_repair
 pillow
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
-pyscrape @ git+ssh://git@github.com/lotus-NLS/pyscrape.git
+pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape.git
 libtmux
