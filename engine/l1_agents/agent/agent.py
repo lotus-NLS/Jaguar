@@ -98,9 +98,10 @@ class Agent(Loggable):
                 tool = tools_map[call.name]
                 outputs += [tool.execute(tool_call=call)]
             except KeyError:
-                self.log(f'No tool found with name {call.name}', level=LogLevel.ERROR)
+                self.error(f'No tool found with name {call.name}')
                 outputs += [ToolOutput.not_found(name=call.name)]
             except Exception as e:
+                self.error(f'Error in executing tool {call.name}: {e.__repr__()}')
                 outputs += [ToolOutput.failed(name=call.name, reason=e)]
 
         for out in outputs:
