@@ -6,7 +6,6 @@ flask
 openai
 json_repair
 pillow
-beautifulsoup4
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
-pyscrape @ git+ssh://git@github.com/Somerandomguy10111/pyscrape.git
+pyscrape @ git+ssh://git@github.com/lotus-NLS/pyscrape.git
 libtmux
