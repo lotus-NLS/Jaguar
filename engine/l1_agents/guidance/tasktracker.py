@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from typing import Optional
+
 from PIL.Image import Image as PILImage
 
-from engine.l3_aos.tools import Tool
 from engine.l3_aos.workspaces import Workspace
+
 
 # -------------------------------------------------------
 

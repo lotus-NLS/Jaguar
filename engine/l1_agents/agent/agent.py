@@ -93,7 +93,7 @@ class Agent(Loggable):
         return pipe
 
     def act(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
-        outputs = self.aos.register(tool_calls=tool_calls)
+        outputs = self.aos.execute(tool_calls=tool_calls)
         for out in outputs:
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)

@@ -15,21 +15,6 @@ class AOS(Loggable):
         for ws in workspaces:
             self.add_workspace(ws)
         self.cautious_mode : bool = cautious_mode
-        self.held_tool_calls : list[ToolCall] = []
-
-    def register(self,  tool_calls : list[ToolCall]) -> list[ToolOutput]:
-        if not self.cautious_mode:
-            outputs = self.execute(tool_calls=tool_calls)
-        else:
-            self.held_tool_calls += tool_calls
-            outputs = []
-
-        return outputs
-
-    def execute_held(self) -> list[ToolOutput]:
-        outputs = self.execute(tool_calls=self.held_tool_calls)
-        self.held_tool_calls = []
-        return outputs
 
     def execute(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
         outputs: list[ToolOutput] = []
