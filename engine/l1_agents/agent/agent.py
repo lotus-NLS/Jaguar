@@ -39,7 +39,7 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        require_update = InfOptions.require_call(tool_name=self.task_tracker.update_tool.get_name())
+        require_update = InfOptions.require_call(tool_name=self.task_tracker.headline)
         report_frequency = 4
 
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
@@ -76,7 +76,9 @@ class Agent(Loggable):
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
 
-        return Step(text_pipe=pipe, ckpt_label=self.task_tracker.get_steplabel(), generation_ctx=context)
+        headline = self.task_tracker.headline
+        self.task_tracker.headline = ''
+        return Step(text_pipe=pipe, ckpt_label=headline, generation_ctx=context)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
