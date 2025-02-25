@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 from PIL.Image import Image as PILImage
+
+from engine.l3_aos.tools import Tool
 from engine.l3_aos.workspaces import Workspace
 
 # -------------------------------------------------------
@@ -11,6 +13,13 @@ class TaskTracker(Workspace):
     def __init__(self):
         super().__init__()
         self.root : Optional[Task] = None
+        self.update_tool : Tool = self.create_action(mthd=self.update)
+
+    def update(self, action_headline : str):
+        """Allows you to report the actions youve taken since your last call of this update tool.
+        Collectively these updates generate a timeline of your actions.
+        Focus on your actions rather than the results. The results will be discussed in a report later on"""
+        pass
 
     def add_task(self, parent_task_id : str, msg : str):
         """Adds a subtask to parent task with [parent_task_id]"""
@@ -29,6 +38,14 @@ class TaskTracker(Workspace):
     def fail_task(self, task_id : str):
         """Marks [task_id] as failed, unnecessary or discarded"""
         self.root.get_descendant(task_id).fail()
+
+    def get_steplabel(self) -> str:
+        headline_arg = self.update_tool.get_args()[0]
+        value = headline_arg.get_value()
+        headline_arg.input = None
+        return value
+
+
 
     # -------------------------------
     # Generics

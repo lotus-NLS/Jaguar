@@ -26,5 +26,3 @@ jobs:
     steps:
       - uses: Somerandomguy10111/devops/actions/basepy@main
       - uses: Somerandomguy10111/devops/actions/deptry@main
-        with:
-          skip_install: "true"

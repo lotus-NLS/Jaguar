@@ -36,7 +36,7 @@ class Context(JsonDataclass):
         return cls(entries=[entry])
 
     @classmethod
-    def from_aos(cls, aos : AOS, with_update : bool):
+    def from_aos(cls, aos : AOS):
         entries = []
         for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
             try:
@@ -45,7 +45,7 @@ class Context(JsonDataclass):
             except BaseException as e:
                 logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
 
-        tools = aos.get_tools(with_update=with_update)
+        tools = aos.get_tools()
         docs = [tool.get_doc() for tool in tools]
 
         return cls(entries=entries, docs=docs)

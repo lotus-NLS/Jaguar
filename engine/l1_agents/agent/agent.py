@@ -7,13 +7,14 @@ from openai import APITimeoutError, APIError
 from engine.l1_agents.guidance import Identity
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfOptions
-from engine.l2_models.language import Entry, Context
 from engine.l2_models.generation.step import TextPipe, Step
+from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall
 from engine.l3_aos.workspaces import Workspace
-from holytools.logging import LogLevel, Loggable
+from holytools.logging import Loggable
+
 
 # ---------------------------------------------------------
 
@@ -38,7 +39,7 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        require_update = InfOptions.require_call(tool_name=self.aos.update_tool.get_name())
+        require_update = InfOptions.require_call(tool_name=self.task_tracker.update_tool.get_name())
         report_frequency = 4
 
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
@@ -75,7 +76,7 @@ class Agent(Loggable):
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
 
-        return Step(text_pipe=pipe, ckpt_label=self.aos.get_steplabel(), generation_ctx=context)
+        return Step(text_pipe=pipe, ckpt_label=self.task_tracker.get_steplabel(), generation_ctx=context)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
@@ -92,7 +93,7 @@ class Agent(Loggable):
     def act(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
         outputs : list[ToolOutput] = []
 
-        tools_map = {t.get_name(): t for t in self.aos.get_tools(with_update=self.is_working())}
+        tools_map = {t.get_name(): t for t in self.aos.get_tools()}
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
@@ -126,7 +127,7 @@ class Agent(Loggable):
 
     def get_context(self) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos, with_update=self.is_working())
+        context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
         msg = (f'You are currently in work mode and cannot converse with the user. '
