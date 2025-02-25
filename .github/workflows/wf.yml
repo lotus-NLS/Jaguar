@@ -15,6 +15,7 @@ jobs:
           GIT_USER : Somerandomguy10111
           GIT_PASS : ${{ secrets.PYSCRAPE_PAT }}
       - uses: Somerandomguy10111/devops/actions/basepy@main
+      - uses: Somerandomguy10111/devops/actions/chrome@main
       - uses: Somerandomguy10111/devops/actions/toxtests@main
         env:
           OPENAI_API_KEY: ${{ secrets.DEV_OPENAI_API_KEY }}
