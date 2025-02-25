@@ -15,7 +15,7 @@ class LotusEngine(Loggable):
         super().__init__()
         self.dev_endpoint: Endpoint = Endpoint.make_localhost(port=5000, path=f'/update')
         self.session_uuid: str = self.generate_session_uuid()
-        self._creds = LotusCredentials.from_file()
+        self._creds : LotusCredentials = LotusCredentials.from_file()
         self._agent = Agent(aos=self._get_default_aos(), model=self._get_default_model())
         self._evalutor : Evaluator = Evaluator(model=self._get_default_model())
 
@@ -61,13 +61,13 @@ class LotusEngine(Loggable):
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
     def _get_default_aos(self) -> AOS:
-        google_api_key = self._creds.get_google_apikey()
-        searchengine_id = self._creds.get_searchengine_id()
+        google_api_key = self._creds.google_api_key
+        searchengine_id = self._creds.search_engine_id
         browser = Browser(google_api_key=google_api_key, searchengine_id=searchengine_id)
         terminal = Terminal()
-        return AOS(workspaces=[terminal, browser])
+        return AOS(workspaces=[terminal, browser], cautious_mode=True)
 
     def _get_default_model(self):
-        return OpenAIModel.default_model(api_key=self._creds.get_openai_apikey())
+        return OpenAIModel.default_model(api_key=self._creds.openai_api_key)
 
 

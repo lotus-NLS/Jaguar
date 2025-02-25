@@ -1,3 +1,4 @@
+from __future__ import annotations
 import dataclasses
 from dataclasses import dataclass
 
@@ -25,7 +26,7 @@ class LotusCredentials(Loggable):
         self.info(msg=f'Completed setup for all Settings')
 
     @classmethod
-    def from_file(cls):
+    def from_file(cls) -> LotusCredentials:
         configs = FileConfigs.credentials()
         keys = set([f.name for f in dataclasses.fields(LotusCredentials) if f.init ])
         keys = [k for k in keys if not "enable_validation" in k]

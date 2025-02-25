@@ -15,12 +15,6 @@ class TestLotusCredentials(Unittest):
     # --------------------------------------------
     # tests
 
-    def test_cred_exist(self):
-        self.credentials.get_google_apikey()
-        self.credentials.get_openai_apikey()
-        self.credentials.get_searchengine_id()
-
-
     def test_creds_work(self):
         self.credentials.validate_openai()
         self.credentials.validate_search_engine()

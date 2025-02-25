@@ -13,8 +13,8 @@ from holytools.devtools import Unittest
 class NLU(Unittest):
     @classmethod
     def setUpClass(cls):
-        configs = LotusCredentials.from_file()
-        cls.model : LLM = OpenAIModel.default_model(api_key=configs.get_openai_apikey())
+        configs : LotusCredentials = LotusCredentials.from_file()
+        cls.model : LLM = OpenAIModel.default_model(api_key=configs.openai_api_key)
         cls.task_provider : TaskProvider = TaskProvider()
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
