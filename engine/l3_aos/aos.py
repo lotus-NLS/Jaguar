@@ -19,16 +19,26 @@ class AOS(Loggable):
     def execute(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
         outputs: list[ToolOutput] = []
         tools_map = {t.get_name(): t for t in self.get_tools()}
+
+        if self.cautious_mode:
+            tool_calls_report = [f'{call.name} with args {call.json_str}' for call in tool_calls]
+            notice_str = f'Press enter to continue with {len(tool_calls)} tool calls:'
+            for r in tool_calls_report:
+                notice_str += f'\n{r}'
+            user_input = input(notice_str)
+            if user_input.lower() != 'y':
+                return [ToolOutput.failed(reason='Execution was denied')]
+
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
                 outputs += [tool.execute(tool_call=call)]
-            except KeyError:
+            except KeyError as e:
                 self.error(f'No tool found with name {call.name}')
-                outputs += [ToolOutput.not_found(name=call.name)]
+                outputs += [ToolOutput.exception(name=call.name, reason=e)]
             except Exception as e:
-                self.error(f'Error in executing tool {call.name}: {e.__repr__()}')
-                outputs += [ToolOutput.failed(name=call.name, reason=e)]
+                self.error(f'Error while executing tool {call.name}: {e.__repr__()}')
+                outputs += [ToolOutput.exception(name=call.name, reason=e)]
         return outputs
 
     def add_workspace(self, ws : Workspace):

@@ -20,16 +20,16 @@ class ToolOutput(Loggable):
         self.progress_msgs : list[ProgressMsg] = []
 
     @classmethod
-    def not_found(cls, name : str):
+    def failed(cls, reason : str):
         output = cls(tool_name='None')
-        output.update(msg=f'Tool \"{name}\" not found', progress_type=ProgressUpdate.FAILED)
+        output.update(msg=f'Failed: {reason}', progress_type=ProgressUpdate.FAILED)
         return output
 
     @classmethod
-    def failed(cls, name : str, reason : Optional[BaseException] = None):
+    def exception(cls, name : str, reason : Optional[BaseException] = None):
         output = cls(tool_name=name)
         conditional_reason = f': {reason}' if reason else ''
-        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=ProgressUpdate.FAILED)
+        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=ProgressUpdate.EXCEPTION)
         return output
 
     def update(self, msg : str, progress_type : ProgressUpdate):
