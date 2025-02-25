@@ -11,16 +11,17 @@ from pyscrape.browse import BrowserEmulator
 
 class Browser(Workspace):
     """A browser allowing you to search google and browse sites"""
-    def __init__(self, google_api_key : str, searchengine_id : str):
+    def __init__(self, google_api_key : str, searchengine_id : str, headless : bool = False):
         super().__init__()
         self.search_engine : SearchEngine = SearchEngine(google_api_key=google_api_key, searchengine_id=searchengine_id)
         self.emulator : Optional[BrowserEmulator] = None
+        self.headless : bool = headless
 
         self.search_context : str = ''
 
     def open(self, url: str):
         """Starts a text based browser and opens the given URL. Use URL=search://{search_term} to perform a google search instead"""
-        self.emulator = BrowserEmulator(headless=False)
+        self.emulator = BrowserEmulator(headless=self.headless)
         self.visit(url=url)
 
     def close(self):

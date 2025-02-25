@@ -1,3 +1,5 @@
+import os
+
 from engine.l3_aos import Browser
 from tests.credtest import CredentialDependentTest
 
@@ -7,7 +9,9 @@ class BrowserTest(CredentialDependentTest):
     def setUp(self):
         self.beaver_test = 'https://en.wikipedia.org/wiki/Beaver'
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'
-        self.browser : Browser = Browser(google_api_key=self.google_apikey, searchengine_id=self.searchengine_id)
+        self.browser : Browser = Browser(google_api_key=self.google_apikey,
+                                         searchengine_id=self.searchengine_id,
+                                         headless=not self.has_graphic_capabilities())
 
     def test_visit(self):
         self.browser.open(url=self.beaver_test)
@@ -28,6 +32,13 @@ class BrowserTest(CredentialDependentTest):
         self.assertIn('Search engine', browser_context)
         self.assertTrue(f'https://en.wikipedia.org/wiki/Beaver' in browser_context)
 
+    @staticmethod
+    def has_graphic_capabilities() -> bool:
+        try:
+            _ = os.environ['DISPLAY']
+            return True
+        except:
+            return False
 
     def tearDown(self):
         self.browser.emulator.quit()
