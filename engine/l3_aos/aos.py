@@ -22,9 +22,10 @@ class AOS(Loggable):
 
         if self.cautious_mode:
             tool_calls_report = [f'{call.name} with args {call.json_str}' for call in tool_calls]
-            notice_str = f'Press enter to continue with {len(tool_calls)} tool calls:'
+            notice_str = f'Following tool call(s) requests permission:'
             for r in tool_calls_report:
-                notice_str += f'\n{r}'
+                notice_str += f'\n- {r}'
+            notice_str += f'\n- Allow execution? (y/n)'
             user_input = input(notice_str)
             if user_input.lower() != 'y':
                 return [ToolOutput.failed(reason='Execution was denied')]
