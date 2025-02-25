@@ -1,19 +1,50 @@
 from __future__ import annotations
 
-from engine.l3_aos.tools import Tool
+from engine.l3_aos.tools import Tool, ToolCall, ToolOutput
 from engine.l3_aos.workspaces import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
+from holytools.logging import Loggable
 
 
 # ---------------------------------------------------------
 
-class AOS:
+class AOS(Loggable):
     def __init__(self, workspaces : list[Workspace], cautious_mode : bool = False):
         super().__init__()
         self.workspaces : list[Workspace] = []
         for ws in workspaces:
             self.add_workspace(ws)
         self.cautious_mode : bool = cautious_mode
+        self.held_tool_calls : list[ToolCall] = []
+
+    def register(self,  tool_calls : list[ToolCall]) -> list[ToolOutput]:
+        if not self.cautious_mode:
+            outputs = self.execute(tool_calls=tool_calls)
+        else:
+            self.held_tool_calls += tool_calls
+            outputs = []
+
+        return outputs
+
+    def execute_held(self) -> list[ToolOutput]:
+        outputs = self.execute(tool_calls=self.held_tool_calls)
+        self.held_tool_calls = []
+        return outputs
+
+    def execute(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
+        outputs: list[ToolOutput] = []
+        tools_map = {t.get_name(): t for t in self.get_tools()}
+        for call in tool_calls:
+            try:
+                tool = tools_map[call.name]
+                outputs += [tool.execute(tool_call=call)]
+            except KeyError:
+                self.error(f'No tool found with name {call.name}')
+                outputs += [ToolOutput.not_found(name=call.name)]
+            except Exception as e:
+                self.error(f'Error in executing tool {call.name}: {e.__repr__()}')
+                outputs += [ToolOutput.failed(name=call.name, reason=e)]
+        return outputs
 
     def add_workspace(self, ws : Workspace):
         self.workspaces.append(ws)

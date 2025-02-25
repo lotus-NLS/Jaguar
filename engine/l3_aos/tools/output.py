@@ -20,6 +20,12 @@ class ToolOutput(Loggable):
         self.progress_msgs : list[ProgressMsg] = []
 
     @classmethod
+    def held(cls):
+        output = cls(tool_name='None')
+        output.update(msg='Tool call held', progress_type=ProgressUpdate.HELD)
+        return output
+
+    @classmethod
     def not_found(cls, name : str):
         output = cls(tool_name='None')
         output.update(msg=f'Tool \"{name}\" not found', progress_type=ProgressUpdate.FAILED)
@@ -64,6 +70,7 @@ class ToolOutput(Loggable):
 class ProgressUpdate(Enum):
     START = 'START'
     INFO = 'INFO'
+    HELD = 'HELD'
     EXCEPTION = 'EXCEPTION'
     FAILED = 'FAILED'
     FINISH = 'FINISH'

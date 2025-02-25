@@ -66,7 +66,7 @@ class Agent(Loggable):
         try:
             generation = self.model.get_generation(context=context, options=inf_options)
             pipe = self.write(generation=generation)
-            self.act(tool_calls=generation.get_tool_calls())
+            outputs = self.act(tool_calls=generation.get_tool_calls())
         except APITimeoutError:
             error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
@@ -78,7 +78,7 @@ class Agent(Loggable):
 
         headline = self.task_tracker.headline
         self.task_tracker.headline = ''
-        return Step(text_pipe=pipe, ckpt_label=headline, generation_ctx=context)
+        return Step(text_pipe=pipe, ckpt_label=headline, generation_ctx=context, outputs=outputs)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
@@ -93,24 +93,10 @@ class Agent(Loggable):
         return pipe
 
     def act(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
-        outputs : list[ToolOutput] = []
-
-        tools_map = {t.get_name(): t for t in self.aos.get_tools()}
-        for call in tool_calls:
-            try:
-                tool = tools_map[call.name]
-                outputs += [tool.execute(tool_call=call)]
-            except KeyError:
-                self.error(f'No tool found with name {call.name}')
-                outputs += [ToolOutput.not_found(name=call.name)]
-            except Exception as e:
-                self.error(f'Error in executing tool {call.name}: {e.__repr__()}')
-                outputs += [ToolOutput.failed(name=call.name, reason=e)]
-
+        outputs = self.aos.register(tool_calls=tool_calls)
         for out in outputs:
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
-
         return outputs
 
     # ---------------------------------------------------
