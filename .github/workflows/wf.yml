@@ -9,6 +9,11 @@ jobs:
   ToxTests:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Git credentials
+        run: echo "machine github.com login $GIT_USER password $GIT_PASS" > ~/.netrc
+        env:
+          GIT_USER : Somerandomguy10111
+          GIT_PASS : ${{ secrets.PYSCRAPE_PAT }}
       - uses: Somerandomguy10111/devops/actions/basepy@main
       - uses: Somerandomguy10111/devops/actions/toxtests@main
         env:
