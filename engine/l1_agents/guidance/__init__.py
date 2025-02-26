@@ -1,2 +1,2 @@
-from .identity import Identity, Core
+from .core import Core, Identity
 from .tasktracker import Task, TaskTracker

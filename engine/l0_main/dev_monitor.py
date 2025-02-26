@@ -3,7 +3,7 @@ from typing import Optional
 
 from flask import Flask, request, jsonify
 
-from engine.l1_agents import Identity
+from engine.l1_agents import Core
 from engine.l2_models.generation.step import StepState
 from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
@@ -62,7 +62,7 @@ class DevMonitor:
 
     @staticmethod
     def get_example_context() -> Context:
-        system_entry = Identity.GOTO().as_system_entry()
+        system_entry = Core.GOTO().as_system_entry()
         hello_entry = Entry.user(msg=f'Hello there')
         basic_context = Context(entries=[system_entry, hello_entry])
 

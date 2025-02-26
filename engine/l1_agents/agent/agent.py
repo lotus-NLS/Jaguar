@@ -4,7 +4,7 @@ from typing import Iterator
 
 from openai import APITimeoutError, APIError
 
-from engine.l1_agents.guidance import Identity
+from engine.l1_agents.guidance import Core
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfOptions
 from engine.l2_models.generation.step import TextPipe, Step
@@ -19,12 +19,12 @@ from holytools.logging import Loggable
 # ---------------------------------------------------------
 
 class Agent(Loggable):
-    def __init__(self, model : LLM, aos : AOS, identity : Identity = Identity.GOTO()):
+    def __init__(self, model : LLM, aos : AOS, core : Core = Core.GOTO()):
         super().__init__()
         self.model: LLM = model
         self.task_tracker : TaskTracker = TaskTracker()
         self.aos : AOS = aos
-        self.identity : Identity = identity
+        self.identity : Core = core
         self.memory: list[Entry] = []
 
         self.aos.add_workspace(ws=self.task_tracker)
@@ -52,9 +52,7 @@ class Agent(Loggable):
         if self.is_working():
             self.task_tracker.close_action.do()
 
-        self.update_memory(entry=Entry.system(msg=f'Now leaving work mode. Please review the objective and provide an execute summary of your results '
-                                                  f'with regard to this objective. Keep it to 60 words or less, so about 3-4 sentences.'
-                                                  f'This report will be used to evaluate the success or failure of the objective.'))
+        self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
         yield self.handle(inf_options=InfOptions.text_only(max_output_tokens=100))
 
     # ---------------------------------------------------
@@ -118,11 +116,8 @@ class Agent(Loggable):
         context += Context.from_aos(aos=self.aos)
         context += Context(entries=self.memory)
 
-        msg = (f'You are currently in work mode and cannot converse with the user. '
-              f'Your current tasks are outlined in the {TaskTracker.__name__} workspace. '
-              'Upon completing these tasks or closing the workspace you will automatically return to conversation mode')
         if self.is_working():
-            work_entry = Entry.system(msg=msg)
+            work_entry = Entry.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
         return context

@@ -8,20 +8,20 @@ from engine.l2_models.language import Entry
 # ----------------------------------------------------
 
 
-class Identity:
-    def __init__(self, core : Core):
-        self.core : Core = core
+class Core:
+    def __init__(self, identity : Identity):
+        self.identity : Identity = identity
         self.os_information : str = self.get_os_info()
 
     @classmethod
     def GOTO(cls):
-        return cls(core=Core.GOTO)
+        return cls(identity=Identity.GOTO)
 
     def as_system_entry(self) -> Entry:
         return Entry.system(msg=self.as_str())
 
     def as_str(self) -> str:
-        msg = f'{self.core.value}\n'
+        msg = f'{self.identity.value}\n'
         msg += f'You operate on the OS: {self.os_information}'
         return msg
 
@@ -45,7 +45,7 @@ class Identity:
         return detail
 
 
-class Core(Enum):
+class Identity(Enum):
     GOTO = ("You are 'GOTO' a software development and system management agent."
             "You can operate either in conversation mode or in work mode which decouples you from the user"
             "and allows you to freely perform tasks and take as many steps as you need to work on your current objectives."

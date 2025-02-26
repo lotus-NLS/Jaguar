@@ -15,6 +15,16 @@ class TaskTracker(Workspace):
         super().__init__()
         self.root : Optional[Task] = None
         self.headline : Optional[str] = None
+        self.report_query : str = (
+            f'Now leaving work mode. Please review the objective and provide an execute summary of your results '
+            f'with regard to this objective. Keep it to 60 words or less, so about 3-4 sentences.'
+            f'This report will be used to evaluate the success or failure of the objective.')
+
+        self.work_notice : str = (f'You are currently in work mode and cannot converse with the user. '
+                       f'Your current tasks are outlined in the {self.__class__.__name__} workspace. '
+                       f'Upon completing these tasks or closing the workspace you will automatically'
+                       f' return to conversation mode')
+
 
     def update(self, action_headline : str):
         """Allows you to report the actions youve taken since your last call of this update tool.
