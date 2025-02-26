@@ -19,7 +19,7 @@ class CatTask(NLU):
         print(f'Agent: {answer}')
 
         property_query = 'The #msg provides information about the GPU model'
-        evaluation = self.evaluateProperty(msg=answer, prop=property_query)
+        evaluation = self.evaluateProperty(msg=answer.writing, prop=property_query)
         self.assertTrue(evaluation == True)
 
 

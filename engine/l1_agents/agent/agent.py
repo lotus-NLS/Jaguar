@@ -45,9 +45,13 @@ class Agent(Loggable):
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfOptions()
-            yield self.handle(inf_options=inf_options)
+            step = self.handle(inf_options=inf_options)
             if not self.is_working():
+                step.is_final = True
+                yield step
                 break
+            else:
+                yield step
 
         if self.is_working():
             self.task_tracker.close_action.do()

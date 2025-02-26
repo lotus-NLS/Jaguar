@@ -1,20 +1,26 @@
 import time
 import uuid
+from dataclasses import dataclass
 
 from engine.l1_agents import Agent, Evaluator, Task
 from engine.l2_models import OpenAIModel, Step, StepState
 from engine.l3_aos import AOS, Terminal, Browser
+from holytools.abstract import JsonDataclass
 from holytools.logging import Loggable
 from holytools.network import Endpoint
 from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
+from ..l2_models.generation.step import Report
+
 
 # ---------------------------------------------------------
 
 class LotusEngine(Loggable):
     def __init__(self):
         super().__init__()
-        self.dev_endpoint: Endpoint = DevMonitor.localhost().step_endpoint
+        self.step_endpoint: Endpoint = DevMonitor.localhost().step_endpoint
+        self.report_endpoint : Endpoint = DevMonitor.localhost().report_endpoint
+
         self.session_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
         self._agent = Agent(aos=self._get_default_aos(), model=self._get_default_model())
@@ -23,14 +29,16 @@ class LotusEngine(Loggable):
     def work(self, task : Task, max_steps : int, dos : str = ''):
         states : list[StepState] = []
         for s in self._agent.work(task=task, max_steps=max_steps):
-            states.append(self.observe_step(step=s))
+            states += [self.observe_step(step=s)]
         print(f'Finished work mode after {len(states)} steps')
 
         if dos:
             report = states[-1].writing
             if report is None:
                 raise ValueError('No report generated')
-            self._evalutor.evaluateProperty(msg=report, prop=dos)
+            is_successful = self._evalutor.evaluateProperty(msg=report, prop=dos)
+            report = Report(summary=report, is_successful=is_successful, session_uuid=self.session_uuid)
+            self.report_endpoint.post(msg=report.to_str(), secure=False)
 
     def converse(self, msg : str) -> StepState:
         step = self._agent.converse(msg=msg)
@@ -48,9 +56,9 @@ class LotusEngine(Loggable):
         step_state = step.get_state(uuid=self.session_uuid, writing=writing)
 
         try:
-            self.dev_endpoint.post(msg=step_state.to_str(), secure=False)
+            self.step_endpoint.post(msg=step_state.to_str(), secure=False)
         except:
-            self.warning(f'Context update endpoint {self.dev_endpoint.get_url(protocol=f"https")} unresponsive')
+            self.warning(f'Context update endpoint {self.step_endpoint.get_url(protocol=f"https")} unresponsive')
 
         return step_state
 
@@ -70,5 +78,4 @@ class LotusEngine(Loggable):
 
     def _get_default_model(self):
         return OpenAIModel.default_model(api_key=self._creds.openai_api_key)
-
 

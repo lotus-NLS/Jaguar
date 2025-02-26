@@ -4,7 +4,7 @@ from typing import Optional
 from flask import Flask, request, jsonify
 
 from engine.l1_agents import Core
-from engine.l2_models.generation.step import StepState
+from engine.l2_models.generation.step import StepState, Report
 from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
 from holytools.network import Endpoint
@@ -23,15 +23,15 @@ class DevMonitor:
         self.checkpoints : dict[str, list[str]] = {}
         self.latest_session_uuid : Optional[str] = None
         self.step_endpoint : Endpoint = self.make_endpopint(path=f'/step')
+        self.report_endpoint : Endpoint = self.make_endpopint(path='/report')
 
         @self.app.route(f'/context')
         def get_context_view() -> str:
             return self.get_html()
 
         @self.app.route(self.step_endpoint.path, methods=['POST'])
-        def step_update():
-            data = request.get_data()
-            s = data.decode()
+        def log_update():
+            s = request.get_data().decode()
             step_state = StepState.from_str(json_str=s)
             self.latest_session_uuid = step_state.session_uuid
             self.context = step_state.generation_ctx
@@ -39,6 +39,13 @@ class DevMonitor:
                 self.checkpoints += [step_state.cpkt_label]
 
             return jsonify({"received": s}), 200
+
+        @self.app.route(self.report_endpoint.path, methods=['POST'])
+        def log_report():
+            data = request.get_data().decode()
+            report = Report.from_str(json_str=data)
+            icon = '✓' if report.is_successful else '✗'
+            self.checkpoints[report.session_uuid] += [icon]
 
     @classmethod
     def localhost(cls, port : int = 5000):
@@ -74,6 +81,8 @@ class DevMonitor:
         aos = AOS.terminal_only()
         aos_context = Context.from_aos(aos=aos)
         return aos_context + basic_context
+
+
 
 
 if __name__ == "__main__":
