@@ -23,7 +23,7 @@ class LotusEngine(Loggable):
     def work(self, task : Task, max_steps : int, dos : str = ''):
         states : list[StepState] = []
         for s in self._agent.work(task=task, max_steps=max_steps):
-            states += [self.observe_step(step=s)]
+            states.append(self.observe_step(step=s))
         print(f'Finished work mode after {len(states)} steps')
 
         if dos:
@@ -32,11 +32,11 @@ class LotusEngine(Loggable):
                 raise ValueError('No report generated')
             self._evalutor.evaluateProperty(msg=report, prop=dos)
 
-    def converse(self, msg : str) -> str:
+    def converse(self, msg : str) -> StepState:
         step = self._agent.converse(msg=msg)
         return self.observe_step(step=step)
 
-    def observe_step(self, step : Step, print_chunks : bool = True) -> str:
+    def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:
         response_text = ''
         for text in step.text_pipe.get_text_stream():
             response_text += text
@@ -52,7 +52,7 @@ class LotusEngine(Loggable):
         except:
             self.warning(f'Context update endpoint {self.dev_endpoint.get_url(protocol=f"https")} unresponsive')
 
-        return response_text
+        return step_state
 
     # ---------------------------------------------------------------
     # build
