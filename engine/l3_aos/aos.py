@@ -20,7 +20,7 @@ class AOS(Loggable):
         outputs: list[ToolOutput] = []
         tools_map = {t.get_name(): t for t in self.get_tools()}
 
-        if self.cautious_mode:
+        if self.cautious_mode and len(tool_calls) > 0:
             tool_calls_report = [f'{call.name} with args {call.json_str}' for call in tool_calls]
             notice_str = f'Following tool call(s) requests permission:'
             for r in tool_calls_report:

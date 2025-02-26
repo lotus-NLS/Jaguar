@@ -7,6 +7,7 @@ from engine.l1_agents import Core
 from engine.l2_models.generation.step import StepState
 from engine.l2_models.language import Context, Entry
 from engine.l3_aos import AOS
+from holytools.network import Endpoint
 from holytools.userIO import MessageFormatter
 
 
@@ -21,13 +22,14 @@ class DevMonitor:
         self.context : Context = self.get_example_context()
         self.checkpoints : dict[str, list[str]] = {}
         self.latest_session_uuid : Optional[str] = None
+        self.step_endpoint : Endpoint = self.make_endpopint(path=f'/step')
 
         @self.app.route(f'/context')
         def get_context_view() -> str:
             return self.get_html()
 
-        @self.app.route('/update', methods=['POST'])
-        def update():
+        @self.app.route(self.step_endpoint.path, methods=['POST'])
+        def step_update():
             data = request.get_data()
             s = data.decode()
             step_state = StepState.from_str(json_str=s)
@@ -43,6 +45,15 @@ class DevMonitor:
         return cls(ip='127.0.0.1', port=port)
 
 
+    # -----------------------------------------------------
+
+    def make_endpopint(self, path : str) -> Endpoint:
+        return Endpoint(ip=self.ip, port=self.port, path=path)
+
+    def serve(self):
+        # logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
+        self.app.run(host=self.ip, port=self.port)
+
     def get_html(self) -> str:
         checkpoints = self.checkpoints.get(self.latest_session_uuid, None)
         ckpt_str = MessageFormatter.get_boxed_train(messages=checkpoints) if checkpoints else ''
@@ -53,12 +64,6 @@ class DevMonitor:
         html_code = escaped_str.replace("\n", "<br>")
         html_code = f'<pre>{html_code}</pre>'
         return html_code
-
-    # -----------------------------------------------------
-
-    def serve(self):
-        # logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-        self.app.run(host=self.ip, port=self.port)
 
     @staticmethod
     def get_example_context() -> Context:

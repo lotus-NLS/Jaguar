@@ -6,6 +6,7 @@ from engine.l2_models import OpenAIModel, Step, StepState
 from engine.l3_aos import AOS, Terminal, Browser
 from holytools.logging import Loggable
 from holytools.network import Endpoint
+from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
 
 # ---------------------------------------------------------
@@ -13,7 +14,7 @@ from .settings import LotusCredentials
 class LotusEngine(Loggable):
     def __init__(self):
         super().__init__()
-        self.dev_endpoint: Endpoint = Endpoint.make_localhost(port=5000, path=f'/update')
+        self.dev_endpoint: Endpoint = DevMonitor.localhost().step_endpoint
         self.session_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
         self._agent = Agent(aos=self._get_default_aos(), model=self._get_default_model())

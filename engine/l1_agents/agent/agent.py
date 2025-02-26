@@ -105,7 +105,6 @@ class Agent(Loggable):
             entry = Entry.from_workspace(ws=frozen_ws)
             entry.add(msg=f'Closed workspace {frozen_ws.get_name()} with following final state:', at_start=True)
             self.update_memory(entry=entry)
-            return frozen_ws
         return freeze_ws
 
     def update_memory(self, entry : Entry):
