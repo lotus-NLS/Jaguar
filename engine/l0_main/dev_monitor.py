@@ -33,10 +33,13 @@ class DevMonitor:
         def log_update():
             s = request.get_data().decode()
             step_state = StepState.from_str(json_str=s)
-            self.latest_session_uuid = step_state.session_uuid
+            session_uuid = step_state.session_uuid
+            self.latest_session_uuid = session_uuid
             self.context = step_state.generation_ctx
             if step_state.ckpt_label:
-                self.checkpoints[step_state.session_uuid].append(step_state.ckpt_label)
+                if not session_uuid in self.checkpoints:
+                    self.checkpoints[session_uuid] = []
+                self.checkpoints[session_uuid].append(step_state.ckpt_label)
 
             return jsonify({"received": s}), 200
 
