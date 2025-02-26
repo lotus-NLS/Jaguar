@@ -25,7 +25,7 @@ class Step:
 
     def get_state(self, uuid : str, writing : Optional[str], is_final : bool = False) -> StepState:
         return StepState(generation_ctx=self.generation_ctx,
-                         cpkt_label=self.ckpt_label,
+                         ckpt_label=self.ckpt_label,
                          session_uuid=uuid, writing=writing,
                          is_final=is_final)
 
@@ -38,9 +38,14 @@ class Step:
 class StepState(JsonDataclass):
     generation_ctx : Context
     writing : str
-    cpkt_label : str
+    ckpt_label : str
     session_uuid : str
     is_final : bool = False
+
+    @classmethod
+    def from_str(cls, json_str: str) -> StepState:
+        return super().from_str(json_str=json_str)
+
 
 class TextPipe(Queue):
     stop_token = '⊥'

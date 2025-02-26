@@ -35,8 +35,8 @@ class DevMonitor:
             step_state = StepState.from_str(json_str=s)
             self.latest_session_uuid = step_state.session_uuid
             self.context = step_state.generation_ctx
-            if step_state.cpkt_label:
-                self.checkpoints += [step_state.cpkt_label]
+            if step_state.ckpt_label:
+                self.checkpoints[step_state.session_uuid].append(step_state.ckpt_label)
 
             return jsonify({"received": s}), 200
 
