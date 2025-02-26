@@ -39,7 +39,7 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        require_update = InfOptions.require_call(tool_name=self.task_tracker.headline)
+        require_update = InfOptions.require_call(tool_name=self.task_tracker.update_tool_name)
         report_frequency = 4
 
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))

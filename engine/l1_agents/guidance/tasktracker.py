@@ -4,6 +4,7 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
+from engine.l3_aos.tools import Tool
 from engine.l3_aos.workspaces import Workspace
 
 
@@ -24,6 +25,8 @@ class TaskTracker(Workspace):
                        f'Your current tasks are outlined in the {self.__class__.__name__} workspace. '
                        f'Upon completing these tasks or closing the workspace you will automatically'
                        f' return to conversation mode')
+        update_action : Tool = self.create_action(mthd=self.update)
+        self.update_tool_name : str = update_action.get_name()
 
 
     def update(self, action_headline : str):
