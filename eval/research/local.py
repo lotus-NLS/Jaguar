@@ -10,7 +10,8 @@ class HardwareTask(NLU):
 
     def test_gpu_research(self):
         task = self.task_provider.get_task('simplehardware')
-        self.engine.work(task=task, max_steps=10)
+        property_query = 'The #msg provides information about the GPU model'
+        self.engine.work(task=task, max_steps=10, dos=property_query)
         user_msg = f'What is the model of my GPU?'
         answer = self.engine.converse(msg=user_msg)
 
@@ -18,7 +19,7 @@ class HardwareTask(NLU):
         print(f'User: {user_msg}')
         print(f'Agent: {answer}')
 
-        property_query = 'The #msg provides information about the GPU model'
+
         evaluation = self.evaluateProperty(msg=answer.writing, prop=property_query)
         self.assertTrue(evaluation == True)
 

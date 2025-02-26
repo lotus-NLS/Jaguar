@@ -31,10 +31,15 @@ class LotusEngine(Loggable):
         print(f'Finished work mode after {len(states)} steps')
 
         if dos:
-            report = states[-1].writing
+            last_state = states[-1]
+            report = last_state.writing
             if report is None:
                 raise ValueError('No report generated')
-            is_successful = self._evalutor.evaluateProperty(msg=report, prop=dos)
+
+            if not last_state.is_final:
+                is_successful = False
+            else:
+                is_successful = self._evalutor.evaluateProperty(msg=report, prop=dos)
             report = Report(summary=report, is_successful=is_successful, session_uuid=self.session_uuid)
             self.report_endpoint.post(msg=report.to_str(), secure=False)
 
