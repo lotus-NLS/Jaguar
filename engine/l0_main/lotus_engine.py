@@ -1,11 +1,9 @@
 import time
 import uuid
-from dataclasses import dataclass
 
 from engine.l1_agents import Agent, Evaluator, Task
 from engine.l2_models import OpenAIModel, Step, StepState
 from engine.l3_aos import AOS, Terminal, Browser
-from holytools.abstract import JsonDataclass
 from holytools.logging import Loggable
 from holytools.network import Endpoint
 from .dev_monitor import DevMonitor
@@ -74,7 +72,7 @@ class LotusEngine(Loggable):
         searchengine_id = self._creds.search_engine_id
         browser = Browser(google_api_key=google_api_key, searchengine_id=searchengine_id)
         terminal = Terminal()
-        return AOS(workspaces=[terminal, browser], cautious_mode=True)
+        return AOS(workspaces=[terminal, browser])
 
     def _get_default_model(self):
         return OpenAIModel.default_model(api_key=self._creds.openai_api_key)
