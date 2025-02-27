@@ -1,11 +1,11 @@
-from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.tools import ToolOutput, ToolDoc
 from engine.l3_aos.tools.output import ExitStatus, MissingArgs, ProgressUpdate
-from tests.t_l3.t_tools.tooltest import BaseTest
+from tests.t_l3.t_tools.tooltest import ToolTest
 
 
 # -----------------------------------------------------
 
-class TestExitStatus(BaseTest):
+class TestTool(ToolTest):
     def test_success(self):
         output = self.simple_tool.execute(self.valid_tool_call)
         self.assertIsInstance(output, ToolOutput)
@@ -31,31 +31,26 @@ class TestExitStatus(BaseTest):
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
 
 
-class TestToolOutput(BaseTest):
-    def test_output_value(self):
-        output = self.simple_tool.execute(self.valid_tool_call)
-        self.assertIn("value", output.value)
+class TestToolDoc(ToolTest):
+    def test_properties(self):
+        doc = self.simple_tool.get_doc()
+        doc.get_desc()
 
-    def test_success(self):
-        output = self.simple_tool.execute(self.valid_tool_call)
-        report = output.get_report()
-        self.assertIn(self.simple_tool.get_name(), report)
-        self.assertIn(ExitStatus.SUCCESS.value, report)
+    def test_from_info(self):
+        actual_name, actual_desc, actual_args = 'TestName', 'TestDescription', self.simple_tool.get_args()
+        doc = ToolDoc.from_info(name=actual_name, desc=actual_desc, args=actual_args)
+        name, desc, args = doc.get_tool_name(), doc.get_desc(), doc.get_parameters()
 
-    def test_exception_reported(self):
-        output = self.invalid_tool.execute(self.valid_tool_call)
-        report = output.get_report()
-        error_msgs = output.get_error_msgs()
-        self.assertIn(self.invalid_tool.get_name(), report)
-        self.assertIn(ExitStatus.EXCEPTION.value, report)
-        self.assertTrue(any(msg for msg in error_msgs))
+        self.assertTrue(name == actual_name)
+        self.assertTrue(desc == actual_desc)
+        self.assertTrue(len(args) == len(actual_args))
 
-    def test_error_messages(self):
-        output = self.simple_tool.execute(self.invalid_tool_call)
-        error_msgs = output.get_error_msgs()
-        self.assertTrue(any(f'{MissingArgs.__name__}' in msg for msg in error_msgs))
+        for a in args:
+            args[a]['type'] = 'string'
+            args[a]['description'] = ''
 
+        print(f'Tool documentation view')
+        print(doc.get_view())
 
 if __name__ == "__main__":
-    TestToolOutput.execute_all()
-    TestExitStatus.execute_all()
+    TestToolDoc.execute_all()

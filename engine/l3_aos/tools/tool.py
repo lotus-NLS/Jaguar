@@ -92,7 +92,6 @@ class Tool:
         return cls.__name__
 
 
-
 class ToolDoc(dict):
     @classmethod
     def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
@@ -117,25 +116,25 @@ class ToolDoc(dict):
         return self.get_view() == other.get_view()
 
     def get_view(self) -> str:
-        func_name = self._get_tool_name()
-        quick_desc = self._get_desc()
+        func_name = self.get_tool_name()
+        quick_desc = self.get_desc()
         info_str = f'- {func_name}: {quick_desc}'
-        arg_dict = self._get_parameters()
+        arg_dict = self.get_parameters()
         for arg_name, arg_dict in arg_dict.items():
-            conditional_optional = f' (optional) ' if not arg_name in self._get_required() else ''
+            conditional_optional = f' (optional) ' if not arg_name in self.get_required() else ''
             arg_str = f'  - {arg_name}{conditional_optional}: {arg_dict["description"]}'
             info_str += f'\n{arg_str}'
 
         return info_str
 
-    def _get_tool_name(self) -> str:
+    def get_tool_name(self) -> str:
         return self['function']['name']
 
-    def _get_desc(self) -> str:
+    def get_desc(self) -> str:
         return self['function']['description']
 
-    def _get_parameters(self) -> dict:
+    def get_parameters(self) -> dict:
         return self['function']['parameters']['properties']
 
-    def _get_required(self) -> list[str]:
+    def get_required(self) -> list[str]:
         return self['function']['parameters']['required']

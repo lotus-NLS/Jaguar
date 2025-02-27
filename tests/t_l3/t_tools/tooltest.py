@@ -8,7 +8,7 @@ from holytools.devtools import Unittest
 # ---------------------------------------------------------
 
 
-class BaseTest(Unittest):
+class ToolTest(Unittest):
     @classmethod
     def setUpClass(cls):
         cls.valid_tool_call = ToolCall(json_str=MockToolCalls.valid_printer_args)
