@@ -1,4 +1,8 @@
-class TestToolCallOpenAI(OpenAITest):
+from engine.l2_models import InfOptions
+from tests.t_l2.base import OpenAITest
+
+
+class TestInfOptions(OpenAITest):
     def test_simple_tool_call(self):
         entries = [self.example_entries.welcome_request]
         docs = [self.greet_tool.get_doc()]
@@ -34,3 +38,7 @@ class TestToolCallOpenAI(OpenAITest):
         self.assertTrue(len(calls) == 1)
         c = calls[0]
         self.assertTrue(c.name == self.greet_tool.get_name())
+
+
+if __name__ == "__main__":
+    TestInfOptions.execute_all()
