@@ -66,16 +66,12 @@ class TextPipe(Queue):
 
     def get_text_stream(self) -> Iterator[str]:
         timeout = 10
-        yield f'GOTO: '
 
         while True:
             try:
                 text = self.get(timeout=timeout)
             except Empty:
                 pipeLogger.warning(f'Text queue timed out after {timeout}s')
-                break
-            except Exception as e:
-                pipeLogger.error(f'Error in getting text from queue: {e}')
                 break
             if text == self.stop_token:
                 pipeLogger.debug(f'\nReceived stop token from text queue')
