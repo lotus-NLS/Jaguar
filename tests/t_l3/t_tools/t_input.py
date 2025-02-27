@@ -1,6 +1,6 @@
 from enum import Enum
 
-from engine.l3_aos.tools import ToolArg
+from engine.l3_aos.tools import ToolArg, ToolCall
 from holytools.devtools import Unittest, ModuleInspector
 
 # ----------------------------------------------------------
@@ -47,6 +47,26 @@ class TestToolArg(Unittest):
         with self.assertRaises(TypeError):
             ToolArg(name='Test', dtype=Enum)
 
+class TestToolCall(Unittest):
+    def test_update(self):
+        js1 = '{"arg_one": "value"}'
+        js2 = ',{"arg_two": "value"}'
+        n1, n2 = 'Hammer', 'Screwdriver'
+
+        tool_call = ToolCall(name=n1, json_str=js1)
+        other = ToolCall(name=n2, json_str=js2)
+        tool_call.update(other)
+        self.assertTrue(tool_call.name == n1+n2)
+        self.assertTrue(tool_call.json_str == js1+js2)
+
+    def test_get_args(self):
+        tool_call = ToolCall(name='Hammer', json_str='{"arg_one": "value"}')
+        args_dict= tool_call.get_args_dict()
+        self.assertTrue(len(args_dict) == 1)
+        for k, v in args_dict.items():
+            self.assertTrue(k == 'arg_one')
+            self.assertTrue(v == 'value')
+
 class ToolArgMethods:
     @staticmethod
     def valid_type_func(this : str, other : int):
@@ -67,6 +87,6 @@ class ToolArgMethods:
 
 if __name__ == "__main__":
     TestToolArg.execute_all()
-
+    TestToolCall.execute_all()
 
 
