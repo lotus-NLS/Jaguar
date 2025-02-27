@@ -1,11 +1,11 @@
 import os
 
 from engine.l3_aos import Browser
-from tests.credtest import CredentialDependentTest
+from tests.credtest import CredTest
 
 # ----------------------------------------------------------------
 
-class BrowserTest(CredentialDependentTest):
+class BrowserTest(CredTest):
     def setUp(self):
         self.beaver_test = 'https://en.wikipedia.org/wiki/Beaver'
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'

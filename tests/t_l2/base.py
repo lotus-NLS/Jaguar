@@ -5,13 +5,13 @@ from engine.l2_models import InfOptions, OpenAIModel, Generation
 from engine.l2_models.language import Entry, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, ExampleFiles
-from tests.credtest import CredentialDependentTest
+from tests.credtest import CredTest
 
 
 # --------------------------------------------------------------------------------
 
 
-class OpenAITest(CredentialDependentTest):
+class OpenAITest(CredTest):
     def setUp(self):
         self.example_entries = ExampleEntries()
         self.greet_tool = Greet()

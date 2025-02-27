@@ -1,12 +1,12 @@
 from engine.l0_main.settings import LotusCredentials
 from holytools.devtools import Unittest
 from holytools.events import Timer
+from tests.credtest import CredTest
+
+
 # --------------------------------------------
 
-class TestLotusCredentials(Unittest):
-    def setUp(self):
-        self.credentials = LotusCredentials.from_file()
-
+class TestLotusCredentials(CredTest):
     @classmethod
     def setUpClass(cls):
         cls.valid_keys = ['openai_api_key', 'google_api_key', 'search_engine_id', 'enable_introduction']
