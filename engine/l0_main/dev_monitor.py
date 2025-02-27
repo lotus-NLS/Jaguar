@@ -17,8 +17,8 @@ class DevMonitor:
         self.port : int = port
         self.app: Flask = Flask(__name__)
 
-        self.context : Context = Context.get_example_context()
-        self.checkpoints : dict[str, list[str]] = {}
+        self.context_map : dict[str, Context] = {}
+        self.ckpt_map : dict[str, list[str]] = {}
         self.latest_session_uuid : Optional[str] = None
         self.step_endpoint : Endpoint = self.make_endpopint(path=f'/step')
         self.report_endpoint : Endpoint = self.make_endpopint(path='/report')
@@ -31,13 +31,14 @@ class DevMonitor:
         def log_update():
             s = request.get_data().decode()
             step_state = StepState.from_str(json_str=s)
-            session_uuid = step_state.session_uuid
-            self.latest_session_uuid = session_uuid
-            self.context = step_state.generation_ctx
+            sess_uuid = step_state.session_uuid
+
+            self.latest_session_uuid = sess_uuid
+            self.context_map[sess_uuid] = step_state.generation_ctx
             if step_state.ckpt_label:
-                if not session_uuid in self.checkpoints:
-                    self.checkpoints[session_uuid] = []
-                self.checkpoints[session_uuid].append(step_state.ckpt_label)
+                if not sess_uuid in self.ckpt_map:
+                    self.ckpt_map[sess_uuid] = []
+                self.ckpt_map[sess_uuid].append(step_state.ckpt_label)
 
             return jsonify({"received": s}), 200
 
@@ -46,7 +47,7 @@ class DevMonitor:
             data = request.get_data().decode()
             report = Report.from_str(json_str=data)
             icon = '✓' if report.is_successful else '✗'
-            self.checkpoints[report.session_uuid] += [icon]
+            self.ckpt_map[report.session_uuid] += [icon]
 
     @classmethod
     def localhost(cls, port : int = 5000):
@@ -62,9 +63,10 @@ class DevMonitor:
         self.app.run(host=self.ip, port=self.port)
 
     def get_html(self) -> str:
-        checkpoints = self.checkpoints.get(self.latest_session_uuid, None)
+        checkpoints = self.ckpt_map.get(self.latest_session_uuid, None)
         ckpt_str = MessageFormatter.get_boxed_train(messages=checkpoints) if checkpoints else ''
-        context_str = self.context.get_view(section_header=f'Agent context')
+        context = self.context_map.get(self.latest_session_uuid, Context.get_example_context())
+        context_str = context.get_view(f'Agent context')
         plain_str = f'{ckpt_str}\n{context_str}'
 
         escaped_str = html.escape(plain_str)

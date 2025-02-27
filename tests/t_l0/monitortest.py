@@ -1,3 +1,6 @@
+import os
+import signal
+
 from engine.l0_main.dev_monitor import DevMonitor
 from holytools.network import Endpoint
 
@@ -9,4 +12,4 @@ class QuittableMonitor(DevMonitor):
 
         @self.app.get(self.kill_endpoint.path)
         def shutdown_server():
-            raise RuntimeError(f'Server shut down')
+            os.kill(os.getpid(), signal.SIGKILL)
