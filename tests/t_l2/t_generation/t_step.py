@@ -61,9 +61,9 @@ class TestStep(Unittest):
     def test_roundtrip(self):
         state = self.step.get_state(uuid='uuid4', is_final=True)
         s = state.to_str()
-        print(f'Serialized state = {s}')
         restored_state = StepState.from_str(s)
 
+        self.assertSame(state.__dict__, restored_state.__dict__)
 
 if __name__ == "__main__":
     # TestTextPipe.execute_all()

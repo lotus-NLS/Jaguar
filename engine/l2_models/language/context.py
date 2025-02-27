@@ -52,9 +52,8 @@ class Context(JsonDataclass):
 
     @classmethod
     def get_example_context(cls) -> Context:
-        system_entry = f'I am GOTO'
-        hello_entry = Entry.user(msg=f'Hello there')
-        basic_context = Context(entries=[system_entry, hello_entry])
+        entries : list[Entry] = [Entry.system(msg=f'I am GOTO'), Entry.user(msg=f'Hello there')]
+        basic_context = Context(entries=entries)
 
         aos = AOS.terminal_only()
         aos_context = Context.from_aos(aos=aos)

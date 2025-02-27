@@ -33,13 +33,13 @@ class AOS(Loggable):
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
-                outputs += [tool.execute(tool_call=call)]
+                outputs.append(tool.execute(tool_call=call))
             except KeyError as e:
                 self.error(f'No tool found with name {call.name}')
-                outputs += [ToolOutput.exception(name=call.name, reason=e)]
+                outputs.append(ToolOutput.exception(name=call.name, reason=e))
             except Exception as e:
                 self.error(f'Error while executing tool {call.name}: {e.__repr__()}')
-                outputs += [ToolOutput.exception(name=call.name, reason=e)]
+                outputs.append(ToolOutput.exception(name=call.name, reason=e))
         return outputs
 
     def add_workspace(self, ws : Workspace):
@@ -58,7 +58,7 @@ class AOS(Loggable):
 
     def get_tools(self) -> list[Tool]:
         workspaces = self.get_workspaces()
-        tools = []
+        tools : list[Tool] = []
         for ws in workspaces:
             tools += ws.get_actions()
         return tools
