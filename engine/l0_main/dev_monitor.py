@@ -52,7 +52,6 @@ class DevMonitor:
     def localhost(cls, port : int = 5000):
         return cls(ip='127.0.0.1', port=port)
 
-
     # -----------------------------------------------------
 
     def make_endpopint(self, path : str) -> Endpoint:
