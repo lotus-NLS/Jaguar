@@ -10,7 +10,7 @@ class CredentialDependentTest(Unittest):
         try:
             kwargs = {'openai_api_key': os.environ['OPENAI_API_KEY'],
                       'google_api_key': os.environ['GOOGLE_API_KEY'],
-                      'search_engine_id': os.environ['SEARCHq_ENGINE_ID']}
+                      'search_engine_id': os.environ['SEARCH_ENGINE_ID']}
             credentials = LotusCredentials(**kwargs)
         except KeyError as e:
             print(f'Error: {e.__repr__()}. Falling back to credentials file')
