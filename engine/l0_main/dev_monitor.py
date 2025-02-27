@@ -3,10 +3,8 @@ from typing import Optional
 
 from flask import Flask, request, jsonify
 
-from engine.l1_agents import Core
 from engine.l2_models.generation.step import StepState, Report
-from engine.l2_models.language import Context, Entry
-from engine.l3_aos import AOS
+from engine.l2_models.language import Context
 from holytools.network import Endpoint
 from holytools.userIO import MessageFormatter
 
@@ -19,7 +17,7 @@ class DevMonitor:
         self.port : int = port
         self.app: Flask = Flask(__name__)
 
-        self.context : Context = self.get_example_context()
+        self.context : Context = Context.get_example_context()
         self.checkpoints : dict[str, list[str]] = {}
         self.latest_session_uuid : Optional[str] = None
         self.step_endpoint : Endpoint = self.make_endpopint(path=f'/step')
@@ -74,16 +72,6 @@ class DevMonitor:
         html_code = escaped_str.replace("\n", "<br>")
         html_code = f'<pre>{html_code}</pre>'
         return html_code
-
-    @staticmethod
-    def get_example_context() -> Context:
-        system_entry = Core.GOTO().as_system_entry()
-        hello_entry = Entry.user(msg=f'Hello there')
-        basic_context = Context(entries=[system_entry, hello_entry])
-
-        aos = AOS.terminal_only()
-        aos_context = Context.from_aos(aos=aos)
-        return aos_context + basic_context
 
 
 

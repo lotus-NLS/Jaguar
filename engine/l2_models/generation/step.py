@@ -23,11 +23,9 @@ class Step:
     outputs : list[ToolOutput]
     is_final : bool = False
 
-    def get_state(self, uuid : str, writing : Optional[str], is_final : bool = False) -> StepState:
-        return StepState(generation_ctx=self.generation_ctx,
-                         ckpt_label=self.ckpt_label,
-                         session_uuid=uuid, writing=writing,
-                         is_final=is_final)
+    def get_state(self, uuid : str, is_final : bool = False) -> StepState:
+        return StepState(generation_ctx=self.generation_ctx,ckpt_label=self.ckpt_label,
+                         session_uuid=uuid, writing=self.text_pipe.content, is_final=is_final)
 
     @classmethod
     def failed(cls, context : Context):
@@ -49,6 +47,20 @@ class StepState(JsonDataclass):
 
 class TextPipe(Queue):
     stop_token = '⊥'
+
+    def __init__(self):
+        super().__init__()
+        self.content : str = ''
+
+    @classmethod
+    def failed(cls, msg: Optional[str] = None) -> TextPipe:
+        pipeline: TextPipe = TextPipe()
+        conditional_msg = f':{msg}'
+        pipeline.put(f'Pipeline failed{conditional_msg}')
+        pipeline.stop()
+        return pipeline
+
+    # ------------------------------------------------------
 
     def put(self, msg : Optional[str], *args, **kwargs):
         if msg is None:
@@ -76,18 +88,9 @@ class TextPipe(Queue):
             if text == self.stop_token:
                 pipeLogger.debug(f'\nReceived stop token from text queue')
                 break
-            if not text:
-                continue
-            yield text
-
-    @classmethod
-    def failed(cls, msg: Optional[str] = None) -> TextPipe:
-        pipeline: TextPipe = TextPipe()
-        conditional_msg = f':{msg}'
-        pipeline.put(f'Pipeline failed{conditional_msg}')
-        pipeline.stop()
-        return pipeline
-
+            if text:
+                self.content += text
+                yield text
 
 
 @dataclass

@@ -50,6 +50,16 @@ class Context(JsonDataclass):
 
         return cls(entries=entries, docs=docs)
 
+    @classmethod
+    def get_example_context(cls) -> Context:
+        system_entry = f'I am GOTO'
+        hello_entry = Entry.user(msg=f'Hello there')
+        basic_context = Context(entries=[system_entry, hello_entry])
+
+        aos = AOS.terminal_only()
+        aos_context = Context.from_aos(aos=aos)
+        return aos_context + basic_context
+
     # ---------------------------------------------------
 
     def get_view(self, section_header : str) -> str:
