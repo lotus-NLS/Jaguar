@@ -40,6 +40,7 @@ class TestWorkspace(Unittest):
         self.assertEqual('', self.workspace.get_text())
         self.log(f'Window context after reset : {Entry.from_workspace(ws=self.workspace)}')
 
+
     def test_toggle_active_inactive(self):
         print(f'Workspace active = {self.workspace.is_active}')
         self.assertFalse(self.workspace.is_active)
@@ -49,6 +50,7 @@ class TestWorkspace(Unittest):
         self.workspace.close_action.do()
         print(f'Workspace active after close actio = {self.workspace.is_active}')
         self.assertFalse(self.workspace.is_active)
+
 
     def test_get_actions(self):
         while_open_actions = ['add', 'reset', 'close']
@@ -72,6 +74,7 @@ class TestWorkspace(Unittest):
         for keyword in while_closed_actions:
             contains_keyword = any([keyword in name for name in action_names])
             self.assertFalse(contains_keyword)
+
 
     def test_get_actiondocs(self):
         actions_docs = self.workspace.get_action_docs()
@@ -101,6 +104,7 @@ class MockWorkspace(Workspace):
 
     def reset(self):
         self.text_content = ''
+
 
 if __name__ == '__main__':
     TestWorkspace.execute_all()

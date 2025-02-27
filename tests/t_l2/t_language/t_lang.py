@@ -4,25 +4,24 @@ from engine.l2_models.language import Entry
 from engine.l3_aos import AOS
 from holytools.devtools import Unittest
 from holytools.fileIO import ExampleFiles
+from tests.t_l2.base import OpenAITest
 
 # ----------------------------------------------------------
 
-class TestContext(Unittest):
+class TestContext(OpenAITest):
     def test_roundtrip(self):
-        context = self.get_example_context()
+        context = Context.get_example_context()
         s = context.to_str()
         new_context = Context.from_str(s)
         self.assertEqual(context, new_context)
 
-    @staticmethod
-    def get_example_context() -> Context:
-        system_entry = Core.GOTO().as_system_entry()
-        hello_entry = Entry.user(msg=f'Hello there')
-        basic_context = Context(entries=[system_entry, hello_entry])
+    def test_text_context(self):
+        entries = [self.example_entries.introduction]
+        self.get_results(entries=entries, docs=[], options=self.text_only)
 
-        aos = AOS.terminal_only()
-        aos_context = Context.from_aos(aos=aos)
-        return aos_context + basic_context
+    def test_image_context(self):
+        entries = [self.example_entries.image_entry]
+        self.get_results(entries=entries, docs=[], options=self.text_only)
 
 
 class TestEntry(Unittest):
