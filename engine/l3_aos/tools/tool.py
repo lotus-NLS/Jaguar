@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from logging import Logger
 from typing import Callable
 
 from func_timeout import func_timeout, FunctionTimedOut
@@ -16,7 +17,7 @@ from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, To
 class Tool:
     def __init__(self, call_timeout : float = 60):
         self.is_active : bool = True
-        self.logger = LoggerFactory.get_logger(name=f'{self.__class__}')
+        self.logger : Logger = LoggerFactory.get_logger(name=f'{self.__class__}')
         self.timeout : float = call_timeout
         self.prehook : Callable  = lambda *args, **kwargs : None
 
@@ -38,14 +39,15 @@ class Tool:
             self.prehook()
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
             output.value = func_timeout(timeout=self.timeout, func=self.do)
-            output.update(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully', progress_type=ProgressUpdate.INFO)
+            output.info(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully')
 
         except ToolException as e:
-            output.update(msg=f'{e.__class__.__name__}: {e}', progress_type=ProgressUpdate.FAILED)
+            output.fail(reason=f'{e.__class__.__name__}: {e}')
         except FunctionTimedOut:
-            output.update(msg=f'Timed out without completing after {self.timeout} seconds', progress_type=ProgressUpdate.FAILED)
+            output.fail(reason=f'Timed out without completing after {self.timeout} seconds')
         except Exception as e:
-            output.update(msg=f'Encountered exception: {e}. Aborting ...', progress_type=ProgressUpdate.EXCEPTION)
+            output.error(reason=f'Encountered exception: {e}. Aborting ...')
+
         output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
 
         return output
@@ -66,7 +68,6 @@ class Tool:
             if not arg.input_is_valid():
                 raise InvalidArgValue(f'Argument value \"{arg.input}\" is not in allowed choices \"{arg.choices}\" for argument \"{arg.name}\"')
         return specified_args
-
 
     @abstractmethod
     def do(self):

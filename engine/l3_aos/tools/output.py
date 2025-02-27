@@ -4,13 +4,14 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Any
 
-from holytools.logging import Loggable, LogLevel
+from holytools.logging import LoggerFactory
 
+tool_output_logger = LoggerFactory.get_logger(name=__name__)
 
 # --------------------------------------------------
 
 @dataclass
-class ToolOutput(Loggable):
+class ToolOutput:
     tool_name : str
     value : Optional[Any] = None
     call_args: Optional[dict] = None
@@ -32,10 +33,19 @@ class ToolOutput(Loggable):
         output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=ProgressUpdate.EXCEPTION)
         return output
 
+    def info(self, msg : str):
+        self.update(msg=msg, progress_type=ProgressUpdate.INFO)
+
     def update(self, msg : str, progress_type : ProgressUpdate):
         progress_msg = ProgressMsg(progress_type=progress_type, content=msg)
         self.progress_msgs.append(progress_msg)
-        self.log(str(progress_msg), level=LogLevel.INFO)
+        tool_output_logger.info(str(progress_msg))
+
+    def error(self, reason : str):
+        self.update(msg=reason, progress_type=ProgressUpdate.EXCEPTION)
+
+    def fail(self, reason : str):
+        self.update(msg=reason, progress_type=ProgressUpdate.FAILED)
 
     # -----------------------------------------------------------
 
