@@ -9,12 +9,10 @@ from holytools.devtools import Unittest
 # ------------------------------------------------
 
 class TestTextPipe(Unittest):
-
     def setUp(self):
         self.text_pipe : TextPipe = TextPipe()
 
     def test_get_text_stream(self):
-
         phrase = f'This is a test'
         words = phrase.split()
         for w in words:
@@ -64,6 +62,7 @@ class TestStep(Unittest):
         restored_state = StepState.from_str(s)
 
         self.assertSame(state.__dict__, restored_state.__dict__)
+
 
 if __name__ == "__main__":
     # TestTextPipe.execute_all()
