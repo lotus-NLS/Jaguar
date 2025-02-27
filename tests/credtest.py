@@ -8,9 +8,9 @@ class CredentialDependentTest(Unittest):
     @classmethod
     def setUpClass(cls):
         try:
-            kwargs = {'openai_api_key': os.environ['OPENAI_API_KEY'],
-                      'google_api_key': os.environ['GOOGLE_API_KEY'],
-                      'search_engine_id': os.environ['SEARCH_ENGINE_ID']}
+            kwargs = {'openai_api_key': os.environ['DEV_OPENAI_API_KEY'],
+                      'google_api_key': os.environ['DEV_GOOGLE_API_KEY'],
+                      'search_engine_id': os.environ['DEV_SEARCH_ENGINE_ID']}
             credentials = LotusCredentials(**kwargs)
         except:
             credentials : LotusCredentials = LotusCredentials.from_file()
