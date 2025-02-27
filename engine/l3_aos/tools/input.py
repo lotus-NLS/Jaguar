@@ -85,26 +85,11 @@ class ToolCall:
             raise ValueError('Empty json string')
 
         try:
-            tool_args_dict = self.load(s=self.json_str)
+            tool_args_dict = json.loads(s=self.json_str)
         except:
-            tool_args_dict = self.load(s=repair_json(json_str=self.json_str))
+            json_str = repair_json(json_str=self.json_str)
+            tool_args_dict = json.loads(s=json_str)
         return tool_args_dict
-
-    @classmethod
-    def from_args_dict(cls, args_dict : dict) -> ToolCall:
-        json_str = json.dumps(args_dict)
-        return cls(json_str=json_str)
-
-    @staticmethod
-    def load(s : str) -> dict:
-        def as_string_decoder(pair: dict) -> dict:
-            return {k: str(v) if v is not None else 'null' for k, v in pair.items()}
-        obj = json.loads(s=s, object_hook=as_string_decoder)
-
-        if not isinstance(obj, dict):
-            raise ValueError(f"Expected a dictionary, got {type(obj)}")
-
-        return obj
 
     def __str__(self):
         return f'{self.name}: {self.json_str}'
