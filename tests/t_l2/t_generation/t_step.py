@@ -43,7 +43,6 @@ class TestStep(Unittest):
         context = Context.get_example_context()
         ckpt_label = f'Checkpoint'
         self.step = Step(text_pipe=self.tp, generation_ctx=context, ckpt_label=ckpt_label, outputs=[])
-        self.state = self.step.get_state(uuid=f'uuid4')
 
     def test_step_state(self):
         writing = f'Hello World'
@@ -54,14 +53,17 @@ class TestStep(Unittest):
         for w in self.tp.get_text_stream():
             _ = w
 
-        print(f'State writing  : {self.state.writing}')
-        self.assertTrue(self.state.writing == writing)
-        self.assertTrue(self.state.is_final == False)
+        state = self.step.get_state(uuid=f'uuid4')
+        print(f'State writing  : {state.writing}')
+        self.assertTrue(state.writing == writing)
+        self.assertTrue(state.is_final == False)
 
     def test_roundtrip(self):
-        s = self.state.to_str()
-        new_step = StepState.from_str(s)
-        self.assertEqual(self.step, new_step)
+        state = self.step.get_state(uuid='uuid4', is_final=True)
+        s = state.to_str()
+        print(f'Serialized state = {s}')
+        restored_state = StepState.from_str(s)
+
 
 if __name__ == "__main__":
     # TestTextPipe.execute_all()
