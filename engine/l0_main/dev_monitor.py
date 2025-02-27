@@ -50,7 +50,7 @@ class DevMonitor:
             self.ckpt_map[report.session_uuid] += [icon]
 
     @classmethod
-    def localhost(cls, port : int = 5000):
+    def localhost(cls, port : int):
         return cls(ip='127.0.0.1', port=port)
 
     # -----------------------------------------------------
@@ -78,5 +78,5 @@ class DevMonitor:
 
 
 if __name__ == "__main__":
-    server = DevMonitor.localhost()
+    server = DevMonitor.localhost(port=8080)
     server.serve()
