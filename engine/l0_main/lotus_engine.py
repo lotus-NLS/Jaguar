@@ -27,6 +27,7 @@ class LotusEngine(Loggable):
     def work(self, task : Task, max_steps : int, dos : str = ''):
         states : list[StepState] = []
         for s in self._agent.work(task=task, max_steps=max_steps):
+            print()
             states += [self.observe_step(step=s)]
         print(f'Finished work mode after {len(states)} steps')
 
@@ -56,7 +57,7 @@ class LotusEngine(Loggable):
                 time.sleep(0.05)
 
         writing = response_text if len(response_text) > 0 else None
-        step_state = step.get_state(uuid=self.session_uuid, writing=writing)
+        step_state = step.get_state(uuid=self.session_uuid)
 
         try:
             self.step_endpoint.post(msg=step_state.to_str(), secure=False)
