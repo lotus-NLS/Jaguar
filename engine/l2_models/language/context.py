@@ -8,6 +8,7 @@ from engine.l3_aos.tools import ToolDoc
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
 from .entry import Entry
+from .. import InfConfig
 
 logger = LoggerFactory.get_logger(name=__name__)
 
@@ -36,7 +37,7 @@ class Context(JsonDataclass):
         return cls(entries=[entry])
 
     @classmethod
-    def from_aos(cls, aos : AOS):
+    def from_aos(cls, aos : AOS, inf_config : InfConfig):
         entries = []
         for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
             try:
@@ -45,7 +46,7 @@ class Context(JsonDataclass):
             except BaseException as e:
                 logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
 
-        tools = aos.get_tools()
+        tools = aos.get_tools() if inf_config.required_tool is None else [inf_config.required_tool]
         docs = [tool.get_doc() for tool in tools]
 
         return cls(entries=entries, docs=docs)

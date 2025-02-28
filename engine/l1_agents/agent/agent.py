@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterator
+from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
 
@@ -11,7 +11,7 @@ from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolOutput, ToolCall
+from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
 from engine.l3_aos.workspaces import Workspace
 from holytools.logging import Loggable
 
@@ -45,13 +45,13 @@ class Agent(Loggable):
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
-            step = self.handle(infConfig=inf_options)
+            step = self.handle(inf_config=inf_options)
             yield step
             if not self.is_working():
                 break
 
         self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
-        final_step = self.handle(infConfig=InfConfig.text_only(max_output_tokens=100))
+        final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
         final_step.finished_work = not self.is_working()
 
         if self.is_working():
@@ -62,15 +62,15 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, infConfig : InfConfig = InfConfig()) -> Step:
-        context = self.get_context()
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
+        context = self.get_context(inf_config=inf_config)
 
         try:
-            generation = self.model.get_generation(context=context, options=infConfig)
+            generation = self.model.get_generation(context=context, options=inf_config)
             pipe = self.write(generation=generation)
-            outputs = self.act(tool_calls=generation.get_tool_calls())
+            outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
         except APITimeoutError:
-            error_msg = f'OpenAI API request timed out after {infConfig.timeout} seconds'
+            error_msg = f'OpenAI API request timed out after {inf_config.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
         except APIError:
@@ -94,8 +94,14 @@ class Agent(Loggable):
 
         return pipe
 
-    def act(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
-        outputs = self.aos.execute(tool_calls=tool_calls)
+    def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolOutput]:
+        if not temp_tool:
+            outputs = self.aos.execute(tool_calls=tool_calls)
+        elif temp_tool and len(tool_calls) > 1:
+            raise ValueError('Temporary tool can only be used with a single tool call')
+        else:
+            outputs = [temp_tool.execute(tool_calls[0])]
+
         for out in outputs:
             output_entry = Entry.from_tool_output(out)
             self.update_memory(output_entry)
@@ -114,9 +120,9 @@ class Agent(Loggable):
     def update_memory(self, entry : Entry):
         self.memory.append(entry)
 
-    def get_context(self) -> Context:
+    def get_context(self, inf_config : InfConfig) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos)
+        context += Context.from_aos(aos=self.aos, inf_config=inf_config)
         context += Context(entries=self.memory)
 
         if self.is_working():
