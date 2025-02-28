@@ -122,7 +122,7 @@ class Agent(Loggable):
 
     def get_context(self, inf_config : InfConfig) -> Context:
         context = Context(entries=[self.identity.as_system_entry()])
-        context += Context.from_aos(aos=self.aos, inf_config=inf_config)
+        context += Context.from_aos(aos=self.aos, required_tool=inf_config.required_tool)
         context += Context(entries=self.memory)
 
         if self.is_working():

@@ -1,81 +1,24 @@
-# import os.path
-# from engine.l1_agents import Agent, Task, Identity
-# from engine.l2_models import OpenAIModel
-# import uuid
-# from holytools.devtools import Unittest
-#
-#
-# class TestAgentContext(Unittest):
-#     def setUp(self):
-#         self.agent = Agent(model=OpenAIModel.get_gpt4_turbo(), identity=Identity.GOTO())
-#         self.language = self.agent.get_active_context()
-#
-#
-#     def test_context_ok(self):
-#         entries = self.language.entries
-#         self.assertTrue(len(entries) > 0)
-#         self.assertTrue(len(self.language.docs) > 0)
-#         # print(f'Tools are {self.language.docs} and entries are {entries}')
-#         first_entry = entries[0]
-#         self.assertIsInstance(obj=first_entry.msg, cls=str)
-#         self.assertIn(self.agent.identity.get_str(), first_entry.msg)
-#
-#
-#     def test_identity_query(self):
-#         explain_identity_task = Task.make_default(msg=f'If your capabilities include helping with software development'
-#                                                 f'and you can interact with/use the system you are deployed with simply'
-#                                                 f'respond with "yes". The response needs to be exact for testing purposes')
-#         response = self.agent.handle(explain_identity_task)
-#
-#         buffer = ''
-#         for text in response.get_text_stream():
-#             buffer += text
-#         self.assertIn('yes', buffer)
-#
-#
-#         explain_os = Task.make_default(msg=f'If you have access to an open/close tools that allow you to open/close applications'
-#                                            f'simply reply with "yes". The response needs to be exact for testing purposes')
-#         response = self.agent.handle(explain_os)
-#         buffer = ''
-#         for text in response.get_text_stream():
-#             buffer += text
-#         self.assertIn('yes', buffer)
-#
-#
-# class TestApplicationUsage(Unittest):
-#     def setUp(self):
-#         self.agent = Agent(model=OpenAIModel.get_gpt4_turbo(), identity=Identity.GOTO())
-#         self.language = self.agent.get_active_context()
-#
-#
-#     def test_text_application(self):
-#         fpath = f'/tmp/{uuid.uuid4()}'
-#         open_task = Task.make_default(msg=f'Please open the text editor tool in {fpath}')
-#         response = self.agent.handle(open_task)
-#         for text in response.get_text_stream():
-#             print(text, end='')
-#
-#         write_task = Task.make_default(msg=f'Now please write anything at all in the text file')
-#         response = self.agent.handle(write_task)
-#         for text in response.get_text_stream():
-#             print(text, end='')
-#         self.assertTrue(os.path.isfile(fpath))
-#         open_apps = self.get_open_workspace()
-#         self.assertTrue(len(open_apps)==1)
-#
-#         close_task = Task.make_default(msg=f'Now please close the text application again')
-#         response = self.agent.handle(close_task)
-#         for text in response.get_text_stream():
-#             print(text, end='')
-#         open_apps = self.get_open_workspace()
-#         self.assertTrue(len(open_apps)==0)
-#
-#
-#     def get_open_workspace(self):
-#         workspaces= self.agent.aos.get_workspaces()
-#         return [workspace for workspace in workspaces if workspace.is_active]
-#
-#
-# if __name__ == '__main__':
-#     # TestAgentContext.execute_all()
-#     TestApplicationUsage.execute_all()
+from engine.l1_agents import Agent
+from engine.l2_models import OpenAIModel, InfConfig
+from engine.l3_aos import Browser, Terminal, AOS
+from tests.credtest import CredTest
+from tests.t_l2.base import Greet
+
+# ------------------------------------------
+
+class TestAgent(CredTest):
+    def setUp(self):
+        browser = Browser(google_api_key=self.credentials.google_api_key,
+                          searchengine_id=self.credentials.search_engine_id)
+        terminal = Terminal()
+        aos = AOS(workspaces=[terminal, browser])
+        model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
+        self.agent = Agent(aos=aos, model=model)
+
+    def test_required_tool(self):
+        greet_tool = Greet()
+        inf_config = InfConfig(required_tool=greet_tool)
+        self.agent.handle(inf_config=inf_config)
+
+if __name__ == "__main__":
+    TestAgent.execute_all()
