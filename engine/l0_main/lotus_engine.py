@@ -16,8 +16,9 @@ from ..l2_models.generation.step import Report
 class LotusEngine(Loggable):
     def __init__(self):
         super().__init__()
-        self.step_endpoint: Endpoint = DevMonitor.localhost().step_endpoint
-        self.report_endpoint : Endpoint = DevMonitor.localhost().report_endpoint
+        dev_monitor : DevMonitor = DevMonitor.default()
+        self.step_endpoint: Endpoint = dev_monitor.step_endpoint
+        self.report_endpoint : Endpoint = dev_monitor.report_endpoint
 
         self.session_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
@@ -42,7 +43,7 @@ class LotusEngine(Loggable):
             else:
                 is_successful = self._evalutor.evaluateProperty(msg=report, prop=dos)
             report = Report(summary=report, is_successful=is_successful, session_uuid=self.session_uuid)
-            self.report_endpoint.post(msg=report.to_str(), secure=False)
+            self.send_report(report=report)
 
     def converse(self, msg : str) -> StepState:
         step = self._agent.converse(msg=msg)
@@ -55,16 +56,24 @@ class LotusEngine(Loggable):
             if print_chunks:
                 print(text, end='', flush=True)
                 time.sleep(0.05)
-
-        writing = response_text if len(response_text) > 0 else None
         step_state = step.get_state(uuid=self.session_uuid)
-
-        try:
-            self.step_endpoint.post(msg=step_state.to_str(), secure=False)
-        except:
-            self.warning(f'Context update endpoint {self.step_endpoint.get_url(protocol=f"https")} unresponsive')
+        self.send_state(state=step_state)
 
         return step_state
+
+    def send_report(self, report : Report):
+        endpoint = self.report_endpoint
+        try:
+            endpoint.post(msg=report.to_str(), secure=False)
+        except:
+            self.warning(f'Context update endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
+
+    def send_state(self, state : StepState):
+        endpoint = self.step_endpoint
+        try:
+            endpoint.post(msg=state.to_str(), secure=False)
+        except:
+            self.warning(f'Context update endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
 
     # ---------------------------------------------------------------
     # build

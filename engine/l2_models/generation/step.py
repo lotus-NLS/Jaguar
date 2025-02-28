@@ -36,7 +36,7 @@ class Step:
 class StepState(JsonDataclass):
     generation_ctx : Context
     writing : str
-    ckpt_label : str
+    ckpt_label : Optional[str]
     session_uuid : str
     is_final : bool = False
 

@@ -79,7 +79,7 @@ class Agent(Loggable):
             return Step.failed(context=context)
 
         headline = self.task_tracker.headline
-        self.task_tracker.headline = ''
+        self.task_tracker.headline = None
         return Step(text_pipe=pipe, ckpt_label=headline, generation_ctx=context, outputs=outputs)
 
     def write(self, generation : Generation):

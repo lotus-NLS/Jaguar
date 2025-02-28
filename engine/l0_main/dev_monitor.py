@@ -1,3 +1,4 @@
+from __future__ import annotations
 import html
 from typing import Optional
 
@@ -35,7 +36,7 @@ class DevMonitor:
 
             self.latest_session_uuid = sess_uuid
             self.context_map[sess_uuid] = step_state.generation_ctx
-            if step_state.ckpt_label:
+            if not step_state.ckpt_label is None:
                 if not sess_uuid in self.ckpt_map:
                     self.ckpt_map[sess_uuid] = []
                 self.ckpt_map[sess_uuid].append(step_state.ckpt_label)
@@ -47,13 +48,19 @@ class DevMonitor:
             data = request.get_data().decode()
             report = Report.from_str(json_str=data)
             icon = '✓' if report.is_successful else '✗'
+            print(f'Report sucessful: {report.is_successful}, Icon = {icon}')
+
             if not report.session_uuid in self.ckpt_map:
                 self.ckpt_map[report.session_uuid] = []
             self.ckpt_map[report.session_uuid].append(icon)
             return jsonify({"received": data}), 200
 
     @classmethod
-    def localhost(cls, port : int):
+    def default(cls) -> DevMonitor:
+        return cls.localhost(port=5000)
+
+    @classmethod
+    def localhost(cls, port : int) -> DevMonitor:
         return cls(ip='127.0.0.1', port=port)
 
     # -----------------------------------------------------
@@ -81,5 +88,5 @@ class DevMonitor:
 
 
 if __name__ == "__main__":
-    server = DevMonitor.localhost(port=8080)
+    server = DevMonitor.default()
     server.serve()
