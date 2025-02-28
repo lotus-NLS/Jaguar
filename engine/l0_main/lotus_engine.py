@@ -29,8 +29,9 @@ class LotusEngine(Loggable):
         states : list[StepState] = []
         for s in self._agent.work(task=task, max_steps=max_steps):
             print()
-            states += [self.observe_step(step=s)]
+            states.append(self.observe_step(step=s))
         print(f'Finished work mode after {len(states)} steps')
+        print(f'Final state success = {states[-1].is_final}')
 
         if dos:
             last_state = states[-1]

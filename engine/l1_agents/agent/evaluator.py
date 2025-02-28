@@ -9,7 +9,6 @@ class Evaluator:
     def __init__(self, model: LLM):
         self.model : LLM = model
 
-
     def evaluateProperty(self, msg : str, prop : str) -> bool:
         yn = YesNoTool()
         query = (f'Please evaluate whether or not the following #property holds for the given #msg\n'
@@ -28,8 +27,13 @@ class Evaluator:
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
-
         yn.execute(tool_call=calls[0])
+
+        print(f'+------------------------+')
+        print(f'Query: {query}')
+        print(f'Agent: {eval_text}')
+        print(f'Answer: {yn.y_n_arg.get_value() == "y"}')
+
         return yn.y_n_arg.get_value() == 'y'
 
 

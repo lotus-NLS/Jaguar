@@ -46,18 +46,18 @@ class Agent(Loggable):
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfOptions()
             step = self.handle(inf_options=inf_options)
+            yield step
             if not self.is_working():
-                step.is_final = True
-                yield step
                 break
-            else:
-                yield step
+
+        self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
+        final_step = self.handle(inf_options=InfOptions.text_only(max_output_tokens=100))
+        final_step.finished_work = not self.is_working()
 
         if self.is_working():
             self.task_tracker.close_action.do()
 
-        self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
-        yield self.handle(inf_options=InfOptions.text_only(max_output_tokens=100))
+        yield final_step
 
     # ---------------------------------------------------
     # Main routine

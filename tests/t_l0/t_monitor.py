@@ -1,3 +1,5 @@
+import uuid
+
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l2_models import Step
 from engine.l2_models.generation.step import TextPipe, StepState, Report
@@ -38,7 +40,7 @@ class ServerTester(BlockedTester):
         self.dev_monitor.serve()
 
     def perform_check(self, case : str) -> bool:
-        uuid = self.mock_engine.uuid
+        sess_uuid = self.mock_engine.uuid
 
         if case == 'context':
             self.mock_engine.post_state()
@@ -49,7 +51,7 @@ class ServerTester(BlockedTester):
 
         elif case == 'checkpoints':
             self.mock_engine.post_state()
-            ckpts = self.dev_monitor.ckpt_map[uuid]
+            ckpts = self.dev_monitor.ckpt_map[sess_uuid]
 
             print(f'Checkpoints = {ckpts}')
             ckpt_len_ok = len(ckpts) == 1
@@ -58,7 +60,7 @@ class ServerTester(BlockedTester):
 
         elif case == 'report':
             self.mock_engine.post_report()
-            ckpts = self.dev_monitor.ckpt_map[uuid]
+            ckpts = self.dev_monitor.ckpt_map[sess_uuid]
             return ckpts[-1] == '✓'
 
         else:
@@ -72,7 +74,7 @@ class MockEngine:
 
         text_pipe = TextPipe()
         step : Step = Step(text_pipe=text_pipe, generation_ctx=self.context, ckpt_label=self.ckpt_label, outputs=[])
-        self.uuid : str = 'somerandomuuid4'
+        self.uuid : str = str(uuid.uuid4())
         self.step_state : StepState = step.get_state(uuid=self.uuid, is_final=False)
         self.report : Report = Report(session_uuid=self.uuid, is_successful=True, summary='')
 
@@ -84,4 +86,8 @@ class MockEngine:
 
 
 if __name__ == "__main__":
-    TestDevMonitor.execute_all()
+    # TestDevMonitor.execute_all()
+    dev_monitor = DevMonitor.default()
+    me = MockEngine(dev_monitor=dev_monitor)
+    me.post_state()
+    me.post_report()

@@ -21,11 +21,11 @@ class Step:
     generation_ctx: Context
     ckpt_label: str
     outputs : list[ToolOutput]
-    is_final : bool = False
+    finished_work : bool = False
 
-    def get_state(self, uuid : str, is_final : bool = False) -> StepState:
-        return StepState(generation_ctx=self.generation_ctx,ckpt_label=self.ckpt_label,
-                         session_uuid=uuid, writing=self.text_pipe.content, is_final=is_final)
+    def get_state(self, uuid : str) -> StepState:
+        return StepState(generation_ctx=self.generation_ctx, ckpt_label=self.ckpt_label,
+                         session_uuid=uuid, writing=self.text_pipe.content, is_final=self.finished_work)
 
     @classmethod
     def failed(cls, context : Context):
