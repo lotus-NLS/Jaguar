@@ -47,7 +47,10 @@ class DevMonitor:
             data = request.get_data().decode()
             report = Report.from_str(json_str=data)
             icon = '✓' if report.is_successful else '✗'
-            self.ckpt_map[report.session_uuid] += [icon]
+            if not report.session_uuid in self.ckpt_map:
+                self.ckpt_map[report.session_uuid] = []
+            self.ckpt_map[report.session_uuid].append(icon)
+            return jsonify({"received": data}), 200
 
     @classmethod
     def localhost(cls, port : int):
