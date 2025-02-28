@@ -71,6 +71,11 @@ class LotusEngine(Loggable):
         report = Report(summary=summary, is_successful=is_successful, session_uuid=self.session_uuid)
         self.send(endpoint=self.report_endpoint, obj=report)
 
+
+    def converse(self, msg : str) -> StepState:
+        step = self._agent.converse(msg=msg)
+        return self.observe_step(step=step)
+
     # ---------------------------------------------------------------
 
     def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:

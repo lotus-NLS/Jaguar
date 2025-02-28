@@ -32,7 +32,7 @@ class TestInfOptions(OpenAITest):
     def test_require_call(self):
         entries = [self.example_entries.welcome_request]
         docs = [self.greet_tool.get_doc()]
-        options = InfConfig.require_call(tool_name=self.greet_tool.get_name())
+        options = InfConfig(required_tool=self.greet_tool)
         text, calls = self.get_results(entries=entries, docs=docs, options=options)
 
         self.assertTrue(len(calls) == 1)

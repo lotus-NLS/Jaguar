@@ -23,7 +23,7 @@ class Evaluator:
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
         context += Context.singleton(entry=Entry.agent(msg=eval_text))
-        options = InfConfig.require_call(tool_name=yn.get_name())
+        options = InfConfig(required_tool=yn)
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()

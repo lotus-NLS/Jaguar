@@ -57,7 +57,7 @@ class TestStep(Unittest):
         self.assertTrue(state.is_final == False)
 
     def test_roundtrip(self):
-        state = self.step.get_state(uuid='uuid4', is_final=True)
+        state = self.step.get_state(uuid='uuid4')
         s = state.to_str()
         restored_state = StepState.from_str(s)
 

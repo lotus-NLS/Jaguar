@@ -1,7 +1,5 @@
-from engine.l1_agents import Core
 from engine.l2_models.language import Context
 from engine.l2_models.language import Entry
-from engine.l3_aos import AOS
 from holytools.devtools import Unittest
 from holytools.fileIO import ExampleFiles
 from tests.t_l2.base import OpenAITest

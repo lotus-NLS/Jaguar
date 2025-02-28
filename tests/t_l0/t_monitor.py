@@ -75,7 +75,7 @@ class MockEngine:
         text_pipe = TextPipe()
         step : Step = Step(text_pipe=text_pipe, generation_ctx=self.context, ckpt_label=self.ckpt_label, outputs=[])
         self.uuid : str = str(uuid.uuid4())
-        self.step_state : StepState = step.get_state(uuid=self.uuid, is_final=False)
+        self.step_state : StepState = step.get_state(uuid=self.uuid)
         self.report : Report = Report(session_uuid=self.uuid, is_successful=True, summary='')
 
     def post_state(self):
@@ -87,7 +87,7 @@ class MockEngine:
 
 if __name__ == "__main__":
     # TestDevMonitor.execute_all()
-    dev_monitor = DevMonitor.default()
-    me = MockEngine(dev_monitor=dev_monitor)
+    default_dev_monitor = DevMonitor.default()
+    me = MockEngine(dev_monitor=default_dev_monitor)
     me.post_state()
     me.post_report()
