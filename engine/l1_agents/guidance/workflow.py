@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
+from engine.l1_agents import Task
+
 
 @dataclass
 class Node:
     content : str
+    task : Task
 
 
 @dataclass
@@ -13,8 +16,7 @@ class Edge:
     target : Node
 
 @dataclass
-class Graph:
+class Workflow:
     nodes : list[Node]
     edges : list[Edge]
 
-    

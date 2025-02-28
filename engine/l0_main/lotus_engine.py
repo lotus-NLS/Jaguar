@@ -1,9 +1,11 @@
 import time
 import uuid
+from typing import Optional
 
 from engine.l1_agents import Agent, Evaluator, Task
 from engine.l2_models import OpenAIModel, Step, StepState
 from engine.l3_aos import AOS, Terminal, Browser
+from holytools.abstract import Serializable
 from holytools.logging import Loggable
 from holytools.network import Endpoint
 from .dev_monitor import DevMonitor
@@ -22,74 +24,58 @@ class LotusEngine(Loggable):
 
         self.session_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
-        self._agent = Agent(aos=self._get_default_aos(), model=self._get_default_model())
-        self._evalutor : Evaluator = Evaluator(model=self._get_default_model())
 
-    def work(self, task : Task, max_steps : int, dos : str = ''):
-        states : list[StepState] = []
-        for s in self._agent.work(task=task, max_steps=max_steps):
-            print()
-            states.append(self.observe_step(step=s))
-        print(f'Finished work mode after {len(states)} steps')
-        print(f'Final state success = {states[-1].is_final}')
+        browser = Browser(google_api_key=self._creds.google_api_key, searchengine_id=self._creds.search_engine_id)
+        terminal = Terminal()
+        aos = AOS(workspaces=[terminal, browser])
+        model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
 
-        if dos:
-            last_state = states[-1]
-            report = last_state.writing
-            if report is None:
-                raise ValueError('No report generated')
-
-            if not last_state.is_final:
-                is_successful = False
-            else:
-                is_successful = self._evalutor.evaluateProperty(msg=report, prop=dos)
-            report = Report(summary=report, is_successful=is_successful, session_uuid=self.session_uuid)
-            self.send_report(report=report)
-
-    def converse(self, msg : str) -> StepState:
-        step = self._agent.converse(msg=msg)
-        return self.observe_step(step=step)
-
-    def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:
-        response_text = ''
-        for text in step.text_pipe.get_text_stream():
-            response_text += text
-            if print_chunks:
-                print(text, end='', flush=True)
-                time.sleep(0.05)
-        step_state = step.get_state(uuid=self.session_uuid)
-        self.send_state(state=step_state)
-
-        return step_state
-
-    def send_report(self, report : Report):
-        endpoint = self.report_endpoint
-        try:
-            endpoint.post(msg=report.to_str(), secure=False)
-        except:
-            self.warning(f'Context update endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
-
-    def send_state(self, state : StepState):
-        endpoint = self.step_endpoint
-        try:
-            endpoint.post(msg=state.to_str(), secure=False)
-        except:
-            self.warning(f'Context update endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
-
-    # ---------------------------------------------------------------
-    # build
+        self._agent = Agent(aos=aos, model=model)
+        self._evalutor : Evaluator = Evaluator(model=model)
 
     @staticmethod
     def generate_session_uuid() -> str:
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
-    def _get_default_aos(self) -> AOS:
-        google_api_key = self._creds.google_api_key
-        searchengine_id = self._creds.search_engine_id
-        browser = Browser(google_api_key=google_api_key, searchengine_id=searchengine_id)
-        terminal = Terminal()
-        return AOS(workspaces=[terminal, browser])
+    # --------------------------------------------------------------
+    # routines
 
-    def _get_default_model(self):
-        return OpenAIModel.default_model(api_key=self._creds.openai_api_key)
+    def work(self, task : Task, max_steps : int, dos : Optional[str] = None):
+        states : list[StepState] = []
+        for step in self._agent.work(task=task, max_steps=max_steps):
+            print()
+            state = self.observe_step(step=step)
+            states.append(state)
+        print(f'Finished work mode after {len(states)} steps')
+        if dos:
+            self.evalute(final_state=states[-1], dos=dos)
 
+
+    def evalute(self, final_state : StepState, dos : str):
+        summary = final_state.writing
+        if summary is None:
+            raise ValueError('No summary generated')
+
+        if not final_state.is_final:
+            is_successful = False
+        else:
+            is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
+        report = Report(summary=summary, is_successful=is_successful, session_uuid=self.session_uuid)
+        self.send(endpoint=self.report_endpoint, obj=report)
+
+    # ---------------------------------------------------------------
+
+    def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:
+        for text in step.text_pipe.get_text_stream():
+            if print_chunks:
+                print(text, end='', flush=True)
+                time.sleep(0.05)
+        step_state = step.get_state(uuid=self.session_uuid)
+        self.send(endpoint=self.step_endpoint, obj=step_state)
+        return step_state
+
+    def send(self, endpoint : Endpoint, obj : Serializable):
+        try:
+            endpoint.post(msg=obj.to_str(), secure=False)
+        except:
+            self.warning(f'Monitor endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
