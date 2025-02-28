@@ -34,9 +34,16 @@ class Workflow:
 
         self.outgoing_edge_map : dict[str, list[Edge]] = {}
         for e in self.edges:
+            if not e.source.name in self.node_map:
+                raise KeyError(f'Node {e.source.name} not found')
+            if not e.target.name  in self.node_map:
+                raise KeyError(f'Node {e.target.name} not found')
             if not e.source.name in self.outgoing_edge_map:
                 self.outgoing_edge_map[e.source.name] = []
             self.outgoing_edge_map[e.source.name].append(e)
+
+    def get_node(self, name : str):
+        return self.node_map[name]
 
     def get_exit_tool(self, node_name : str) -> ExitTool:
         exit_tool = ExitTool(edges=self.outgoing_edge_map[node_name])
@@ -51,7 +58,7 @@ class Workflow:
         edges = [Edge(source=start_node, target=nodeA, case='Success'),
                  Edge(source=start_node, target=nodeB, case='Failure')]
 
-        nodes = [start_node]
+        nodes = [start_node, nodeA, nodeB]
         return cls(start_node=start_node, nodes=nodes, edges=edges)
 
 
