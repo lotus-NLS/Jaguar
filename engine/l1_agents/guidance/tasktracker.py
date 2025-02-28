@@ -82,7 +82,11 @@ class Task:
         self.subtasks : list[Task] = []
 
     @classmethod
-    def from_yaml(cls, s : str):
+    def get_example(cls) -> Task:
+        return cls.from_yaml(s=f'- Example')
+
+    @classmethod
+    def from_yaml(cls, s : str) -> Task:
         lines = s.split('\n')
         root = Task(is_root=True)
         ancestors = [root]
