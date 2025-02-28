@@ -7,7 +7,7 @@ from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceD
 
 from engine.l2_models.language.context import Context
 from engine.l2_models.language.entry import APIType, Entry
-from engine.l2_models.generation import Generation, Chunk, InfOptions
+from engine.l2_models.generation import Generation, Chunk, InfConfig
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
 
@@ -23,7 +23,7 @@ class OpenAIModel(LLM):
     def default_model(cls, api_key : str) -> OpenAIModel:
         return cls(name='gpt-4o', api_key=api_key)
 
-    def get_generation(self, context : Context, options: InfOptions) -> Generation:
+    def get_generation(self, context : Context, options: InfConfig) -> Generation:
         token_cap_ok = self.check_token_cap_ok(context=context, token_cap=options.input_tokens_max)
         if not token_cap_ok:
             raise ValueError(f'Context exceeds token cap of {options.input_tokens_max}')
@@ -38,7 +38,7 @@ class OpenAIModel(LLM):
 
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
-    def get_response(self, context : Context, options: InfOptions) -> Stream[ChatCompletionChunk]:
+    def get_response(self, context : Context, options: InfConfig) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self._name,
             'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],

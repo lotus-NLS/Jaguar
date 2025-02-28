@@ -10,6 +10,7 @@ from holytools.logging import Loggable
 from holytools.network import Endpoint
 from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
+from ..l1_agents.guidance.workflow import Workflow
 from ..l2_models.generation.step import Report
 
 
@@ -25,7 +26,8 @@ class LotusEngine(Loggable):
         self.session_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
 
-        browser = Browser(google_api_key=self._creds.google_api_key, searchengine_id=self._creds.search_engine_id)
+        browser = Browser(google_api_key=self._creds.google_api_key,
+                          searchengine_id=self._creds.search_engine_id)
         terminal = Terminal()
         aos = AOS(workspaces=[terminal, browser])
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
@@ -40,14 +42,20 @@ class LotusEngine(Loggable):
     # --------------------------------------------------------------
     # routines
 
-    def work(self, task : Task, max_steps : int, dos : Optional[str] = None):
+    def do_workflow(self, wf : Workflow):
+        node = wf.start_node
+        self.do_task(task=node.task, max_steps=node.max_steps)
+
+        self._agent.handle()
+
+    def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
         states : list[StepState] = []
         for step in self._agent.work(task=task, max_steps=max_steps):
             print()
             state = self.observe_step(step=step)
             states.append(state)
         print(f'Finished work mode after {len(states)} steps')
-        if dos:
+        if not dos is None:
             self.evalute(final_state=states[-1], dos=dos)
 
 

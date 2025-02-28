@@ -1,7 +1,7 @@
 import time
 from typing import Optional
 
-from engine.l2_models import InfOptions, OpenAIModel, Generation
+from engine.l2_models import InfConfig, OpenAIModel, Generation
 from engine.l2_models.language import Entry, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, ExampleFiles
@@ -17,13 +17,13 @@ class OpenAITest(CredTest):
         self.greet_tool = Greet()
         self.noify_chef_tool = NotifyChef()
 
-        self.text_only = InfOptions.text_only()
-        self.tool_allowed = InfOptions()
+        self.text_only = InfConfig.text_only()
+        self.tool_allowed = InfConfig()
 
         self.default_model : OpenAIModel = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.textbox = TextBox()
 
-    def get_results(self, entries : list[Entry], docs : list[ToolDoc], options : InfOptions) -> tuple[str, list[ToolCall]]:
+    def get_results(self, entries : list[Entry], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:
         context = Context(entries=entries, docs=docs)
         generation = self.default_model.get_generation(context=context, options=options)
         prompts_context = [entry.msg for entry in context.entries]

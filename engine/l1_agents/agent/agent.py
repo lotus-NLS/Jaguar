@@ -6,7 +6,7 @@ from openai import APITimeoutError, APIError
 
 from engine.l1_agents.guidance import Core
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
-from engine.l2_models import Generation, InfOptions
+from engine.l2_models import Generation, InfConfig
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
@@ -39,19 +39,19 @@ class Agent(Loggable):
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
-        require_update = InfOptions.require_call(tool_name=self.task_tracker.update_tool_name)
+        require_update = InfConfig.require_call(tool_name=self.task_tracker.update_tool_name)
         report_frequency = 4
 
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
         for j in range(max_steps):
-            inf_options = require_update if (j+1) % report_frequency == 0 else InfOptions()
-            step = self.handle(inf_options=inf_options)
+            inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
+            step = self.handle(infConfig=inf_options)
             yield step
             if not self.is_working():
                 break
 
         self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
-        final_step = self.handle(inf_options=InfOptions.text_only(max_output_tokens=100))
+        final_step = self.handle(infConfig=InfConfig.text_only(max_output_tokens=100))
         final_step.finished_work = not self.is_working()
 
         if self.is_working():
@@ -62,15 +62,15 @@ class Agent(Loggable):
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_options : InfOptions = InfOptions()) -> Step:
+    def handle(self, infConfig : InfConfig = InfConfig()) -> Step:
         context = self.get_context()
 
         try:
-            generation = self.model.get_generation(context=context, options=inf_options)
+            generation = self.model.get_generation(context=context, options=infConfig)
             pipe = self.write(generation=generation)
             outputs = self.act(tool_calls=generation.get_tool_calls())
         except APITimeoutError:
-            error_msg = f'OpenAI API request timed out after {inf_options.timeout} seconds'
+            error_msg = f'OpenAI API request timed out after {infConfig.timeout} seconds'
             self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
             return Step.failed(context=context)
         except APIError:

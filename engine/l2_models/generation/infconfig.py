@@ -36,7 +36,7 @@ class CallOptions:
 
 
 @dataclass
-class InfOptions:
+class InfConfig:
     call_options: CallOptions = field(default_factory=CallOptions.auto)
     timeout : float = 10
     input_tokens_max: int = 8192

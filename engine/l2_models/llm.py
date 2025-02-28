@@ -8,7 +8,7 @@ import tiktoken
 from tiktoken import Encoding
 
 from engine.l2_models.language import Entry, Context
-from engine.l2_models.generation import InfOptions, Generation, CallOptions
+from engine.l2_models.generation import InfConfig, Generation, CallOptions
 from holytools.logging import Loggable
 
 
@@ -26,12 +26,12 @@ class LLM(Loggable):
         # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
 
     @abstractmethod
-    def get_generation(self, context : Context, options: InfOptions) -> Generation:
+    def get_generation(self, context : Context, options: InfConfig) -> Generation:
         pass
 
     def get_text_generation(self, entries: list[Entry]) -> Generation:
         context = Context(entries=entries, docs=[])
-        options = InfOptions(call_options=CallOptions.no_call())
+        options = InfConfig(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)
 
     def check_token_cap_ok(self, context : Context, token_cap : int) -> bool:

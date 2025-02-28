@@ -10,7 +10,7 @@ class CatTask(NLU):
 
     def test_search_for_cat(self):
         task = self.task_provider.get_task('cat')
-        self.engine.work(task=task, max_steps=10)
+        self.engine.do_task(task=task, max_steps=10)
         user_msg = f'What is the first result from your search for cat videos?'
         answer = self.engine.converse(msg=user_msg)
 

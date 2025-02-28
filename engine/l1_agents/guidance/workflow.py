@@ -6,8 +6,8 @@ from engine.l1_agents import Task
 @dataclass
 class Node:
     content : str
+    max_steps : int
     task : Task
-
 
 @dataclass
 class Edge:
@@ -17,6 +17,7 @@ class Edge:
 
 @dataclass
 class Workflow:
+    start_node: Node
     nodes : list[Node]
     edges : list[Edge]
 

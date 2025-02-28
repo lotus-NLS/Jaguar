@@ -1,4 +1,4 @@
-from engine.l2_models import InfOptions
+from engine.l2_models import InfConfig
 from engine.l2_models.language import Entry, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
@@ -18,12 +18,12 @@ class Evaluator:
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)
 
-        generation = self.model.get_generation(context=context, options=InfOptions.text_only())
+        generation = self.model.get_generation(context=context, options=InfConfig.text_only())
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
         context += Context.singleton(entry=Entry.agent(msg=eval_text))
-        options = InfOptions.require_call(tool_name=yn.get_name())
+        options = InfConfig.require_call(tool_name=yn.get_name())
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
