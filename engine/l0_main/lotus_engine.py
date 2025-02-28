@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from engine.l1_agents import Agent, Evaluator, Task
-from engine.l2_models import OpenAIModel, Step, StepState
+from engine.l2_models import OpenAIModel, Step, StepState, InfConfig
 from engine.l3_aos import AOS, Terminal, Browser
 from holytools.abstract import Serializable
 from holytools.logging import Loggable
@@ -44,7 +44,17 @@ class LotusEngine(Loggable):
 
     def do_workflow(self, wf : Workflow):
         node = wf.start_node
-        self.do_task(task=node.task, max_steps=node.max_steps)
+        outgoing_edges = wf.outgoing_edge[node.name]
+
+        while len(outgoing_edges) > 0:
+            self.do_task(task=node.task, max_steps=node.max_steps)
+            exit_tool = wf.get_exit_tool(node_name=node.name)
+            inf_config = InfConfig(required_tool=exit_tool)
+            self._agent.handle(inf_config=inf_config)
+            outgoing_edges = wf.outgoing_edge[node.name]
+
+            choice = exit_tool.exit_choice.get_value()
+            node = outgoing_edges[choice].target
 
         self._agent.handle()
 

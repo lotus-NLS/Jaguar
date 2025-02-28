@@ -32,21 +32,21 @@ class Workflow:
                 raise ValueError(f'Node with name {n.name} already exists')
             self.node_map[n.name] = n
 
-        self.outgoing_edge_map : dict[str, list[Edge]] = {}
+        self.outgoing_edge : dict[str, list[Edge]] = {}
         for e in self.edges:
             if not e.source.name in self.node_map:
                 raise KeyError(f'Node {e.source.name} not found')
             if not e.target.name  in self.node_map:
                 raise KeyError(f'Node {e.target.name} not found')
-            if not e.source.name in self.outgoing_edge_map:
-                self.outgoing_edge_map[e.source.name] = []
-            self.outgoing_edge_map[e.source.name].append(e)
+            if not e.source.name in self.outgoing_edge:
+                self.outgoing_edge[e.source.name] = []
+            self.outgoing_edge[e.source.name].append(e)
 
     def get_node(self, name : str):
         return self.node_map[name]
 
     def get_exit_tool(self, node_name : str) -> ExitTool:
-        exit_tool = ExitTool(edges=self.outgoing_edge_map[node_name])
+        exit_tool = ExitTool(edges=self.outgoing_edge[node_name])
         return exit_tool
 
     @classmethod
