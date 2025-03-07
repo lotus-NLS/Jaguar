@@ -89,12 +89,15 @@ class LotusEngine(Loggable):
     # ---------------------------------------------------------------
 
     def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:
+        step_state = step.get_state(uuid=self.session_uuid)
+        self.send(endpoint=self.step_endpoint, obj=step_state)
+        print(f'Agent: ', end='')
         for text in step.text_pipe.get_text_stream():
             if print_chunks:
                 print(text, end='', flush=True)
                 time.sleep(0.05)
-        step_state = step.get_state(uuid=self.session_uuid)
-        self.send(endpoint=self.step_endpoint, obj=step_state)
+
+        print()
         return step_state
 
     def send(self, endpoint : Endpoint, obj : Serializable):
