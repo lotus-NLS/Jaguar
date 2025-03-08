@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 import platform, distro
 from enum import Enum
-
+from datetime import datetime
 from engine.l2_models.language import Entry
 
 
@@ -22,7 +23,8 @@ class Core:
 
     def as_str(self) -> str:
         msg = f'{self.identity.value}\n'
-        msg += f'You operate on the OS: {self.os_information}'
+        msg += f'You operate on the OS: {self.os_information}. '
+        msg += f'The current date is {self.get_date()} and the current time in this moment is {self.get_time()}.'
         return msg
 
     @staticmethod
@@ -43,6 +45,18 @@ class Core:
             detail += f" (Error obtaining additional details: {e})"
 
         return detail
+
+    @staticmethod
+    def get_date() -> str:
+        current_dt = datetime.now()
+        date = current_dt.date()
+        return date.strftime('%d.%m.%Y')
+
+    @staticmethod
+    def get_time() -> str:
+        current_dt = datetime.now()
+        time = current_dt.time()
+        return time.strftime('%H:%M:%S')
 
 
 class Identity(Enum):
