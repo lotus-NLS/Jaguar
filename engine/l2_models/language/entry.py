@@ -25,6 +25,8 @@ class Entry(JsonDataclass):
     def __post_init__(self):
         if not self.name and self.role == Role.TOOL:
             raise ValueError('Tool must have a name')
+        if self.image.mode != 'RGB':
+            self.image = ImageConverter.to_rgb(img=self.image)
 
     @classmethod
     def from_workspace(cls, ws : Workspace):
@@ -65,12 +67,6 @@ class Entry(JsonDataclass):
      # ----------------------------------------------------
     # get
 
-    def as_dict(self, api_type: APIType) -> dict:
-        if api_type == APIType.OPENAI:
-            return self.as_openai_dict()
-        else:
-            raise ValueError(f'API type {api_type} not supported')
-
     def get_view(self) -> str:
         name_str = f'({self.name})' if not self.name is None else ''
         return f'{self.role.value}{name_str}: {self.msg}'
@@ -83,32 +79,15 @@ class Entry(JsonDataclass):
         if not self.image:
             content = self.msg
         else:
-            text = {
-                "type": "text",
-                "text": f"{self.msg}"
-            }
-            image = {
-                "type": "image_url",
-                "image_url": {"url": f"data:image/{self.image.format};base64,{self.get_image_as_base64()}"}
-            }
+            b64_img = ImageConverter.to_base64_str(image=self.image)
+            image_url = {"url": f"data:image/{self.image.format};base64,{b64_img}"}
+
+            text = {"type": "text", "text": f"{self.msg}"}
+            image = {"type": "image_url", "image_url": image_url}
             content = [text, image]
 
         data['content'] = content
         return data
-
-    def get_image_as_base64(self) -> Optional[str]:
-        image = self.image
-        if image.mode != 'RGB':
-            image = ImageConverter.to_rgb(img=image)
-        base64_image = ImageConverter.to_base64_str(image)
-        return base64_image
-
-
-
-class APIType(Enum):
-    OPENAI = 'OPENAI'
-    GOOGLE = 'GOOGLE'
-    ANTHROPIC = 'ANTHROPIC'
 
 
 class Role(Enum):

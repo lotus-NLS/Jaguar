@@ -6,7 +6,7 @@ from openai import Stream, OpenAI
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from engine.l2_models.language.context import Context
-from engine.l2_models.language.entry import APIType, Entry
+from engine.l2_models.language.entry import Entry
 from engine.l2_models.generation import Generation, Chunk, InfConfig
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
@@ -41,7 +41,7 @@ class OpenAIModel(LLM):
     def get_response(self, context : Context, options: InfConfig) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self._name,
-            'messages': [entry.as_dict(api_type=APIType.OPENAI) for entry in context.entries],
+            'messages': [entry.as_openai_dict() for entry in context.entries],
             'stream' : True,
             'timeout' : options.timeout
         }
