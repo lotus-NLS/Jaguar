@@ -16,12 +16,6 @@ class PythonIDE(Workspace):
         super().__init__()
         self.project : Optional[PythonProject] = None
 
-    def open(self, project_dirpath : str):
-        self.project = PythonProject(project_dirpath=project_dirpath)
-
-    def close(self, *args, **kwargs):
-        self.project = None
-
     def switch_project(self, workspace_dirpath : str):
         self.project = PythonProject(project_dirpath=workspace_dirpath)
 
@@ -33,6 +27,15 @@ class PythonIDE(Workspace):
 
     def close_file(self, fpath : str):
         self.project.close_file(fpath=fpath)
+
+    # -------------------------------------------------------
+    # Workspace generics
+
+    def open(self, project_dirpath : str):
+        self.project = PythonProject(project_dirpath=project_dirpath)
+
+    def close(self, *args, **kwargs):
+        self.project = None
 
     def get_text(self) -> str:
         return self.project.get_text()

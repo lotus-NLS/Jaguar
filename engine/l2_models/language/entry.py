@@ -25,8 +25,9 @@ class Entry(JsonDataclass):
     def __post_init__(self):
         if not self.name and self.role == Role.TOOL:
             raise ValueError('Tool must have a name')
-        if self.image.mode != 'RGB':
-            self.image = ImageConverter.to_rgb(img=self.image)
+        if self.image:
+            if self.image.mode != 'RGB':
+                self.image = ImageConverter.to_rgb(img=self.image)
 
     @classmethod
     def from_workspace(cls, ws : Workspace):
