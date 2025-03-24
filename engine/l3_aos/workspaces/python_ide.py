@@ -4,8 +4,10 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 import subprocess
 from engine.l3_aos import Workspace
-from holytools.fsys import FsysNode
 import re
+
+from holytools.fsys import Directory
+
 
 # --------------------------------------------
 
@@ -23,8 +25,8 @@ class PythonIDE(Workspace):
     def switch_project(self, workspace_dirpath : str):
         self.project = PythonProject(project_dirpath=workspace_dirpath)
 
-    def run_file(self, script_dirpath : str):
-        self.project.run_file(script_dirpath=script_dirpath)
+    def run_file(self, script_fpath : str):
+        self.project.run_file(script_fpath=script_fpath)
 
     def get_text(self) -> str:
         return self.project.get_text()
@@ -51,17 +53,19 @@ class PythonProject:
     def mkvenv(self):
         pass
 
-    def run_file(self, script_dirpath : str):
-        script_path = '/home/daniel/testdir/srcdir/newfile.py'
-        result = subprocess.run([self.interpreter_fpath, script_path], capture_output=True, text=True)
+    def run_file(self, script_fpath : str):
+        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True)
         self.run_output = f'{result.stdout}\n{result.stderr}\nExit code: {result.returncode}'
 
     def get_project_filetree(self):
-        root_node = FsysNode(path=self.dirpath)
-        fpaths = root_node.get_subfile_paths()
-        fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
+        root_node = Directory(path=self.dirpath)
+        fpaths = root_node.get_subfile_fpaths()
 
-        return '\n'.join(fpaths)
+        fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
+        fs_dict = root_node.to_dict(fpaths=fpaths)
+        filetree = root_node.dict_to_tree(fs_dict=fs_dict, max_children=10)
+
+        return filetree
 
     def is_excluded(self, fpath : str) -> bool:
         excluded_paths = [os.path.join(self.dirpath, name) for name in self.excluded_dirs]
@@ -73,5 +77,5 @@ class PythonProject:
         return in_excluded or matches_exclusion_pattern
 
 if __name__ == "__main__":
-    project = PythonProject(project_dirpath=f'/home/daniel/lotus/engine')
+    project = PythonProject(project_dirpath=f'/home/daniel/lotus/engine/engine')
     print(project.get_project_filetree())
