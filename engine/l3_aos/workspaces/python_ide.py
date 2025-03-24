@@ -66,23 +66,22 @@ class PythonProject:
 
     def run_file(self, script_fpath : str):
         result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True)
-        self.run_output = f'{script_fpath}\n{result.stdout}\n{result.stderr}\nExit code: {result.returncode}'
+        header = f'{script_fpath}\n'
+        script_stdout = f'{result.stdout}'
+        script_stderr = f'\033[31m{result.stderr}\033[0m'
+        exit_code_msg = f'Exit code: {result.returncode}'
+
+        self.run_output = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def get_text(self) -> str:
-        # text = f'''{self.get_metadata()}\n{self.get_project_filetree()}\n
-        # {self.get_file_contents()}\n
-        # {self.run_output}\n
-        # '''
-
         text = f'+--- Project metadata ---+\n{self.get_metadata()}\n\n'
         text += f'+--- Project structure: ---+\n{self.get_project_filetree()}\n'
         if self.open_fpaths:
             text += f'+--- Open files ---+\n{self.get_file_contents()}\n'
         if self.run_output:
-            text += self.run_output
+            text += f'+--- Execution output ---+\n{self.run_output}'
 
         return text
-
 
     # -----------------------------------------------
 
@@ -119,7 +118,6 @@ class PythonProject:
             all_contents += self.get_with_lineno(fpath=path)
         return all_contents
 
-
     @staticmethod
     def get_with_lineno(fpath : str):
         with open(fpath, 'r') as f:
@@ -134,10 +132,12 @@ class PythonProject:
 
 if __name__ == "__main__":
     test_dirpath = f'/home/daniel/lotus/engine'
-    script_fpath = os.path.join(test_dirpath, 'engine/run.py')
+    testscript_fpath = os.path.join(test_dirpath, 'tests/t_l3/t_workspaces/testscript.py')
 
     project = PythonProject(project_dirpath=test_dirpath)
     # print(project.get_project_filetree())
     # print(project.get_metadata())
     # print(project.get_with_lineno(fpath=script_fpath))
     print(project.get_text())
+    project.run_file(script_fpath=testscript_fpath)
+    print(project.run_output)
