@@ -56,7 +56,8 @@ class PythonProject:
         self.open_fpaths : list[str] = []
 
     def mkvenv(self):
-        pass
+        subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
+        self.interpreter_fpath = os.path.join(self.dirpath, f'.venv/bin/python')
 
     def open_file(self, fpath : str):
         self.open_fpaths.append(fpath)
