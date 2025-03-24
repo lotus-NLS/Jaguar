@@ -60,8 +60,9 @@ class PythonProject:
     def get_project_filetree(self):
         root_node = Directory(path=self.dirpath)
         fpaths = root_node.get_subfile_fpaths()
-
         fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
+        fpaths = [os.path.relpath(p, self.dirpath) for p in fpaths]
+
         fs_dict = root_node.to_dict(fpaths=fpaths)
         filetree = root_node.dict_to_tree(fs_dict=fs_dict, max_children=10)
 
@@ -77,5 +78,5 @@ class PythonProject:
         return in_excluded or matches_exclusion_pattern
 
 if __name__ == "__main__":
-    project = PythonProject(project_dirpath=f'/home/daniel/lotus/engine/engine')
+    project = PythonProject(project_dirpath=f'/home/daniel/lotus/engine')
     print(project.get_project_filetree())
