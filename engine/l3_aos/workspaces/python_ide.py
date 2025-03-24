@@ -28,6 +28,12 @@ class PythonIDE(Workspace):
     def run_file(self, script_fpath : str):
         self.project.run_file(script_fpath=script_fpath)
 
+    def open_file(self, fpath : str):
+        self.project.open_file(fpath=fpath)
+
+    def close_file(self, fpath : str):
+        self.project.close_file(fpath=fpath)
+
     def get_text(self) -> str:
         return self.project.get_text()
 
@@ -42,25 +48,55 @@ class PythonProject:
             raise ValueError(f'Project dirpath does not exist: {self.dirpath}')
         venv_python_fpath = os.path.join(self.dirpath, '.venv/bin/python')
         self.interpreter_fpath : Optional[str] = venv_python_fpath if os.path.isfile(venv_python_fpath) else None
+
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
         self.excluded_patterns : list[str] = ['.*\\.pyc']
+
         self.run_output : Optional[str] = None
         self.open_fpaths : list[str] = []
-
-    def get_text(self) -> str:
-        pass
 
     def mkvenv(self):
         pass
 
+    def open_file(self, fpath : str):
+        self.open_fpaths.append(fpath)
+
+    def close_file(self, fpath : str):
+        self.open_fpaths.remove(fpath)
+
     def run_file(self, script_fpath : str):
         result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True)
-        self.run_output = f'{result.stdout}\n{result.stderr}\nExit code: {result.returncode}'
+        self.run_output = f'{script_fpath}\n{result.stdout}\n{result.stderr}\nExit code: {result.returncode}'
+
+    def get_text(self) -> str:
+        # text = f'''{self.get_metadata()}\n{self.get_project_filetree()}\n
+        # {self.get_file_contents()}\n
+        # {self.run_output}\n
+        # '''
+
+        text = f'+--- Project metadata ---+\n{self.get_metadata()}\n\n'
+        text += f'+--- Project structure: ---+\n{self.get_project_filetree()}\n'
+        if self.open_fpaths:
+            text += f'+--- Open files ---+\n{self.get_file_contents()}\n'
+        if self.run_output:
+            text += self.run_output
+
+        return text
+
+
+    # -----------------------------------------------
+
+    def get_metadata(self) -> str:
+        venv = os.path.relpath(self.interpreter_fpath, self.dirpath) if self.interpreter_fpath else None
+        metadata = (f'{"Project name":<20}: {os.path.basename(self.dirpath)}\n'
+                    f'{"Project dirpath":<20}: {self.dirpath} \n'
+                    f'{"Virtual environment":<20}: {venv}')
+        return metadata
 
     def get_project_filetree(self):
         root_node = Directory(path=self.dirpath)
         fpaths = root_node.get_subfile_fpaths()
-        fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
+        fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
         fpaths = [os.path.relpath(p, self.dirpath) for p in fpaths]
 
         fs_dict = root_node.to_dict(fpaths=fpaths)
@@ -68,7 +104,7 @@ class PythonProject:
 
         return filetree
 
-    def is_excluded(self, fpath : str) -> bool:
+    def _is_excluded(self, fpath : str) -> bool:
         excluded_paths = [os.path.join(self.dirpath, name) for name in self.excluded_dirs]
         in_excluded = any([fpath.startswith(excluded_path) for excluded_path in excluded_paths])
 
@@ -77,6 +113,31 @@ class PythonProject:
 
         return in_excluded or matches_exclusion_pattern
 
+    def get_file_contents(self) -> str:
+        all_contents = ''
+        for path in self.open_fpaths:
+            all_contents += self.get_with_lineno(fpath=path)
+        return all_contents
+
+
+    @staticmethod
+    def get_with_lineno(fpath : str):
+        with open(fpath, 'r') as f:
+            c = f.read()
+        lines = c.split('\n')
+
+        enumerated_content = ''
+        for n, l in enumerate(lines):
+            enumerated_content += f'{n+1:< 5}| {l}\n'
+        return enumerated_content.rstrip('\n')
+
+
 if __name__ == "__main__":
-    project = PythonProject(project_dirpath=f'/home/daniel/lotus/engine')
-    print(project.get_project_filetree())
+    test_dirpath = f'/home/daniel/lotus/engine'
+    script_fpath = os.path.join(test_dirpath, 'engine/run.py')
+
+    project = PythonProject(project_dirpath=test_dirpath)
+    # print(project.get_project_filetree())
+    # print(project.get_metadata())
+    # print(project.get_with_lineno(fpath=script_fpath))
+    print(project.get_text())
