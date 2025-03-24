@@ -12,6 +12,7 @@ from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
 from ..l1_agents.guidance.workflow import Workflow
 from ..l2_models.generation.step import Report
+from ..l3_aos.workspaces.python_ide import PythonIDE
 
 
 # ---------------------------------------------------------
@@ -29,7 +30,8 @@ class LotusEngine(Loggable):
         browser = Browser(google_api_key=self._creds.google_api_key,
                           searchengine_id=self._creds.search_engine_id)
         terminal = Terminal()
-        aos = AOS(workspaces=[terminal, browser])
+        ide = PythonIDE()
+        aos = AOS(workspaces=[terminal, browser, ide])
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
 
         self._agent = Agent(aos=aos, model=model)
@@ -68,7 +70,6 @@ class LotusEngine(Loggable):
         if not dos is None:
             self.evalute(final_state=states[-1], dos=dos)
 
-
     def evalute(self, final_state : StepState, dos : str):
         summary = final_state.writing
         if summary is None:
@@ -80,7 +81,6 @@ class LotusEngine(Loggable):
             is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
         report = Report(summary=summary, is_successful=is_successful, session_uuid=self.session_uuid)
         self.send(endpoint=self.report_endpoint, obj=report)
-
 
     def converse(self, msg : str) -> StepState:
         step = self._agent.converse(msg=msg)

@@ -97,6 +97,3 @@ class Role(Enum):
     AGENT = 'assistant'
     SYSTEM = 'system'
 
-    def __str__(self):
-        return self.value
-
