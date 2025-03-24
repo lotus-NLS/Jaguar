@@ -65,11 +65,11 @@ class PythonProject:
         self.open_fpaths.remove(fpath)
 
     def run_file(self, script_fpath : str):
-        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True)
-        header = f'{script_fpath}\n'
+        env = {'PYTHONPATH' : self.dirpath}
+        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True, env=env)
         script_stdout = f'{result.stdout}'
         script_stderr = f'\033[31m{result.stderr}\033[0m'
-        exit_code_msg = f'Exit code: {result.returncode}'
+        exit_code_msg = f'Process finished with exit code {result.returncode}'
 
         self.run_output = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
@@ -138,6 +138,7 @@ if __name__ == "__main__":
     # print(project.get_project_filetree())
     # print(project.get_metadata())
     # print(project.get_with_lineno(fpath=script_fpath))
+
     print(project.get_text())
     project.run_file(script_fpath=testscript_fpath)
     print(project.run_output)
