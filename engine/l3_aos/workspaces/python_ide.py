@@ -73,6 +73,18 @@ class PythonProject:
     def install_libraries(self, names : list[str]):
         subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
 
+    def write(self, fileNo : int, after_line : int, content : str):
+        fpath = self.open_fpaths[fileNo]
+        with open(fpath, 'r') as f:
+            lines = f.readlines()
+        before_lines = lines[:after_line] # If line = 1, then before lines = lines[:1] includes first element
+        content_lines = content.split('\n')
+        after_lines =  lines[after_line:]
+
+        new_content = '\n'.join()
+
+
+
     def open_file(self, fpath : str):
         self.open_fpaths.append(fpath)
 
