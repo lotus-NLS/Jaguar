@@ -2,7 +2,7 @@ import uuid
 
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l2_models import Step
-from engine.l2_models.generation.step import TextPipe, StepState, Report
+from engine.l2_models.generation.step import TextPipe, State, Report
 from engine.l2_models.language import Context
 from holytools.devtools import Unittest
 from holytools.devtools.testing.runner import BlockedTester
@@ -73,10 +73,10 @@ class MockEngine:
         self.ckpt_label = f'Checkpoint'
 
         text_pipe = TextPipe()
-        step : Step = Step(text_pipe=text_pipe, generation_ctx=self.context, ckpt_label=self.ckpt_label, outputs=[])
+        step : Step = Step(text_pipe=text_pipe, gen_ctx=self.context, ckpt_label=self.ckpt_label, outputs=[])
         self.uuid : str = str(uuid.uuid4())
-        self.step_state : StepState = step.get_state(uuid=self.uuid)
-        self.report : Report = Report(session_uuid=self.uuid, is_successful=True, summary='')
+        self.step_state : State = step.get_state(uuid=self.uuid)
+        self.report : Report = Report(sess_uuid=self.uuid, is_successful=True, summary='')
 
     def post_state(self):
         self.dev_monitor.step_endpoint.post(self.step_state.to_str(), secure=False)
@@ -86,8 +86,4 @@ class MockEngine:
 
 
 if __name__ == "__main__":
-    # TestDevMonitor.execute_all()
-    default_dev_monitor = DevMonitor.default()
-    me = MockEngine(dev_monitor=default_dev_monitor)
-    me.post_state()
-    me.post_report()
+    TestDevMonitor.execute_all()

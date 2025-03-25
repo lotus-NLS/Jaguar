@@ -4,7 +4,7 @@ from typing import Optional
 
 from flask import Flask, request, jsonify
 
-from engine.l2_models.generation.step import StepState, Report
+from engine.l2_models.generation.step import State, Report
 from engine.l2_models.language import Context
 from holytools.network import Endpoint
 from holytools.userIO import MessageFormatter
@@ -31,11 +31,11 @@ class DevMonitor:
         @self.app.route(self.step_endpoint.path, methods=['POST'])
         def log_update():
             s = request.get_data().decode()
-            step_state = StepState.from_str(json_str=s)
-            sess_uuid = step_state.session_uuid
+            step_state = State.from_str(json_str=s)
+            sess_uuid = step_state.sess_uuid
 
             self.latest_session_uuid = sess_uuid
-            self.context_map[sess_uuid] = step_state.generation_ctx
+            self.context_map[sess_uuid] = step_state.gen_ctx
             if not step_state.ckpt_label is None:
                 if not sess_uuid in self.ckpt_map:
                     self.ckpt_map[sess_uuid] = []
@@ -46,13 +46,13 @@ class DevMonitor:
         @self.app.route(self.report_endpoint.path, methods=['POST'])
         def log_report():
             data = request.get_data().decode()
-            report = Report.from_str(json_str=data)
+            report : Report = Report.from_str(json_str=data)
             icon = '✓' if report.is_successful else '✗'
             print(f'Report sucessful: {report.is_successful}, Icon = {icon}')
 
-            if not report.session_uuid in self.ckpt_map:
-                self.ckpt_map[report.session_uuid] = []
-            self.ckpt_map[report.session_uuid].append(icon)
+            if not report.sess_uuid in self.ckpt_map:
+                self.ckpt_map[report.sess_uuid] = []
+            self.ckpt_map[report.sess_uuid].append(icon)
             return jsonify({"received": data}), 200
 
     @classmethod

@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from engine.l1_agents import Agent, Evaluator, Task
-from engine.l2_models import OpenAIModel, Step, StepState, InfConfig
+from engine.l2_models import OpenAIModel, Step, State, InfConfig
 from engine.l3_aos import AOS, Terminal, Browser
 from holytools.abstract import Serializable
 from holytools.logging import Loggable
@@ -24,7 +24,7 @@ class LotusEngine(Loggable):
         self.step_endpoint: Endpoint = dev_monitor.step_endpoint
         self.report_endpoint : Endpoint = dev_monitor.report_endpoint
 
-        self.session_uuid: str = self.generate_session_uuid()
+        self.sess_uuid: str = self.generate_session_uuid()
         self._creds : LotusCredentials = LotusCredentials.from_file()
 
         browser = Browser(google_api_key=self._creds.google_api_key,
@@ -42,7 +42,7 @@ class LotusEngine(Loggable):
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
     # --------------------------------------------------------------
-    # routines
+    # work
 
     def do_workflow(self, wf : Workflow):
         node = wf.start_node
@@ -61,7 +61,7 @@ class LotusEngine(Loggable):
         self._agent.handle()
 
     def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
-        states : list[StepState] = []
+        states : list[State] = []
         for step in self._agent.work(task=task, max_steps=max_steps):
             print()
             state = self.observe_step(step=step)
@@ -70,8 +70,8 @@ class LotusEngine(Loggable):
         if not dos is None:
             self.evalute(final_state=states[-1], dos=dos)
 
-    def evalute(self, final_state : StepState, dos : str):
-        summary = final_state.writing
+    def evalute(self, final_state : State, dos : str):
+        summary = final_state.msg
         if summary is None:
             raise ValueError('No summary generated')
 
@@ -79,23 +79,32 @@ class LotusEngine(Loggable):
             is_successful = False
         else:
             is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
-        report = Report(summary=summary, is_successful=is_successful, session_uuid=self.session_uuid)
+
+        print(f'Is sucessful = {is_successful}')
+        report = Report(summary=summary, is_successful=is_successful, sess_uuid=self.sess_uuid)
         self.send(endpoint=self.report_endpoint, obj=report)
 
-    def converse(self, msg : str) -> StepState:
+    # --------------------------------------------------------------
+    # conversation
+
+    def converse(self, msg : str) -> State:
         step = self._agent.converse(msg=msg)
         return self.observe_step(step=step)
 
     # ---------------------------------------------------------------
 
-    def observe_step(self, step : Step, print_chunks : bool = True) -> StepState:
-        step_state = step.get_state(uuid=self.session_uuid)
+    def observe_step(self, step : Step, print_chunks : bool = True) -> State:
+        step_state = step.get_state(uuid=self.sess_uuid)
         self.send(endpoint=self.step_endpoint, obj=step_state)
         print(f'Agent: ', end='')
-        for text in step.text_pipe.get_text_stream():
+
+        msg = ''
+        for chunk in step.text_pipe.get_text_stream():
+            msg += chunk
             if print_chunks:
-                print(text, end='', flush=True)
+                print(chunk, end='', flush=True)
                 time.sleep(0.05)
+        step_state.msg = msg
 
         print()
         return step_state

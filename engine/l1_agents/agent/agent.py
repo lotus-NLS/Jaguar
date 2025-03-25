@@ -80,7 +80,7 @@ class Agent(Loggable):
 
         headline = self.task_tracker.headline
         self.task_tracker.headline = None
-        return Step(text_pipe=pipe, ckpt_label=headline, generation_ctx=context, outputs=outputs)
+        return Step(text_pipe=pipe, ckpt_label=headline, gen_ctx=context, outputs=outputs)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
