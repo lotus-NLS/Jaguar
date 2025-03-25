@@ -70,8 +70,8 @@ class PythonProject:
         subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
         self.interpreter_fpath = os.path.join(self.dirpath, '.venv/bin/python')
 
-    def install_library(self, name : str):
-        subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install', f'{name}'])
+    def install_libraries(self, names : list[str]):
+        subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
 
     def open_file(self, fpath : str):
         self.open_fpaths.append(fpath)
@@ -163,17 +163,11 @@ class PythonProject:
 
 
 if __name__ == "__main__":
-    test_dirpath = '/home/daniel/lotus/engine'
-    testscript_fpath = os.path.join(test_dirpath, 'tests/t_l3/t_workspaces/testscript.py')
+    test_dirpath = '/home/daniel/testdir'
+    testscript_fpath = os.path.join(test_dirpath, 'srcdir/newfile.py')
 
     project = PythonProject(project_dirpath=test_dirpath)
     project.open_file(fpath=testscript_fpath)
-    project.install_library(name='pipdeptree')
+    project.install_libraries(names=['pipdeptree', 'deptry'])
 
     print(project.get_text())
-
-    # print(project.get_project_filetree())
-
-    # print(project.get_project_filetree())
-    # print(project.get_metadata())
-    # print(project.get_with_lineno(fpath=script_fpath))
