@@ -93,6 +93,10 @@ class ToolCall:
         except:
             json_str = repair_json(json_str=self.json_str)
             tool_args_dict = json.loads(s=json_str)
+        for v in tool_args_dict.values():
+            if not isinstance(v, str):
+                raise ValueError(f'Invalid json string: {self.json_str}, includes non-string keys or values')
+
         return tool_args_dict
 
     def __str__(self):

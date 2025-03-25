@@ -67,6 +67,12 @@ class TestToolCall(Unittest):
             self.assertTrue(k == 'arg_one')
             self.assertTrue(v == 'value')
 
+    def test_non_string_items(self):
+        tc1 = ToolCall(name='Hammer', json_str='{"arg_one": 1}')
+        with self.assertRaises(ValueError):
+            tc1.get_args_dict()
+
+
 class ToolArgMethods:
     @staticmethod
     def valid_type_func(this : str, other : int):
