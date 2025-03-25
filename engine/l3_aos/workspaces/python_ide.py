@@ -26,6 +26,7 @@ class PythonIDE(Workspace):
         self.project.run_file(script_fpath=script_fpath)
 
     def open_file(self, fpath : str):
+        """Opens a file specified by relative or absolute path. If the file does not exist it is created instead"""
         self.project.open_file(fpath=fpath)
 
     def close_file(self, fpath : str):
@@ -66,19 +67,34 @@ class PythonProject:
         self.run_output : Optional[str] = None
         self.open_fpaths : list[str] = []
 
+
+    def open_file(self, fpath : str):
+        parent_dir = os.path.dirname(fpath)
+        if not os.path.isdir(parent_dir):
+            raise ValueError(f'Parent directory of file does not exist: {parent_dir}')
+
+        fpath = self._get_abspath(fpath=fpath)
+        self.open_fpaths.append(fpath)
+
+    def close_file(self, fpath : str):
+        fpath = self._get_abspath(fpath=fpath)
+        self.open_fpaths.remove(fpath)
+
     def write(self, fileNo : int, after_line : int, content : str):
         fpath = self.open_fpaths[fileNo]
-        with open(fpath, 'r') as f:
-            lines = f.readlines()
+        if os.path.isfile(path=fpath):
+            with open(fpath, 'r') as f:
+                lines = f.readlines()
 
-        before_lines = lines[:after_line]
-        content_lines = content.split('\n')
-        after_lines =  lines[after_line:]
-        total_lines = before_lines + content_lines + after_lines
+            before_lines = lines[:after_line]
+            content_lines = content.split('\n')
+            after_lines =  lines[after_line:]
+            total_lines = before_lines + content_lines + after_lines
 
-        new_content = '\n'.join(total_lines)
+            content = '\n'.join(total_lines)
+
         with open(fpath, 'w') as f:
-            f.write(new_content)
+            f.write(content)
 
     def delete(self, fileNo :int, start_line : int,end_line : int ):
         fpath = self.open_fpaths[fileNo]
@@ -93,13 +109,6 @@ class PythonProject:
         with open(fpath, 'w') as f:
             f.write(new_content)
 
-    def open_file(self, fpath : str):
-        fpath = self._get_abspath(fpath=fpath)
-        self.open_fpaths.append(fpath)
-
-    def close_file(self, fpath : str):
-        fpath = self._get_abspath(fpath=fpath)
-        self.open_fpaths.remove(fpath)
 
     def mkvenv(self):
         subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
