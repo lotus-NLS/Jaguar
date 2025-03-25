@@ -65,7 +65,7 @@ class PythonProject:
         self.excluded_patterns : list[str] = ['.*\\.pyc']
 
         self.run_output : Optional[str] = None
-        self.open_fpaths : list[str] = []
+        self._open_fpaths : list[str] = []
 
 
     def open_file(self, fpath : str):
@@ -74,14 +74,14 @@ class PythonProject:
             raise ValueError(f'Parent directory of file does not exist: {parent_dir}')
 
         fpath = self._get_abspath(fpath=fpath)
-        self.open_fpaths.append(fpath)
+        self._open_fpaths.append(fpath)
 
     def close_file(self, fpath : str):
         fpath = self._get_abspath(fpath=fpath)
-        self.open_fpaths.remove(fpath)
+        self._open_fpaths.remove(fpath)
 
     def write(self, fileNo : int, after_line : int, content : str):
-        fpath = self.open_fpaths[fileNo]
+        fpath = self._open_fpaths[fileNo]
         if os.path.isfile(path=fpath):
             with open(fpath, 'r') as f:
                 lines = f.readlines()
@@ -89,15 +89,15 @@ class PythonProject:
             before_lines = lines[:after_line]
             content_lines = content.split('\n')
             after_lines =  lines[after_line:]
-            total_lines = before_lines + content_lines + after_lines
+            total_lines = before_lines + content_lines + ['\n'] + after_lines
 
-            content = '\n'.join(total_lines)
+            content = ''.join(total_lines)
 
         with open(fpath, 'w') as f:
             f.write(content)
 
     def delete(self, fileNo :int, start_line : int,end_line : int ):
-        fpath = self.open_fpaths[fileNo]
+        fpath = self._open_fpaths[fileNo]
         with open(fpath, 'r') as f:
             lines = f.readlines()
 
@@ -105,7 +105,7 @@ class PythonProject:
         after_lines = lines[end_line:]
         total_lines = before_lines + after_lines
 
-        new_content = '\n'.join(total_lines)
+        new_content = ''.join(total_lines)
         with open(fpath, 'w') as f:
             f.write(new_content)
 
@@ -129,7 +129,7 @@ class PythonProject:
     def get_view(self) -> str:
         text = MessageFormatter.get_boxed(text=self._get_metadata(), headline=f'Project metadata')
         text += MessageFormatter.get_boxed(text=self._get_project_filetree(), headline=f'Project file structure')
-        if self.open_fpaths:
+        if self._open_fpaths:
             text += self._get_editor()
         if self.run_output:
             text += MessageFormatter.get_boxed(headline='Execution output', text=self.run_output)
@@ -173,7 +173,7 @@ class PythonProject:
 
     def _get_editor(self) -> str:
         all_contents = ''
-        for j, path in enumerate(self.open_fpaths):
+        for j, path in enumerate(self._open_fpaths):
             fname = os.path.basename(path)
             texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
@@ -203,6 +203,7 @@ class PythonProject:
         enumerated_content = ''
         for n, l in enumerate(lines):
             enumerated_content += f'{n+1:< 5}| {l}\n'
+        enumerated_content = enumerated_content.rstrip('\n')
         return enumerated_content
 
 
