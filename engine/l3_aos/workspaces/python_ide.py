@@ -7,7 +7,9 @@ from engine.l3_aos import Workspace
 import re
 
 from holytools.fsys import Directory
-
+from holytools.userIO import MessageFormatter
+from pylint import lint
+from pylint.reporters import CollectingReporter
 
 # --------------------------------------------
 
@@ -70,7 +72,7 @@ class PythonProject:
 
     def run_file(self, script_fpath : str):
         env = {'PYTHONPATH' : self.dirpath}
-        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True, env=env)
+        result = subprocess.Popen([self.interpreter_fpath, script_fpath], env=env)
         script_stdout = f'{result.stdout}'
         script_stderr = f'\033[31m{result.stderr}\033[0m'
         exit_code_msg = f'Process finished with exit code {result.returncode}'
@@ -81,7 +83,7 @@ class PythonProject:
         text = f'+--- Project metadata ---+\n{self.get_metadata()}\n\n'
         text += f'+--- Project structure: ---+\n{self.get_project_filetree()}\n'
         if self.open_fpaths:
-            text += f'+--- Open files ---+\n{self.get_file_contents()}\n'
+            text += f'+--- Open files ---+\n{self.get_editor()}\n'
         if self.run_output:
             text += f'+--- Execution output ---+\n{self.run_output}'
 
@@ -116,11 +118,28 @@ class PythonProject:
 
         return in_excluded or matches_exclusion_pattern
 
-    def get_file_contents(self) -> str:
+    def get_editor(self) -> str:
         all_contents = ''
         for path in self.open_fpaths:
-            all_contents += self.get_with_lineno(fpath=path)
+            fcontent = self.get_with_lineno(fpath=path)
+            inspections = self.get_inspections(fpath=path)
+            all_contents += fcontent + MessageFormatter.get_boxed(text=inspections, headline=f'Problems', )
         return all_contents
+
+    @staticmethod
+    def get_inspections(fpath : str) -> str:
+        reporter = CollectingReporter()
+        lint.Run([fpath] + ['--disable=C,R'], reporter=reporter, exit=False)
+        criticalility_dict = {'W' : '⚠️', 'E' : '🛑'}
+
+        print(reporter.messages)
+
+        formatted_inspections = ''
+        for m in reporter.messages:
+            symbol = criticalility_dict[m.C]
+            formatted_inspections += f' {symbol} l.{m.line:<4}| {m.msg}\n'
+
+        return formatted_inspections
 
     @staticmethod
     def get_with_lineno(fpath : str):
@@ -139,10 +158,9 @@ if __name__ == "__main__":
     testscript_fpath = os.path.join(test_dirpath, 'tests/t_l3/t_workspaces/testscript.py')
 
     project = PythonProject(project_dirpath=test_dirpath)
+    print(project.get_inspections(__file__))
+    # a
+    # 2+2 == 4
     # print(project.get_project_filetree())
     # print(project.get_metadata())
     # print(project.get_with_lineno(fpath=script_fpath))
-
-    print(project.get_text())
-    project.run_file(script_fpath=testscript_fpath)
-    print(project.run_output)

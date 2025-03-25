@@ -11,3 +11,6 @@ _, __ = Image, AOS(workspaces=[])
 print('Hello world!')
 raise Exception(f'fuck you')
 
+a
+
+# 2+2 = 4
