@@ -18,7 +18,7 @@ class TestPythonIDE(Unittest):
         cls.script_fpath = os.path.join(this_dir, 'testscript.py')
 
     def test_script_display(self):
-        file_content = self.project.get_with_lineno(fpath=self.script_fpath)
+        file_content = self.project._get_with_lineno(fpath=self.script_fpath)
         expected_line = 'from engine.l3_aos.aos import AOS'
         self.assertTrue(expected_line in file_content)
 

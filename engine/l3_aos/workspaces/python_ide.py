@@ -42,7 +42,7 @@ class PythonIDE(Workspace):
         self.project = None
 
     def get_text(self) -> str:
-        return self.project.get_text()
+        return self.project.get_view()
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -66,30 +66,34 @@ class PythonProject:
         self.run_output : Optional[str] = None
         self.open_fpaths : list[str] = []
 
+    def write(self, fileNo : int, after_line : int, content : str):
+        fpath = self.open_fpaths[fileNo]
+        with open(fpath, 'r') as f:
+            lines = f.readlines()
+
+        before_lines = lines[:after_line] # If line = 1, then before lines = lines[:1] includes first element
+        content_lines = content.split('\n')
+        after_lines =  lines[after_line:]
+        total_lines = before_lines + content_lines + after_lines
+
+        new_content = '\n'.join(total_lines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
+
+    def open_file(self, fpath : str):
+        fpath = self._get_abspath(fpath=fpath)
+        self.open_fpaths.append(fpath)
+
+    def close_file(self, fpath : str):
+        fpath = self._get_abspath(fpath=fpath)
+        self.open_fpaths.remove(fpath)
+
     def mkvenv(self):
         subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
         self.interpreter_fpath = os.path.join(self.dirpath, '.venv/bin/python')
 
     def install_libraries(self, names : list[str]):
         subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
-
-    def write(self, fileNo : int, after_line : int, content : str):
-        fpath = self.open_fpaths[fileNo]
-        with open(fpath, 'r') as f:
-            lines = f.readlines()
-        before_lines = lines[:after_line] # If line = 1, then before lines = lines[:1] includes first element
-        content_lines = content.split('\n')
-        after_lines =  lines[after_line:]
-
-        new_content = '\n'.join()
-
-
-
-    def open_file(self, fpath : str):
-        self.open_fpaths.append(fpath)
-
-    def close_file(self, fpath : str):
-        self.open_fpaths.remove(fpath)
 
     def run_file(self, script_fpath : str):
         env = {'PYTHONPATH' : self.dirpath}
@@ -100,11 +104,11 @@ class PythonProject:
 
         self.run_output = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
-    def get_text(self) -> str:
-        text = MessageFormatter.get_boxed(text=self.get_metadata(), headline=f'Project metadata')
-        text += MessageFormatter.get_boxed(text=self.get_project_filetree(), headline=f'Project file structure')
+    def get_view(self) -> str:
+        text = MessageFormatter.get_boxed(text=self._get_metadata(), headline=f'Project metadata')
+        text += MessageFormatter.get_boxed(text=self._get_project_filetree(), headline=f'Project file structure')
         if self.open_fpaths:
-            text += self.get_editor()
+            text += self._get_editor()
         if self.run_output:
             text += MessageFormatter.get_boxed(headline='Execution output', text=self.run_output)
 
@@ -112,14 +116,20 @@ class PythonProject:
 
     # -----------------------------------------------
 
-    def get_metadata(self) -> str:
+    def _get_abspath(self, fpath : str):
+        if os.path.isabs(fpath):
+            return fpath
+        else:
+            return os.path.join(self.dirpath, fpath)
+
+    def _get_metadata(self) -> str:
         venv = os.path.relpath(self.interpreter_fpath, self.dirpath) if self.interpreter_fpath else None
         metadata = (f'{"Project name":<20}: {os.path.basename(self.dirpath)}\n'
                     f'{"Project dirpath":<20}: {self.dirpath} \n'
                     f'{"Virtual environment":<20}: {venv}')
         return metadata
 
-    def get_project_filetree(self):
+    def _get_project_filetree(self):
         root_node = Directory(path=self.dirpath)
         fpaths = root_node.get_subfile_fpaths()
         fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
@@ -139,18 +149,18 @@ class PythonProject:
 
         return in_excluded or matches_exclusion_pattern
 
-    def get_editor(self) -> str:
+    def _get_editor(self) -> str:
         all_contents = ''
         for path in self.open_fpaths:
             fname = os.path.basename(path)
-            texts = [self.get_with_lineno(fpath=path), self.get_inspections(fpath=path)]
+            texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
             headlines = [f'[{fname}]', 'Problems']
             all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
 
         return all_contents
 
     @staticmethod
-    def get_inspections(fpath : str) -> str:
+    def _get_inspections(fpath : str) -> str:
         reporter = CollectingReporter()
         lint.Run([fpath] + ['--disable=C,R'], reporter=reporter, exit=False)
         criticalility_dict = {'W' : '⚠️', 'E' : '🛑'}
@@ -163,7 +173,7 @@ class PythonProject:
         return formatted_inspections
 
     @staticmethod
-    def get_with_lineno(fpath : str):
+    def _get_with_lineno(fpath : str):
         with open(fpath, 'r') as f:
             c = f.read()
         lines = c.split('\n')
@@ -182,4 +192,4 @@ if __name__ == "__main__":
     project.open_file(fpath=testscript_fpath)
     project.install_libraries(names=['pipdeptree', 'deptry'])
 
-    print(project.get_text())
+    print(project.get_view())
