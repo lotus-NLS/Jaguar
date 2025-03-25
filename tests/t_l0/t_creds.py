@@ -8,6 +8,7 @@ from tests.credtest import CredTest
 class TestLotusCredentials(CredTest):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.valid_keys = ['openai_api_key', 'google_api_key', 'search_engine_id', 'enable_introduction']
         cls.invalid_keys = ['invalid_key', 'invalid_key2', 'invalid_key3']
 
@@ -26,5 +27,5 @@ class TestLotusCredentials(CredTest):
         print(f'Setting up credentials took {timer.capture(verbose=False)} seconds')
 
 if __name__ == "__main__":
-    # TestLotusCredentials.execute_all()
+    TestLotusCredentials.execute_all()
     TestLotusCredentials.measure_startup_time()

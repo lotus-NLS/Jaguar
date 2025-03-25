@@ -1,4 +1,5 @@
 from engine.l3_aos import Terminal
+from engine.l3_aos.tools import ToolCall
 from holytools.devtools import Unittest
 
 
@@ -9,6 +10,8 @@ class TerminalText(Unittest):
         self.terminal : Terminal = Terminal()
 
     def test_get_text(self):
+        tc = ToolCall.from_dict(attr_dict={'workdir_path' : '~'})
+        self.terminal.open_action._set_args(tool_call=tc)
         self.terminal.open_action.do()
         text = self.terminal.get_text()
         self.assertTrue('@' in text)

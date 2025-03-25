@@ -76,6 +76,10 @@ class ToolCall:
         self.name : str = name
         self.json_str : str = json_str
 
+    @classmethod
+    def from_dict(cls, attr_dict : dict) -> ToolCall:
+        return cls(json_str=json.dumps(attr_dict))
+
     def update(self, other : ToolCall):
         self.name += other.name
         self.json_str += other.json_str

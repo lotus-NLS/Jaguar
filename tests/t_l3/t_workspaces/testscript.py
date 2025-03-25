@@ -1,8 +1,7 @@
-import os
 import sys
 
-print(sys.path)
-print(os.getcwd())
+print(f'Hello world :)')
+print(print(f'sys.path: {sys.path}'))
 
 import PIL.Image as Image
 from engine.l3_aos.aos import AOS
@@ -10,7 +9,5 @@ _, __ = Image, AOS(workspaces=[])
 
 print('Hello world!')
 raise Exception(f'fuck you')
-
-a
 
 # 2+2 = 4

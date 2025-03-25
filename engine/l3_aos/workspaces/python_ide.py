@@ -14,6 +14,7 @@ from pylint.reporters import CollectingReporter
 # --------------------------------------------
 
 class PythonIDE(Workspace):
+    """LotusPythonIDE: Minimal text operable python IDE"""
     def __init__(self):
         super().__init__()
         self.project : Optional[PythonProject] = None
@@ -34,6 +35,7 @@ class PythonIDE(Workspace):
     # Workspace generics
 
     def open(self, project_dirpath : str):
+        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
         self.project = PythonProject(project_dirpath=project_dirpath)
 
     def close(self, *args, **kwargs):
@@ -48,6 +50,10 @@ class PythonIDE(Workspace):
 
 class PythonProject:
     def __init__(self, project_dirpath : str):
+        project_dirpath = os.path.expanduser(project_dirpath)
+        if not os.path.isdir(project_dirpath):
+            raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
+
         self.dirpath : str = project_dirpath
         if not self.dirpath:
             raise ValueError(f'Project dirpath does not exist: {self.dirpath}')
@@ -72,7 +78,7 @@ class PythonProject:
 
     def run_file(self, script_fpath : str):
         env = {'PYTHONPATH' : self.dirpath}
-        result = subprocess.Popen([self.interpreter_fpath, script_fpath], env=env)
+        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True, env=env)
         script_stdout = f'{result.stdout}'
         script_stderr = f'\033[31m{result.stderr}\033[0m'
         exit_code_msg = f'Process finished with exit code {result.returncode}'
@@ -83,7 +89,7 @@ class PythonProject:
         text = MessageFormatter.get_boxed(text=self.get_metadata(), headline=f'Project metadata')
         text += MessageFormatter.get_boxed(text=self.get_project_filetree(), headline=f'Project file structure')
         if self.open_fpaths:
-            text += MessageFormatter.get_boxed(headline=f'Editor', text=self.get_editor())
+            text += self.get_editor()
         if self.run_output:
             text += MessageFormatter.get_boxed(headline='Execution output', text=self.run_output)
 
@@ -121,9 +127,11 @@ class PythonProject:
     def get_editor(self) -> str:
         all_contents = ''
         for path in self.open_fpaths:
-            fcontent = self.get_with_lineno(fpath=path)
-            inspections = self.get_inspections(fpath=path)
-            all_contents += fcontent + MessageFormatter.get_boxed(text=inspections, headline='Problems', )
+            fname = os.path.basename(path)
+            texts = [self.get_with_lineno(fpath=path), self.get_inspections(fpath=path)]
+            headlines = [f'[{fname}]', 'Problems']
+            all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
+
         return all_contents
 
     @staticmethod
@@ -148,7 +156,7 @@ class PythonProject:
         enumerated_content = ''
         for n, l in enumerate(lines):
             enumerated_content += f'{n+1:< 5}| {l}\n'
-        return enumerated_content.rstrip('\n')
+        return enumerated_content
 
 
 if __name__ == "__main__":
@@ -159,10 +167,8 @@ if __name__ == "__main__":
     project.open_file(fpath=testscript_fpath)
     print(project.get_text())
 
-    print(project.get_project_filetree())
+    # print(project.get_project_filetree())
 
-    # a
-    # 2+2 == 4
     # print(project.get_project_filetree())
     # print(project.get_metadata())
     # print(project.get_with_lineno(fpath=script_fpath))
