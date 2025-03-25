@@ -62,7 +62,7 @@ class PythonProject:
 
     def mkvenv(self):
         subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
-        self.interpreter_fpath = os.path.join(self.dirpath, f'.venv/bin/python')
+        self.interpreter_fpath = os.path.join(self.dirpath, '.venv/bin/python')
 
     def open_file(self, fpath : str):
         self.open_fpaths.append(fpath)
@@ -80,12 +80,12 @@ class PythonProject:
         self.run_output = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def get_text(self) -> str:
-        text = f'+--- Project metadata ---+\n{self.get_metadata()}\n\n'
-        text += f'+--- Project structure: ---+\n{self.get_project_filetree()}\n'
+        text = MessageFormatter.get_boxed(text=self.get_metadata(), headline=f'Project metadata')
+        text += MessageFormatter.get_boxed(text=self.get_project_filetree(), headline=f'Project file structure')
         if self.open_fpaths:
-            text += f'+--- Open files ---+\n{self.get_editor()}\n'
+            text += MessageFormatter.get_boxed(headline=f'Editor', text=self.get_editor())
         if self.run_output:
-            text += f'+--- Execution output ---+\n{self.run_output}'
+            text += MessageFormatter.get_boxed(headline='Execution output', text=self.run_output)
 
         return text
 
@@ -123,7 +123,7 @@ class PythonProject:
         for path in self.open_fpaths:
             fcontent = self.get_with_lineno(fpath=path)
             inspections = self.get_inspections(fpath=path)
-            all_contents += fcontent + MessageFormatter.get_boxed(text=inspections, headline=f'Problems', )
+            all_contents += fcontent + MessageFormatter.get_boxed(text=inspections, headline='Problems', )
         return all_contents
 
     @staticmethod
@@ -131,8 +131,6 @@ class PythonProject:
         reporter = CollectingReporter()
         lint.Run([fpath] + ['--disable=C,R'], reporter=reporter, exit=False)
         criticalility_dict = {'W' : '⚠️', 'E' : '🛑'}
-
-        print(reporter.messages)
 
         formatted_inspections = ''
         for m in reporter.messages:
@@ -154,11 +152,15 @@ class PythonProject:
 
 
 if __name__ == "__main__":
-    test_dirpath = f'/home/daniel/lotus/engine'
+    test_dirpath = '/home/daniel/lotus/engine'
     testscript_fpath = os.path.join(test_dirpath, 'tests/t_l3/t_workspaces/testscript.py')
 
     project = PythonProject(project_dirpath=test_dirpath)
-    print(project.get_inspections(__file__))
+    project.open_file(fpath=testscript_fpath)
+    print(project.get_text())
+
+    print(project.get_project_filetree())
+
     # a
     # 2+2 == 4
     # print(project.get_project_filetree())
