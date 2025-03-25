@@ -71,10 +71,23 @@ class PythonProject:
         with open(fpath, 'r') as f:
             lines = f.readlines()
 
-        before_lines = lines[:after_line] # If line = 1, then before lines = lines[:1] includes first element
+        before_lines = lines[:after_line]
         content_lines = content.split('\n')
         after_lines =  lines[after_line:]
         total_lines = before_lines + content_lines + after_lines
+
+        new_content = '\n'.join(total_lines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
+
+    def delete(self, fileNo :int, start_line : int,end_line : int ):
+        fpath = self.open_fpaths[fileNo]
+        with open(fpath, 'r') as f:
+            lines = f.readlines()
+
+        before_lines = lines[:start_line-1]
+        after_lines = lines[end_line:]
+        total_lines = before_lines + after_lines
 
         new_content = '\n'.join(total_lines)
         with open(fpath, 'w') as f:
@@ -151,10 +164,10 @@ class PythonProject:
 
     def _get_editor(self) -> str:
         all_contents = ''
-        for path in self.open_fpaths:
+        for j, path in enumerate(self.open_fpaths):
             fname = os.path.basename(path)
             texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
-            headlines = [f'[{fname}]', 'Problems']
+            headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
             all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
 
         return all_contents
