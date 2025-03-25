@@ -68,18 +68,14 @@ class LotusEngine(Loggable):
             states.append(state)
         print(f'Finished work mode after {len(states)} steps')
         if not dos is None:
-            self.evalute(final_state=states[-1], dos=dos)
+            self.evaluate_report(final_state=states[-1], dos=dos)
 
-    def evalute(self, final_state : State, dos : str):
+    def evaluate_report(self, final_state : State, dos : str):
         summary = final_state.msg
         if summary is None:
             raise ValueError('No summary generated')
 
-        if not final_state.is_final:
-            is_successful = False
-        else:
-            is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
-
+        is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
         print(f'Is sucessful = {is_successful}')
         report = Report(summary=summary, is_successful=is_successful, sess_uuid=self.sess_uuid)
         self.send(endpoint=self.report_endpoint, obj=report)

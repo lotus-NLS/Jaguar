@@ -52,7 +52,6 @@ class Agent(Loggable):
 
         self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
         final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
-        final_step.finished_work = not self.is_working()
 
         if self.is_working():
             self.task_tracker.close_action.do()

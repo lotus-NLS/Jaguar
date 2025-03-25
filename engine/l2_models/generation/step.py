@@ -21,10 +21,10 @@ class Step:
     gen_ctx: Context
     ckpt_label: str
     outputs : list[ToolOutput]
-    finished_work : bool = False
+    is_final : bool = False
 
     def get_state(self, uuid : str) -> State:
-        return State(gen_ctx=self.gen_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid, is_final=self.finished_work)
+        return State(gen_ctx=self.gen_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
     @classmethod
     def failed(cls, context : Context):
@@ -37,7 +37,6 @@ class State(JsonDataclass):
     ckpt_label : Optional[str]
     sess_uuid : str
     msg: str = ''
-    is_final : bool = False
 
     @classmethod
     def from_str(cls, json_str: str) -> State:
