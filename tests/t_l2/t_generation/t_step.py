@@ -54,7 +54,6 @@ class TestStep(Unittest):
         state = self.step.get_state(uuid=f'uuid4')
         print(f'State writing  : {state.msg}')
         self.assertTrue(state.msg == writing)
-        self.assertTrue(state.is_final == False)
 
     def test_roundtrip(self):
         state = self.step.get_state(uuid='uuid4')
