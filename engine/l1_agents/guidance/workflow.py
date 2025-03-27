@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import os.path
 from dataclasses import dataclass
 
 from engine.l1_agents.guidance.tasktracker import Task
@@ -77,7 +79,10 @@ class Workflow:
 
 
     @classmethod
-    def unittest(cls, module_name : str, tests_directory : str) -> Workflow:
+    def unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
+        proj_name = os.path.basename(project_dirpath)
+
+        n0test = Node.single_task(name=f'Open project', directive=f'Open the project at {project_dirpath}')
         n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
         n2test = Node.single_task(name=f'Analyse file',
                                   directive=f'Take note of module functionalities that need testing.')
@@ -91,11 +96,10 @@ class Workflow:
         n6test = Node.single_task(name=f'Fix issues', directive=f'Fix any issues that appear in the inspection pop up')
         n7test = Node.single_task(name='Run', directive=f'Run the test module')
 
-        edgesTest = Edge.linear_chain(nodes=[n1test, n2test, n3test, n4test, n5test, n6test])
-        testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test, n7test],
-                                edges=edgesTest, notice='You are tasked with creating a unittest for module'
-                                                        f'{module_name}. In this proces you will analyse the module'
-                                                        f'and then write a unittest module in {tests_directory}')
+        all_nodes = [n0test, n1test, n2test, n3test, n4test, n5test, n6test, n7test]
+        edgesTest = Edge.linear_chain(nodes=all_nodes)
+        notice = f'You are tasked with creating a unittest for module {module_name} in project {proj_name}. In this proces you will analyse the module and then write a unittest module in {tests_directory}'
+        testWorkflow = Workflow(start_node=n0test, nodes=all_nodes, edges=edgesTest, notice=notice)
         return testWorkflow
 
 
