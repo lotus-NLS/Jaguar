@@ -9,11 +9,11 @@ class Evaluator:
     def __init__(self, model: LLM):
         self.model : LLM = model
 
-    def evaluateProperty(self, msg : str, prop : str) -> bool:
+    def evaluateProperty(self, report : str, prop : str) -> bool:
         yn = YesNoTool()
         query = (f'Please evaluate whether or not the following #property holds for the given #msg\n'
                           f'    - #property: \"{prop}\"\n'
-                          f'    - #msg     : \"{msg}\"')
+                          f'    - #msg     : \"{report}\"')
         entries = [Entry.user(msg=query)]
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)

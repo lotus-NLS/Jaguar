@@ -1,14 +1,8 @@
 from engine import LotusEngine
+from engine.l1_agents import Workflow
 
 if __name__ == "__main__":
     engine = LotusEngine()
 
-    while True:
-        print('User: ', end='')
-        user_input = input()
-        if user_input == 'exit':
-            break
-        engine.converse(msg=user_input)
-        print()
-
-
+    unittest_workflow = Workflow.unittest(module_name=f'LotusEngine', tests_directory='tests')
+    engine.do_workflow(wf=unittest_workflow)

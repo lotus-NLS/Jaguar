@@ -37,8 +37,6 @@ class LotusEngine(Loggable):
         self.agent = Agent(aos=aos, model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
 
-        self.workflows : dict[str, Workflow] = {'Unittest' : Workflow.unittest()}
-
     @staticmethod
     def generate_session_uuid() -> str:
         return str(uuid.uuid4()) + str(uuid.uuid4())
@@ -72,26 +70,32 @@ class LotusEngine(Loggable):
             states.append(state)
         print(f'Finished work mode after {len(states)} steps')
         if not dos is None:
-            self.evaluate_report(final_state=states[-1], dos=dos)
+            self.evalute_report(report=states[-1].msg, dos=dos)
 
-    def evaluate_report(self, final_state : State, dos : str):
-        summary = final_state.msg
-        if summary is None:
-            raise ValueError('No summary generated')
-
-        is_successful = self._evalutor.evaluateProperty(msg=summary, prop=dos)
-        print(f'Is sucessful = {is_successful}')
-        report = Report(summary=summary, is_successful=is_successful, sess_uuid=self.sess_uuid)
-        self.send(endpoint=self.report_endpoint, obj=report)
 
     # --------------------------------------------------------------
     # conversation
 
-    def converse(self, msg : str) -> State:
-        step = self.agent.converse(msg=msg)
-        return self.observe_step(step=step)
+    def converse(self, msg : str):
+        while True:
+            print('User: ', end='')
+            user_input = input()
+            if user_input == 'exit':
+                break
+            step = self.agent.converse(msg=msg)
+            self.observe_step(step=step)
+
+            print()
 
     # ---------------------------------------------------------------
+
+    def evalute_report(self, report : str, dos : str):
+        if not report:
+            raise ValueError('No summary generated')
+
+        is_successful = self._evalutor.evaluateProperty(report=report, prop=dos)
+        report = Report(summary=report, is_successful=is_successful, sess_uuid=self.sess_uuid)
+        self.send(endpoint=self.report_endpoint, obj=report)
 
     def observe_step(self, step : Step, print_chunks : bool = True) -> State:
         step_state = step.get_state(uuid=self.sess_uuid)
