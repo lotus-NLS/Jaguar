@@ -35,6 +35,7 @@ class Workflow:
     start_node: Node
     nodes : list[Node]
     edges : list[Edge]
+    notice : str = ''
 
     def __post_init__(self):
         self.node_map : dict[str, Node] = {}
@@ -75,7 +76,7 @@ class Workflow:
 
 
     @classmethod
-    def test_module(cls) -> Workflow:
+    def unittest(cls, module_name : str, tests_directory : str) -> Workflow:
         n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
         n2test = Node.single_task(name=f'Analyse file',
                                   directive=f'Take note of module functionalities that need testing.')
@@ -85,12 +86,15 @@ class Workflow:
                                   directive=f'Make a list of resources that are shared between runs.'
                                             f'Determine whether a setUp or setUpClass routine is more appropriate.'
                                             f'If the tests manipulate the attributes then setUp is needed rather than setUpClass')
-        n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the file')
-        n6test = Node.single_task(name='Run', directive=f'Run the test module')
+        n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the unittest file in the folder {tests_directory}')
+        n6test = Node.single_task(name=f'Fix issues', directive=f'Fix any issues that appear in the inspection pop up')
+        n7test = Node.single_task(name='Run', directive=f'Run the test module')
 
         edgesTest = Edge.linear_chain(nodes=[n1test, n2test, n3test, n4test, n5test, n6test])
-        testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test],
-                                edges=edgesTest)
+        testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test, n7test],
+                                edges=edgesTest, notice='You are tasked with creating a unittest for module'
+                                                        f'{module_name}. In this proces you will analyse the module'
+                                                        f'and then write a unittest module in {tests_directory}')
         return testWorkflow
 
 

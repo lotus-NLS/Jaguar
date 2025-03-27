@@ -37,6 +37,8 @@ class LotusEngine(Loggable):
         self.agent = Agent(aos=aos, model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
 
+        self.workflows : dict[str, Workflow] = {'Unittest' : Workflow.unittest()}
+
     @staticmethod
     def generate_session_uuid() -> str:
         return str(uuid.uuid4()) + str(uuid.uuid4())
