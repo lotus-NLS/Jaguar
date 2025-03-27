@@ -28,6 +28,7 @@ class Edge:
         edges = []
         for n1, n2 in zip(nodes, nodes[1:]):
             e = Edge(source=n1, target=n2, case='Any')
+            edges.append(e)
         return edges
 
 @dataclass
