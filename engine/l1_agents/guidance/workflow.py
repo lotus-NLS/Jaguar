@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from engine.l1_agents import Task
+from engine.l1_agents.guidance.tasktracker import Task
 from engine.l3_aos.tools import Tool, ToolArg
 
 # ------------------------------------------------
@@ -12,12 +12,23 @@ class Node:
     max_steps : int
     task : Task
 
+    @classmethod
+    def single_task(cls, name : str, directive : str, max_steps : int = 5):
+        task = Task.from_yaml(s=f'-{directive}')
+        return Node(name=name, task=task, max_steps=max_steps)
+
 @dataclass
 class Edge:
     source : Node
     target : Node
     case : str
 
+    @classmethod
+    def linear_chain(cls, nodes : list[Node]) -> list[Edge]:
+        edges = []
+        for n1, n2 in zip(nodes, nodes[1:]):
+            e = Edge(source=n1, target=n2, case='Any')
+        return edges
 
 @dataclass
 class Workflow:
@@ -81,6 +92,19 @@ class ExitTool(Tool):
     def get_args(self) -> list[ToolArg]:
         return [self.exit_choice]
 
+
+
+n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
+n2test = Node.single_task(name=f'Analyse file', directive=f'Take note of module functionalities that need testing.')
+n3test = Node.single_task(name=f'Write cases', directive=f'Write up test cases informally and what they will assert')
+n4test = Node.single_task(name=f'Determine common resources', directive=f'Make a list of resources that are shared between runs.'
+                                                                    f'Determine whether a setUp or setUpClass routine is more appropriate.'
+                                                                    f'If the tests manipulate the attributes then setUp is needed rather than setUpClass')
+n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the file')
+n6test = Node.single_task(name='Run', directive=f'Run the test module')
+
+edgesTest = Edge.linear_chain(nodes=[n1test, n2test, n3test, n4test, n5test, n6test])
+testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test], edges=edgesTest)
 
 if __name__ == "__main__":
     wf = Workflow.get_example_workflow()
