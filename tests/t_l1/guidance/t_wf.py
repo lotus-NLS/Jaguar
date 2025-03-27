@@ -7,7 +7,6 @@ class TestWorkflow(Unittest):
     def setUp(self):
         self.workflow : Workflow = Workflow.get_example_workflow()
 
-
     def test_get_node(self):
         nodeA = self.workflow.get_node('A')
         self.assertTrue(nodeA.name == 'A')

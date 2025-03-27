@@ -47,7 +47,7 @@ class ToolArg:
                 if self.dtype is bool:
                     val = bool(val)
         except ValueError:
-            raise ValueError(f"Invalid input type for '{self.name}'. Expected a value of type {self.dtype.__name__}, got '{self.input}'")
+            raise ValueError(f"Invalid input type for ToolArg '{self.name}'. Expected a value of type {self.dtype.__name__}, got '{self.input}'")
         return val
 
     def is_set(self) -> bool:

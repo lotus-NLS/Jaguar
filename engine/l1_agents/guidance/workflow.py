@@ -43,34 +43,63 @@ class Workflow:
                 raise ValueError(f'Node with name {n.name} already exists')
             self.node_map[n.name] = n
 
-        self.outgoing_edge : dict[str, list[Edge]] = {}
+        self.outgoing_edge_map : dict[str, list[Edge]] = {}
         for e in self.edges:
             if not e.source.name in self.node_map:
                 raise KeyError(f'Node {e.source.name} not found')
             if not e.target.name  in self.node_map:
                 raise KeyError(f'Node {e.target.name} not found')
-            if not e.source.name in self.outgoing_edge:
-                self.outgoing_edge[e.source.name] = []
-            self.outgoing_edge[e.source.name].append(e)
+            if not e.source.name in self.outgoing_edge_map:
+                self.outgoing_edge_map[e.source.name] = []
+            self.outgoing_edge_map[e.source.name].append(e)
 
     def get_node(self, name : str):
         return self.node_map[name]
 
     def get_exit_tool(self, node_name : str) -> ExitTool:
-        exit_tool = ExitTool(edges=self.outgoing_edge[node_name])
+        exit_tool = ExitTool(edges=self.outgoing_edge_map[node_name])
         return exit_tool
 
+
+    # @classmethod
+    # def get_example_workflow(cls) -> Workflow:
+    #     nodeA = Node(name='A', max_steps=3, task=Task.get_example())
+    #     nodeB = Node(name='B', max_steps=3, task=Task.get_example())
+    #     start_node = Node(name='Start', max_steps=3, task=Task.get_example())
+    #
+    #     edges = [Edge(source=start_node, target=nodeA, case='Success'),
+    #              Edge(source=start_node, target=nodeB, case='Failure')]
+    #
+    #     nodes = [start_node, nodeA, nodeB]
+    #     return cls(start_node=start_node, nodes=nodes, edges=edges)
+
+
     @classmethod
-    def get_example_workflow(cls) -> Workflow:
-        nodeA = Node(name='A', max_steps=3, task=Task.get_example())
-        nodeB = Node(name='B', max_steps=3, task=Task.get_example())
-        start_node = Node(name='Start', max_steps=3, task=Task.get_example())
+    def test_module(cls) -> Workflow:
+        n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
+        n2test = Node.single_task(name=f'Analyse file',
+                                  directive=f'Take note of module functionalities that need testing.')
+        n3test = Node.single_task(name=f'Write cases',
+                                  directive=f'Write up test cases informally and what they will assert')
+        n4test = Node.single_task(name=f'Determine common resources',
+                                  directive=f'Make a list of resources that are shared between runs.'
+                                            f'Determine whether a setUp or setUpClass routine is more appropriate.'
+                                            f'If the tests manipulate the attributes then setUp is needed rather than setUpClass')
+        n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the file')
+        n6test = Node.single_task(name='Run', directive=f'Run the test module')
 
-        edges = [Edge(source=start_node, target=nodeA, case='Success'),
-                 Edge(source=start_node, target=nodeB, case='Failure')]
+        edgesTest = Edge.linear_chain(nodes=[n1test, n2test, n3test, n4test, n5test, n6test])
+        testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test],
+                                edges=edgesTest)
+        return testWorkflow
 
-        nodes = [start_node, nodeA, nodeB]
-        return cls(start_node=start_node, nodes=nodes, edges=edges)
+
+    @classmethod
+    def example(cls) -> Workflow:
+        n1 = Node.single_task(name='Step1', directive='Test task, please complete')
+        n2 = Node.single_task(name='Step2', directive='Test task, pleaes complete')
+        edge = Edge(source=n1, target=n2, case='Success')
+        return cls(start_node=n1, nodes=[n1, n2], edges=[edge])
 
 
 class ExitTool(Tool):
@@ -87,27 +116,15 @@ class ExitTool(Tool):
                        f'Please decide according to these options:')
         for j, e in enumerate(self.edges):
             initial_msg += f'\n[{j}]: {e.case}'
+        initial_msg += f'Specify the case through an integer'
         return initial_msg
 
     def get_args(self) -> list[ToolArg]:
         return [self.exit_choice]
 
 
-
-n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
-n2test = Node.single_task(name=f'Analyse file', directive=f'Take note of module functionalities that need testing.')
-n3test = Node.single_task(name=f'Write cases', directive=f'Write up test cases informally and what they will assert')
-n4test = Node.single_task(name=f'Determine common resources', directive=f'Make a list of resources that are shared between runs.'
-                                                                    f'Determine whether a setUp or setUpClass routine is more appropriate.'
-                                                                    f'If the tests manipulate the attributes then setUp is needed rather than setUpClass')
-n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the file')
-n6test = Node.single_task(name='Run', directive=f'Run the test module')
-
-edgesTest = Edge.linear_chain(nodes=[n1test, n2test, n3test, n4test, n5test, n6test])
-testWorkflow = Workflow(start_node=n1test, nodes=[n1test, n2test, n3test, n4test, n5test, n6test], edges=edgesTest)
-
 if __name__ == "__main__":
-    wf = Workflow.get_example_workflow()
+    wf = Workflow.example()
     tool = wf.get_exit_tool(node_name='Start')
     print(tool.get_desc())
     print(tool.get_args())

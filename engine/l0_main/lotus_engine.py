@@ -34,7 +34,7 @@ class LotusEngine(Loggable):
         aos = AOS(workspaces=[terminal, browser, ide])
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
 
-        self._agent = Agent(aos=aos, model=model)
+        self.agent = Agent(aos=aos, model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
 
     @staticmethod
@@ -46,23 +46,25 @@ class LotusEngine(Loggable):
 
     def do_workflow(self, wf : Workflow):
         node = wf.start_node
-        outgoing_edges = wf.outgoing_edge[node.name]
+        outgoing_edges = wf.outgoing_edge_map[node.name]
 
-        while len(outgoing_edges) > 0:
+        while True:
+            input(f'Press enter to continue')
             self.do_task(task=node.task, max_steps=node.max_steps)
+
             exit_tool = wf.get_exit_tool(node_name=node.name)
-            inf_config = InfConfig(required_tool=exit_tool)
-            self._agent.handle(inf_config=inf_config)
-            outgoing_edges = wf.outgoing_edge[node.name]
+            self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
 
             choice = exit_tool.exit_choice.get_value()
             node = outgoing_edges[choice].target
+            if not node.name in wf.outgoing_edge_map:
+                break
 
-        self._agent.handle()
+        self.agent.handle()
 
     def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
         states : list[State] = []
-        for step in self._agent.work(task=task, max_steps=max_steps):
+        for step in self.agent.work(task=task, max_steps=max_steps):
             print()
             state = self.observe_step(step=step)
             states.append(state)
@@ -84,7 +86,7 @@ class LotusEngine(Loggable):
     # conversation
 
     def converse(self, msg : str) -> State:
-        step = self._agent.converse(msg=msg)
+        step = self.agent.converse(msg=msg)
         return self.observe_step(step=step)
 
     # ---------------------------------------------------------------
