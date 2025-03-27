@@ -12,6 +12,7 @@ from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
 from ..l1_agents.guidance.workflow import Workflow
 from ..l2_models.generation.step import Report
+from ..l2_models.language import Entry
 from ..l3_aos.workspaces.python_ide import PythonIDE
 
 
@@ -48,6 +49,9 @@ class LotusEngine(Loggable):
         node = wf.start_node
         outgoing_edges = wf.outgoing_edge_map[node.name]
 
+        workflow_description = Entry.system(msg=wf.notice)
+        self.agent.update_memory(entry=workflow_description)
+
         while True:
             input(f'Press enter to continue')
             self.do_task(task=node.task, max_steps=node.max_steps)
@@ -76,13 +80,14 @@ class LotusEngine(Loggable):
     # --------------------------------------------------------------
     # conversation
 
-    def converse(self, msg : str):
+    def converse(self):
         while True:
             print('User: ', end='')
             user_input = input()
             if user_input == 'exit':
                 break
-            step = self.agent.converse(msg=msg)
+
+            step = self.agent.talk(msg=user_input)
             self.observe_step(step=step)
 
             print()

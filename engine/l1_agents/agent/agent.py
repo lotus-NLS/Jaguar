@@ -32,7 +32,7 @@ class Agent(Loggable):
             hook = self.get_freeze_hook(ws=ws)
             ws.close_action.add_prehook(hook)
 
-    def converse(self, msg : str) -> Step:
+    def talk(self, msg : str) -> Step:
         self.memory.append(Entry.user(msg=msg))
         return self.handle()
 

@@ -82,12 +82,12 @@ class Workflow:
     def unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
         proj_name = os.path.basename(project_dirpath)
 
-        n0test = Node.single_task(name=f'Open project', directive=f'Open the project at {project_dirpath}')
-        n1test = Node.single_task(name=f'Open files', directive=f'Open relevant module files')
-        n2test = Node.single_task(name=f'Analyse file',
-                                  directive=f'Take note of module functionalities that need testing.')
+        n0test = Node.single_task(name=f'Open project', directive=f'Open the project at {project_dirpath} in the PythonIDE')
+        n1test = Node.single_task(name=f'Open files', directive=f'Open the file {module_name}')
+        n2test = Node.single_task(name=f'Analyse file {module_name}',
+                                  directive=f'Take note of module {module_name} functionalities that need testing.')
         n3test = Node.single_task(name=f'Write cases',
-                                  directive=f'Write up test cases informally and what they will assert')
+                                  directive=f'Write up test cases informally and what behaviour will assert')
         n4test = Node.single_task(name=f'Determine common resources',
                                   directive=f'Make a list of resources that are shared between runs.'
                                             f'Determine whether a setUp or setUpClass routine is more appropriate.'
@@ -98,7 +98,8 @@ class Workflow:
 
         all_nodes = [n0test, n1test, n2test, n3test, n4test, n5test, n6test, n7test]
         edgesTest = Edge.linear_chain(nodes=all_nodes)
-        notice = f'You are tasked with creating a unittest for module {module_name} in project {proj_name}. In this proces you will analyse the module and then write a unittest module in {tests_directory}'
+        notice = (f'You are tasked with creating a unittest for the file {module_name} in project {proj_name} found. In this proces you will analyse the module and then write a unittest module in {tests_directory}.'
+                  f'In this proces you will receive a list of TaskTracker task lists that will guide you through the process')
         testWorkflow = Workflow(start_node=n0test, nodes=all_nodes, edges=edgesTest, notice=notice)
         return testWorkflow
 

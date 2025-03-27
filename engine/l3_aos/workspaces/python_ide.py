@@ -140,6 +140,7 @@ class PythonProject:
     # -----------------------------------------------
 
     def _get_abspath(self, fpath : str):
+        fpath= os.path.expanduser(fpath)
         if os.path.isabs(fpath):
             return fpath
         else:
