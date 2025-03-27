@@ -69,6 +69,7 @@ class PythonProject:
 
 
     def open_file(self, fpath : str):
+        fpath = self._get_abspath(fpath=fpath)
         parent_dir = os.path.dirname(fpath)
         if not os.path.isdir(parent_dir):
             raise ValueError(f'Parent directory of file does not exist: {parent_dir}')
@@ -175,7 +176,7 @@ class PythonProject:
         all_contents = ''
         for j, path in enumerate(self._open_fpaths):
             fname = os.path.basename(path)
-            texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
+            texts = [self._view_with_lineno(fpath=path), self._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
             all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
 
@@ -195,7 +196,7 @@ class PythonProject:
         return formatted_inspections
 
     @staticmethod
-    def _get_with_lineno(fpath : str):
+    def _view_with_lineno(fpath : str):
         with open(fpath, 'r') as f:
             c = f.read()
         lines = c.split('\n')
