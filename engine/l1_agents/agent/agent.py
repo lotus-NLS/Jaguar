@@ -40,7 +40,7 @@ class Agent(Loggable):
         self.task_tracker.open_action.do()
         self.task_tracker.root = task
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
-        report_frequency = 4
+        report_frequency = 5
 
         self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
         for j in range(max_steps):

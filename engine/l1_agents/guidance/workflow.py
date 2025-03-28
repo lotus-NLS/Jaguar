@@ -70,10 +70,10 @@ class Workflow:
         proj_name = os.path.basename(project_dirpath)
 
 
-        ys1 = (f'- Get acquinted with module + Determine test cases\n'
+        ys1 = (f'- Get acquinted with module {module_name} \n'
                f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
-               f'    - Analyse file {module_name}: Take note of module {module_name} functionalities that need testing.\n'
-               f'    - Write cases: Write up test cases informally and what behaviour will asserted')
+               f'    - Analyse file {module_name}: Take note of the the functionalities in {module_name} that to be checked in a unittest.\n'
+               f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest')
         get_acquainted_task = Task.from_yaml(s=ys1)
         n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
 

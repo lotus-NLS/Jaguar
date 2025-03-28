@@ -29,9 +29,7 @@ class TaskTracker(Workspace):
 
 
     def update(self, action_headline : str):
-        """Allows you to report the actions youve taken since your last call of this update tool.
-        Collectively these updates generate a timeline of your actions.
-        Focus on your actions rather than the results. The results will be discussed in a report later on"""
+        """Allows you to report the actions youve taken since your last call of this update tool. Collectively these updates generate a timeline of your actions. Focus on your actions rather than the results. The results will be discussed in a report later on"""
         self.headline : str = action_headline
 
     def add_task(self, parent_task_id : str, msg : str):
@@ -40,8 +38,7 @@ class TaskTracker(Workspace):
         parent.add_subtask(msg)
 
     def add_comment(self, task_id : str, msg : str):
-        """Adds a comment to task [task_id].
-        Use this to store updates, relevant information or reason about why this task should be marked as done or discarded"""
+        """Adds a comment to task [task_id]. Use this to store updates, relevant information or reason about why this task should be marked as done or discarded"""
         self.root.get_descendant(task_id).add_comment(msg)
 
     def complete_task(self, task_id : str):
@@ -55,6 +52,10 @@ class TaskTracker(Workspace):
     # -------------------------------
     # Generics
 
+
+    def get_actions(self) -> list[Tool]:
+        actions = super().get_actions()
+        return [a for a in actions if a.get_name() != self.update_tool.get_name()]
 
     def open(self):
         """Opens task tracker"""

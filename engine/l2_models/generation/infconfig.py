@@ -43,7 +43,7 @@ class InfConfig:
     call_options: CallOptions = field(default_factory=CallOptions.auto)
     required_tool : Optional[Tool] = None
     timeout : float = 10
-    input_tokens_max: int = 8192
+    input_tokens_max: int = 16384
     output_tokens_max : Optional[int] = None
     debugging : bool = True
 
