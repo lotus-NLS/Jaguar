@@ -11,7 +11,6 @@ from holytools.logging import LoggerFactory
 from .input import ToolArg
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
 
-
 # ---------------------------------------------------------
 
 class Tool:

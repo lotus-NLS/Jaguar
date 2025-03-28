@@ -100,8 +100,8 @@ class Workflow:
 
     @classmethod
     def example(cls) -> Workflow:
-        n1 = Node.single_directive(name='start', directive='Test task, please complete, do not close')
-        n2 = Node.single_directive(name='end', directive='Test task, please complete, do not close')
+        n1 = Node.single_directive(name='start', directive='Test task A. Please complete this test task A')
+        n2 = Node.single_directive(name='end', directive='Test task B. Please complete this test task B')
         edge = Edge(source=n1, target=n2, case='Success')
         return cls(start_node=n1, nodes=[n1, n2], edges=[edge])
 

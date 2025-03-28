@@ -33,7 +33,7 @@ class AOS(Loggable):
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
-                outputs.append(tool.execute(tool_call=call))
+                outputs.append(tool.execute(args_dict=call.get_args_dict()))
             except KeyError as e:
                 self.error(f'No tool found with name {call.name}')
                 outputs.append(ToolOutput.exception(name=call.name, reason=e))
