@@ -60,6 +60,7 @@ class LotusEngine(Loggable):
                 break
 
             exit_tool = wf.get_exit_tool(node_name=node.name)
+            self.agent.update_memory(entry=Entry.tool(msg=exit_tool.get_desc(), name=exit_tool.get_name()))
             self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
             choice = exit_tool.exit_choice.get_value()
             node = outgoing_edges[choice].target

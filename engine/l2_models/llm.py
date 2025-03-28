@@ -19,11 +19,7 @@ class LLM(Loggable):
         super().__init__()
         self.api_key : str = api_key
         self._name : str = name
-
-        # TODO: This is a workaround pending issue https://github.com/openai/tiktoken/issues/367
-        name = name if not name == 'o1' else 'o1-'
-        self.tokenizer: Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(name))
-        # self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.encoding_for_model(self._name))
+        self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.get_encoding(encoding_name=f'o200k_base'))
 
     @abstractmethod
     def get_generation(self, context : Context, options: InfConfig) -> Generation:

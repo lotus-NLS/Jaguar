@@ -1,5 +1,5 @@
 from engine.l1_agents import Task
-from engine.l1_agents.guidance.workflow import Workflow, ExitTool, Node, Edge
+from engine.l1_agents.guidance.workflow import Workflow, NodeNavigation, Node, Edge
 from holytools.devtools import Unittest
 
 
@@ -17,7 +17,7 @@ class TestWorkflow(Unittest):
 
     def test_get_exit_tool(self):
         exit_tool = self.workflow.get_exit_tool('Start')
-        self.assertTrue(isinstance(exit_tool, ExitTool))
+        self.assertTrue(isinstance(exit_tool, NodeNavigation))
 
     def test_invalid_wf(self):
         nodeA = Node(name='StepA', max_steps=3, task=Task.get_example())

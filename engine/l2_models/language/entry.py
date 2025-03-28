@@ -33,7 +33,8 @@ class Entry(JsonDataclass):
     def from_workspace(cls, ws : Workspace, with_box : bool = True):
         msg = f'{ws.get_desc()}\n'
         if with_box:
-            msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=ws.get_name())
+            headline = f'** {ws.get_name()} ** (Active)'
+            msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=headline)
         else:
             msg += ws.get_text()
         return Entry.tool(name=ws.get_name(), msg=msg, image=ws.get_image())

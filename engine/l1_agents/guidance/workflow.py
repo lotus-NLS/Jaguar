@@ -61,8 +61,8 @@ class Workflow:
     def get_node(self, name : str):
         return self.node_map[name]
 
-    def get_exit_tool(self, node_name : str) -> ExitTool:
-        exit_tool = ExitTool(edges=self.outgoing_edge_map[node_name])
+    def get_exit_tool(self, node_name : str) -> NodeNavigation:
+        exit_tool = NodeNavigation(edges=self.outgoing_edge_map[node_name])
         return exit_tool
 
     @classmethod
@@ -100,26 +100,26 @@ class Workflow:
 
     @classmethod
     def example(cls) -> Workflow:
-        n1 = Node.single_directive(name='start', directive='Test task A. Please complete this test task A')
-        n2 = Node.single_directive(name='end', directive='Test task B. Please complete this test task B')
-        edge = Edge(source=n1, target=n2, case='Success')
+        n1 = Node.single_directive(name='start', directive='Test task A. Mark this task completed')
+        n2 = Node.single_directive(name='end', directive='Test task B. Mark this task completed')
+        edge = Edge(source=n1, target=n2, case='Success. This workflow is just an example with a single exit case')
         return cls(start_node=n1, nodes=[n1, n2], edges=[edge])
 
 
-class ExitTool(Tool):
+class NodeNavigation(Tool):
     def __init__(self, edges : list[Edge]):
         super().__init__()
         self.edges : list[Edge] = edges
-        self.exit_choice : ToolArg = ToolArg(name='Exit choice', dtype=int)
+        self.exit_choice : ToolArg = ToolArg(name='Case choice', dtype=int)
 
     def _do(self):
         pass
 
     def get_desc(self) -> str:
         initial_msg = (f'Decides with which case the current task is quit. '
-                       f'Please decide according to these options:')
+                       f'Please decide according to these options:\n')
         for j, e in enumerate(self.edges):
-            initial_msg += f'\n[{j}]: {e.case}'
+            initial_msg += f'[{j}]: {e.case}\n'
         initial_msg += f'Specify the case through an integer'
         return initial_msg
 

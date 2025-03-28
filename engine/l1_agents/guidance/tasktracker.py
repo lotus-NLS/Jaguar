@@ -23,6 +23,7 @@ class TaskTracker(Workspace):
 
         self.work_notice : str = (f'You are currently in work mode and cannot converse with the user. '
                        f'Your current tasks are outlined in the {self.__class__.__name__} workspace. '
+                       f'The only active instance of TaskTracker workspace is marked with ** {self.__class__.__name__} (Active) ** '
                        f'Upon completing these tasks or closing the workspace you will automatically'
                        f' return to conversation mode')
         self.update_tool : Tool = self.create_action(mthd=self.update)
