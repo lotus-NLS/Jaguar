@@ -26,10 +26,11 @@ class PythonIDE(Workspace):
         self.project.run_file(script_fpath=script_fpath)
 
     def open_file(self, fpath : str):
-        """Opens a file specified by relative or absolute path. If the file does not exist it is created instead"""
+        """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
         self.project.open_file(fpath=fpath)
 
     def close_file(self, fpath : str):
+        """Closes file spcified relative to the project dirpath"""
         self.project.close_file(fpath=fpath)
 
     # -------------------------------------------------------

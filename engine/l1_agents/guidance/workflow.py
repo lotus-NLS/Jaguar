@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from engine.l1_agents.guidance.tasktracker import Task
 from engine.l3_aos.tools import Tool, ToolArg
+from holytools.fileIO import SegmentProvider
 
 # ------------------------------------------------
 
@@ -15,7 +16,7 @@ class Node:
     task : Task
 
     @classmethod
-    def single_task(cls, name : str, directive : str, max_steps : int = 5):
+    def single_directive(cls, name : str, directive : str, max_steps : int = 5):
         task = Task.from_yaml(s=f'-{directive}')
         return Node(name=name, task=task, max_steps=max_steps)
 
@@ -64,50 +65,39 @@ class Workflow:
         exit_tool = ExitTool(edges=self.outgoing_edge_map[node_name])
         return exit_tool
 
-
-    # @classmethod
-    # def get_example_workflow(cls) -> Workflow:
-    #     nodeA = Node(name='A', max_steps=3, task=Task.get_example())
-    #     nodeB = Node(name='B', max_steps=3, task=Task.get_example())
-    #     start_node = Node(name='Start', max_steps=3, task=Task.get_example())
-    #
-    #     edges = [Edge(source=start_node, target=nodeA, case='Success'),
-    #              Edge(source=start_node, target=nodeB, case='Failure')]
-    #
-    #     nodes = [start_node, nodeA, nodeB]
-    #     return cls(start_node=start_node, nodes=nodes, edges=edges)
-
-
     @classmethod
     def unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
         proj_name = os.path.basename(project_dirpath)
 
-        n0test = Node.single_task(name=f'Open project', directive=f'Open the project at {project_dirpath} in the PythonIDE')
-        n1test = Node.single_task(name=f'Open files', directive=f'Open the file {module_name}')
-        n2test = Node.single_task(name=f'Analyse file {module_name}',
-                                  directive=f'Take note of module {module_name} functionalities that need testing.')
-        n3test = Node.single_task(name=f'Write cases',
-                                  directive=f'Write up test cases informally and what behaviour will assert')
-        n4test = Node.single_task(name=f'Determine common resources',
-                                  directive=f'Make a list of resources that are shared between runs.'
-                                            f'Determine whether a setUp or setUpClass routine is more appropriate.'
-                                            f'If the tests manipulate the attributes then setUp is needed rather than setUpClass')
-        n5test = Node.single_task(name=f'Implement', directive=f'Open and write out the unittest file in the folder {tests_directory}')
-        n6test = Node.single_task(name=f'Fix issues', directive=f'Fix any issues that appear in the inspection pop up')
-        n7test = Node.single_task(name='Run', directive=f'Run the test module')
 
-        all_nodes = [n0test, n1test, n2test, n3test, n4test, n5test, n6test, n7test]
-        edgesTest = Edge.linear_chain(nodes=all_nodes)
-        notice = (f'You are tasked with creating a unittest for the file {module_name} in project {proj_name} found. In this proces you will analyse the module and then write a unittest module in {tests_directory}.'
-                  f'In this proces you will receive a list of TaskTracker task lists that will guide you through the process')
-        testWorkflow = Workflow(start_node=n0test, nodes=all_nodes, edges=edgesTest, notice=notice)
+        ys1 = (f'- Get acquinted with module + Determine test cases\n'
+               f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
+               f'    - Analyse file {module_name}: Take note of module {module_name} functionalities that need testing.\n'
+               f'    - Write cases: Write up test cases informally and what behaviour will asserted')
+        get_acquainted_task = Task.from_yaml(s=ys1)
+        n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
+
+        ys2 = (f'- Write out unittest\n'
+               f'    - Determine common resources: Make a list of resources that are shared between runs.\n'
+               f'    - setUp or setUpClass: Determine whether a setUp or setUpClass routine is more appropriate.\n'
+               f'    - Implement unittest: Open and write out the unittest file at the appropriate location in {tests_directory}\n'
+               f'    - Fix issues: Fix any issues that appear in the inspection popup\n'
+               f'    - Run: Run the test module')
+        write_unittest_task = Task.from_yaml(s=ys2)
+        n1 = Node(name='Write unittest', task=write_unittest_task, max_steps=20)
+        edges = [Edge(source=n0, target=n1, case='Success')]
+
+        notice = (f'You are tasked with creating a unittest for the file {module_name} in project {proj_name}.'
+                  f'You will be guided through this process through the TaskTracker tool which will present you each individual step')
+
+        testWorkflow = Workflow(start_node=n0, nodes=[n0, n1], edges=edges, notice=notice)
         return testWorkflow
 
 
     @classmethod
     def example(cls) -> Workflow:
-        n1 = Node.single_task(name='Step1', directive='Test task, please complete')
-        n2 = Node.single_task(name='Step2', directive='Test task, pleaes complete')
+        n1 = Node.single_directive(name='Step1', directive='Test task, please complete')
+        n2 = Node.single_directive(name='Step2', directive='Test task, pleaes complete')
         edge = Edge(source=n1, target=n2, case='Success')
         return cls(start_node=n1, nodes=[n1, n2], edges=[edge])
 
@@ -134,7 +124,8 @@ class ExitTool(Tool):
 
 
 if __name__ == "__main__":
-    wf = Workflow.example()
-    tool = wf.get_exit_tool(node_name='Start')
-    print(tool.get_desc())
-    print(tool.get_args())
+    task_provider = SegmentProvider(fpath='tasks.txt', delimiter='##')
+    analyse_file = task_provider.retrieve(name=f'')
+
+    t1 = Task.from_yaml(s=analyse_file)
+    print(t1.get_tree())
