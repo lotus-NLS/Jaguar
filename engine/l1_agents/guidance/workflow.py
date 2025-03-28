@@ -101,9 +101,11 @@ class Workflow:
     @classmethod
     def example(cls) -> Workflow:
         n1 = Node.single_directive(name='start', directive='Test task A. Mark this task completed')
-        n2 = Node.single_directive(name='end', directive='Test task B. Mark this task completed')
+        n2 = Node.single_directive(name='end', directive='Complete the task with taskID = 1. Do *not* under any circumstance close the TaskTracker')
         edge = Edge(source=n1, target=n2, case='Success. This workflow is just an example with a single exit case')
-        return cls(start_node=n1, nodes=[n1, n2], edges=[edge])
+        return cls(start_node=n1, nodes=[n1, n2], edges=[edge], notice='You will be guided through this workflow through a series of'
+                                                                       'task lists. They will each be presented to you in thie TaskTracker tool'
+                                                                       'Only the active TaskTracker tool is relevant.')
 
 
 class NodeNavigation(Tool):
