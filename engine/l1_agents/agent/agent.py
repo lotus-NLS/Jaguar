@@ -111,8 +111,8 @@ class Agent(Loggable):
 
     def get_freeze_hook(self, ws : Workspace):
         def freeze_ws(frozen_ws: Workspace = ws):
-            entry = Entry.from_workspace(ws=frozen_ws)
-            entry.add(msg=f'Closed workspace {frozen_ws.get_name()} with following final state:', at_start=True)
+            entry = Entry.from_workspace(ws=frozen_ws, with_box=False)
+            entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
             self.update_memory(entry=entry)
         return freeze_ws
 

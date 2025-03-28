@@ -30,9 +30,12 @@ class Entry(JsonDataclass):
                 self.image = ImageConverter.to_rgb(img=self.image)
 
     @classmethod
-    def from_workspace(cls, ws : Workspace):
+    def from_workspace(cls, ws : Workspace, with_box : bool = True):
         msg = f'{ws.get_desc()}\n'
-        msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=ws.get_name())
+        if with_box:
+            msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=ws.get_name())
+        else:
+            msg += ws.get_text()
         return Entry.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
 
     @classmethod
