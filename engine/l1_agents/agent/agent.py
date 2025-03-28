@@ -53,7 +53,7 @@ class Agent(Loggable):
         self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
         final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
 
-        if self.is_working():
+        if self.task_tracker.is_active:
             self.task_tracker.close_action.do()
 
         yield final_step
@@ -131,4 +131,10 @@ class Agent(Loggable):
         return context
 
     def is_working(self) -> bool:
-        return self.task_tracker.is_active
+        is_active = self.task_tracker.is_active
+        if is_active:
+            is_working = not all([t.is_complete for t in self.task_tracker.root.subtasks])
+        else:
+            is_working = False
+
+        return is_working

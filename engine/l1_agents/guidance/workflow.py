@@ -73,7 +73,8 @@ class Workflow:
         ys1 = (f'- Section A: Get acquinted with module {module_name} \n'
                f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
                f'    - Analyse file {module_name}: Take note of the the functionalities in {module_name} that to be checked in a unittest.\n'
-               f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest')
+               f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest\n'
+               f'    - Mark complete: One the above tasks are done, complete task 1 (= sectionA) in the TaskTracker tool to proceed to the next section')
         get_acquainted_task = Task.from_yaml(s=ys1)
         n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
 
