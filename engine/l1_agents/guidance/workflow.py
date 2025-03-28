@@ -70,14 +70,14 @@ class Workflow:
         proj_name = os.path.basename(project_dirpath)
 
 
-        ys1 = (f'- Get acquinted with module {module_name} \n'
+        ys1 = (f'- Section A: Get acquinted with module {module_name} \n'
                f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
                f'    - Analyse file {module_name}: Take note of the the functionalities in {module_name} that to be checked in a unittest.\n'
                f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest')
         get_acquainted_task = Task.from_yaml(s=ys1)
         n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
 
-        ys2 = (f'- Write out unittest\n'
+        ys2 = (f'- Section B: Write out unittest\n'
                f'    - Determine common resources: Make a list of resources that are shared between runs.\n'
                f'    - setUp or setUpClass: Determine whether a setUp or setUpClass routine is more appropriate.\n'
                f'    - Implement unittest: Open and write out the unittest file at the appropriate location in {tests_directory}\n'
@@ -88,7 +88,10 @@ class Workflow:
         edges = [Edge(source=n0, target=n1, case='Success')]
 
         notice = (f'You are tasked with creating a unittest for the file {module_name} in project {proj_name}.'
-                  f'You will be guided through this process through the TaskTracker tool which will present you each individual step')
+                  f'You will be guided through this process through the TaskTracker tool. '
+                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                  f'As soon as you finish this section of tasks, the next secetion will be presented to you until'
+                  f'the workflow is complete.')
 
         testWorkflow = Workflow(start_node=n0, nodes=[n0, n1], edges=edges, notice=notice)
         return testWorkflow
