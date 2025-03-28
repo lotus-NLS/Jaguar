@@ -27,8 +27,8 @@ class TestAgent(CredTest):
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
 
     def test_freeze_ws(self):
-        self.agent.task_tracker.open_action._do()
-        self.agent.task_tracker.close_action._do()
+        self.agent.task_tracker.open_action.execute({})
+        self.agent.task_tracker.close_action.execute({})
 
         context = self.agent.get_context(inf_config=InfConfig())
         context_view = context.get_view(section_header=f'Context')
