@@ -72,7 +72,7 @@ class Greet(Tool):
                                           desc='This is the text that will be displayed to the guests on the monitor.'
                                                'There is only one monitor so you need only call this once')
 
-    def do(self):
+    def _do(self):
         print(self.text_arg.input)
 
     def get_desc(self) -> str:
@@ -86,7 +86,7 @@ class NotifyChef(Tool):
         super().__init__(call_timeout=call_timeout)
         self.number_of_guests_arg : ToolArg = ToolArg(name="number_of_guests")
 
-    def do(self):
+    def _do(self):
         print(f'We need to prepare food for {self.number_of_guests_arg.input} guests')
 
     def get_desc(self) -> str:

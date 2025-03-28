@@ -37,7 +37,7 @@ class Agent(Loggable):
         return self.handle()
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
-        self.task_tracker.open_action.do()
+        self.task_tracker.open_action.execute({})
         self.task_tracker.root = task
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
@@ -54,7 +54,7 @@ class Agent(Loggable):
         final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
 
         if self.task_tracker.is_active:
-            self.task_tracker.close_action.do()
+            self.task_tracker.close_action.execute({})
 
         yield final_step
 
@@ -95,11 +95,11 @@ class Agent(Loggable):
 
     def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolOutput]:
         if not temp_tool:
-            outputs = self.aos.execute(tool_calls=tool_calls)
+            outputs = self.aos.process(tool_calls=tool_calls)
         elif temp_tool and len(tool_calls) > 1:
             raise ValueError('Temporary tool can only be used with a single tool call')
         else:
-            outputs = [temp_tool.execute(tool_calls[0])]
+            outputs = [temp_tool.execute(tool_calls[0].get_args_dict())]
 
         for out in outputs:
             output_entry = Entry.from_tool_output(out)

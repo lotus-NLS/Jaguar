@@ -50,7 +50,7 @@ class Workspace(Loggable):
             def get_name(cls) -> str:
                 return f'{workspace.get_name()}_{mthd.__name__}'
 
-            def do(self):
+            def _do(self):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(**kwargs)
                 if mthd.__name__ == workspace.open.__name__:

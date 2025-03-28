@@ -30,7 +30,7 @@ class InvalidTool(Tool):
     def get_desc(self) -> str:
         return 'throws error on execution'
 
-    def do(self):
+    def _do(self):
         raise ValueError
 
     def get_args(self) -> list[ToolArg]:
@@ -43,7 +43,7 @@ class PrinterTool(Tool):
         self.text_arg : ToolArg = ToolArg(name="arg_one")
         self.text_arg_two : ToolArg = ToolArg(name="arg_two", is_optional=True)
 
-    def do(self):
+    def _do(self):
         time.sleep(0.1)
         msg = f"SimpleTool says: {self.text_arg.input}"
         print(msg)

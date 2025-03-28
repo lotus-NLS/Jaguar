@@ -16,7 +16,7 @@ class AOS(Loggable):
             self.add_workspace(ws)
         self.cautious_mode : bool = cautious_mode
 
-    def execute(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
+    def process(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
         outputs: list[ToolOutput] = []
         tools_map = {t.get_name(): t for t in self.get_tools()}
 

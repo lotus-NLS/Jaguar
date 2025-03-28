@@ -13,7 +13,7 @@ class TestWorkspace(Unittest):
         self.workspace = MockWorkspace()
 
     def test_tool_execution(self):
-        self.workspace.open_action.do()
+        self.workspace.open_action._do()
         actions = self.workspace.get_actions()
         actions_map : dict[str, Tool] = {action.get_name() : action for action in actions}
 
@@ -30,13 +30,13 @@ class TestWorkspace(Unittest):
         add_json_str = '{"msg": "New text"}'
         tool_call = ToolCall(json_str=add_json_str)
 
-        add.execute(tool_call=tool_call)
+        add.execute(args_dict=tool_call.get_args_dict())
         self.assertIn('New text', self.workspace.get_text())
         self.log(f'Window context before reset: {Entry.from_workspace(ws=self.workspace)}')
 
         reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
-        reset.execute(tool_call)
+        reset.execute(args_dict=tool_call.get_args_dict())
         self.assertEqual('', self.workspace.get_text())
         self.log(f'Window context after reset : {Entry.from_workspace(ws=self.workspace)}')
 
@@ -44,10 +44,10 @@ class TestWorkspace(Unittest):
     def test_toggle_active_inactive(self):
         print(f'Workspace active = {self.workspace.is_active}')
         self.assertFalse(self.workspace.is_active)
-        self.workspace.open_action.do()
+        self.workspace.open_action._do()
         print(f'Workspace active after open actio = {self.workspace.is_active}')
         self.assertTrue(self.workspace.is_active)
-        self.workspace.close_action.do()
+        self.workspace.close_action._do()
         print(f'Workspace active after close actio = {self.workspace.is_active}')
         self.assertFalse(self.workspace.is_active)
 
@@ -65,7 +65,7 @@ class TestWorkspace(Unittest):
             contains_keyword = any([keyword in name for name in action_names])
             self.assertTrue(contains_keyword)
 
-        self.workspace.open_action.do()
+        self.workspace.open_action._do()
         action_names = [action.get_name() for action in self.workspace.get_actions()]
         print(f'Actions while open = {action_names}')
         for keyword in while_open_actions:

@@ -80,14 +80,14 @@ class Terminal(Workspace):
 
 if __name__ == "__main__":
     t = Terminal()
-    t.open_action.do()
+    t.open_action.execute({})
 
     t.type(content='echo Hellomydude')
     t1 = t.get_text()
     print(f'After typing: {t1}')
 
-    t.close_action.do()
-    t.open_action.do()
+    t.close_action.execute({})
+    t.open_action.execute({})
 
     t2 = t.get_text()
     print(f'After re-opening: {t2}')

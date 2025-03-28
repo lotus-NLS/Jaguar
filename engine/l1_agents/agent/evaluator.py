@@ -27,7 +27,7 @@ class Evaluator:
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
-        yn.execute(tool_call=calls[0])
+        yn.execute(args_dict=calls[0].get_args_dict())
 
         print(f'+------------------------+')
         print(f'Query: {query}')
@@ -42,7 +42,7 @@ class YesNoTool(Tool):
         super().__init__()
         self.y_n_arg : ToolArg = ToolArg(name=f'YesOrNo', choices=[f'y', 'n'])
 
-    def do(self):
+    def _do(self):
         pass
 
     def get_desc(self) -> str:

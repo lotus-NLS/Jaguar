@@ -5,7 +5,7 @@ from holytools.devtools import Unittest
 
 class TestWorkflow(Unittest):
     def setUp(self):
-        self.workflow : Workflow = Workflow.get_example_workflow()
+        self.workflow : Workflow = Workflow.example()
 
     def test_get_node(self):
         nodeA = self.workflow.get_node('A')

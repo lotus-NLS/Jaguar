@@ -1,4 +1,4 @@
-from engine.l1_agents import Agent
+from engine.l1_agents import Agent, TaskTracker
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
@@ -26,6 +26,15 @@ class TestAgent(CredTest):
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
 
+    def test_freeze_ws(self):
+        self.agent.task_tracker.open_action._do()
+        self.agent.task_tracker.close_action._do()
+
+        context = self.agent.get_context(inf_config=InfConfig())
+        context_view = context.get_view(section_header=f'Context')
+        print(context_view)
+
+        self.assertTrue(f'Closed workspace {TaskTracker.__name__} with following final state:' in context_view)
 
 
 if __name__ == "__main__":

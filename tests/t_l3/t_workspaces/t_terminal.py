@@ -11,13 +11,12 @@ class TerminalText(Unittest):
 
     def test_get_text(self):
         tc = ToolCall.from_dict(attr_dict={'workdir_path' : '~'})
-        self.terminal.open_action._set_args(tool_call=tc)
-        self.terminal.open_action.do()
+        self.terminal.open_action.execute(args_dict=tc.get_args_dict())
         text = self.terminal.get_text()
         self.assertTrue('@' in text)
 
     def test_hello_world(self):
-        self.terminal.open_action.do()
+        self.terminal.open_action._do()
         echo_text = 'Hello World'
         self.terminal.type(content=f'echo "{echo_text}"')
         text = self.terminal.get_text()

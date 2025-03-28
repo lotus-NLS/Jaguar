@@ -8,7 +8,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
-from .input import ToolCall, ToolArg
+from .input import ToolArg
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
 
 
@@ -31,14 +31,14 @@ class Tool:
             raise ValueError(f'Hook function \"{pre_hook.__name__}\" must not have any non-default arguments')
         self.prehook = pre_hook
 
-    def execute(self, tool_call: ToolCall) -> ToolOutput:
-        output = ToolOutput(tool_name=self.get_name(), call_args=tool_call.get_args_dict())
-        output.update(msg=f'Starting \"{self.get_name()}\" with args {tool_call.get_args_dict()}', progress_type=ProgressUpdate.START)
+    def execute(self, args_dict : dict) -> ToolOutput:
+        output = ToolOutput(tool_name=self.get_name(), call_args=args_dict)
+        output.update(msg=f'Starting \"{self.get_name()}\" with args {args_dict}', progress_type=ProgressUpdate.START)
         try:
-            self._set_args(tool_call=tool_call)
+            self._set_args(args_dict=args_dict)
             self.prehook()
             output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
-            output.value = func_timeout(timeout=self.timeout, func=self.do)
+            output.value = func_timeout(timeout=self.timeout, func=self._do)
             output.info(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully')
 
         except ToolException as e:
@@ -52,11 +52,10 @@ class Tool:
 
         return output
 
-    def _set_args(self, tool_call : ToolCall):
+    def _set_args(self, args_dict : dict):
         for arg in self.get_args():
             arg.input = None
 
-        args_dict = tool_call.get_args_dict()
         required_args = [arg for arg in self.get_args() if not arg.is_optional]
         missing_args = [arg.name for arg in required_args if not arg.name in args_dict]
         if missing_args:
@@ -70,7 +69,7 @@ class Tool:
         return specified_args
 
     @abstractmethod
-    def do(self):
+    def _do(self):
         pass
 
     @abstractmethod

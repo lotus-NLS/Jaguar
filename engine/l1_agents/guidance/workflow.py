@@ -112,7 +112,7 @@ class ExitTool(Tool):
         self.edges : list[Edge] = edges
         self.exit_choice : ToolArg = ToolArg(name='Exit choice', dtype=int)
 
-    def do(self):
+    def _do(self):
         pass
 
     def get_desc(self) -> str:
