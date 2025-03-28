@@ -9,7 +9,9 @@ class TestEngine(Unittest):
 
     def test_do_workflow(self):
         wf = Workflow.example()
-        self.engine.do_workflow(wf=wf)
+        final_node = self.engine.do_workflow(wf=wf)
+        self.assertTrue(final_node.name == 'end')
+        self.assertTrue(final_node.task.subtasks_complete())
 
     def test_do_task(self):
         pass

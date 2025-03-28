@@ -133,7 +133,7 @@ class Agent(Loggable):
     def is_working(self) -> bool:
         is_active = self.task_tracker.is_active
         if is_active:
-            is_working = not all([t.is_complete for t in self.task_tracker.root.subtasks])
+            is_working = not self.task_tracker.root.subtasks_complete()
         else:
             is_working = False
 

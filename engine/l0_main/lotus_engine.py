@@ -10,7 +10,7 @@ from holytools.logging import Loggable
 from holytools.network import Endpoint
 from .dev_monitor import DevMonitor
 from .settings import LotusCredentials
-from ..l1_agents.guidance.workflow import Workflow
+from ..l1_agents.guidance.workflow import Workflow, Node
 from ..l2_models.generation.step import Report
 from ..l2_models.language import Entry
 from ..l3_aos.workspaces.python_ide import PythonIDE
@@ -45,7 +45,7 @@ class LotusEngine(Loggable):
     # --------------------------------------------------------------
     # work
 
-    def do_workflow(self, wf : Workflow):
+    def do_workflow(self, wf : Workflow) -> Node:
         node = wf.start_node
         outgoing_edges = wf.outgoing_edge_map[node.name]
 
@@ -53,18 +53,18 @@ class LotusEngine(Loggable):
         self.agent.update_memory(entry=workflow_description)
 
         while True:
-            input(f'Press enter to continue')
+            print(f'## Now starting work on node: {node.name}')
             self.do_task(task=node.task, max_steps=node.max_steps)
 
-            exit_tool = wf.get_exit_tool(node_name=node.name)
-            self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
-
-            choice = exit_tool.exit_choice.get_value()
-            node = outgoing_edges[choice].target
             if not node.name in wf.outgoing_edge_map:
                 break
 
-        self.agent.handle()
+            exit_tool = wf.get_exit_tool(node_name=node.name)
+            self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
+            choice = exit_tool.exit_choice.get_value()
+            node = outgoing_edges[choice].target
+
+        return node
 
     def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
         states : list[State] = []

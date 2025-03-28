@@ -83,6 +83,9 @@ class Task:
         self.is_failed : bool = False
         self.subtasks : list[Task] = []
 
+    def subtasks_complete(self) -> bool:
+        return all([st.is_complete for st in self.subtasks])
+
     @classmethod
     def get_example(cls) -> Task:
         return cls.from_yaml(s=f'- Example')
