@@ -47,17 +47,18 @@ class TestPythonIDE(Unittest):
         self.assertTrue(not self.project.interpreter_fpath is None)
         self.assertTrue(os.path.isfile(self.project.interpreter_fpath))
 
-    def test_write_and_delete(self):
+    def test_write(self):
         self.project.open_file(fpath=self.script_fpath)
         fpath = self.script_fpath
-        new_content = f'import PIL'
+        new_content = f'import PIL\n'
         self.project.write(fileNo=0, after_line=0, content=new_content)
 
         file_content = self.project._view_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | import PIL
- 2   | print(f'Hello world :)')
- 3   | a = 2
- 4   | b=3'''
+ 2   | 
+ 3   | print(f'Hello world :)')
+ 4   | a = 2
+ 5   | b=3'''
 
         print(f'- New file content:\n{file_content}')
         self.assertEqual(file_content, expected_file_content)

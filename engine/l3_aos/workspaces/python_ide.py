@@ -33,6 +33,14 @@ class PythonIDE(Workspace):
         """Closes file spcified relative to the project dirpath"""
         self.project.close_file(fpath=fpath)
 
+    def write(self, fileNo : int, after_line : int, content : str):
+        """Writes content to a file opened in the IDE"""
+        self.project.write(fileNo=fileNo, after_line=after_line, content=content)
+
+    def delete(self, fileNo :int, start_line : int,end_line : int ):
+        """Deletes lines in a file opened in the IDE"""
+        self.project.delete(fileNo=fileNo, start_line=start_line, end_line=end_line)
+
     # -------------------------------------------------------
     # Workspace generics
 
@@ -92,11 +100,12 @@ class PythonProject:
                 lines = f.readlines()
 
             before_lines = lines[:after_line]
-            content_lines = content.split('\n')
             after_lines =  lines[after_line:]
-            total_lines = before_lines + content_lines + ['\n'] + after_lines
 
-            content = ''.join(total_lines)
+            before_content = ''.join(before_lines)
+            after_content = ''.join(after_lines)
+
+            content = f'{before_content}{content}\n{after_content}'
 
         with open(fpath, 'w') as f:
             f.write(content)
