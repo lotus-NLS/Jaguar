@@ -74,6 +74,9 @@ class PythonProject:
         parent_dir = os.path.dirname(fpath)
         if not os.path.isdir(parent_dir):
             raise ValueError(f'Parent directory of file does not exist: {parent_dir}')
+        if not os.path.isfile(fpath):
+            with open(fpath, 'w') as f:
+                f.write('')
 
         fpath = self._get_abspath(fpath=fpath)
         self._open_fpaths.append(fpath)

@@ -20,6 +20,10 @@ class TestPythonIDE(Unittest):
             testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
             f.write(testscript_content)
 
+    def test_open_new(self):
+        self.project.open_file(fpath='newfile.py')
+        self.project.get_view()
+
     def test_relative_fpath(self):
         fpath = 'test.py'
         self.project.open_file(fpath=fpath)
