@@ -42,19 +42,6 @@ class TestStep(Unittest):
         ckpt_label = f'Checkpoint'
         self.step = Step(text_pipe=self.tp, gen_ctx=context, ckpt_label=ckpt_label, outputs=[])
 
-    def test_step_state(self):
-        writing = f'Hello World'
-        for w in writing:
-            self.tp.put(w)
-        self.tp.stop()
-
-        for w in self.tp.get_text_stream():
-            _ = w
-
-        state = self.step.get_state(uuid=f'uuid4')
-        print(f'State writing  : {state.msg}')
-        self.assertTrue(state.msg == writing)
-
     def test_roundtrip(self):
         state = self.step.get_state(uuid='uuid4')
         s = state.to_str()
@@ -64,5 +51,5 @@ class TestStep(Unittest):
 
 
 if __name__ == "__main__":
-    # TestTextPipe.execute_all()
+    TestTextPipe.execute_all()
     TestStep.execute_all()

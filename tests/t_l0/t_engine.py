@@ -13,8 +13,5 @@ class TestEngine(Unittest):
         self.assertTrue(final_node.name == 'end')
         self.assertTrue(final_node.task.subtasks_complete())
 
-    def test_do_task(self):
-        pass
-
 if __name__ == '__main__':
     TestEngine.execute_all()
