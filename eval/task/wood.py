@@ -1,9 +1,9 @@
 from engine import LotusEngine
-from eval.nl import NLU
+from eval.nlu import NLU
 
 # ---------------------------------------------------
 
-class HardwareTask(NLU):
+class TerminalTask(NLU):
     def setUp(self):
         super().setUpClass()
         self.engine = LotusEngine()
@@ -39,7 +39,34 @@ class HardwareTask(NLU):
         # self.assertTrue(evaluation == True)
 
 
+
+class BrowserTask(NLU):
+    def setUp(self):
+        super().setUpClass()
+        self.engine = LotusEngine()
+
+    def test_search_for_cat(self):
+        task = self.task_provider.get_task('cat')
+        self.engine.do_task(task=task, max_steps=10)
+        user_msg = f'What is the first result from your search for cat videos?'
+        answer = self.engine.agent.talk(msg=user_msg)
+
+        print(f'+------------------------+')
+        print(f'User: {user_msg}')
+        print(f'Agent: {answer}')
+
+        property_query = 'The #msg provides information about the GPU model'
+        evaluation = self.evaluateProperty(msg=answer.msg, prop=property_query)
+        self.assertTrue(evaluation == True)
+
+
 if __name__ == "__main__":
-    hw_test = HardwareTask()
+    hw_test = BrowserTask()
+    hw_test.setUp()
+    hw_test.test_search_for_cat()
+
+
+if __name__ == "__main__":
+    hw_test = TerminalTask()
     hw_test.setUp()
     hw_test.test_gpu_research()
