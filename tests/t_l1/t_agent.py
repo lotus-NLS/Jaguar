@@ -34,7 +34,7 @@ class TestAgent(CredTest):
         context_view = context.get_view(section_header=f'Context')
         print(context_view)
 
-        self.assertTrue(f'Closed workspace {TaskTracker.__name__} with following final state:' in context_view)
+        self.assertTrue(f'## [Closed workspace] ##' in context_view)
 
 
 if __name__ == "__main__":

@@ -7,32 +7,32 @@ from tests.t_l3.t_tools.tooltest import ToolTest
 
 class TestTool(ToolTest):
     def setUp(self):
+        super().setUp()
         self.EXCEPTION = ProgressUpdate.exception(content='')
         self.FAILED = ProgressUpdate.failed(content='')
 
-
     def test_success(self):
-        output = self.simple_tool.execute(self.valid_tool_call)
+        output = self.simple_tool.execute(self.valid_tool_call.get_args_dict())
         self.assertIsInstance(output, ToolOutput)
         self.assertEqual(output.get_exit_status(), ExitStatus.SUCCESS)
 
     def test_timeout(self):
         self.simple_tool.timeout = 0.000
-        output = self.simple_tool.execute(self.valid_tool_call)
+        output = self.simple_tool.execute(self.valid_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
 
     def test_exception(self):
-        output = self.invalid_tool.execute(self.valid_tool_call)
+        output = self.invalid_tool.execute(self.valid_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.EXCEPTION)
         self.assertTrue(any(msg.update_type == self.EXCEPTION.update_type for msg in output.progress_msgs))
 
     def test_missing_required_arg(self):
-        output = self.simple_tool.execute(self.empty_tool_call)
+        output = self.simple_tool.execute(self.empty_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
         self.assertTrue(any(msg.update_type == self.FAILED.update_type for msg in output.progress_msgs))
 
     def test_invalid_arg(self):
-        output = self.simple_tool.execute(self.invalid_tool_call)
+        output = self.simple_tool.execute(self.invalid_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
 
 
@@ -57,5 +57,7 @@ class TestToolDoc(ToolTest):
         print(f'Tool documentation view')
         print(doc.get_view())
 
+
 if __name__ == "__main__":
     TestToolDoc.execute_all()
+    TestTool.execute_all()

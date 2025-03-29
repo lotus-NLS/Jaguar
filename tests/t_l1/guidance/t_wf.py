@@ -3,9 +3,16 @@ from engine.l1_agents.guidance.workflow import Workflow, NodeNavigation, Node, E
 from holytools.devtools import Unittest
 
 
+
 class TestWorkflow(Unittest):
     def setUp(self):
-        self.workflow : Workflow = Workflow.example()
+        nodes = [Node(name='Start', task=Task.get_example(), max_steps=3),
+                 Node(name='A', task=Task.get_example(), max_steps=3),
+                 Node(name='B', task=Task.get_example(), max_steps=3),]
+        edges = [Edge(source=nodes[0], target=nodes[0], case='Success'),
+                 Edge(source=nodes[0], target=nodes[2], case='Failure')]
+        self.workflow = Workflow(start_node=nodes[0], nodes=nodes, edges=edges)
+
 
     def test_get_node(self):
         nodeA = self.workflow.get_node('A')

@@ -69,9 +69,14 @@ class TestToolCall(Unittest):
 
     def test_non_string_items(self):
         tc1 = ToolCall(name='Hammer', json_str='{"arg_one": 1}')
-        with self.assertRaises(ValueError):
-            tc1.get_args_dict()
+        tc2 = ToolCall(name='Screwdriver', json_str='{"arg_one": "1"}')
 
+        arg_dict_one = tc1.get_args_dict()
+        arg_dict_two = tc2.get_args_dict()
+        for (v1,v2) in zip(arg_dict_one.values(), arg_dict_two.values()):
+            print(v1, v2)
+            print(type(v1), type(v2))
+            self.assertTrue(type(v1) == type(v2))
 
 class ToolArgMethods:
     @staticmethod
@@ -94,5 +99,3 @@ class ToolArgMethods:
 if __name__ == "__main__":
     TestToolArg.execute_all()
     TestToolCall.execute_all()
-
-
