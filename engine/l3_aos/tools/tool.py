@@ -8,8 +8,9 @@ from func_timeout import func_timeout, FunctionTimedOut
 
 from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
-from .input import ToolArg
-from .output import MissingArgs, InvalidArgValue, ToolOutput, ProgressUpdate, ToolException
+from .input import ToolArg, ToolDoc
+from .output import MissingArgs, InvalidArgValue, ToolOutput, ToolException
+
 
 # ---------------------------------------------------------
 
@@ -32,22 +33,22 @@ class Tool:
 
     def execute(self, args_dict : dict) -> ToolOutput:
         output = ToolOutput(tool_name=self.get_name(), call_args=args_dict)
-        output.update(msg=f'Starting \"{self.get_name()}\" with args {args_dict}', progress_type=ProgressUpdate.START)
+        output.start(msg=f'Starting \"{self.get_name()}\" with args {args_dict}')
         try:
             self._set_args(args_dict=args_dict)
             self.prehook()
-            output.update(msg=f'Running tool \"{self.get_name()}\"', progress_type=ProgressUpdate.INFO)
+            output.info(msg=f'Running tool \"{self.get_name()}\"')
             output.value = func_timeout(timeout=self.timeout, func=self._do)
             output.info(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully')
 
         except ToolException as e:
-            output.fail(reason=f'{e.__class__.__name__}: {e}')
+            output.fail(msg=f'{e.__class__.__name__}: {e}')
         except FunctionTimedOut:
-            output.fail(reason=f'Timed out without completing after {self.timeout} seconds')
+            output.fail(msg=f'Timed out without completing after {self.timeout} seconds')
         except Exception as e:
-            output.error(reason=f'Encountered exception: {e}. Aborting ...')
+            output.error(msg=f'Encountered exception: {e}. Aborting ...')
 
-        output.update(msg=f'Tool call finished', progress_type=ProgressUpdate.FINISH)
+        output.finish(msg=f'Tool call finished')
 
         return output
 
@@ -90,49 +91,4 @@ class Tool:
         return cls.__name__
 
 
-class ToolDoc(dict):
-    @classmethod
-    def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
-        function_doc = {
-            'name': name,
-            'description': desc,
-            'parameters': {
-                'type': 'object',
-                'properties': {arg.name: arg.get_json_doc() for arg in args},
-                'required': [arg.name for arg in args if not arg.is_optional]
-            },
-        }
 
-        tool_doc = {
-            'type': 'function',
-            'function': function_doc
-        }
-
-        return cls(tool_doc)
-
-    def __eq__(self, other):
-        return self.get_view() == other.get_view()
-
-    def get_view(self) -> str:
-        func_name = self.get_tool_name()
-        quick_desc = self.get_desc()
-        info_str = f'- {func_name}: {quick_desc}'
-        arg_dict = self.get_parameters()
-        for arg_name, arg_dict in arg_dict.items():
-            conditional_optional = f' (optional) ' if not arg_name in self.get_required() else ''
-            arg_str = f'  - {arg_name}{conditional_optional}: {arg_dict["description"]}'
-            info_str += f'\n{arg_str}'
-
-        return info_str
-
-    def get_tool_name(self) -> str:
-        return self['function']['name']
-
-    def get_desc(self) -> str:
-        return self['function']['description']
-
-    def get_parameters(self) -> dict:
-        return self['function']['parameters']['properties']
-
-    def get_required(self) -> list[str]:
-        return self['function']['parameters']['required']

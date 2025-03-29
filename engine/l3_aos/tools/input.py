@@ -71,6 +71,54 @@ class ToolArg:
         return arg_doc
 
 
+class ToolDoc(dict):
+    @classmethod
+    def from_info(cls, name : str, desc : str, args : list[ToolArg]) -> ToolDoc:
+        function_doc = {
+            'name': name,
+            'description': desc,
+            'parameters': {
+                'type': 'object',
+                'properties': {arg.name: arg.get_json_doc() for arg in args},
+                'required': [arg.name for arg in args if not arg.is_optional]
+            },
+        }
+
+        tool_doc = {
+            'type': 'function',
+            'function': function_doc
+        }
+
+        return cls(tool_doc)
+
+    def __eq__(self, other):
+        return self.get_view() == other.get_view()
+
+    def get_view(self) -> str:
+        func_name = self.get_tool_name()
+        quick_desc = self.get_desc()
+        info_str = f'- {func_name}: {quick_desc}'
+        arg_dict = self.get_parameters()
+        for arg_name, arg_dict in arg_dict.items():
+            conditional_optional = f' (optional) ' if not arg_name in self.get_required() else ''
+            arg_str = f'  - {arg_name}{conditional_optional}: {arg_dict["description"]}'
+            info_str += f'\n{arg_str}'
+
+        return info_str
+
+    def get_tool_name(self) -> str:
+        return self['function']['name']
+
+    def get_desc(self) -> str:
+        return self['function']['description']
+
+    def get_parameters(self) -> dict:
+        return self['function']['parameters']['properties']
+
+    def get_required(self) -> list[str]:
+        return self['function']['parameters']['required']
+
+
 class ToolCall:
     def __init__(self, name : str = '', json_str : str = ''):
         self.name : str = name
@@ -105,6 +153,7 @@ class ToolCall:
 
     def __str__(self):
         return f'{self.name}: {self.json_str}'
+
 
 
 if __name__ == "__main__":

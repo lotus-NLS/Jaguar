@@ -6,6 +6,11 @@ from tests.t_l3.t_tools.tooltest import ToolTest
 # -----------------------------------------------------
 
 class TestTool(ToolTest):
+    def setUp(self):
+        self.EXCEPTION = ProgressUpdate.exception(content='')
+        self.FAILED = ProgressUpdate.failed(content='')
+
+
     def test_success(self):
         output = self.simple_tool.execute(self.valid_tool_call)
         self.assertIsInstance(output, ToolOutput)
@@ -19,12 +24,12 @@ class TestTool(ToolTest):
     def test_exception(self):
         output = self.invalid_tool.execute(self.valid_tool_call)
         self.assertEqual(output.get_exit_status(), ExitStatus.EXCEPTION)
-        self.assertTrue(any(msg.progress_type == ProgressUpdate.EXCEPTION for msg in output.progress_msgs))
+        self.assertTrue(any(msg.update_type == self.EXCEPTION.update_type for msg in output.progress_msgs))
 
     def test_missing_required_arg(self):
         output = self.simple_tool.execute(self.empty_tool_call)
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
-        self.assertTrue(any(msg.progress_type == ProgressUpdate.FAILED for msg in output.progress_msgs))
+        self.assertTrue(any(msg.update_type == self.FAILED.update_type for msg in output.progress_msgs))
 
     def test_invalid_arg(self):
         output = self.simple_tool.execute(self.invalid_tool_call)

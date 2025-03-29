@@ -18,42 +18,50 @@ class ToolOutput:
 
     def __post_init__(self):
         super().__init__()
-        self.progress_msgs : list[ProgressMsg] = []
+        self.progress_msgs : list[ProgressUpdate] = []
 
     @classmethod
     def failed(cls, reason : str):
         output = cls(tool_name='None')
-        output.update(msg=f'Failed: {reason}', progress_type=ProgressUpdate.FAILED)
+        output.fail(msg=f'Failed: {reason}')
         return output
 
     @classmethod
     def exception(cls, name : str, reason : Optional[BaseException] = None):
         output = cls(tool_name=name)
         conditional_reason = f': {reason}' if reason else ''
-        output.update(msg=f'Tool{name} failed{conditional_reason}', progress_type=ProgressUpdate.EXCEPTION)
+        output.error(msg=f'Tool{name} failed{conditional_reason}')
         return output
 
+    def start(self, msg : str):
+        self.log_update(ProgressUpdate.start(content=msg))
+
     def info(self, msg : str):
-        self.update(msg=msg, progress_type=ProgressUpdate.INFO)
+        self.log_update(ProgressUpdate.info(content=msg))
 
-    def update(self, msg : str, progress_type : ProgressUpdate):
-        progress_msg = ProgressMsg(progress_type=progress_type, content=msg)
-        self.progress_msgs.append(progress_msg)
-        tool_output_logger.info(str(progress_msg))
+    def error(self, msg : str):
+        self.log_update(ProgressUpdate.exception(content=msg))
 
-    def error(self, reason : str):
-        self.update(msg=reason, progress_type=ProgressUpdate.EXCEPTION)
+    def fail(self, msg : str):
+        self.log_update(ProgressUpdate.failed(content=msg))
 
-    def fail(self, reason : str):
-        self.update(msg=reason, progress_type=ProgressUpdate.FAILED)
+    def finish(self, msg : str):
+        self.log_update(ProgressUpdate.finish(content=msg))
+
+    def log_update(self, update : ProgressUpdate):
+        self.progress_msgs.append(update)
+        tool_output_logger.info(str(update))
 
     # -----------------------------------------------------------
 
     def get_exit_status(self) -> ExitStatus:
+        EXCEPTION = ProgressUpdate.exception(content='')
+        FAILED = ProgressUpdate.failed(content='')
+
         for progress in self.progress_msgs:
-            if progress.progress_type == ProgressUpdate.EXCEPTION:
+            if progress.update_type == EXCEPTION.update_type:
                 return ExitStatus.EXCEPTION
-            if progress.progress_type in [ProgressUpdate.FAILED]:
+            if progress.update_type in [FAILED.update_type]:
                 return ExitStatus.FAILED
         return ExitStatus.SUCCESS
 
@@ -67,16 +75,10 @@ class ToolOutput:
         return log_msg
 
     def get_error_msgs(self) -> list[str]:
-        return [progress.content for progress in self.progress_msgs if progress.progress_type in [ProgressUpdate.EXCEPTION, ProgressUpdate.FAILED]]
+        FAILED = ProgressUpdate.failed(content='')
+        EXCEPTION = ProgressUpdate.exception(content='')
 
-
-
-class ProgressUpdate(Enum):
-    START = 'START'
-    INFO = 'INFO'
-    EXCEPTION = 'EXCEPTION'
-    FAILED = 'FAILED'
-    FINISH = 'FINISH'
+        return [progress.content for progress in self.progress_msgs if progress.update_type in [FAILED.update_type, EXCEPTION.update_type]]
 
 
 class ExitStatus(Enum):
@@ -84,13 +86,34 @@ class ExitStatus(Enum):
     FAILED = 'FAILED'
     EXCEPTION = 'EXCEPTION'
 
+
 @dataclass
-class ProgressMsg:
-    progress_type : ProgressUpdate
+class ProgressUpdate:
+    update_type : str
     content : str
 
+    @classmethod
+    def start(cls, content : str) -> ProgressUpdate:
+        return cls(update_type='START', content=content)
+
+    @classmethod
+    def info(cls, content : str) -> ProgressUpdate:
+        return cls(update_type='INFO', content=content)
+
+    @classmethod
+    def exception(cls, content : str) -> ProgressUpdate:
+        return cls(update_type='EXCEPTION', content=content)
+
+    @classmethod
+    def failed(cls, content : str) -> ProgressUpdate:
+        return cls(update_type='FAILED', content=content)
+
+    @classmethod
+    def finish(cls, content : str) -> ProgressUpdate:
+        return cls(update_type='FINISH', content=content)
+
     def __str__(self):
-        return f'[{self.progress_type.value}]: {self.content}'
+        return f'[{self.update_type}]: {self.content}'
 
 
 class ToolException(Exception):

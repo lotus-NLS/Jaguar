@@ -12,7 +12,7 @@ class CatTask(NLU):
         task = self.task_provider.get_task('cat')
         self.engine.do_task(task=task, max_steps=10)
         user_msg = f'What is the first result from your search for cat videos?'
-        answer = self.engine.converse(msg=user_msg)
+        answer = self.engine.agent.talk(msg=user_msg)
 
         print(f'+------------------------+')
         print(f'User: {user_msg}')
