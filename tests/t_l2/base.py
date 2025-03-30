@@ -25,7 +25,7 @@ class OpenAITest(CredTest):
 
     def get_results(self, entries : list[Entry], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:
         context = Context(entries=entries, docs=docs)
-        generation = self.default_model.get_generation(context=context, options=options)
+        generation = self.default_model.get_generation(context=context, config=options)
         prompts_context = [entry.msg for entry in context.entries]
 
         print(f'-> Prompts: \n {prompts_context}')

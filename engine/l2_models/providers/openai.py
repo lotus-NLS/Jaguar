@@ -23,17 +23,17 @@ class OpenAIModel(LLM):
     def default_model(cls, api_key : str) -> OpenAIModel:
         return cls(name='gpt-4o', api_key=api_key)
 
-    def get_generation(self, context : Context, options: InfConfig) -> Generation:
-        token_cap_ok = self.check_token_cap_ok(context=context, token_cap=options.input_tokens_max)
+    def get_generation(self, context : Context, config: InfConfig) -> Generation:
+        token_cap_ok = self.check_token_cap_ok(context=context, token_cap=config.input_tokens_max)
         if not token_cap_ok:
-            raise ValueError(f'Context exceeds token cap of {options.input_tokens_max}')
+            raise ValueError(f'Context exceeds token cap of {config.input_tokens_max}')
 
         for entry in context.entries:
             if not isinstance(entry, Entry):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
         self.log(f'Creating generation request')
-        openai_response = self.get_response(context=context, options=options)
+        openai_response = self.get_response(context=context, options=config)
         self.log(f"Received generation response. Currently at {self.tokenizer.count_context_tokens(context=context)} tokens")
 
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
