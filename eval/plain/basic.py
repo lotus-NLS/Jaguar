@@ -11,7 +11,6 @@ from tests.credtest import CredTest
 # ---------------------------------------------------------------
 
 class TestFileStructure(CredTest):
-
     def setUp(self):
         fsys_structure = set()
 
@@ -42,20 +41,28 @@ class TestFileStructure(CredTest):
         root_dir = Directory(path=self.tmp_dirpath)
         dir_view = root_dir.get_tree()
         model = OpenAIModel.default_model(api_key=self.openai_apikey)
-        print(dir_view)
 
         ctx = Context.singleton(entry=Entry.agent(msg=dir_view))
         ctx += Context.singleton(entry=Entry.user(msg=f'Give the file path of file {self.random_folder.name}'
                                                       f' relative to the root'))
-        generation = model.get_generation(context=ctx, config=InfConfig())
-        print(f'- Context = {ctx}')
 
-        generation.exhaust()
-        text = generation.get_text()
-        print(text)
+        reps = 5
+        successes = []
+        for j in range(reps):
+            generation = model.get_generation(context=ctx, config=InfConfig())
+            print(f'- Context = {ctx}')
 
-        relative_path = os.path.relpath(self.random_folder.path, start=self.tmp_dirpath)
-        self.assertTrue(relative_path in text)
+            generation.exhaust()
+            text = generation.get_text()
+            print(text)
+
+            relative_path = os.path.relpath(self.random_folder.path, start=self.tmp_dirpath)
+            successes.append(relative_path in text)
+        symbol = '✅' if sum(successes) == reps else '❌'
+        print(f'- Successs score = {sum(successes)}/{reps}:\n'
+              f'- Eval status = {symbol}')
+        self.assertTrue(sum(successes) == reps)
+
 
 class VirtualFolder:
     def __init__(self, name : str, path : str, children=None):
