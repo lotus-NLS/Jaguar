@@ -7,9 +7,11 @@ from typing import Optional
 from flask import Flask
 from flask_socketio import SocketIO, emit
 
+from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents import Agent, Evaluator, Task, TaskTracker
 from engine.l2_models import OpenAIModel, State, InfConfig
 from engine.l3_aos import AOS, Terminal, Browser
+from holytools.abstract import Serializable
 from holytools.logging import Loggable
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents.guidance.workflow import Workflow, Node
@@ -17,6 +19,8 @@ from engine.l2_models.generation.step import Report, Step
 from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM
 from engine.l3_aos.workspaces.python_ide import PythonIDE
+from holytools.network import Endpoint
+
 
 # ---------------------------------------------------------
 
@@ -30,6 +34,8 @@ class LotusEngine(Loggable):
         self.agent = self.make_agent(model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
 
+        dev_monitor : DevMonitor = DevMonitor.default()
+        self.step_endpoint: Endpoint = dev_monitor.step_endpoint
         self.outgoing_messages : Queue[Message] = Queue()
         self.start_socket()
 
@@ -138,6 +144,7 @@ class LotusEngine(Loggable):
         for chunk in step.text_pipe.get_text_stream():
             text += chunk
             print(chunk, end='')
+        self.send(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 
         for o in step.tool_outputs:
             if not TaskTracker.get_name() in o.tool_name:
@@ -150,6 +157,11 @@ class LotusEngine(Loggable):
 
         return text
 
+    def send(self, endpoint : Endpoint, obj : Serializable):
+        try:
+            endpoint.post(msg=obj.to_str(), secure=False)
+        except:
+            self.warning(f'Monitor endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
 
 if __name__ == "__main__":
     engine = LotusEngine()
