@@ -17,7 +17,7 @@ from holytools.userIO import MessageFormatter
 
 @dataclass
 class Message(JsonDataclass):
-    msg : str
+    text : str
     role: Role
     name : Optional[str] = None
     image: Optional[PILImage] = None
@@ -46,37 +46,37 @@ class Message(JsonDataclass):
 
     @classmethod
     def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.USER, name=name, msg=msg, image=image)
+        return cls(role=Role.USER, name=name, text=msg, image=image)
 
     @classmethod
     def system(cls, msg: str, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.SYSTEM, name=None, msg=msg, image=image)
+        return cls(role=Role.SYSTEM, name=None, text=msg, image=image)
 
     @classmethod
     def agent(
             cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.AGENT, name=name, msg=msg, image=image)
+        return cls(role=Role.AGENT, name=name, text=msg, image=image)
 
     @classmethod
     def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.TOOL, name=name, msg=msg, image=image)
+        return cls(role=Role.TOOL, name=name, text=msg, image=image)
 
     def __eq__(self, other):
         if not isinstance(other, Message):
             return False
-        return self.msg == other.msg and self.role == other.role and self.name == other.name and self.image == other.image
+        return self.text == other.text and self.role == other.role and self.name == other.name and self.image == other.image
 
     def add(self, msg : str, at_start : bool = False):
-        first = self.msg if not at_start else msg
-        second = msg if not at_start else self.msg
-        self.msg = f'{first}\n{second}'
+        first = self.text if not at_start else msg
+        second = msg if not at_start else self.text
+        self.text = f'{first}\n{second}'
 
      # ----------------------------------------------------
     # get
 
     def get_view(self) -> str:
         name_str = f'({self.name})' if not self.name is None else ''
-        return f'{self.role.value}{name_str}: {self.msg}'
+        return f'{self.role.value}{name_str}: {self.text}'
 
     def as_openai_dict(self) -> dict:
         data = {'role': self.role.value}
@@ -84,12 +84,12 @@ class Message(JsonDataclass):
             data['name'] = self.name if self.name else 'unnamed'
 
         if not self.image:
-            content = self.msg
+            content = self.text
         else:
             b64_img = ImageConverter.to_base64_str(image=self.image)
             image_url = {"url": f"data:image/{self.image.format};base64,{b64_img}"}
 
-            text = {"type": "text", "text": f"{self.msg}"}
+            text = {"type": "text", "text": f"{self.text}"}
             image = {"type": "image_url", "image_url": image_url}
             content = [text, image]
 

@@ -22,13 +22,13 @@ class LLM(Loggable):
         self.tokenizer : Tokenizer = Tokenizer(encoding=tiktoken.get_encoding(encoding_name=f'o200k_base'))
 
     @abstractmethod
-    def get_generation(self, context : Context, options: InfConfig) -> Generation:
+    def get_generation(self, context : Context, config: InfConfig) -> Generation:
         pass
 
     def get_text_generation(self, entries: list[Message]) -> Generation:
         context = Context(entries=entries, docs=[])
         options = InfConfig(call_options=CallOptions.no_call())
-        return self.get_generation(context=context, options=options)
+        return self.get_generation(context=context, config=options)
 
     def check_token_cap_ok(self, context : Context, token_cap : int) -> bool:
         num_tokens = self.tokenizer.count_context_tokens(context=context)

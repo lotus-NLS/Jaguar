@@ -65,7 +65,7 @@ class Agent(Loggable):
         context = self.get_context(inf_config=inf_config)
 
         try:
-            generation = self.model.get_generation(context=context, options=inf_config)
+            generation = self.model.get_generation(context=context, config=inf_config)
             pipe = self.write(generation=generation)
             outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
         except APITimeoutError:

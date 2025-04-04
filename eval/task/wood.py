@@ -56,14 +56,9 @@ class BrowserTask(NLU):
         print(f'Agent: {answer}')
 
         property_query = 'The #msg provides information about the GPU model'
-        evaluation = self.evaluateProperty(msg=answer.msg, prop=property_query)
+        evaluation = self.evaluateProperty(msg=answer.text, prop=property_query)
         self.assertTrue(evaluation == True)
 
-
-if __name__ == "__main__":
-    hw_test = BrowserTask()
-    hw_test.setUp()
-    hw_test.test_search_for_cat()
 
 
 if __name__ == "__main__":

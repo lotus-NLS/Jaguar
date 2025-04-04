@@ -205,7 +205,7 @@ class PythonProject:
         formatted_inspections = ''
         for m in reporter.messages:
             symbol = criticalility_dict[m.C]
-            formatted_inspections += f' {symbol} l.{m.line:<4}| {m.msg}\n'
+            formatted_inspections += f' {symbol} l.{m.line:<4}| {m.text}\n'
 
         return formatted_inspections
 

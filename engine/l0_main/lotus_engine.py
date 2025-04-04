@@ -1,4 +1,4 @@
-import random
+import threading
 import time
 import uuid
 from queue import Queue
@@ -11,13 +11,12 @@ from engine.l1_agents import Agent, Evaluator, Task
 from engine.l2_models import OpenAIModel, State, InfConfig
 from engine.l3_aos import AOS, Terminal, Browser
 from holytools.logging import Loggable
-from .settings import LotusCredentials
-from ..l1_agents.guidance.workflow import Workflow, Node
-from ..l2_models.generation.step import Report, Step
-from ..l2_models.language import Message
-from ..l2_models.llm import LLM
-from ..l3_aos.workspaces.python_ide import PythonIDE
-
+from engine.l0_main.settings import LotusCredentials
+from engine.l1_agents.guidance.workflow import Workflow, Node
+from engine.l2_models.generation.step import Report, Step
+from engine.l2_models.language import Message
+from engine.l2_models.llm import LLM
+from engine.l3_aos.workspaces.python_ide import PythonIDE
 
 # ---------------------------------------------------------
 
@@ -31,8 +30,8 @@ class LotusEngine(Loggable):
         self.agent = self.make_agent(model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
 
-        self.msg_queue : Queue[Message] = Queue()
-        self.start_socketIO()
+        self.outgoing_messages : Queue[Message] = Queue()
+        self.start_socket()
 
     @staticmethod
     def generate_session_uuid() -> str:
@@ -52,7 +51,6 @@ class LotusEngine(Loggable):
         app = Flask(__name__)
         socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
 
-
         @app.route('/')
         def index():
             return "Hello, this is the main page!"
@@ -61,24 +59,26 @@ class LotusEngine(Loggable):
         def handle_connect():
             emit('uuid', {'uuid': self.generate_session_uuid()})
 
-        # def send_msg():
-        #     roles = ['User', 'Assistant', 'System', 'Tool']
-        #
-        #     while True:
-        #         time.sleep(2)
-        #         the_uuid = str(uuid.uuid4())
-        #         print(f"Broadcast a message with UUID {the_uuid} to all connected clients.")
-        #         r = random.choice(roles)
-        #         socketio.emit('msg', {'role': r, 'content': the_uuid})
-        #
-        # def send_task():
-        #     while True:
-        #         time.sleep(2)
-        #         print(f'Broadcast a task to all connected clients.')
-        #         socketio.emit('task', {'content': '[ ]: You gotta finish this'})
+        def start():
+            socketio.run(app, host='localhost', port=8000, allow_unsafe_werkzeug=True)
+
+        def send_outgoing():
+            while True:
+                msg = self.outgoing_messages.get()
+                print(f'Emitting message to socket: {msg.text}')
+                socketio.emit('msg', {'role': msg.role.value, 'content': msg.text})
+
+        socketio.start_background_task(start)
+        socketio.start_background_task(send_outgoing)
 
     # ---------------------------------------------------------------------------------------
     # routines
+
+    def testroutine(self):
+        while True:
+            time.sleep(2)
+            msg = Message.user(msg='Hello world')
+            self.outgoing_messages.put(msg)
 
     def do_workflow(self, wf : Workflow) -> Node:
         node = wf.start_node
@@ -129,8 +129,17 @@ class LotusEngine(Loggable):
 
             print()
 
-
     def observe(self, step : Step) -> State:
+        text = ''
         for chunk in step.text_pipe.get_text_stream():
+            text += chunk
             print(chunk, end='')
+        msg = Message.agent(msg=text)
+        self.outgoing_messages.put(msg)
+
         return step.get_state(uuid=self.sess_uuid)
+
+
+if __name__ == "__main__":
+    engine = LotusEngine()
+    engine.testroutine()
