@@ -66,7 +66,7 @@ class Workflow:
         return exit_tool
 
     @classmethod
-    def unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
+    def generate_unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
         proj_name = os.path.basename(project_dirpath)
 
 
