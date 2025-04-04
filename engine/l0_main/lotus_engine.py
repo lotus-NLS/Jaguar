@@ -7,7 +7,7 @@ from typing import Optional
 from flask import Flask
 from flask_socketio import SocketIO, emit
 
-from engine.l1_agents import Agent, Evaluator, Task
+from engine.l1_agents import Agent, Evaluator, Task, TaskTracker
 from engine.l2_models import OpenAIModel, State, InfConfig
 from engine.l3_aos import AOS, Terminal, Browser
 from holytools.logging import Loggable
@@ -125,6 +125,9 @@ class LotusEngine(Loggable):
             if user_input == 'exit':
                 break
 
+            user_mesage = Message.user(msg=user_input)
+            self.outgoing_messages.put(user_mesage)
+
             step = self.agent.talk(msg=user_input)
             self.observe(step=step)
 
@@ -135,6 +138,12 @@ class LotusEngine(Loggable):
         for chunk in step.text_pipe.get_text_stream():
             text += chunk
             print(chunk, end='')
+
+        for o in step.tool_outputs:
+            if not TaskTracker.get_name() in o.tool_name:
+                msg = Message.from_tool_output(tool_output=o)
+                self.outgoing_messages.put(msg)
+
         if text:
             msg = Message.agent(msg=text)
             self.outgoing_messages.put(msg)

@@ -20,7 +20,7 @@ class Step:
     text_pipe : TextPipe
     gen_ctx: Context
     ckpt_label: str
-    outputs : list[ToolOutput]
+    tool_outputs : list[ToolOutput]
     is_final : bool = False
 
     def get_state(self, uuid : str) -> State:
@@ -28,7 +28,7 @@ class Step:
 
     @classmethod
     def failed(cls, context : Context):
-        return cls(text_pipe=TextPipe.failed(), gen_ctx=context, ckpt_label='failed', outputs=[])
+        return cls(text_pipe=TextPipe.failed(), gen_ctx=context, ckpt_label='failed', tool_outputs=[])
 
 
 @dataclass

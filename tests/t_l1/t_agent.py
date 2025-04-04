@@ -21,7 +21,7 @@ class TestAgent(CredTest):
         inf_config = InfConfig(required_tool=greet_tool)
         step = self.agent.handle(inf_config=inf_config)
 
-        outputs : list[ToolOutput] = step.outputs
+        outputs : list[ToolOutput] = step.tool_outputs
 
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
