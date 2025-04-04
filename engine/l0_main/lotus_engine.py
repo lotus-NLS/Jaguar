@@ -94,6 +94,7 @@ class LotusEngine(Loggable):
         self.agent.update_memory(entry=workflow_description)
 
         while True:
+
             print(f'## Now starting work on node: {node.name}')
             self.do_task(task=node.task, max_steps=node.max_steps)
 
@@ -111,6 +112,8 @@ class LotusEngine(Loggable):
     def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
         writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
+
+            user_input = input('Press enter to proceed')
             print()
             w = self.observe(step=step)
             writings.append(w)

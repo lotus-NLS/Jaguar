@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import traceback
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -44,7 +45,8 @@ class Context(JsonDataclass):
                 entry = Message.from_workspace(ws=ws)
                 entries.append(entry)
             except BaseException as e:
-                logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
+                tb = traceback.format_exc()
+                logger.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
 
         tools = aos.get_tools() if required_tool is None else [required_tool]
         docs = [tool.get_doc() for tool in tools]
