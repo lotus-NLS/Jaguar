@@ -103,14 +103,15 @@ class LotusEngine(Loggable):
         return node
 
     def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
-        states : list[State] = []
+        writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
             print()
-            state = self.observe(step=step)
-            states.append(state)
-        print(f'Finished work mode after {len(states)} steps')
+            w = self.observe(step=step)
+            writings.append(w)
+        print(f'Finished work mode after {len(writings)} steps')
+
         if not dos is None:
-            report = states[-1].msg
+            report = writings[-1]
             if not report:
                 raise ValueError('No summary generated')
 
@@ -129,15 +130,16 @@ class LotusEngine(Loggable):
 
             print()
 
-    def observe(self, step : Step) -> State:
+    def observe(self, step : Step) -> str:
         text = ''
         for chunk in step.text_pipe.get_text_stream():
             text += chunk
             print(chunk, end='')
-        msg = Message.agent(msg=text)
-        self.outgoing_messages.put(msg)
+        if text:
+            msg = Message.agent(msg=text)
+            self.outgoing_messages.put(msg)
 
-        return step.get_state(uuid=self.sess_uuid)
+        return text
 
 
 if __name__ == "__main__":
