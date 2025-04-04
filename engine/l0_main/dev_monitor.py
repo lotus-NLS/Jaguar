@@ -85,3 +85,8 @@ class DevMonitor:
         return html_code
 
 
+
+
+if __name__ == "__main__":
+    server = DevMonitor.default()
+    server.serve()
