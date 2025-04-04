@@ -2,7 +2,7 @@ import time
 from typing import Optional
 
 from engine.l2_models import InfConfig, OpenAIModel, Generation
-from engine.l2_models.language import Entry, Context
+from engine.l2_models.language import Message, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, ExampleFiles
 from tests.credtest import CredTest
@@ -23,7 +23,7 @@ class OpenAITest(CredTest):
         self.default_model : OpenAIModel = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.textbox = TextBox()
 
-    def get_results(self, entries : list[Entry], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:
+    def get_results(self, entries : list[Message], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:
         context = Context(entries=entries, docs=docs)
         generation = self.default_model.get_generation(context=context, config=options)
         prompts_context = [entry.msg for entry in context.entries]
@@ -97,14 +97,14 @@ class NotifyChef(Tool):
 
 class ExampleEntries:
     def __init__(self):
-        self.introduction = Entry.user(msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
-        self.repetition = Entry.user(msg='Can you please repeat what I said above in its entirety?')
+        self.introduction = Message.user(msg='Hi there, pleased to meet you! Who are you and what is your expertise?')
+        self.repetition = Message.user(msg='Can you please repeat what I said above in its entirety?')
 
         fpath = ExampleFiles.lend_png().fpath
         img_io = ImageFile(fpath=fpath)
         img_content = img_io.read()
-        self.image_entry = Entry.user(msg='Can you describe what\'s in this image?', image=img_content)
+        self.image_entry = Message.user(msg='Can you describe what\'s in this image?', image=img_content)
 
-        self.welcome_request = Entry.user(msg='## Automated message: Please greet our eight guests and welcome them to our home! You need only do this once, every guest will see it.')
-        self.notify_chef = Entry.user(msg='Also please notify the chef that we need food for eight people.')
-        self.write_num_guests = Entry.user(msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')
+        self.welcome_request = Message.user(msg='## Automated message: Please greet our eight guests and welcome them to our home! You need only do this once, every guest will see it.')
+        self.notify_chef = Message.user(msg='Also please notify the chef that we need food for eight people.')
+        self.write_num_guests = Message.user(msg='Please tell me how many guests there are without invoking the display, then display a (single) warm welcome message')

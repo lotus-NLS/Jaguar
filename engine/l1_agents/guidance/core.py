@@ -3,7 +3,7 @@ from __future__ import annotations
 import platform, distro
 from enum import Enum
 from datetime import datetime
-from engine.l2_models.language import Entry
+from engine.l2_models.language import Message
 
 
 # ----------------------------------------------------
@@ -18,8 +18,8 @@ class Core:
     def GOTO(cls):
         return cls(identity=Identity.GOTO)
 
-    def as_system_entry(self) -> Entry:
-        return Entry.system(msg=self.as_str())
+    def as_system_entry(self) -> Message:
+        return Message.system(msg=self.as_str())
 
     def as_str(self) -> str:
         msg = f'{self.identity.value}\n'

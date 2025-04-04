@@ -16,7 +16,7 @@ from holytools.userIO import MessageFormatter
 # ----------------------------------------------
 
 @dataclass
-class Entry(JsonDataclass):
+class Message(JsonDataclass):
     msg : str
     role: Role
     name : Optional[str] = None
@@ -38,30 +38,31 @@ class Entry(JsonDataclass):
         else:
             headline = f'{ws.get_name()}[Archived]'
         msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=headline)
-        return Entry.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
+        return Message.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
 
     @classmethod
-    def from_tool_output(cls, tool_output : ToolOutput) -> Entry:
-        return Entry.tool(msg=tool_output.get_report(), name=tool_output.tool_name)
+    def from_tool_output(cls, tool_output : ToolOutput) -> Message:
+        return Message.tool(msg=tool_output.get_report(), name=tool_output.tool_name)
 
     @classmethod
-    def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:
+    def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
         return cls(role=Role.USER, name=name, msg=msg, image=image)
 
     @classmethod
-    def system(cls, msg: str, image: Optional[PILImage] = None) -> Entry:
+    def system(cls, msg: str, image: Optional[PILImage] = None) -> Message:
         return cls(role=Role.SYSTEM, name=None, msg=msg, image=image)
 
     @classmethod
-    def agent(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Entry:
+    def agent(
+            cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
         return cls(role=Role.AGENT, name=name, msg=msg, image=image)
 
     @classmethod
-    def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Entry:
+    def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Message:
         return cls(role=Role.TOOL, name=name, msg=msg, image=image)
 
     def __eq__(self, other):
-        if not isinstance(other, Entry):
+        if not isinstance(other, Message):
             return False
         return self.msg == other.msg and self.role == other.role and self.name == other.name and self.image == other.image
 

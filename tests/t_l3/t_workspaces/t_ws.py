@@ -1,6 +1,6 @@
 from typing import Optional
 
-from engine.l2_models.language import Entry
+from engine.l2_models.language import Message
 from engine.l3_aos.tools import ToolDoc, ToolCall, Tool
 from engine.l3_aos.workspaces import Workspace
 from holytools.devtools import Unittest
@@ -32,13 +32,13 @@ class TestWorkspace(Unittest):
 
         add.execute(args_dict=tool_call.get_args_dict())
         self.assertIn('New text', self.workspace.get_text())
-        self.log(f'Window context before reset: {Entry.from_workspace(ws=self.workspace)}')
+        self.log(f'Window context before reset: {Message.from_workspace(ws=self.workspace)}')
 
         reset_json_str = '{}'
         tool_call = ToolCall(json_str=reset_json_str)
         reset.execute(args_dict=tool_call.get_args_dict())
         self.assertEqual('', self.workspace.get_text())
-        self.log(f'Window context after reset : {Entry.from_workspace(ws=self.workspace)}')
+        self.log(f'Window context after reset : {Message.from_workspace(ws=self.workspace)}')
 
 
     def test_toggle_active_inactive(self):

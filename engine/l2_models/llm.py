@@ -7,7 +7,7 @@ from typing import Optional
 import tiktoken
 from tiktoken import Encoding
 
-from engine.l2_models.language import Entry, Context
+from engine.l2_models.language import Message, Context
 from engine.l2_models.generation import InfConfig, Generation, CallOptions
 from holytools.logging import Loggable
 
@@ -25,7 +25,7 @@ class LLM(Loggable):
     def get_generation(self, context : Context, options: InfConfig) -> Generation:
         pass
 
-    def get_text_generation(self, entries: list[Entry]) -> Generation:
+    def get_text_generation(self, entries: list[Message]) -> Generation:
         context = Context(entries=entries, docs=[])
         options = InfConfig(call_options=CallOptions.no_call())
         return self.get_generation(context=context, options=options)

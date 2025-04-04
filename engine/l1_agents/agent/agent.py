@@ -8,7 +8,7 @@ from engine.l1_agents.guidance import Core
 from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfConfig
 from engine.l2_models.generation.step import TextPipe, Step
-from engine.l2_models.language import Entry, Context
+from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
@@ -25,7 +25,7 @@ class Agent(Loggable):
         self.task_tracker : TaskTracker = TaskTracker()
         self.aos : AOS = aos
         self.identity : Core = core
-        self.memory: list[Entry] = []
+        self.memory: list[Message] = []
 
         self.aos.add_workspace(ws=self.task_tracker)
         for ws in self.aos.get_workspaces(active_only=False):
@@ -33,7 +33,7 @@ class Agent(Loggable):
             ws.close_action.add_prehook(hook)
 
     def talk(self, msg : str) -> Step:
-        self.memory.append(Entry.user(msg=msg))
+        self.memory.append(Message.user(msg=msg))
         return self.handle()
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
@@ -42,7 +42,7 @@ class Agent(Loggable):
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
 
-        self.update_memory(entry=Entry.system(msg=f'Now entering work mode'))
+        self.update_memory(entry=Message.system(msg=f'Now entering work mode'))
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
@@ -50,7 +50,7 @@ class Agent(Loggable):
             if not self.is_working():
                 break
 
-        self.update_memory(entry=Entry.system(msg=self.task_tracker.report_query))
+        self.update_memory(entry=Message.system(msg=self.task_tracker.report_query))
         final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
 
         if self.task_tracker.is_active:
@@ -89,7 +89,7 @@ class Agent(Loggable):
 
         text = generation.get_text()
         if text:
-            self.update_memory(entry=Entry.agent(msg=text))
+            self.update_memory(entry=Message.agent(msg=text))
 
         return pipe
 
@@ -102,7 +102,7 @@ class Agent(Loggable):
             outputs = [temp_tool.execute(tool_calls[0].get_args_dict())]
 
         for out in outputs:
-            output_entry = Entry.from_tool_output(out)
+            output_entry = Message.from_tool_output(out)
             self.update_memory(output_entry)
         return outputs
 
@@ -111,12 +111,12 @@ class Agent(Loggable):
 
     def get_freeze_hook(self, ws : Workspace):
         def freeze_ws(frozen_ws: Workspace = ws):
-            entry = Entry.from_workspace(ws=frozen_ws, active=False)
+            entry = Message.from_workspace(ws=frozen_ws, active=False)
             entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
             self.update_memory(entry=entry)
         return freeze_ws
 
-    def update_memory(self, entry : Entry):
+    def update_memory(self, entry : Message):
         self.memory.append(entry)
 
     def get_context(self, inf_config : InfConfig) -> Context:
@@ -125,7 +125,7 @@ class Agent(Loggable):
 
         context += Context.from_aos(aos=self.aos, required_tool=inf_config.required_tool)
         if self.is_working():
-            work_entry = Entry.system(msg=self.task_tracker.work_notice)
+            work_entry = Message.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
         return context

@@ -6,7 +6,7 @@ from openai import Stream, OpenAI
 from openai.types.chat.chat_completion_chunk import Choice, ChoiceDelta, ChoiceDeltaToolCall, ChatCompletionChunk
 
 from engine.l2_models.language.context import Context
-from engine.l2_models.language.entry import Entry
+from engine.l2_models.language.message import Message
 from engine.l2_models.generation import Generation, Chunk, InfConfig
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import ToolCall
@@ -29,7 +29,7 @@ class OpenAIModel(LLM):
             raise ValueError(f'Context exceeds token cap of {config.input_tokens_max}')
 
         for entry in context.entries:
-            if not isinstance(entry, Entry):
+            if not isinstance(entry, Message):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
         self.log(f'Creating generation request')

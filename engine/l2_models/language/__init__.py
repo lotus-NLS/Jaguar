@@ -1,2 +1,2 @@
 from .context import Context
-from .entry import Entry
+from .message import Message

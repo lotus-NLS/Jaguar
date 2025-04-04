@@ -1,5 +1,5 @@
 from engine.l2_models import InfConfig
-from engine.l2_models.language import Entry, Context
+from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
 
@@ -14,7 +14,7 @@ class Evaluator:
         query = (f'Please evaluate whether or not the following #property holds for the given #msg\n'
                           f'    - #property: \"{prop}\"\n'
                           f'    - #msg     : \"{report}\"')
-        entries = [Entry.user(msg=query)]
+        entries = [Message.user(msg=query)]
         docs = [yn.get_doc()]
         context = Context(entries=entries, docs=docs)
 
@@ -22,7 +22,7 @@ class Evaluator:
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
-        context += Context.singleton(entry=Entry.agent(msg=eval_text))
+        context += Context.singleton(entry=Message.agent(msg=eval_text))
         options = InfConfig(required_tool=yn)
         yn_generation = self.model.get_generation(context=context, options=options)
         yn_generation.exhaust()

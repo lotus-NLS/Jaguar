@@ -8,7 +8,7 @@ from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolDoc, Tool
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
-from .entry import Entry
+from .message import Message
 
 logger = LoggerFactory.get_logger(name=__name__)
 
@@ -16,7 +16,7 @@ logger = LoggerFactory.get_logger(name=__name__)
 
 @dataclass
 class Context(JsonDataclass):
-    entries: list[Entry] = field(default_factory=list)
+    entries: list[Message] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
     @staticmethod
@@ -33,7 +33,7 @@ class Context(JsonDataclass):
         return JsonDataclass.make_basic(basic_cls, s)
 
     @classmethod
-    def singleton(cls, entry : Entry) -> Context:
+    def singleton(cls, entry : Message) -> Context:
         return cls(entries=[entry])
 
     @classmethod
@@ -41,7 +41,7 @@ class Context(JsonDataclass):
         entries = []
         for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
             try:
-                entry = Entry.from_workspace(ws=ws)
+                entry = Message.from_workspace(ws=ws)
                 entries.append(entry)
             except BaseException as e:
                 logger.error(f'Error in getting entry for app \"{ws.get_name()}\": {e}')
@@ -53,7 +53,7 @@ class Context(JsonDataclass):
 
     @classmethod
     def get_example_context(cls, msg : str = 'I am GOTO') -> Context:
-        entries : list[Entry] = [Entry.system(msg=msg), Entry.user(msg=f'Hello there')]
+        entries : list[Message] = [Message.system(msg=msg), Message.user(msg=f'Hello there')]
         basic_context = Context(entries=entries)
 
         aos = AOS.terminal_only()

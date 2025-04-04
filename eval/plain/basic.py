@@ -3,7 +3,7 @@ import random
 import tempfile
 
 from engine.l2_models import OpenAIModel, InfConfig
-from engine.l2_models.language import Context, Entry
+from engine.l2_models.language import Context, Message
 from holytools.fsys import Directory
 from tests.credtest import CredTest
 
@@ -42,8 +42,8 @@ class TestFileStructure(CredTest):
         dir_view = root_dir.get_tree()
         model = OpenAIModel.default_model(api_key=self.openai_apikey)
 
-        ctx = Context.singleton(entry=Entry.agent(msg=dir_view))
-        ctx += Context.singleton(entry=Entry.user(msg=f'Give the file path of file {self.random_folder.name}'
+        ctx = Context.singleton(entry=Message.agent(msg=dir_view))
+        ctx += Context.singleton(entry=Message.user(msg=f'Give the file path of file {self.random_folder.name}'
                                                       f' relative to the root'))
 
         reps = 5
