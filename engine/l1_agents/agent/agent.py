@@ -50,13 +50,8 @@ class Agent(Loggable):
             if not self.is_working():
                 break
 
-        self.update_memory(entry=Message.system(msg=self.task_tracker.report_query))
-        final_step = self.handle(inf_config=InfConfig.text_only(max_output_tokens=100))
-
         if self.task_tracker.is_active:
             self.task_tracker.close_action.execute({})
-
-        yield final_step
 
     # ---------------------------------------------------
     # Main routine

@@ -1,5 +1,4 @@
 import time
-from typing import Optional
 
 from engine.l0_main.lotus_io import LotusIO
 from engine.l0_main.settings import LotusCredentials
@@ -43,7 +42,6 @@ class LotusEngine(Loggable):
             msg = Message.user(msg='Hello world')
             self.IO.outgoing_messages.put(msg)
 
-
     def do_workflow(self, wf : Workflow) -> Node:
         node = wf.start_node
         outgoing_edges = wf.outgoing_edge_map[node.name]
@@ -66,7 +64,7 @@ class LotusEngine(Loggable):
 
         return node
 
-    def do_task(self, task : Task, max_steps : int, dos : Optional[str] = None):
+    def do_task(self, task : Task, max_steps : int):
         writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
             input('Press enter to proceed')
@@ -75,12 +73,6 @@ class LotusEngine(Loggable):
             w = self.IO.observe(step=step)
             writings.append(w)
         print(f'Finished work mode after {len(writings)} steps')
-
-        if not dos is None:
-            report = writings[-1]
-            if not report:
-                raise ValueError('No summary generated')
-            self._evalutor.evaluateProperty(report=report, prop=dos)
 
     def converse(self):
         while True:
@@ -96,7 +88,6 @@ class LotusEngine(Loggable):
             self.IO.observe(step=step)
 
             print()
-
 
 
 if __name__ == "__main__":
