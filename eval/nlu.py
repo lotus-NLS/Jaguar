@@ -1,5 +1,6 @@
 import os
 
+from engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents.guidance.tasktracker import Task
 from engine.l2_models import OpenAIModel, InfConfig
@@ -16,6 +17,7 @@ class NLU(Unittest):
         configs : LotusCredentials = LotusCredentials.from_file()
         cls.model : LLM = OpenAIModel.default_model(api_key=configs.openai_api_key)
         cls.task_provider : TaskProvider = TaskProvider()
+        cls.engine = LotusEngine()
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
         yn = YesNoTool()
@@ -63,7 +65,7 @@ class YesNoTool(Tool):
 class TaskProvider:
     def __init__(self):
         script_dirpath = os.path.dirname(__file__)
-        tasks_fpath = os.path.join(script_dirpath, 'tasks.txt')
+        tasks_fpath = os.path.join(script_dirpath, 'resources', 'tasks.txt')
         with open(tasks_fpath, 'r') as f:
             content = f.read()
             parts = content.split('++')
