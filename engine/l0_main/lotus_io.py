@@ -4,9 +4,6 @@ import time
 import uuid
 from queue import Queue
 
-from flask import Flask
-from flask_socketio import SocketIO, emit
-
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents import TaskTracker
 from engine.l2_models.generation.step import Step
@@ -38,20 +35,26 @@ class LotusIO(Loggable):
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
     def start_socket(self):
+        from flask_socketio import SocketIO, emit
+        from flask import Flask
+
         app = Flask(__name__)
         socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
-
-        @app.route('/')
-        def index():
-            return "Hello, this is the main page!"
-
-        @socketio.on('connect')
-        def handle_connect():
-            emit('uuid', {'uuid': self.generate_session_uuid()})
 
         def start():
             sys.stdout = temp_file
             sys.stderr = temp_file
+
+
+
+            @app.route('/')
+            def index():
+                return "Hello, this is the main page!"
+
+            @socketio.on('connect')
+            def handle_connect():
+                emit('uuid', {'uuid': self.generate_session_uuid()})
+
             socketio.run(app, host='localhost', port=8000, allow_unsafe_werkzeug=True)
 
         def send_outgoing():
@@ -92,6 +95,7 @@ class LotusIO(Loggable):
             endpoint.post(msg=obj.to_str(), secure=False)
         except:
             self.warning(f'Monitor endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
+
 
 if __name__ == "__main__":
     lotus_io = LotusIO()
