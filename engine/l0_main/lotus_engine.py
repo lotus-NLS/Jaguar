@@ -11,7 +11,6 @@ from engine.l3_aos import AOS, Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from holytools.logging import Timber
 
-
 # ---------------------------------------------------------
 
 class LotusEngine(Timber):

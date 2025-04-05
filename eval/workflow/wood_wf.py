@@ -22,7 +22,8 @@ class UnittestWFEval(NLU):
 
     def test_calc_wf(self):
         while True:
-            print(f'User: ')
+            print()
+            print(f'User: ', end='')
             user_input = input()
             self.engine.do_talk(user_input)
 
@@ -42,7 +43,5 @@ class UnittestWFEval(NLU):
             with open(dest_fpath, 'wb') as f2:
                 f2.write(content)
 
-
 if __name__ == "__main__":
     UnittestWFEval.execute_all()
-    # print(listdir.__file__)

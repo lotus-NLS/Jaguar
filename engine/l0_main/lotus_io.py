@@ -1,8 +1,6 @@
 import tempfile
 import time
-import time
 import uuid
-from io import StringIO
 from queue import Queue
 
 from flask import Flask
@@ -14,7 +12,6 @@ from engine.l2_models.generation.step import Step
 from engine.l2_models.language import Message
 from holytools.abstract import Serializable
 from holytools.logging import LoggerFactory
-from holytools.logging.loggers import LoggerOverseer
 from holytools.logging.timber import Timber
 from holytools.network import Endpoint
 
@@ -41,6 +38,11 @@ class LotusIO(Timber):
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
     def start_socket(self):
+        # TODO: This is temporarily disabled until this logging becomes relevant
+        # TODO: In the meantime don't forget "WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead."
+        werkzeug_logger = LoggerFactory.get_logger(name='werkzeug')
+        werkzeug_logger.disabled = True
+
         app = Flask(__name__)
         socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
 
@@ -58,7 +60,7 @@ class LotusIO(Timber):
         def send_outgoing():
             while True:
                 msg = self.outgoing_messages.get()
-                print(f'Emitting message to socket: {msg.text}')
+                # print(f'Emitting message to socket: {msg.text}')
                 socketio.emit('msg', {'role': msg.role.value, 'content': msg.text})
 
         socketio.start_background_task(start)
@@ -66,13 +68,15 @@ class LotusIO(Timber):
 
     def observe(self, step : Step) -> str:
         text = ''
+        self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
+
         print('Assistant: ', end='')
         for chunk in step.text_pipe.get_text_stream():
             time.sleep(0.05)
             text += chunk
             print(chunk, end='')
         print()
-        self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
+
 
         for o in step.tool_outputs:
             if not TaskTracker.get_name() in o.tool_name:
@@ -87,16 +91,11 @@ class LotusIO(Timber):
 
     def post(self, endpoint : Endpoint, obj : Serializable):
         try:
+            self.info(f'Making post request to {endpoint.get_url(protocol="https")}')
             endpoint.post(msg=obj.to_str(), secure=False)
         except:
             self.warning(f'Monitor endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
 
 
 if __name__ == "__main__":
-    werkzeug_logger = LoggerFactory.get_logger(name='werkzeug')
-    # werkzeug_logger.disabled = True
-    # LoggerOverseer.force_identification()
-    LoggerOverseer.redirect(logger=werkzeug_logger, new_stream=temp_file)
-
-    lotus_io = LotusIO()
-    time.sleep(2)
+    pass
