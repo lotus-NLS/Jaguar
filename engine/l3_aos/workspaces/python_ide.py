@@ -132,8 +132,10 @@ class PythonProject:
         subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
 
     def run_file(self, script_fpath : str):
-        env = {'PYTHONPATH' : self.dirpath}
-        result = subprocess.run([self.interpreter_fpath, script_fpath], capture_output=True, text=True, env=env)
+        env, cwd = {'PYTHONPATH' : self.dirpath}, self.dirpath
+        arg_list = [self.interpreter_fpath, script_fpath]
+        result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
+
         script_stdout = f'{result.stdout}'
         script_stderr = f'\033[31m{result.stderr}\033[0m'
         exit_code_msg = f'Process finished with exit code {result.returncode}'

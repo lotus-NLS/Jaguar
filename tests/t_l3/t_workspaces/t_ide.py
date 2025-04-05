@@ -37,9 +37,13 @@ class TestPythonIDE(Unittest):
         print(f'- Initial file content:\n{file_content}')
         self.assertEqual(file_content, expected_file_content)
 
-
     def test_run_file(self):
         self.project.run_file(script_fpath=self.script_fpath)
+        print(f'- Run output:\n{self.project.run_output}')
+        self.assertTrue('Hello world :)' in self.project.run_output)
+
+        relative_script_fpath = os.path.relpath(self.script_fpath, start=self.project.dirpath)
+        self.project.run_file(script_fpath=relative_script_fpath)
         print(f'- Run output:\n{self.project.run_output}')
         self.assertTrue('Hello world :)' in self.project.run_output)
 
