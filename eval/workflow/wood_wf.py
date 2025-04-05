@@ -21,15 +21,15 @@ class UnittestWFEval(NLU):
         self.copy_file(source_fpath=listdir_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'listdir.py'))
 
     def test_calc_wf(self):
+        self.engine.do_talk(query=f'Please open the python project at /tmp/1213a3cd-7fd4-4fb0-8e3e-0c4f544d4db0')
+
         while True:
             print()
             print(f'User: ', end='')
             user_input = input()
             self.engine.do_talk(user_input)
 
-        self.unittest_workflow = Workflow.generate_unittest(filename=f'Evalutor and YesNoTool in evaluator.py',
-                                                            tests_directory='tests',
-                                                            project_dirpath=f'/home/daniel/lotus/engine')
+        # self.unittest_workflow = Workflow.generate_unittest(filename=f'Evalutor and YesNoTool in evaluator.py', tests_directory='tests',project_dirpath=f'/home/daniel/lotus/engine')
 
     def test_listdir_wf(self):
         self.unittest_workflow = Workflow.generate_unittest(filename=f'ListDir',

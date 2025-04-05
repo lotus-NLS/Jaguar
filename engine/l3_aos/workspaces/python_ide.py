@@ -169,6 +169,7 @@ class PythonProject:
     def _get_project_filetree(self):
         root_node = Directory(path=self.dirpath)
         fpaths = root_node.get_subfile_fpaths()
+        fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
         fs_dict = root_node.to_dict(fpaths=fpaths)
 
         parts = self.dirpath.split('/')
