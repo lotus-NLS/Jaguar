@@ -67,16 +67,12 @@ class LotusEngine(Loggable):
     def do_task(self, task : Task, max_steps : int):
         writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
-            input('Press enter to proceed')
-
             print()
             w = self.IO.observe(step=step)
             writings.append(w)
         print(f'- Finished work mode after {len(writings)} steps\n')
 
     def do_talk(self, query : str) -> str:
-        print(f'User: {query}', end='')
-
         user_mesage = Message.user(msg=query)
         self.IO.send(user_mesage)
 

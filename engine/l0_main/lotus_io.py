@@ -1,3 +1,6 @@
+import sys
+import tempfile
+import time
 import uuid
 from queue import Queue
 
@@ -12,6 +15,8 @@ from holytools.abstract import Serializable
 from holytools.logging import Loggable
 from holytools.network import Endpoint
 
+temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+t')
+print(f'Temp file created: {temp_file.name}')
 
 # ---------------------------------------------------------
 
@@ -45,9 +50,14 @@ class LotusIO(Loggable):
             emit('uuid', {'uuid': self.generate_session_uuid()})
 
         def start():
+            sys.stdout = temp_file
+            sys.stderr = temp_file
             socketio.run(app, host='localhost', port=8000, allow_unsafe_werkzeug=True)
 
         def send_outgoing():
+            sys.stdout = temp_file
+            sys.stderr = temp_file
+
             while True:
                 msg = self.outgoing_messages.get()
                 print(f'Emitting message to socket: {msg.text}')
@@ -56,12 +66,14 @@ class LotusIO(Loggable):
         socketio.start_background_task(start)
         socketio.start_background_task(send_outgoing)
 
-
     def observe(self, step : Step) -> str:
         text = ''
+        print('Assistant: ', end='')
         for chunk in step.text_pipe.get_text_stream():
+            time.sleep(0.05)
             text += chunk
             print(chunk, end='')
+        print()
         self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 
         for o in step.tool_outputs:
