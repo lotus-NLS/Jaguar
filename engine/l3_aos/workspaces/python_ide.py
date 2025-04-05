@@ -169,11 +169,13 @@ class PythonProject:
     def _get_project_filetree(self):
         root_node = Directory(path=self.dirpath)
         fpaths = root_node.get_subfile_fpaths()
-        fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
-        fpaths = [os.path.relpath(p, self.dirpath) for p in fpaths]
-
         fs_dict = root_node.to_dict(fpaths=fpaths)
-        filetree = root_node.dict_to_tree(fs_dict=fs_dict, max_children=10)
+
+        parts = self.dirpath.split('/')
+        for p in parts:
+            fs_dict = fs_dict[p]
+
+        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.dirpath, max_children=10)
 
         return filetree
 
