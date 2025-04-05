@@ -1,17 +1,21 @@
 import tempfile
 import time
+import time
 import uuid
+from io import StringIO
 from queue import Queue
 
-from flask_socketio import SocketIO, emit
 from flask import Flask
+from flask_socketio import SocketIO, emit
 
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents import TaskTracker
 from engine.l2_models.generation.step import Step
 from engine.l2_models.language import Message
 from holytools.abstract import Serializable
-from holytools.logging import Loggable
+from holytools.logging import LoggerFactory
+from holytools.logging.loggers import LoggerOverseer
+from holytools.logging.timber import Timber
 from holytools.network import Endpoint
 
 temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+t')
@@ -19,7 +23,7 @@ print(f'Temp file created: {temp_file.name}')
 
 # ---------------------------------------------------------
 
-class LotusIO(Loggable):
+class LotusIO(Timber):
     def __init__(self):
         super().__init__()
         self.sess_uuid: str = self.generate_session_uuid()
@@ -89,5 +93,10 @@ class LotusIO(Loggable):
 
 
 if __name__ == "__main__":
+    werkzeug_logger = LoggerFactory.get_logger(name='werkzeug')
+    # werkzeug_logger.disabled = True
+    # LoggerOverseer.force_identification()
+    LoggerOverseer.redirect(logger=werkzeug_logger, new_stream=temp_file)
+
     lotus_io = LotusIO()
-    time.sleep(10)
+    time.sleep(2)

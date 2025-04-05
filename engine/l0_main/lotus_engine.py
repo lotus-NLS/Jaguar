@@ -9,12 +9,12 @@ from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS, Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from holytools.logging import Loggable
+from holytools.logging import Timber
 
 
 # ---------------------------------------------------------
 
-class LotusEngine(Loggable):
+class LotusEngine(Timber):
     def __init__(self):
         super().__init__()
         self._creds: LotusCredentials = LotusCredentials.from_file()

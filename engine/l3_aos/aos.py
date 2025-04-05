@@ -3,12 +3,12 @@ from __future__ import annotations
 from engine.l3_aos.tools import Tool, ToolCall, ToolOutput
 from engine.l3_aos.workspaces import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
-from holytools.logging import Loggable
+from holytools.logging import Timber
 
 
 # ---------------------------------------------------------
 
-class AOS(Loggable):
+class AOS(Timber):
     def __init__(self, workspaces : list[Workspace], cautious_mode : bool = False):
         super().__init__()
         self.workspaces : list[Workspace] = []

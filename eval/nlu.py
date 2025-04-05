@@ -1,6 +1,6 @@
 import os
 
-from engine import LotusEngine
+from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents.guidance.tasktracker import Task
 from engine.l2_models import OpenAIModel, InfConfig

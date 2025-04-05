@@ -9,12 +9,12 @@ from tiktoken import Encoding
 
 from engine.l2_models.language import Message, Context
 from engine.l2_models.generation import InfConfig, Generation, CallOptions
-from holytools.logging import Loggable
+from holytools.logging import Timber
 
 
 # ---------------------------------------------------------
 
-class LLM(Loggable):
+class LLM(Timber):
     def __init__(self, name : str, api_key : Optional[str] = None):
         super().__init__()
         self.api_key : str = api_key

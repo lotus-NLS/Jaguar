@@ -7,13 +7,13 @@ import requests
 from func_timeout import func_timeout, FunctionTimedOut
 
 from holytools.configs import FileConfigs
-from holytools.logging import Loggable
+from holytools.logging import Timber
 
 
 # --------------------------------------------
 
 @dataclass
-class LotusCredentials(Loggable):
+class LotusCredentials(Timber):
     openai_api_key : str
     google_api_key : str
     search_engine_id : str

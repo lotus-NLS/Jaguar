@@ -8,11 +8,11 @@ from PIL.Image import Image as PILImage
 
 from engine.l3_aos.tools import ToolDoc, ToolArg, Tool
 from holytools.devtools import ModuleInspector
-from holytools.logging import Loggable
+from holytools.logging import Timber
 
 # ---------------------------------------------------------
 
-class Workspace(Loggable):
+class Workspace(Timber):
     def __init__(self):
         super().__init__()
         self.is_active : bool = False
