@@ -4,7 +4,7 @@ from engine.l1_agents import Workflow
 if __name__ == "__main__":
     engine = LotusEngine()
 
-    engine.converse()
+    engine.do_talk()
 
     unittest_workflow = Workflow.generate_unittest(module_name=f'Evalutor and YesNoTool in evaluator.py',
                                                    tests_directory='tests',

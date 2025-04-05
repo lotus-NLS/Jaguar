@@ -62,7 +62,7 @@ class LotusIO(Loggable):
         for chunk in step.text_pipe.get_text_stream():
             text += chunk
             print(chunk, end='')
-        self.send(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
+        self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 
         for o in step.tool_outputs:
             if not TaskTracker.get_name() in o.tool_name:
@@ -75,7 +75,7 @@ class LotusIO(Loggable):
 
         return text
 
-    def send(self, endpoint : Endpoint, obj : Serializable):
+    def post(self, endpoint : Endpoint, obj : Serializable):
         try:
             endpoint.post(msg=obj.to_str(), secure=False)
         except:

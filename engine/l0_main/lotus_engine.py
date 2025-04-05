@@ -72,22 +72,19 @@ class LotusEngine(Loggable):
             print()
             w = self.IO.observe(step=step)
             writings.append(w)
-        print(f'Finished work mode after {len(writings)} steps')
+        print(f'- Finished work mode after {len(writings)} steps\n')
 
-    def converse(self):
-        while True:
-            print('User: ', end='')
-            user_input = input()
-            if user_input == 'exit':
-                break
+    def do_talk(self, query : str) -> str:
+        print(f'User: {query}', end='')
 
-            user_mesage = Message.user(msg=user_input)
-            self.IO.send(user_mesage)
+        user_mesage = Message.user(msg=query)
+        self.IO.send(user_mesage)
 
-            step = self.agent.talk(msg=user_input)
-            self.IO.observe(step=step)
+        step = self.agent.talk(msg=query)
+        response = self.IO.observe(step=step)
 
-            print()
+
+        return response
 
 
 if __name__ == "__main__":

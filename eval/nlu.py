@@ -42,6 +42,7 @@ class NLU(Unittest):
         self.assertTrue(len(calls) == 1)
         yn.execute(args_dict=calls[0].get_args_dict())
 
+        print(f'\n- Evaluation results:')
         print(f'Query: {query}\n'
               f'Eval : {eval_text}\n'
               f'Answer: {yn.y_n_arg.get_value()}')
