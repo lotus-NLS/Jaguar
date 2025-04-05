@@ -1,8 +1,10 @@
-import sys
 import tempfile
 import time
 import uuid
 from queue import Queue
+
+from flask_socketio import SocketIO, emit
+from flask import Flask
 
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents import TaskTracker
@@ -35,32 +37,21 @@ class LotusIO(Loggable):
         return str(uuid.uuid4()) + str(uuid.uuid4())
 
     def start_socket(self):
-        from flask_socketio import SocketIO, emit
-        from flask import Flask
-
         app = Flask(__name__)
         socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
 
+        @app.route('/')
+        def index():
+            return "Hello, this is the main page!"
+
+        @socketio.on('connect')
+        def handle_connect():
+            emit('uuid', {'uuid': self.generate_session_uuid()})
+
         def start():
-            sys.stdout = temp_file
-            sys.stderr = temp_file
-
-
-
-            @app.route('/')
-            def index():
-                return "Hello, this is the main page!"
-
-            @socketio.on('connect')
-            def handle_connect():
-                emit('uuid', {'uuid': self.generate_session_uuid()})
-
             socketio.run(app, host='localhost', port=8000, allow_unsafe_werkzeug=True)
 
         def send_outgoing():
-            sys.stdout = temp_file
-            sys.stderr = temp_file
-
             while True:
                 msg = self.outgoing_messages.get()
                 print(f'Emitting message to socket: {msg.text}')
@@ -99,3 +90,4 @@ class LotusIO(Loggable):
 
 if __name__ == "__main__":
     lotus_io = LotusIO()
+    time.sleep(10)
