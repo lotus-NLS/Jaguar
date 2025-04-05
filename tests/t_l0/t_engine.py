@@ -1,4 +1,4 @@
-from engine import LotusEngine
+from engine.l0_main.lotus_engine import LotusEngine
 from engine.l1_agents import Workflow
 from holytools.devtools import Unittest
 

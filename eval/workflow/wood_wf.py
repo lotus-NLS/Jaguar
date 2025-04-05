@@ -27,12 +27,12 @@ class UnittestWFEval(NLU):
             user_input = input()
             self.engine.do_talk(user_input)
 
-        # self.unittest_workflow = Workflow.generate_unittest(module_name=f'Evalutor and YesNoTool in evaluator.py',
-        #                                                     tests_directory='tests',
-        #                                                     project_dirpath=f'/home/daniel/lotus/engine')
+        self.unittest_workflow = Workflow.generate_unittest(filename=f'Evalutor and YesNoTool in evaluator.py',
+                                                            tests_directory='tests',
+                                                            project_dirpath=f'/home/daniel/lotus/engine')
 
     def test_listdir_wf(self):
-        self.unittest_workflow = Workflow.generate_unittest(module_name=f'ListDir',
+        self.unittest_workflow = Workflow.generate_unittest(filename=f'ListDir',
                                                             tests_directory='eval/workflow',
                                                             project_dirpath=f'/home/daniel/lotus/engine')
 

@@ -49,7 +49,7 @@ class LotusEngine(Timber):
         self.agent.update_memory(entry=workflow_description)
 
         while True:
-            print(f'## Now starting work on node: {node.name}')
+            print(f'\n## Now starting work on node: {node.name}')
             self.do_task(task=node.task, max_steps=node.max_steps)
 
             if not node.name in wf.outgoing_edge_map:
@@ -80,7 +80,6 @@ class LotusEngine(Timber):
 
 
         return response
-
 
 if __name__ == "__main__":
     engine = LotusEngine()

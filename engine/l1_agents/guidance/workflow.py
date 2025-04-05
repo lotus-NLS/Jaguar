@@ -66,15 +66,21 @@ class Workflow:
         return exit_tool
 
     @classmethod
-    def generate_unittest(cls, project_dirpath : str, module_name : str, tests_directory : str) -> Workflow:
+    def generate_unittest(cls, project_dirpath : str, filename : str, tests_directory : str) -> Workflow:
         proj_name = os.path.basename(project_dirpath)
 
+        notice = (f'You are tasked with creating a unittest for the file {filename} in project {proj_name}.'
+                  f'You will be guided through this process through the TaskTracker tool. '
+                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                  f'As soon as you finish this section of tasks, the next secetion will be presented to you until'
+                  f'the workflow is complete.')
 
-        ys1 = (f'- Section A: Get acquinted with module {module_name} \n'
+        ys1 = (f'- Section A: Get acquinted with module {filename} \n'
                f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
-               f'    - Analyse file {module_name}: Take note of the the functionalities in {module_name} that to be checked in a unittest.\n'
+               f'    - Open file: Open file {filename} in the PythonIDE\n'
+               f'    - Analyse file {filename}: Take note of the the functionalities in {filename} that to be checked in a unittest.\n'
                f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest\n'
-               f'    - Mark complete: One the above tasks are done, complete task 1 (= sectionA) in the TaskTracker tool to proceed to the next section')
+               f'    - Mark complete: Once the above tasks are done, complete task 1 (= sectionA) in the TaskTracker tool to proceed to the next section')
         get_acquainted_task = Task.from_yaml(s=ys1)
         n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
 
@@ -88,11 +94,6 @@ class Workflow:
         n1 = Node(name='Write unittest', task=write_unittest_task, max_steps=20)
         edges = [Edge(source=n0, target=n1, case='Success')]
 
-        notice = (f'You are tasked with creating a unittest for the file {module_name} in project {proj_name}.'
-                  f'You will be guided through this process through the TaskTracker tool. '
-                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
-                  f'As soon as you finish this section of tasks, the next secetion will be presented to you until'
-                  f'the workflow is complete.')
 
         testWorkflow = Workflow(start_node=n0, nodes=[n0, n1], edges=edges, notice=notice)
         return testWorkflow

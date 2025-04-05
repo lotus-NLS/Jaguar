@@ -13,7 +13,6 @@ class TestWorkflow(Unittest):
                  Edge(source=nodes[0], target=nodes[2], case='Failure')]
         self.workflow = Workflow(start_node=nodes[0], nodes=nodes, edges=edges)
 
-
     def test_get_node(self):
         nodeA = self.workflow.get_node('A')
         self.assertTrue(nodeA.name == 'A')
