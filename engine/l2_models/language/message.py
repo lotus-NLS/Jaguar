@@ -30,7 +30,7 @@ class Message(JsonDataclass):
                 self.image = ImageConverter.to_rgb(img=self.image)
 
     @classmethod
-    def from_workspace(cls, ws : Workspace, active : bool = True):
+    def from_workspace(cls, ws : Workspace, active : bool = True) -> Message:
         msg = f'{ws.get_desc()}\n'
         if active:
             headline = f'{ws.get_name()}[Active]'

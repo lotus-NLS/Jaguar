@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from engine.l3_aos.tools import Tool, ToolCall, ToolOutput
+from typing import Optional
+
+from engine.l3_aos.tools import Tool, ToolCall, ToolOutput, ToolDoc
 from engine.l3_aos.workspaces import Workspace
 from engine.l3_aos.workspaces.terminal import Terminal
 from holytools.logging import Timber
@@ -55,6 +57,11 @@ class AOS(Timber):
 
     # ------------------------------------------------------------------
     # get
+
+    def get_docs(self, required_tool : Optional[Tool] = None) -> list[ToolDoc]:
+        tools = self.get_tools() if required_tool is None else [required_tool]
+        docs = [tool.get_doc() for tool in tools]
+        return docs
 
     def get_tools(self) -> list[Tool]:
         workspaces = self.get_workspaces()

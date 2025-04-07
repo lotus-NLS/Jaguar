@@ -16,7 +16,7 @@ class Evaluator:
                           f'    - #msg     : \"{report}\"')
         entries = [Message.user(msg=query)]
         docs = [yn.get_doc()]
-        context = Context(entries=entries, docs=docs)
+        context = Context(messages=entries, docs=docs)
 
         generation = self.model.get_generation(context=context, config=InfConfig.text_only())
         generation.exhaust()

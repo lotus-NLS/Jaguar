@@ -26,7 +26,7 @@ class LLM(Timber):
         pass
 
     def get_text_generation(self, entries: list[Message]) -> Generation:
-        context = Context(entries=entries, docs=[])
+        context = Context(messages=entries, docs=[])
         options = InfConfig(call_options=CallOptions.no_call())
         return self.get_generation(context=context, config=options)
 
@@ -47,7 +47,7 @@ class Tokenizer:
             token_count = 0
             tool_docs = context.docs
             the_tools = [] if tool_docs is None else tool_docs
-            for entry in context.entries:
+            for entry in context.messages:
                 token_count += self.count_string_tokens(the_str=f'{entry}')
             for tool_docs in the_tools:
                 token_count += self.count_string_tokens(the_str=json.dumps(tool_docs))

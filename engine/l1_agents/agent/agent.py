@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import traceback
 from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
@@ -9,6 +10,7 @@ from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfConfig
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Message, Context
+from engine.l2_models.language.message import Role
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
@@ -115,15 +117,40 @@ class Agent(Timber):
         self.memory.append(entry)
 
     def get_context(self, inf_config : InfConfig) -> Context:
-        context = Context(entries=[self.identity.as_system_entry()])
-        context += Context(entries=self.memory)
+        context = Context(messages=[self.identity.as_system_entry()])
+        context += Context(docs=self.aos.get_docs(required_tool=inf_config.required_tool))
+        context += Context(messages=self.memory)
 
-        context += Context.from_aos(aos=self.aos, required_tool=inf_config.required_tool)
+        def get_matching_ws_name(ws_names : list[str], tool_name : str):
+            for n in ws_names:
+                if n in tool_name:
+                    return n
+
+        msg_map = self.get_entry_map(aos=self.aos)
+        agent_ws_names = list(msg_map.keys())
+        for j, m in enumerate(reversed(context.messages)):
+            matching_ws_name = get_matching_ws_name(ws_names=agent_ws_names, tool_name=m.text)
+            if m.role == Role.TOOL and not matching_ws_name is None:
+                print(f'- Found tool role')
+                print(f'{m.get_view()}')
+                index, msg = len(msg_map)-j, msg_map[matching_ws_name]
+                context.messages.insert(index, msg)
+
         if self.is_working():
             work_entry = Message.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
         return context
+
+    def get_entry_map(self, aos : AOS) -> dict[str, Message]:
+        msg_map: dict[str, Message] = {}
+        for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
+            try:
+                msg_map[ws.get_name()] = Message.from_workspace(ws=ws)
+            except BaseException as e:
+                tb = traceback.format_exc()
+                self.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
+        return msg_map
 
     def is_working(self) -> bool:
         is_active = self.task_tracker.is_active

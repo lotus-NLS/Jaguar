@@ -24,9 +24,9 @@ class OpenAITest(CredTest):
         self.textbox = TextBox()
 
     def get_results(self, entries : list[Message], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:
-        context = Context(entries=entries, docs=docs)
+        context = Context(messages=entries, docs=docs)
         generation = self.default_model.get_generation(context=context, config=options)
-        prompts_context = [entry.text for entry in context.entries]
+        prompts_context = [entry.text for entry in context.messages]
 
         print(f'-> Prompts: \n {prompts_context}')
         print("->Generated Text Content:")

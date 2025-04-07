@@ -1,12 +1,9 @@
 from __future__ import annotations
 
 import json
-import traceback
 from dataclasses import dataclass, field
-from typing import Optional
 
-from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolDoc, Tool
+from engine.l3_aos.tools import ToolDoc
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
 from .message import Message
@@ -17,7 +14,7 @@ logger = LoggerFactory.get_logger(name=__name__)
 
 @dataclass
 class Context(JsonDataclass):
-    entries: list[Message] = field(default_factory=list)
+    messages: list[Message] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
     @staticmethod
@@ -35,32 +32,13 @@ class Context(JsonDataclass):
 
     @classmethod
     def singleton(cls, entry : Message) -> Context:
-        return cls(entries=[entry])
-
-    @classmethod
-    def from_aos(cls, aos : AOS, required_tool : Optional[Tool] = None):
-        entries = []
-        for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
-            try:
-                entry = Message.from_workspace(ws=ws)
-                entries.append(entry)
-            except BaseException as e:
-                tb = traceback.format_exc()
-                logger.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
-
-        tools = aos.get_tools() if required_tool is None else [required_tool]
-        docs = [tool.get_doc() for tool in tools]
-
-        return cls(entries=entries, docs=docs)
+        return cls(messages=[entry])
 
     @classmethod
     def get_example_context(cls, msg : str = 'I am GOTO') -> Context:
         entries : list[Message] = [Message.system(msg=msg), Message.user(msg=f'Hello there')]
-        basic_context = Context(entries=entries)
-
-        aos = AOS.terminal_only()
-        aos_context = Context.from_aos(aos=aos)
-        return aos_context + basic_context
+        basic_context = Context(messages=entries)
+        return basic_context
 
     # ---------------------------------------------------
 
@@ -81,20 +59,20 @@ class Context(JsonDataclass):
             context_str += f'{doc.get_view()}\n\n'
 
         context_str += small_seperator(f'Memory')
-        for entry in self.entries:
+        for entry in self.messages:
             context_str += f'{entry.get_view()}\n'
 
         return context_str
 
     def __iadd__(self, other : Context):
-        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+        return Context(messages=self.messages + other.messages, docs=self.docs + other.docs)
 
     def __add__(self, other : Context):
-        return Context(entries=self.entries + other.entries, docs=self.docs + other.docs)
+        return Context(messages=self.messages + other.messages, docs=self.docs + other.docs)
 
     def __eq__(self, other : Context):
-        entry_lens_eq = len(self.entries) == len(other.entries)
-        entries_equal = all([e1 == e2 for e1,e2 in zip(self.entries, other.entries)])
+        entry_lens_eq = len(self.messages) == len(other.messages)
+        entries_equal = all([e1 == e2 for e1,e2 in zip(self.messages, other.messages)])
 
         doc_lens_eq = len(self.docs) == len(other.docs)
         docs_equal = all([d1 == d2 for d1,d2 in zip(self.docs, other.docs)])

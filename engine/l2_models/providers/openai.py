@@ -28,7 +28,7 @@ class OpenAIModel(LLM):
         if not token_cap_ok:
             raise ValueError(f'Context exceeds token cap of {config.input_tokens_max}')
 
-        for entry in context.entries:
+        for entry in context.messages:
             if not isinstance(entry, Message):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
@@ -41,7 +41,7 @@ class OpenAIModel(LLM):
     def get_response(self, context : Context, options: InfConfig) -> Stream[ChatCompletionChunk]:
         args_dict = {
             'model': self._name,
-            'messages': [entry.as_openai_dict() for entry in context.entries],
+            'messages': [entry.as_openai_dict() for entry in context.messages],
             'stream' : True,
             'timeout' : options.timeout
         }
