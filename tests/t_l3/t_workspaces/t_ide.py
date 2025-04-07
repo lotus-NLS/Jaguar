@@ -12,10 +12,8 @@ class TestPythonIDE(Unittest):
         cls.tempdir : str = tempfile.mktemp()
         os.makedirs(cls.tempdir)
         cls.ide : PythonIDE = PythonIDE()
-        cls.ide.open_file(fpath=cls.tempdir)
+        cls.ide.open(project_dirpath=cls.tempdir)
         cls.ide._mkvenv()
-
-        cls.viewprovider : ViewProvider = ViewProvider()
 
     def setUp(self):
         self.script_fpath = os.path.join(self.tempdir, 'test.py')
@@ -32,7 +30,7 @@ class TestPythonIDE(Unittest):
         self.ide.open_file(fpath=fpath)
 
     def test_script_display(self):
-        file_content = self.viewprovider._get_with_lineno(fpath=self.script_fpath)
+        file_content = self.ide.viewprovider._get_with_lineno(fpath=self.script_fpath)
         expected_file_content = ''' 1   | print(f'Hello world :)')
  2   | a = 2
  3   | b=3'''
@@ -42,13 +40,15 @@ class TestPythonIDE(Unittest):
 
     def test_run_file(self):
         self.ide.run_file(script_fpath=self.script_fpath)
-        print(f'- Run output:\n{self.ide.run_output}')
-        self.assertTrue('Hello world :)' in self.ide.run_output)
+        out1 = self.ide.output_map[self.script_fpath]
+        print(f'- Run output:\n{out1}')
+        self.assertTrue('Hello world :)' in out1)
 
         relative_script_fpath = os.path.relpath(self.script_fpath, start=self.ide.proj_dirpath)
         self.ide.run_file(script_fpath=relative_script_fpath)
-        print(f'- Run output:\n{self.ide.run_output}')
-        self.assertTrue('Hello world :)' in self.ide.run_output)
+        out2 = self.ide.output_map[self.script_fpath]
+        print(f'- Run output:\n{out2}')
+        self.assertTrue('Hello world :)' in out2)
 
     def test_venv_exists(self):
         self.assertTrue(not self.ide.interpreter_fpath is None)
@@ -60,7 +60,7 @@ class TestPythonIDE(Unittest):
         new_content = f'import PIL\n'
         self.ide.write(fileNo=0, after_line=0, content=new_content)
 
-        file_content = self.viewprovider._get_with_lineno(fpath=fpath)
+        file_content = self.ide.viewprovider._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | import PIL
  2   | 
  3   | print(f'Hello world :)')
@@ -75,7 +75,7 @@ class TestPythonIDE(Unittest):
         fpath = self.script_fpath
         self.ide.delete(fileNo=0, start_line=1, end_line=1)
 
-        file_content = self.viewprovider._get_with_lineno(fpath=fpath)
+        file_content = self.ide.viewprovider._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | a = 2
  2   | b=3'''
 

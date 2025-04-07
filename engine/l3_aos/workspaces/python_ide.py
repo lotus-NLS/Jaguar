@@ -21,7 +21,7 @@ class PythonIDE(Workspace):
         self.interpreter_fpath : Optional[str] = None
         self.viewprovider : Optional[ViewProvider] = None
 
-        self.run_output : dict[str, str] = {}
+        self.output_map : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
     # -------------------------------------------------------
@@ -44,7 +44,7 @@ class PythonIDE(Workspace):
 
     def _reset(self):
         self.proj_dirpath = None
-        self.run_output = {}
+        self.output_map = {}
         self._open_fpaths = []
         self.interpreter_fpath = None
         self.viewprovider = None
@@ -52,7 +52,7 @@ class PythonIDE(Workspace):
     def get_text(self) -> str:
         metadata = self.viewprovider.get_metadata(interpreter_fpath=self.interpreter_fpath)
         filetree = self.viewprovider.get_project_filetree()
-        editor = self.viewprovider.get_editor(open_fpaths=self._open_fpaths, run_output=self.run_output)
+        editor = self.viewprovider.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
 
         text = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
         text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure')
@@ -78,7 +78,7 @@ class PythonIDE(Workspace):
         script_stderr = f'\033[31m{result.stderr}\033[0m'
         exit_code_msg = f'Process finished with exit code {result.returncode}'
 
-        self.run_output[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
+        self.output_map[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def open_file(self, fpath : str):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
