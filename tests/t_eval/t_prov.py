@@ -6,9 +6,8 @@ class TestTaskProvider(Unittest):
     def test_retrieval(self):
         provider = TaskProvider()
         task = provider.get_task(name='test')
-        print(f'- Task content = {task._content}')
-        self.assertTrue('Test' in task._content)
-
+        print(f'- Task tree:\n{task.get_tree()}')
+        self.assertTrue('Test' in task.get_tree())
 
 if __name__ == "__main__":
     TestTaskProvider.execute_all()
