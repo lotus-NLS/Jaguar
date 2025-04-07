@@ -18,19 +18,58 @@ class PythonIDE(Workspace):
     def __init__(self):
         super().__init__()
         self.proj_dirpath : Optional[str] = None
-        if not self.proj_dirpath:
-            raise ValueError(f'Project dirpath does not exist: {self.proj_dirpath}')
-        py_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
-        self.interpreter_fpath : Optional[str] = py_fpath if os.path.isfile(py_fpath) else None
-
-        self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
-        self.excluded_patterns : list[str] = ['.*\\.pyc']
+        self.interpreter_fpath : Optional[str] = None
+        self.viewprovider : Optional[ViewProvider] = None
 
         self.run_output : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
+    # -------------------------------------------------------
+    # Workspace generics
+
+    def open(self, project_dirpath : str):
+        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
+        project_dirpath = os.path.expanduser(project_dirpath)
+        if not os.path.isdir(project_dirpath):
+            raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
+        self._reset()
+
+        self.proj_dirpath = project_dirpath
+        py_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
+        self.interpreter_fpath: Optional[str] = py_fpath if os.path.isfile(py_fpath) else None
+        self.viewprovider = ViewProvider(proj_dirpath=self.proj_dirpath)
+
+    def close(self, *args, **kwargs):
+        self._reset()
+
+    def _reset(self):
+        self.proj_dirpath = None
+        self.run_output = {}
+        self._open_fpaths = []
+        self.interpreter_fpath = None
+        self.viewprovider = None
+
+    def get_text(self) -> str:
+        metadata = self.viewprovider.get_metadata(interpreter_fpath=self.interpreter_fpath)
+        filetree = self.viewprovider.get_project_filetree()
+        editor = self.viewprovider.get_editor(open_fpaths=self._open_fpaths, run_output=self.run_output)
+
+        text = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
+        text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure')
+        if self._open_fpaths:
+            text += editor
+
+        return text
+
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+    # --------------------------------------------------------------------
+    # Functionalities
+
     def run_file(self, script_fpath : str):
         script_fpath = self._get_abspath(fpath=script_fpath)
+
         env, cwd = {'PYTHONPATH': self.proj_dirpath}, self.proj_dirpath
         arg_list = [self.interpreter_fpath, script_fpath]
         result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
@@ -44,6 +83,7 @@ class PythonIDE(Workspace):
     def open_file(self, fpath : str):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
         fpath = self._get_abspath(fpath=fpath)
+
         parent_dir = os.path.dirname(fpath)
         if not os.path.isdir(parent_dir):
             raise ValueError(f'Parent directory of file does not exist: {parent_dir}')
@@ -51,7 +91,6 @@ class PythonIDE(Workspace):
             with open(fpath, 'w') as f:
                 f.write('')
 
-        fpath = self._get_abspath(fpath=fpath)
         self._open_fpaths.append(fpath)
         
     def close_file(self, fpath : str):
@@ -66,12 +105,8 @@ class PythonIDE(Workspace):
             with open(fpath, 'r') as f:
                 lines = f.readlines()
 
-            before_lines = lines[:after_line]
-            after_lines = lines[after_line:]
-
-            before_content = ''.join(before_lines)
-            after_content = ''.join(after_lines)
-
+            before_content = ''.join(lines[:after_line])
+            after_content = ''.join(lines[after_line:])
             content = f'{before_content}{content}\n{after_content}'
 
         with open(fpath, 'w') as f:
@@ -98,73 +133,46 @@ class PythonIDE(Workspace):
         else:
             return os.path.join(self.proj_dirpath, fpath)
 
-    # -------------------------------------------------------
-    # Workspace generics
+    def _mkvenv(self):
+        subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])
+        self.interpreter_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
 
-    def open(self, project_dirpath : str):
-        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
-        project_dirpath = os.path.expanduser(project_dirpath)
-        if not os.path.isdir(project_dirpath):
-            raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
-        self._reset()
-        self.proj_dirpath = project_dirpath
 
-    def close(self, *args, **kwargs):
-        self._reset()
 
-    def _reset(self):
-        self.proj_dirpath : Optional[str] = None
-        self.run_output = {}
-        self._open_fpaths = []
-
-    def get_text(self) -> str:
-        metadata = ViewProvider.get_metadata(proj_dirpath=self.proj_dirpath, interpreter_fpath=self.interpreter_fpath)
-        filetree = ViewProvider.get_project_filetree(proj_dirpath=self.proj_dirpath)
-        editor = ViewProvider.get_editor(open_fpaths=self._open_fpaths, run_output=self.run_output)
-
-        text = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
-        text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure')
-        if self._open_fpaths:
-            text += editor
-
-        return text
-
-    def get_image(self) -> Optional[PILImage]:
-        return None
-
-    # -------------------------------------------------------
-    #  Project view
 
 
 class ViewProvider:
-    @staticmethod
-    def get_metadata(proj_dirpath : str, interpreter_fpath : str) -> str:
-        venv = os.path.relpath(interpreter_fpath, proj_dirpath) if interpreter_fpath else None
-        metadata = (f'{"Project name":<20}: {os.path.basename(proj_dirpath)}\n'
-                    f'{"Project dirpath":<20}: {proj_dirpath} \n'
+    def __init__(self, proj_dirpath : str):
+        self.proj_dirpath : str = proj_dirpath
+        self.excluded_patterns : list[str] = ['.*\\.pyc']
+        self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
+
+    def get_metadata(self, interpreter_fpath : str) -> str:
+        venv = os.path.relpath(interpreter_fpath, self.proj_dirpath) if interpreter_fpath else None
+        metadata = (f'{"Project name":<20}: {os.path.basename(self.proj_dirpath)}\n'
+                    f'{"Project dirpath":<20}: {self.proj_dirpath} \n'
                     f'{"Virtual environment":<20}: {venv}')
         return metadata
 
-    @staticmethod
-    def get_project_filetree(proj_dirpath : str) -> str:
-        root_node = Directory(path=proj_dirpath)
+    def get_project_filetree(self) -> str:
+        root_node = Directory(path=self.proj_dirpath)
         fpaths = root_node.get_subfile_fpaths()
-        fpaths = [p for p in fpaths if not ViewProvider._is_excluded(fpath=p)]
+        fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
         fs_dict = root_node.to_dict(fpaths=fpaths)
 
-        parts = proj_dirpath.split('/')
+        parts = self.proj_dirpath.split('/')
         for p in parts:
             fs_dict = fs_dict[p]
 
-        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=proj_dirpath, max_children=10)
+        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.proj_dirpath, max_children=10)
 
         return filetree
 
-    @staticmethod
-    def _is_excluded(fpath : str, excluded_patterns : list[str], excluded_dirpaths) -> bool:
+    def _is_excluded(self, fpath : str) -> bool:
+        excluded_dirpaths = [os.path.join(self.proj_dirpath, excl_dir) for excl_dir in self.excluded_dirs]
         in_excluded = any([fpath.startswith(excl_path) for excl_path in excluded_dirpaths])
         
-        excluded_reg_patterns = [re.compile(pattern) for pattern in excluded_patterns]
+        excluded_reg_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
         matches_exclusion_pattern = any([pattern.match(fpath) for pattern in excluded_reg_patterns])
 
         return in_excluded or matches_exclusion_pattern
@@ -211,22 +219,6 @@ class ViewProvider:
         return enumerated_content
 
     #
-    # def mkvenv(self):
-    #     subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])
-    #     self.interpreter_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
     #
     # def install_libraries(self, names : list[str]):
     #     subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
-
-
-
-
-# if __name__ == "__main__":
-#     test_dirpath = '/home/daniel/testdir'
-#     testscript_fpath = os.path.join(test_dirpath, 'srcdir/newfile.py')
-# 
-#     project = PythonProject(project_dirpath=test_dirpath)
-#     project.open_file(fpath=testscript_fpath)
-#     project.install_libraries(names=['pipdeptree', 'deptry'])
-# 
-#     print(project.get_view())
