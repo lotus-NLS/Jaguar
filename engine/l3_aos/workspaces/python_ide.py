@@ -118,10 +118,14 @@ class PythonIDE(Workspace):
         self._open_fpaths = []
 
     def get_text(self) -> str:
-        text = MessageFormatter.get_boxed(text=self._get_metadata(), headline=f'Project metadata')
-        text += MessageFormatter.get_boxed(text=self._get_project_filetree(), headline=f'Project file structure')
+        metadata = ViewProvider.get_metadata(proj_dirpath=self.proj_dirpath, interpreter_fpath=self.interpreter_fpath)
+        filetree = ViewProvider.get_project_filetree(proj_dirpath=self.proj_dirpath)
+        editor = ViewProvider.get_editor(open_fpaths=self._open_fpaths, run_output=self.run_output)
+
+        text = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
+        text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure')
         if self._open_fpaths:
-            text += self._get_editor()
+            text += editor
 
         return text
 
@@ -131,45 +135,50 @@ class PythonIDE(Workspace):
     # -------------------------------------------------------
     #  Project view
 
-    def _get_metadata(self) -> str:
-        venv = os.path.relpath(self.interpreter_fpath, self.proj_dirpath) if self.interpreter_fpath else None
-        metadata = (f'{"Project name":<20}: {os.path.basename(self.proj_dirpath)}\n'
-                    f'{"Project dirpath":<20}: {self.proj_dirpath} \n'
+
+class ViewProvider:
+    @staticmethod
+    def get_metadata(proj_dirpath : str, interpreter_fpath : str) -> str:
+        venv = os.path.relpath(interpreter_fpath, proj_dirpath) if interpreter_fpath else None
+        metadata = (f'{"Project name":<20}: {os.path.basename(proj_dirpath)}\n'
+                    f'{"Project dirpath":<20}: {proj_dirpath} \n'
                     f'{"Virtual environment":<20}: {venv}')
         return metadata
 
-    def _get_project_filetree(self):
-        root_node = Directory(path=self.proj_dirpath)
+    @staticmethod
+    def get_project_filetree(proj_dirpath : str) -> str:
+        root_node = Directory(path=proj_dirpath)
         fpaths = root_node.get_subfile_fpaths()
-        fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
+        fpaths = [p for p in fpaths if not ViewProvider._is_excluded(fpath=p)]
         fs_dict = root_node.to_dict(fpaths=fpaths)
 
-        parts = self.proj_dirpath.split('/')
+        parts = proj_dirpath.split('/')
         for p in parts:
             fs_dict = fs_dict[p]
 
-        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.proj_dirpath, max_children=10)
+        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=proj_dirpath, max_children=10)
 
         return filetree
 
-    def _is_excluded(self, fpath : str) -> bool:
-        excluded_paths = [os.path.join(self.proj_dirpath, name) for name in self.excluded_dirs]
-        in_excluded = any([fpath.startswith(excluded_path) for excluded_path in excluded_paths])
-
-        excluded_reg_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
+    @staticmethod
+    def _is_excluded(fpath : str, excluded_patterns : list[str], excluded_dirpaths) -> bool:
+        in_excluded = any([fpath.startswith(excl_path) for excl_path in excluded_dirpaths])
+        
+        excluded_reg_patterns = [re.compile(pattern) for pattern in excluded_patterns]
         matches_exclusion_pattern = any([pattern.match(fpath) for pattern in excluded_reg_patterns])
 
         return in_excluded or matches_exclusion_pattern
 
-    def _get_editor(self) -> str:
+    @staticmethod
+    def get_editor(open_fpaths : list[str], run_output : dict[str, str]) -> str:
         all_contents = ''
-        for j, path in enumerate(self._open_fpaths):
+        for j, path in enumerate(open_fpaths):
             fname = os.path.basename(path)
-            texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
+            texts = [ViewProvider._get_with_lineno(fpath=path), ViewProvider._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
 
-            if path in self.run_output:
-                texts.append(self.run_output[path])
+            if path in run_output:
+                texts.append(run_output[path])
                 headlines.append('Execution output')
 
             all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)

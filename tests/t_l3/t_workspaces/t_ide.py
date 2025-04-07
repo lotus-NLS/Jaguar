@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from engine.l3_aos.workspaces.python_ide import PythonProject
+from engine.l3_aos.workspaces.python_ide import ViewProvider
 from holytools.devtools import Unittest
 
 # --------------------------------------------------------------
@@ -11,7 +11,7 @@ class TestPythonIDE(Unittest):
     def setUpClass(cls):
         cls.tempdir : str = tempfile.mktemp()
         os.makedirs(cls.tempdir)
-        cls.project : PythonProject = PythonProject(project_dirpath=cls.tempdir)
+        cls.project : ViewProvider = ViewProvider(project_dirpath=cls.tempdir)
         cls.project.mkvenv()
 
     def setUp(self):

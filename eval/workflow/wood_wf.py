@@ -1,7 +1,7 @@
 import os
 
 from engine.l1_agents import Workflow
-from engine.l3_aos.workspaces.python_ide import PythonProject
+from engine.l3_aos.workspaces.python_ide import ViewProvider
 from eval.nlu import NLU
 from eval.resources import listdir, calculator
 
@@ -11,7 +11,7 @@ class UnittestWFEval(NLU):
         self.proj_dirpath: str = '/tmp/1213a3cd-7fd4-4fb0-8e3e-0c4f544d4db0'
         if not os.path.isdir(self.proj_dirpath):
             os.makedirs(self.proj_dirpath)
-            python_proj = PythonProject(project_dirpath=self.proj_dirpath)
+            python_proj = ViewProvider(project_dirpath=self.proj_dirpath)
             python_proj.mkvenv()
 
         calc_fpath = calculator.__file__
