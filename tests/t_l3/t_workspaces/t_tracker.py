@@ -1,8 +1,9 @@
 from eval.task.resources.taskprovider import TaskProvider
-from tests.basetests import EngineTest
+from tests.basetests import AgentTest
 
+# ---------------------------------------------------
 
-class TestTracker(EngineTest):
+class TestTracker(AgentTest):
     def test_no_root(self):
         tracker = self.agent.task_tracker
         with self.assertRaises(ValueError):
@@ -20,7 +21,6 @@ class TestTracker(EngineTest):
         tracker.complete_task(task_id='1')
 
         self.assertTrue(not tracker.is_active)
-
 
 if __name__ == "__main__":
     TestTracker.execute_all()
