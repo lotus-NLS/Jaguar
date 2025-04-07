@@ -55,6 +55,7 @@ class Agent(Timber):
             yield step
             if not self.is_working():
                 break
+            print()
 
         if self.task_tracker.is_active:
             self.task_tracker.close_action.execute({})

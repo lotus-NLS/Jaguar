@@ -29,6 +29,7 @@ class TaskTracker(Workspace):
         self.update_tool : Tool = self.create_action(mthd=self.update)
 
 
+
     def update(self, action_headline : str):
         """Allows you to report the actions youve taken since your last call of this update tool. Collectively these updates generate a timeline of your actions. Focus on your actions rather than the results. The results will be discussed in a report later on"""
         self.headline : str = action_headline

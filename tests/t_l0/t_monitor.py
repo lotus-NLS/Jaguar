@@ -46,7 +46,7 @@ class ServerTester(BlockedTester):
             self.mock_engine.post_state()
             actual_context = self.mock_engine.context
             conv_context = self.dev_monitor.context_map[self.mock_engine.uuid]
-            print(f'Conversation context = {conv_context.get_view(section_header="Context")}')
+            print(f'Conversation context = {conv_context.get_view()}')
             return conv_context.to_str() == actual_context.to_str()
 
         elif case == 'checkpoints':

@@ -76,15 +76,13 @@ class DevMonitor:
         checkpoints = self.ckpt_map.get(self.latest_session_uuid, None)
         ckpt_str = MessageFormatter.get_boxed_train(messages=checkpoints) if checkpoints else ''
         context = self.context_map.get(self.latest_session_uuid, Context.get_example_context())
-        context_str = context.get_view(f'Agent context')
+        context_str = context.get_view()
         plain_str = f'{ckpt_str}\n{context_str}'
 
         escaped_str = html.escape(plain_str)
         html_code = escaped_str.replace("\n", "<br>")
         html_code = f'<pre>{html_code}</pre>'
         return html_code
-
-
 
 
 if __name__ == "__main__":

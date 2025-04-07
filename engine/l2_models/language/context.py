@@ -42,23 +42,20 @@ class Context(JsonDataclass):
 
     # ---------------------------------------------------
 
-    def get_view(self, section_header : str) -> str:
+    def get_view(self) -> str:
         def big_seperator(name : str) -> str:
             max_len = 100
             num_dashes = max(0, max_len-len(name))
             dashes = '-'*int(num_dashes/2.)
             return '\n+' + dashes + f' {name} '+ dashes + '+\n'
 
-        def small_seperator(name : str) -> str:
-            return f'----->> {name}\n'
-
-        context_str = big_seperator(name=section_header)
-        context_str += small_seperator(f'Tool docs') if self.docs else ''
+        context_str = ''
+        context_str += big_seperator(f'Tool docs') if self.docs else ''
         context_str += '\n'
         for doc in self.docs:
             context_str += f'{doc.get_view()}\n\n'
 
-        context_str += small_seperator(f'Memory')
+        context_str += big_seperator(f'Memory')
         for entry in self.messages:
             context_str += f'{entry.get_view()}\n'
 

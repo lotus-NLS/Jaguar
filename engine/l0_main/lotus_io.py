@@ -21,11 +21,11 @@ print(f'Temp file created: {temp_file.name}')
 # ---------------------------------------------------------
 
 class LotusIO(Timber):
-    def __init__(self):
+    def __init__(self, port : int):
         super().__init__()
         self.sess_uuid: str = self.generate_session_uuid()
 
-        dev_monitor : DevMonitor = DevMonitor.default()
+        dev_monitor : DevMonitor = DevMonitor.localhost(port=port)
         self.step_endpoint: Endpoint = dev_monitor.step_endpoint
         self.outgoing_messages : Queue[Message] = Queue()
         self.start_socket()

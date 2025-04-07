@@ -73,8 +73,6 @@ class LotusEngine(Timber):
                 time.sleep(0.02)
                 input(f'Press enter to continue ...')
 
-            print()
-
         print(f'- Finished work mode after {len(writings)} steps\n')
 
     def do_talk(self, query : str) -> str:
