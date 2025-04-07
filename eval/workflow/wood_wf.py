@@ -3,7 +3,7 @@ import os
 from engine.l1_agents import Workflow
 from engine.l3_aos.workspaces.python_ide import ViewProvider
 from eval.nlu import NLU
-from eval.resources import listdir, calculator
+from eval.a_resources import listdir, calculator
 
 
 class UnittestWFEval(NLU):

@@ -4,7 +4,7 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
-from eval.resources.taskprovider import TaskProvider
+from eval.a_resources.taskprovider import TaskProvider
 from holytools.devtools import Unittest
 
 # ---------------------------------------------------
