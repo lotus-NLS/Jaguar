@@ -73,7 +73,7 @@ class PythonProject:
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
         self.excluded_patterns : list[str] = ['.*\\.pyc']
 
-        self.run_output : Optional[str] = None
+        self.run_output : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
 
@@ -132,6 +132,7 @@ class PythonProject:
         subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
 
     def run_file(self, script_fpath : str):
+        script_fpath = self._get_abspath(fpath=script_fpath)
         env, cwd = {'PYTHONPATH' : self.dirpath}, self.dirpath
         arg_list = [self.interpreter_fpath, script_fpath]
         result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
@@ -140,15 +141,13 @@ class PythonProject:
         script_stderr = f'\033[31m{result.stderr}\033[0m'
         exit_code_msg = f'Process finished with exit code {result.returncode}'
 
-        self.run_output = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
+        self.run_output[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def get_view(self) -> str:
         text = MessageFormatter.get_boxed(text=self._get_metadata(), headline=f'Project metadata')
         text += MessageFormatter.get_boxed(text=self._get_project_filetree(), headline=f'Project file structure')
         if self._open_fpaths:
             text += self._get_editor()
-        if self.run_output:
-            text += MessageFormatter.get_boxed(headline='Execution output', text=self.run_output)
 
         return text
 
@@ -197,6 +196,11 @@ class PythonProject:
             fname = os.path.basename(path)
             texts = [self._view_with_lineno(fpath=path), self._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
+
+            if path in self.run_output:
+                texts.append(self.run_output[path])
+                headlines.append('Execution output')
+
             all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
 
         return all_contents
