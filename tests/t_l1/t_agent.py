@@ -16,7 +16,16 @@ class TestAgent(CredTest):
         model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
         self.agent = Agent(aos=aos, model=model)
 
-    def test_required_tool(self):
+    def test_memory_context(self):
+        pass
+
+    def test_tasktracker_context(self):
+        pass
+
+    def test_aos_context(self):
+        pass
+
+    def test_required_tool_use(self):
         greet_tool = Greet()
         inf_config = InfConfig(required_tool=greet_tool)
         step = self.agent.handle(inf_config=inf_config)
