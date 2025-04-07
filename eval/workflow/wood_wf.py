@@ -3,9 +3,8 @@ import os
 from engine.l1_agents import Workflow
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.nlu import NLU
-import scenarios.calculator
-import scenarios.listdir
-
+import eval.workflow.resources.listdir as listdir
+import eval.workflow.resources.calculator as calculator
 
 class UnittestWFEval(NLU):
     def setUp(self):
@@ -14,8 +13,8 @@ class UnittestWFEval(NLU):
             os.makedirs(self.proj_dirpath)
             PythonIDE._mkvenv(proj_dirpath=self.proj_dirpath)
 
-        calc_fpath = scenarios.calculator.__file__
-        listdir_fpath = scenarios.listdir.__file__
+        calc_fpath = calculator.__file__
+        listdir_fpath = listdir.__file__
 
         self.copy_file(source_fpath=calc_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'calculator.py'))
         self.copy_file(source_fpath=listdir_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'listdir.py'))
