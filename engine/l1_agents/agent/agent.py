@@ -41,7 +41,7 @@ class Agent(Timber):
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task {task.name}')
-        self.act(tool_calls=[ToolCall.empty()], temp_tool=self.task_tracker.open_action)
+        self.task_tracker.open_action.execute(args_dict={})
         self.task_tracker.root = task
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
@@ -52,10 +52,11 @@ class Agent(Timber):
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
-            yield step
-            if not self.is_working():
-                break
             print()
+
+            yield step
+            if not self.task_tracker.is_active:
+                break
 
         if self.task_tracker.is_active:
             self.task_tracker.close_action.execute({})
@@ -128,6 +129,7 @@ class Agent(Timber):
         context += Context(messages=self.memory)
 
         msg_map = self.get_entry_map(aos=self.aos)
+        print(f'- Currently active workspaces\n{list(msg_map.keys())}')
         for j, m in enumerate(reversed(context.messages)):
             matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
             if m.role == Role.TOOL and not matching_ws_name is None:
@@ -135,7 +137,7 @@ class Agent(Timber):
                 context.messages.insert(index, msg)
                 del msg_map[matching_ws_name]
 
-        if self.is_working():
+        if self.task_tracker.is_active:
             work_entry = Message.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
@@ -156,12 +158,3 @@ class Agent(Timber):
                 tb = traceback.format_exc()
                 self.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
         return msg_map
-
-    def is_working(self) -> bool:
-        is_active = self.task_tracker.is_active
-        if is_active:
-            is_working = not self.task_tracker.root.recursively_complete()
-        else:
-            is_working = False
-
-        return is_working

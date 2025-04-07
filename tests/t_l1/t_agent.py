@@ -3,10 +3,10 @@ from engine.l1_agents import Agent, Task
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
+from scenarios.taskprovider import TaskProvider
 from tests.credtest import CredTest
 from tests.t_l2.base import Greet
 
-from scenarios.taskprovider import TaskProvider
 
 # ------------------------------------------
 
@@ -31,23 +31,21 @@ class TestAgent(CredTest):
         self.assertTrue(content in view)
 
     def test_tasktracker_context(self):
-        # test_task = self.task_provider.get_task(name='test')
-        test_task = Task.from_yaml(s=f'- Make a comment on this task')
-        last_step = None
+        task = Task.from_yaml(s='- Complete this task')
         work_notice = self.agent.task_tracker.work_notice
+        close_tool = self.agent.task_tracker.close_action
+        
+        close_step = None
+        for _ in self.agent.work(task=task, max_steps=1):
+            close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
 
+        gen_ctx_view = close_step.pre_ctx.get_view()
+        self.assertTrue('TaskTracker[Active]' in gen_ctx_view)
+        self.assertTrue(work_notice in gen_ctx_view)
 
-        for j, step in enumerate(self.agent.work(test_task, max_steps=2)):
-            if j == 0:
-                ctx_view = step.post_ctx.get_view()
-                self.assertTrue('TaskTracker[Active]' in ctx_view)
-                self.assertTrue(work_notice in ctx_view)
-
-            last_step = step
-            self.lotusIO.observe(step=step)
-
-        self.assertTrue('TaskTracker[Archived]' in last_step.post_ctx.get_view())
-        self.assertTrue('TaskTracker[Active]' not in last_step.post_ctx.get_view())
+        post_ctx_view = close_step.post_ctx.get_view()
+        self.assertTrue('TaskTracker[Archived]' in post_ctx_view)
+        self.assertTrue('TaskTracker[Active]' not in post_ctx_view)
 
     # Measure tool docs there
     # Measure
@@ -62,6 +60,8 @@ class TestAgent(CredTest):
     def test_is_working(self):
         pass
 
+    def test_headlines(self):
+        pass
 
     def test_required_tool_use(self):
         greet_tool = Greet()

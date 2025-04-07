@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 from engine.l3_aos.tools import Tool
+
 
 # -----------------------------------------------------------------
 
@@ -40,20 +41,31 @@ class CallOptions:
 
 @dataclass
 class InfConfig:
-    call_options: CallOptions = field(default_factory=CallOptions.auto)
     required_tool : Optional[Tool] = None
     timeout : float = 10
     input_tokens_max: int = 16384
+    disable_call: bool = False
     output_tokens_max : Optional[int] = None
     debugging : bool = True
 
     def __post_init__(self):
-        if self.required_tool:
-            self.call_options = CallOptions.require_call(tool_name=self.required_tool.get_name())
+        if not self.required_tool is None and self.disable_call:
+            raise ValueError('Cannot disable call if a required tool is set')
+
+        if self.disable_call:
+            self.call_options: CallOptions = CallOptions.no_call()
+        elif self.required_tool:
+            self.call_options : CallOptions = CallOptions.require_call(tool_name=self.required_tool.get_name())
+        else:
+            self.call_options : CallOptions = CallOptions.auto()
 
     def get_call_allowed(self) -> bool:
         return self.call_options.call_allowed
 
     @classmethod
     def text_only(cls, max_output_tokens : Optional[int] = None):
-        return cls(call_options=CallOptions.no_call(), output_tokens_max=max_output_tokens)
+        return cls(disable_call=True, output_tokens_max=max_output_tokens)
+
+    @classmethod
+    def single_tool(cls, tool : Tool):
+        return cls(required_tool=tool)

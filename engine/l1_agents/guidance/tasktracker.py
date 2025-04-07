@@ -42,6 +42,10 @@ class TaskTracker(Workspace):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
+        is_working = not self.root.recursively_complete()
+        if not is_working:
+            self.close_action.execute(args_dict={})
+
     def fail_task(self, task_id : str):
         """Marks [task_id] as failed, unnecessary or discarded"""
         self.root.get_descendant(task_id).fail()
