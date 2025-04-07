@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import traceback
 from dataclasses import dataclass, field
 
 from engine.l3_aos.tools import ToolDoc
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
-from .message import Message
+from .message import Message, Role
+from engine.l3_aos.aos import AOS
 
 logger = LoggerFactory.get_logger(name=__name__)
 
@@ -16,6 +18,34 @@ logger = LoggerFactory.get_logger(name=__name__)
 class Context(JsonDataclass):
     messages: list[Message] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
+
+    def interweave_workspaces(self, aos : AOS):
+        msg_map = self.get_entry_map(aos=aos)
+        print(f'- Currently active workspaces\n{list(msg_map.keys())}')
+        for j, m in enumerate(reversed(self.messages)):
+            matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
+            if m.role == Role.TOOL and not matching_ws_name is None:
+                index, msg = len(self.messages)-j, msg_map[matching_ws_name]
+                self.messages.insert(index, msg)
+                del msg_map[matching_ws_name]
+
+    @staticmethod
+    def get_matching_ws_name(ws_names: list[str], tool_name: str):
+        for n in ws_names:
+            if n in tool_name:
+                return n
+
+    @staticmethod
+    def get_entry_map(aos : AOS) -> dict[str, Message]:
+        msg_map: dict[str, Message] = {}
+        for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
+            try:
+                msg_map[ws.get_name()] = Message.from_workspace(ws=ws)
+            except BaseException as e:
+                tb = traceback.format_exc()
+                logger.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
+        return msg_map
+
 
     @staticmethod
     def get_basic_entry(obj):

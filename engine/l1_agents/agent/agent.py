@@ -127,34 +127,10 @@ class Agent(Timber):
         context = Context(messages=[self.identity.as_system_entry()])
         context += Context(docs=self.aos.get_docs(required_tool=inf_config.required_tool))
         context += Context(messages=self.memory)
-
-        msg_map = self.get_entry_map(aos=self.aos)
-        print(f'- Currently active workspaces\n{list(msg_map.keys())}')
-        for j, m in enumerate(reversed(context.messages)):
-            matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
-            if m.role == Role.TOOL and not matching_ws_name is None:
-                index, msg = len(context.messages)-j, msg_map[matching_ws_name]
-                context.messages.insert(index, msg)
-                del msg_map[matching_ws_name]
+        context.interweave_workspaces(aos=self.aos)
 
         if self.task_tracker.is_active:
             work_entry = Message.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
         return context
-
-    @staticmethod
-    def get_matching_ws_name(ws_names: list[str], tool_name: str):
-        for n in ws_names:
-            if n in tool_name:
-                return n
-
-    def get_entry_map(self, aos : AOS) -> dict[str, Message]:
-        msg_map: dict[str, Message] = {}
-        for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
-            try:
-                msg_map[ws.get_name()] = Message.from_workspace(ws=ws)
-            except BaseException as e:
-                tb = traceback.format_exc()
-                self.error(f'Error in getting entry for app "{ws.get_name()}": {e}\nTraceback: {tb}')
-        return msg_map
