@@ -40,7 +40,7 @@ class TestStep(Unittest):
         self.tp = TextPipe()
         context = Context.get_example_context()
         ckpt_label = f'Checkpoint'
-        self.step = Step(text_pipe=self.tp, post_ctx=context, ckpt_label=ckpt_label, tool_outputs=[])
+        self.step = Step(text_pipe=self.tp, post_ctx=context, ckpt_label=ckpt_label, tool_outputs=[], pre_ctx=context)
 
     def test_roundtrip(self):
         state = self.step.get_state(uuid='uuid4')

@@ -22,4 +22,4 @@
     - Open Youtube
     - Enter 'cat videos' in search bar
 ++test
-- Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.
+- Test: Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.

@@ -40,7 +40,7 @@ class Agent(Timber):
         return self.handle()
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
-        self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task {task.name}')
+        self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
         self.task_tracker.open_action.execute(args_dict={})
         self.task_tracker.root = task
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)

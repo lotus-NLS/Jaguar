@@ -76,7 +76,7 @@ class TaskTracker(Workspace):
 class Task:
     def __init__(self, content : str = '', identifier : str = '', is_root : bool = False):
         self.is_root : bool = is_root
-        self.name : str = content
+        self._content : str = content
         self.identifier : str = identifier
 
         self.comment : str = ''
@@ -90,6 +90,11 @@ class Task:
         else:
             return all(st.recursively_complete() for st in self.subtasks)
 
+    def get_content(self) -> str:
+        if self.is_root:
+            raise ValueError('Root task is only placeholder')
+        else:
+            return self._content
 
     @classmethod
     def get_example(cls) -> Task:
@@ -163,7 +168,7 @@ class Task:
             else:
                 mark = ' '
             status_and_id = f'[{mark}] {self.identifier}: '
-            tree = f'{pre_indent}{status_and_id}{self.name}\n'
+            tree = f'{pre_indent}{status_and_id}{self._content}\n'
             if self.comment:
                 tree += f'{pre_indent}{len(status_and_id)*" "}{self.comment}\n'
         else:

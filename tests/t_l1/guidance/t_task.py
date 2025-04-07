@@ -31,9 +31,9 @@ class TestTask(Unittest):
         print(f'Exmple root tree task tree:\n{tree}')
 
     def test_get_by_id(self):
-        print(f'Name of task wiith id 1: {self.root.get_descendant("1").name}')
-        self.assertEqual(self.root.get_descendant('1').name, self.task1.name)
-        self.assertEqual(self.root.get_descendant('11').name, self.subtask11.name)
+        print(f'Name of task wiith id 1: {self.root.get_descendant("1")._content}')
+        self.assertEqual(self.root.get_descendant('1')._content, self.task1._content)
+        self.assertEqual(self.root.get_descendant('11')._content, self.subtask11._content)
 
         with self.assertRaises(ValueError):
             self.root.get_descendant('0')

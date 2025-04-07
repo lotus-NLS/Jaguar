@@ -27,7 +27,7 @@ class LLM(Timber):
 
     def get_text_generation(self, entries: list[Message]) -> Generation:
         context = Context(messages=entries, docs=[])
-        options = InfConfig(call_options=CallOptions.no_call())
+        options = InfConfig.text_only()
         return self.get_generation(context=context, config=options)
 
     def check_token_cap_ok(self, context : Context, token_cap : int) -> bool:
