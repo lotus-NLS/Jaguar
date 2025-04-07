@@ -42,7 +42,7 @@ class TaskTracker(Workspace):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
-        is_working = not self.root.recursively_complete()
+        is_working = not self.root.is_recursively_complete()
         if not is_working:
             self.close_action.execute(args_dict={})
 
@@ -60,7 +60,8 @@ class TaskTracker(Workspace):
 
     def open(self):
         """Opens task tracker"""
-        self.root = Task(content='', is_root=True)
+        if self.root is None:
+            raise ValueError('Root task is not initialized. Please initialize it with a task before opening')
 
     def close(self):
         """Closes task tracker"""
@@ -84,11 +85,11 @@ class Task:
         self.is_failed : bool = False
         self.subtasks : list[Task] = []
 
-    def recursively_complete(self) -> bool:
+    def is_recursively_complete(self) -> bool:
         if not self.subtasks:
             return self.is_complete
         else:
-            return all(st.recursively_complete() for st in self.subtasks)
+            return all(st.is_recursively_complete() for st in self.subtasks)
 
     def get_content(self) -> str:
         if self.is_root:
@@ -153,11 +154,11 @@ class Task:
         first_num = int(identifier[0])
         partial_id = identifier[1:]
 
-        parrent_idx = first_num-1
-        if parrent_idx < 0:
+        parent_idx = first_num-1
+        if parent_idx < 0:
             raise ValueError(f'Invalid task id: {identifier}. Must be greater than 0')
 
-        return self.subtasks[parrent_idx].get_descendant(partial_id)
+        return self.subtasks[parent_idx].get_descendant(partial_id)
 
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:

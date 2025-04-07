@@ -1,26 +1,26 @@
-from engine.l1_agents import TaskTracker
 from eval.task.resources.taskprovider import TaskProvider
-from holytools.devtools import Unittest
+from tests.basetests import EngineTest
 
 
-class TestTracker(Unittest):
-    def setUp(self):
-        self.agent = A
-
+class TestTracker(EngineTest):
+    def test_no_root(self):
+        tracker = self.agent.task_tracker
+        with self.assertRaises(ValueError):
+            tracker.open()
 
     def test_autoclose(self):
-
-
         task_provider = TaskProvider()
-
-        tracker = TaskTracker()
-
-        tracker.open_action.execute({})
         task = task_provider.get_task(name='test')
-        print(f'Task tree:\n{task.get_tree()}')
 
-        task.complete()
+        tracker = self.agent.task_tracker
+        tracker.root = task
+        tracker.open_action.execute({})
+
+        print(f'Task tree:\n{task.get_tree()}')
+        tracker.complete_task(task_id='1')
+
         self.assertTrue(not tracker.is_active)
+
 
 if __name__ == "__main__":
     TestTracker.execute_all()

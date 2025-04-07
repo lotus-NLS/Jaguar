@@ -41,8 +41,8 @@ class Agent(Timber):
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
-        self.task_tracker.open_action.execute(args_dict={})
         self.task_tracker.root = task
+        self.task_tracker.open_action.execute(args_dict={})
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
         time.sleep(0.1)

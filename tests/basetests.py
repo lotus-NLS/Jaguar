@@ -2,8 +2,11 @@ import os
 
 from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
+from engine.l1_agents import Agent
 from engine.l2_models import OpenAIModel
+from engine.l2_models.llm import LLM
 from holytools.devtools import Unittest
+
 
 class CredTest(Unittest):
     @classmethod
@@ -24,6 +27,6 @@ class CredTest(Unittest):
 
 class EngineTest(CredTest):
     def setUp(self):
-        self.model = OpenAIModel.default_model(api_key=self.openai_apikey)
+        self.model : LLM = OpenAIModel.default_model(api_key=self.openai_apikey)
         self.engine : LotusEngine = LotusEngine()
-        self.agent = self.engine.agent
+        self.agent : Agent = self.engine.agent
