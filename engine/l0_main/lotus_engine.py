@@ -78,7 +78,6 @@ class LotusEngine(Timber):
         step = self.agent.talk(msg=query)
         response = self.IO.observe(step=step)
 
-
         return response
 
 if __name__ == "__main__":

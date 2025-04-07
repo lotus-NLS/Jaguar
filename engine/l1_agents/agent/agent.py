@@ -76,7 +76,8 @@ class Agent(Timber):
 
         headline = self.task_tracker.headline
         self.task_tracker.headline = None
-        return Step(text_pipe=pipe, ckpt_label=headline, gen_ctx=context, tool_outputs=outputs)
+        post_step_context = self.get_context(inf_config=inf_config)
+        return Step(text_pipe=pipe, ckpt_label=headline, post_ctx=post_step_context, tool_outputs=outputs)
 
     def write(self, generation : Generation):
         pipe = TextPipe()
@@ -121,14 +122,9 @@ class Agent(Timber):
         context += Context(docs=self.aos.get_docs(required_tool=inf_config.required_tool))
         context += Context(messages=self.memory)
 
-        def get_matching_ws_name(ws_names : list[str], tool_name : str):
-            for n in ws_names:
-                if n in tool_name:
-                    return n
-
         msg_map = self.get_entry_map(aos=self.aos)
         for j, m in enumerate(reversed(context.messages)):
-            matching_ws_name = get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
+            matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
             if m.role == Role.TOOL and not matching_ws_name is None:
                 index, msg = len(context.messages)-j, msg_map[matching_ws_name]
                 context.messages.insert(index, msg)
@@ -139,6 +135,12 @@ class Agent(Timber):
             context += Context.singleton(entry=work_entry)
 
         return context
+
+    @staticmethod
+    def get_matching_ws_name(ws_names: list[str], tool_name: str):
+        for n in ws_names:
+            if n in tool_name:
+                return n
 
     def get_entry_map(self, aos : AOS) -> dict[str, Message]:
         msg_map: dict[str, Message] = {}

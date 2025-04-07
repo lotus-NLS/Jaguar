@@ -18,17 +18,17 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 @dataclass
 class Step:
     text_pipe : TextPipe
-    gen_ctx: Context
+    post_ctx: Context
     ckpt_label: str
     tool_outputs : list[ToolOutput]
     is_final : bool = False
 
     def get_state(self, uuid : str) -> State:
-        return State(gen_ctx=self.gen_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
+        return State(gen_ctx=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
     @classmethod
     def failed(cls, context : Context):
-        return cls(text_pipe=TextPipe.failed(), gen_ctx=context, ckpt_label='failed', tool_outputs=[])
+        return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[])
 
 
 @dataclass
