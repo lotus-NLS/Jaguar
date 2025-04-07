@@ -44,7 +44,7 @@ class Agent(Timber):
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
 
-        self.update_memory(entry=Message.system(msg=f'Now entering work mode'))
+        self.update_memory(entry=Message.system(msg=f'Now entering work mode. Complete the outlined tasks'))
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
@@ -128,7 +128,7 @@ class Agent(Timber):
             if m.role == Role.TOOL and not matching_ws_name is None:
                 index, msg = len(context.messages)-j, msg_map[matching_ws_name]
                 context.messages.insert(index, msg)
-                del msg_map[matching_ws_name]\
+                del msg_map[matching_ws_name]
 
         if self.is_working():
             work_entry = Message.system(msg=self.task_tracker.work_notice)

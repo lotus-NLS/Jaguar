@@ -33,9 +33,9 @@ class TaskTracker(Workspace):
         """Allows you to report the actions youve taken since your last call of this update tool. Collectively these updates generate a timeline of your actions. Focus on your actions rather than the results. The results will be discussed in a report later on"""
         self.headline : str = action_headline
 
-    def add_task(self, parent_task_id : str, msg : str):
-        """Adds a subtask to parent task with [parent_task_id]"""
-        parent = self.root.get_descendant(parent_task_id)
+    def add_task(self, taskID : str, msg : str):
+        """Adds a subtask to parent task with [parent_task_id] e.g. taskID='1'= first top level task"""
+        parent = self.root.get_descendant(taskID)
         parent.add_subtask(msg)
 
     def add_comment(self, task_id : str, msg : str):
@@ -144,7 +144,11 @@ class Task:
         first_num = int(identifier[0])
         partial_id = identifier[1:]
 
-        return self.subtasks[first_num-1].get_descendant(partial_id)
+        parrent_idx = first_num-1
+        if parrent_idx < 0:
+            raise ValueError(f'Invalid task id: {identifier}. Must be greater than 0')
+
+        return self.subtasks[parrent_idx].get_descendant(partial_id)
 
     def get_tree(self, pre_indent : str = '') -> str:
         if not self.is_root:

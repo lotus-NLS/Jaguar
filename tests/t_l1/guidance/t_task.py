@@ -34,6 +34,9 @@ class TestTask(Unittest):
         self.assertEqual(self.root.get_descendant('1').name, self.task1.name)
         self.assertEqual(self.root.get_descendant('11').name, self.subtask1.name)
 
+        with self.assertRaises(ValueError):
+            self.root.get_descendant('0')
+
     def test_complete(self):
         self.root.complete()
 

@@ -63,12 +63,18 @@ class LotusEngine(Timber):
 
         return node
 
-    def do_task(self, task : Task, max_steps : int):
+    def do_task(self, task : Task, max_steps : int, halt_every_step : bool = False):
         writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
-            print()
             w = self.IO.observe(step=step)
             writings.append(w)
+
+            if halt_every_step:
+                time.sleep(0.02)
+                input(f'Press enter to continue ...')
+
+            print()
+
         print(f'- Finished work mode after {len(writings)} steps\n')
 
     def do_talk(self, query : str) -> str:

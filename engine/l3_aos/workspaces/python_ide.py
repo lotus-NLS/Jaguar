@@ -55,7 +55,7 @@ class PythonIDE(Workspace):
         editor = self.viewprovider.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
 
         text = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
-        text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure')
+        text += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure ({self.proj_dirpath})')
         if self._open_fpaths:
             text += editor
 
@@ -133,11 +133,9 @@ class PythonIDE(Workspace):
         else:
             return os.path.join(self.proj_dirpath, fpath)
 
-    def _mkvenv(self):
-        subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])
-        self.interpreter_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
-
-
+    @staticmethod
+    def _mkvenv(proj_dirpath : str):
+        subprocess.run(['python3', '-m', 'venv', f'{proj_dirpath}/.venv'])
 
 
 
