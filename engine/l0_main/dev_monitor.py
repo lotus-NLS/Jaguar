@@ -35,7 +35,7 @@ class DevMonitor:
             sess_uuid = step_state.sess_uuid
 
             self.latest_session_uuid = sess_uuid
-            self.context_map[sess_uuid] = step_state.gen_ctx
+            self.context_map[sess_uuid] = step_state.post_context
             if not step_state.ckpt_label is None:
                 if not sess_uuid in self.ckpt_map:
                     self.ckpt_map[sess_uuid] = []
@@ -86,5 +86,5 @@ class DevMonitor:
 
 
 if __name__ == "__main__":
-    server = DevMonitor.localhost(port=5001)
+    server = DevMonitor.default()
     server.serve()

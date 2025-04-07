@@ -25,7 +25,7 @@ class Step:
     is_final : bool = False
 
     def get_state(self, uuid : str) -> State:
-        return State(gen_ctx=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
+        return State(post_context=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
     @classmethod
     def failed(cls, context : Context):
@@ -34,7 +34,7 @@ class Step:
 
 @dataclass
 class State(JsonDataclass):
-    gen_ctx : Context
+    post_context : Context
     ckpt_label : Optional[str]
     sess_uuid : str
     msg: str = ''
