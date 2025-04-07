@@ -20,7 +20,7 @@ class TestAgent(CredTest):
         self.agent = Agent(aos=aos, model=model)
         self.default_inf_config : InfConfig = InfConfig()
         self.task_provider : TaskProvider = TaskProvider()
-        self.lotusIO : LotusIO = LotusIO(port=8001)
+        self.lotusIO : LotusIO = LotusIO(disable_socket=True)
 
     def test_memory_context(self):
         content = f'Hello there!'
@@ -30,9 +30,6 @@ class TestAgent(CredTest):
         print(f'- View of context\n{view}')
         self.assertTrue(content in view)
 
-    # Do work, yield context, measure active tasktracker
-    # Finish work, yield final contex, measure closed
-    # Measure work notice there, not there on is_working, not_is working
     def test_tasktracker_context(self):
         test_task = self.task_provider.get_task(name='test')
         last_step = None
@@ -45,6 +42,7 @@ class TestAgent(CredTest):
 
                 self.assertTrue('TaskTracker[Active]' in ctx_view)
                 self.assertTrue(work_notice in ctx_view)
+
 
         self.assertTrue('TaskTracker[Archived]' in last_step.post_ctx.get_view())
         self.assertTrue('TaskTracker[Active]' not in last_step.post_ctx.get_view())

@@ -1,4 +1,3 @@
-import tempfile
 import time
 import uuid
 from queue import Queue
@@ -15,20 +14,19 @@ from holytools.logging import LoggerFactory
 from holytools.logging.timber import Timber
 from holytools.network import Endpoint
 
-temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+t')
-print(f'Temp file created: {temp_file.name}')
-
 # ---------------------------------------------------------
 
 class LotusIO(Timber):
-    def __init__(self, port : int):
+    def __init__(self, disable_socket : bool = False, socket_port : int = 8000):
         super().__init__()
         self.sess_uuid: str = self.generate_session_uuid()
+        self.socket_port : int = socket_port
 
-        dev_monitor : DevMonitor = DevMonitor.localhost(port=port)
+        dev_monitor : DevMonitor = DevMonitor.default()
         self.step_endpoint: Endpoint = dev_monitor.step_endpoint
         self.outgoing_messages : Queue[Message] = Queue()
-        self.start_socket()
+        if not disable_socket:
+            self.start_socket()
 
     def send(self, message : Message):
         self.outgoing_messages.put(message)
@@ -55,12 +53,11 @@ class LotusIO(Timber):
             emit('uuid', {'uuid': self.generate_session_uuid()})
 
         def start():
-            socketio.run(app, host='localhost', port=8000, allow_unsafe_werkzeug=True)
+            socketio.run(app, host='localhost', port=self.socket_port, allow_unsafe_werkzeug=True)
 
         def send_outgoing():
             while True:
                 msg = self.outgoing_messages.get()
-                # print(f'Emitting message to socket: {msg.text}')
                 socketio.emit('msg', {'role': msg.role.value, 'content': msg.text})
 
         socketio.start_background_task(start)

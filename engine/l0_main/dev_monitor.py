@@ -86,5 +86,5 @@ class DevMonitor:
 
 
 if __name__ == "__main__":
-    server = DevMonitor.default()
+    server = DevMonitor.localhost(port=5001)
     server.serve()
