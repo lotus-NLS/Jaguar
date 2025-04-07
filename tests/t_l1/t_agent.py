@@ -87,6 +87,4 @@ class TestAgent(CredTest):
 
 if __name__ == "__main__":
     ta = TestAgent()
-    ta.setUpClass()
-    ta.setUp()
-    ta.test_tasktracker_context()
+    ta.execute_all()
