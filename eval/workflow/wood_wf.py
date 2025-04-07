@@ -21,13 +21,14 @@ class UnittestWFEval(NLU):
         self.copy_file(source_fpath=listdir_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'listdir.py'))
 
     def test_calc_wf(self):
-        self.unittest_workflow = Workflow.generate_unittest(filename=f'Evalutor and YesNoTool in evaluator.py',
-                                                            tests_directory='tests',
-                                                            project_dirpath=f'/home/daniel/lotus/engine')
-        start_node = self.unittest_workflow.nodes[0]
+        self.unittest_wf = Workflow.unittest(filename=f'Calculator.py',
+                                             tests_directory='tests',
+                                             project_dirpath=self.proj_dirpath)
+        start_node = self.unittest_wf.nodes[0]
         start_task = start_node.task
 
         self.engine.do_task(task=start_task, max_steps=10, halt_every_step=True)
+
 
     # def test_listdir_wf(self):
     #     self.unittest_workflow = Workflow.generate_unittest(filename=f'ListDir',

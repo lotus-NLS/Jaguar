@@ -125,6 +125,10 @@ class ToolCall:
         self.json_str : str = json_str
 
     @classmethod
+    def empty(cls) -> ToolCall:
+        return cls(name='', json_str='{}')
+
+    @classmethod
     def from_dict(cls, attr_dict : dict) -> ToolCall:
         return cls(json_str=json.dumps(attr_dict))
 

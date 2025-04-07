@@ -33,9 +33,9 @@ class TaskTracker(Workspace):
         """Allows you to report the actions youve taken since your last call of this update tool. Collectively these updates generate a timeline of your actions. Focus on your actions rather than the results. The results will be discussed in a report later on"""
         self.headline : str = action_headline
 
-    def add_task(self, taskID : str, msg : str):
-        """Adds a subtask to parent task with [parent_task_id] e.g. taskID='1'= first top level task"""
-        parent = self.root.get_descendant(taskID)
+    def add_task(self, parent_task_id : str, msg : str):
+        """Adds a subtask to parent task with [parent_task_id] e.g. parent_task_id adds new task with [msg] to first top level task"""
+        parent = self.root.get_descendant(parent_task_id)
         parent.add_subtask(msg)
 
     def add_comment(self, task_id : str, msg : str):

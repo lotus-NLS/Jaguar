@@ -66,7 +66,7 @@ class Workflow:
         return exit_tool
 
     @classmethod
-    def generate_unittest(cls, project_dirpath : str, filename : str, tests_directory : str) -> Workflow:
+    def unittest(cls, project_dirpath : str, filename : str, tests_directory : str) -> Workflow:
         proj_name = os.path.basename(project_dirpath)
 
         notice = (f'You are tasked with creating a unittest for the file {filename} in project {proj_name}.'
@@ -75,7 +75,7 @@ class Workflow:
                   f'As soon as you finish this section of tasks, the next secetion will be presented to you until'
                   f'the workflow is complete.')
 
-        ys1 = (f'- Section A: Get acquinted with module {filename} \n'
+        ys1 = (f'- Get acquinted with module {filename} \n'
                f'    - Open project: Open the project at {project_dirpath} in the PythonIDE\n'
                f'    - Open file: Open file {filename} in the PythonIDE\n'
                f'    - Analyse file {filename}: Take note of the the functionalities in {filename} that to be checked in a unittest.\n'

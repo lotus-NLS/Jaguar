@@ -39,7 +39,7 @@ class Agent(Timber):
         return self.handle()
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
-        self.task_tracker.open_action.execute({})
+        self.act(tool_calls=[ToolCall.empty()], temp_tool=self.task_tracker.open_action)
         self.task_tracker.root = task
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
