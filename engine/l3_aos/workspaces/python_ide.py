@@ -36,7 +36,10 @@ class PythonIDE(Workspace):
 
         self.proj_dirpath = project_dirpath
         py_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
-        self.interpreter_fpath: Optional[str] = py_fpath if os.path.isfile(py_fpath) else None
+        if not os.path.isfile(py_fpath):
+            self._mkvenv(proj_dirpath=self.proj_dirpath)
+
+        self.interpreter_fpath: Optional[str] = py_fpath
         self.viewprovider = ViewProvider(proj_dirpath=self.proj_dirpath)
 
     def close(self, *args, **kwargs):

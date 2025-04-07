@@ -13,7 +13,6 @@ class TestPythonIDE(Unittest):
         os.makedirs(cls.tempdir)
         cls.ide : PythonIDE = PythonIDE()
         cls.ide.open(project_dirpath=cls.tempdir)
-        cls.ide._mkvenv()
 
     def setUp(self):
         self.script_fpath = os.path.join(self.tempdir, 'test.py')
