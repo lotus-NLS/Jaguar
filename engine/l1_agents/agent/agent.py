@@ -127,14 +127,12 @@ class Agent(Timber):
                     return n
 
         msg_map = self.get_entry_map(aos=self.aos)
-        agent_ws_names = list(msg_map.keys())
         for j, m in enumerate(reversed(context.messages)):
-            matching_ws_name = get_matching_ws_name(ws_names=agent_ws_names, tool_name=m.text)
+            matching_ws_name = get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
             if m.role == Role.TOOL and not matching_ws_name is None:
-                print(f'- Found tool role')
-                print(f'{m.get_view()}')
-                index, msg = len(msg_map)-j, msg_map[matching_ws_name]
+                index, msg = len(context.messages)-j, msg_map[matching_ws_name]
                 context.messages.insert(index, msg)
+                del msg_map[matching_ws_name]\
 
         if self.is_working():
             work_entry = Message.system(msg=self.task_tracker.work_notice)
