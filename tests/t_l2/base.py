@@ -5,7 +5,7 @@ from engine.l2_models import InfConfig, OpenAIModel, Generation
 from engine.l2_models.language import Message, Context
 from engine.l3_aos.tools import Tool, ToolArg, ToolCall, ToolDoc
 from holytools.fileIO import ImageFile, ExampleFiles
-from tests.credtest import CredTest
+from tests.basetests import CredTest
 
 
 # --------------------------------------------------------------------------------

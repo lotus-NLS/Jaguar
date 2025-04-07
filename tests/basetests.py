@@ -1,8 +1,9 @@
 import os
 
+from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
+from engine.l2_models import OpenAIModel
 from holytools.devtools import Unittest
-
 
 class CredTest(Unittest):
     @classmethod
@@ -20,3 +21,9 @@ class CredTest(Unittest):
         cls.searchengine_id : str = credentials.search_engine_id
         cls.google_apikey : str = credentials.google_api_key
         cls.openai_apikey : str = credentials.openai_api_key
+
+class EngineTest(CredTest):
+    def setUp(self):
+        self.model = OpenAIModel.default_model(api_key=self.openai_apikey)
+        self.engine : LotusEngine = LotusEngine()
+        self.agent = self.engine.agent

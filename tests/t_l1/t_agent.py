@@ -4,7 +4,7 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from eval.task.resources.taskprovider import TaskProvider
-from tests.credtest import CredTest
+from tests.basetests import CredTest
 from tests.t_l2.base import Greet
 
 
