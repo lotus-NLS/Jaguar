@@ -9,7 +9,6 @@ from engine.l2_models.language import Context
 from holytools.network import Endpoint
 from holytools.userIO import MessageFormatter
 
-
 # --------------------------------------------------------------
 
 class DevMonitor:
@@ -81,6 +80,7 @@ class DevMonitor:
 
         escaped_str = html.escape(plain_str)
         html_code = escaped_str.replace("\n", "<br>")
+        
         html_code = f'<pre>{html_code}</pre>'
         return html_code
 
