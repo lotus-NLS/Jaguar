@@ -36,7 +36,7 @@ class TestAgent(CredTest):
     def test_tasktracker_context(self):
         test_task = self.task_provider.get_task(name='test')
         last_step = None
-        work_notice = 'You are currently in work mode and cannot converse with the user'
+        work_notice = self.agent.task_tracker.work_notice
 
         for j, step in enumerate(self.agent.work(test_task, max_steps=2)):
             last_step = step
