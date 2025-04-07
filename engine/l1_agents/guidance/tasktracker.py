@@ -84,8 +84,12 @@ class Task:
         self.is_failed : bool = False
         self.subtasks : list[Task] = []
 
-    def subtasks_complete(self) -> bool:
-        return all([st.is_complete for st in self.subtasks])
+    def recursively_complete(self) -> bool:
+        if not self.subtasks:
+            return self.is_complete
+        else:
+            return all(st.recursively_complete() for st in self.subtasks)
+
 
     @classmethod
     def get_example(cls) -> Task:

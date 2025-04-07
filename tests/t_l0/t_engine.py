@@ -11,7 +11,7 @@ class TestEngine(Unittest):
         wf = Workflow.example()
         final_node = self.engine.do_workflow(wf=wf)
         self.assertTrue(final_node.name == 'end')
-        self.assertTrue(final_node.task.subtasks_complete())
+        self.assertTrue(final_node.task.recursively_complete())
 
 if __name__ == '__main__':
     TestEngine.execute_all()
