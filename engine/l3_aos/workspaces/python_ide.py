@@ -17,58 +17,11 @@ class PythonIDE(Workspace):
     """LotusPythonIDE: Minimal text operable python IDE"""
     def __init__(self):
         super().__init__()
-        self.project : Optional[PythonProject] = None
-
-    def switch_project(self, workspace_dirpath : str):
-        self.project = PythonProject(project_dirpath=workspace_dirpath)
-
-    def run_file(self, script_fpath : str):
-        self.project.run_file(script_fpath=script_fpath)
-
-    def open_file(self, fpath : str):
-        """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
-        self.project.open_file(fpath=fpath)
-
-    def close_file(self, fpath : str):
-        """Closes file spcified relative to the project dirpath"""
-        self.project.close_file(fpath=fpath)
-
-    def write(self, fileNo : int, after_line : int, content : str):
-        """Writes content to a file opened in the IDE"""
-        self.project.write(fileNo=fileNo, after_line=after_line, content=content)
-
-    def delete(self, fileNo :int, start_line : int,end_line : int ):
-        """Deletes lines in a file opened in the IDE"""
-        self.project.delete(fileNo=fileNo, start_line=start_line, end_line=end_line)
-
-    # -------------------------------------------------------
-    # Workspace generics
-
-    def open(self, project_dirpath : str):
-        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
-        self.project = PythonProject(project_dirpath=project_dirpath)
-
-    def close(self, *args, **kwargs):
-        self.project = None
-
-    def get_text(self) -> str:
-        return self.project.get_view()
-
-    def get_image(self) -> Optional[PILImage]:
-        return None
-
-
-class PythonProject:
-    def __init__(self, project_dirpath : str):
-        project_dirpath = os.path.expanduser(project_dirpath)
-        if not os.path.isdir(project_dirpath):
-            raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
-
-        self.dirpath : str = project_dirpath
-        if not self.dirpath:
-            raise ValueError(f'Project dirpath does not exist: {self.dirpath}')
-        venv_python_fpath = os.path.join(self.dirpath, '.venv/bin/python')
-        self.interpreter_fpath : Optional[str] = venv_python_fpath if os.path.isfile(venv_python_fpath) else None
+        self.proj_dirpath : Optional[str] = None
+        if not self.proj_dirpath:
+            raise ValueError(f'Project dirpath does not exist: {self.proj_dirpath}')
+        py_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
+        self.interpreter_fpath : Optional[str] = py_fpath if os.path.isfile(py_fpath) else None
 
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
         self.excluded_patterns : list[str] = ['.*\\.pyc']
@@ -76,8 +29,20 @@ class PythonProject:
         self.run_output : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
+    def run_file(self, script_fpath : str):
+        script_fpath = self._get_abspath(fpath=script_fpath)
+        env, cwd = {'PYTHONPATH': self.proj_dirpath}, self.proj_dirpath
+        arg_list = [self.interpreter_fpath, script_fpath]
+        result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
+
+        script_stdout = f'{result.stdout}'
+        script_stderr = f'\033[31m{result.stderr}\033[0m'
+        exit_code_msg = f'Process finished with exit code {result.returncode}'
+
+        self.run_output[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def open_file(self, fpath : str):
+        """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
         fpath = self._get_abspath(fpath=fpath)
         parent_dir = os.path.dirname(fpath)
         if not os.path.isdir(parent_dir):
@@ -88,19 +53,21 @@ class PythonProject:
 
         fpath = self._get_abspath(fpath=fpath)
         self._open_fpaths.append(fpath)
-
+        
     def close_file(self, fpath : str):
+        """Closes file spcified relative to the project dirpath"""
         fpath = self._get_abspath(fpath=fpath)
         self._open_fpaths.remove(fpath)
-
+        
     def write(self, fileNo : int, after_line : int, content : str):
+        """Writes content to a file opened in the IDE"""
         fpath = self._open_fpaths[fileNo]
         if os.path.isfile(path=fpath):
             with open(fpath, 'r') as f:
                 lines = f.readlines()
 
             before_lines = lines[:after_line]
-            after_lines =  lines[after_line:]
+            after_lines = lines[after_line:]
 
             before_content = ''.join(before_lines)
             after_content = ''.join(after_lines)
@@ -111,6 +78,7 @@ class PythonProject:
             f.write(content)
 
     def delete(self, fileNo :int, start_line : int,end_line : int ):
+        """Deletes lines in a file opened in the IDE"""
         fpath = self._open_fpaths[fileNo]
         with open(fpath, 'r') as f:
             lines = f.readlines()
@@ -123,27 +91,33 @@ class PythonProject:
         with open(fpath, 'w') as f:
             f.write(new_content)
 
+    def _get_abspath(self, fpath : str):
+        fpath= os.path.expanduser(fpath)
+        if os.path.isabs(fpath):
+            return fpath
+        else:
+            return os.path.join(self.proj_dirpath, fpath)
 
-    def mkvenv(self):
-        subprocess.run(['python3', '-m', 'venv', f'{self.dirpath}/.venv'])
-        self.interpreter_fpath = os.path.join(self.dirpath, '.venv/bin/python')
+    # -------------------------------------------------------
+    # Workspace generics
 
-    def install_libraries(self, names : list[str]):
-        subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
+    def open(self, project_dirpath : str):
+        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
+        project_dirpath = os.path.expanduser(project_dirpath)
+        if not os.path.isdir(project_dirpath):
+            raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
+        self._reset()
+        self.proj_dirpath = project_dirpath
 
-    def run_file(self, script_fpath : str):
-        script_fpath = self._get_abspath(fpath=script_fpath)
-        env, cwd = {'PYTHONPATH' : self.dirpath}, self.dirpath
-        arg_list = [self.interpreter_fpath, script_fpath]
-        result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
+    def close(self, *args, **kwargs):
+        self._reset()
 
-        script_stdout = f'{result.stdout}'
-        script_stderr = f'\033[31m{result.stderr}\033[0m'
-        exit_code_msg = f'Process finished with exit code {result.returncode}'
+    def _reset(self):
+        self.proj_dirpath : Optional[str] = None
+        self.run_output = {}
+        self._open_fpaths = []
 
-        self.run_output[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
-
-    def get_view(self) -> str:
+    def get_text(self) -> str:
         text = MessageFormatter.get_boxed(text=self._get_metadata(), headline=f'Project metadata')
         text += MessageFormatter.get_boxed(text=self._get_project_filetree(), headline=f'Project file structure')
         if self._open_fpaths:
@@ -151,38 +125,35 @@ class PythonProject:
 
         return text
 
-    # -----------------------------------------------
+    def get_image(self) -> Optional[PILImage]:
+        return None
 
-    def _get_abspath(self, fpath : str):
-        fpath= os.path.expanduser(fpath)
-        if os.path.isabs(fpath):
-            return fpath
-        else:
-            return os.path.join(self.dirpath, fpath)
+    # -------------------------------------------------------
+    #  Project view
 
     def _get_metadata(self) -> str:
-        venv = os.path.relpath(self.interpreter_fpath, self.dirpath) if self.interpreter_fpath else None
-        metadata = (f'{"Project name":<20}: {os.path.basename(self.dirpath)}\n'
-                    f'{"Project dirpath":<20}: {self.dirpath} \n'
+        venv = os.path.relpath(self.interpreter_fpath, self.proj_dirpath) if self.interpreter_fpath else None
+        metadata = (f'{"Project name":<20}: {os.path.basename(self.proj_dirpath)}\n'
+                    f'{"Project dirpath":<20}: {self.proj_dirpath} \n'
                     f'{"Virtual environment":<20}: {venv}')
         return metadata
 
     def _get_project_filetree(self):
-        root_node = Directory(path=self.dirpath)
+        root_node = Directory(path=self.proj_dirpath)
         fpaths = root_node.get_subfile_fpaths()
         fpaths = [p for p in fpaths if not self._is_excluded(fpath=p)]
         fs_dict = root_node.to_dict(fpaths=fpaths)
 
-        parts = self.dirpath.split('/')
+        parts = self.proj_dirpath.split('/')
         for p in parts:
             fs_dict = fs_dict[p]
 
-        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.dirpath, max_children=10)
+        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.proj_dirpath, max_children=10)
 
         return filetree
 
     def _is_excluded(self, fpath : str) -> bool:
-        excluded_paths = [os.path.join(self.dirpath, name) for name in self.excluded_dirs]
+        excluded_paths = [os.path.join(self.proj_dirpath, name) for name in self.excluded_dirs]
         in_excluded = any([fpath.startswith(excluded_path) for excluded_path in excluded_paths])
 
         excluded_reg_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
@@ -194,7 +165,7 @@ class PythonProject:
         all_contents = ''
         for j, path in enumerate(self._open_fpaths):
             fname = os.path.basename(path)
-            texts = [self._view_with_lineno(fpath=path), self._get_inspections(fpath=path)]
+            texts = [self._get_with_lineno(fpath=path), self._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
 
             if path in self.run_output:
@@ -219,7 +190,7 @@ class PythonProject:
         return formatted_inspections
 
     @staticmethod
-    def _view_with_lineno(fpath : str):
+    def _get_with_lineno(fpath : str) -> str:
         with open(fpath, 'r') as f:
             c = f.read()
         lines = c.split('\n')
@@ -230,13 +201,23 @@ class PythonProject:
         enumerated_content = enumerated_content.rstrip('\n')
         return enumerated_content
 
+    #
+    # def mkvenv(self):
+    #     subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])
+    #     self.interpreter_fpath = os.path.join(self.proj_dirpath, '.venv/bin/python')
+    #
+    # def install_libraries(self, names : list[str]):
+    #     subprocess.run([self.interpreter_fpath, '-m' 'pip', 'install'] + names)
 
-if __name__ == "__main__":
-    test_dirpath = '/home/daniel/testdir'
-    testscript_fpath = os.path.join(test_dirpath, 'srcdir/newfile.py')
 
-    project = PythonProject(project_dirpath=test_dirpath)
-    project.open_file(fpath=testscript_fpath)
-    project.install_libraries(names=['pipdeptree', 'deptry'])
 
-    print(project.get_view())
+
+# if __name__ == "__main__":
+#     test_dirpath = '/home/daniel/testdir'
+#     testscript_fpath = os.path.join(test_dirpath, 'srcdir/newfile.py')
+# 
+#     project = PythonProject(project_dirpath=test_dirpath)
+#     project.open_file(fpath=testscript_fpath)
+#     project.install_libraries(names=['pipdeptree', 'deptry'])
+# 
+#     print(project.get_view())

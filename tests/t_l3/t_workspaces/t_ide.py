@@ -29,7 +29,7 @@ class TestPythonIDE(Unittest):
         self.project.open_file(fpath=fpath)
 
     def test_script_display(self):
-        file_content = self.project._view_with_lineno(fpath=self.script_fpath)
+        file_content = self.project._get_with_lineno(fpath=self.script_fpath)
         expected_file_content = ''' 1   | print(f'Hello world :)')
  2   | a = 2
  3   | b=3'''
@@ -57,7 +57,7 @@ class TestPythonIDE(Unittest):
         new_content = f'import PIL\n'
         self.project.write(fileNo=0, after_line=0, content=new_content)
 
-        file_content = self.project._view_with_lineno(fpath=fpath)
+        file_content = self.project._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | import PIL
  2   | 
  3   | print(f'Hello world :)')
@@ -72,7 +72,7 @@ class TestPythonIDE(Unittest):
         fpath = self.script_fpath
         self.project.delete(fileNo=0, start_line=1, end_line=1)
 
-        file_content = self.project._view_with_lineno(fpath=fpath)
+        file_content = self.project._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | a = 2
  2   | b=3'''
 
