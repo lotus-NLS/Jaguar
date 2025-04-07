@@ -1,5 +1,5 @@
 from engine.l0_main.lotus_io import LotusIO
-from engine.l1_agents import Agent
+from engine.l1_agents import Agent, Task
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
@@ -31,18 +31,20 @@ class TestAgent(CredTest):
         self.assertTrue(content in view)
 
     def test_tasktracker_context(self):
-        test_task = self.task_provider.get_task(name='test')
+        # test_task = self.task_provider.get_task(name='test')
+        test_task = Task.from_yaml(s=f'- Make a comment on this task')
         last_step = None
         work_notice = self.agent.task_tracker.work_notice
 
+
         for j, step in enumerate(self.agent.work(test_task, max_steps=2)):
-            last_step = step
             if j == 0:
                 ctx_view = step.post_ctx.get_view()
-
                 self.assertTrue('TaskTracker[Active]' in ctx_view)
                 self.assertTrue(work_notice in ctx_view)
 
+            last_step = step
+            self.lotusIO.observe(step=step)
 
         self.assertTrue('TaskTracker[Archived]' in last_step.post_ctx.get_view())
         self.assertTrue('TaskTracker[Active]' not in last_step.post_ctx.get_view())
@@ -84,4 +86,7 @@ class TestAgent(CredTest):
 
 
 if __name__ == "__main__":
-    TestAgent.execute_all()
+    ta = TestAgent()
+    ta.setUpClass()
+    ta.setUp()
+    ta.test_tasktracker_context()

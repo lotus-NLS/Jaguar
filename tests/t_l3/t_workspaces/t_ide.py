@@ -1,8 +1,9 @@
 import os
 import tempfile
 
-from engine.l3_aos.workspaces.python_ide import ViewProvider, PythonIDE
+from engine.l3_aos.workspaces.python_ide import PythonIDE
 from holytools.devtools import Unittest
+
 
 # --------------------------------------------------------------
 

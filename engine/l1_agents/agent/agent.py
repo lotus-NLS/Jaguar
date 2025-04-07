@@ -82,7 +82,7 @@ class Agent(Timber):
         headline = self.task_tracker.headline
         self.task_tracker.headline = None
         post_context = self.get_context(inf_config=inf_config)
-        return Step(text_pipe=pipe, ckpt_label=headline, post_ctx=post_context, tool_outputs=outputs)
+        return Step(text_pipe=pipe, ckpt_label=headline, pre_ctx=context, post_ctx=post_context, tool_outputs=outputs)
 
     def write(self, generation : Generation):
         pipe = TextPipe()

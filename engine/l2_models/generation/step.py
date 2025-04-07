@@ -18,6 +18,7 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 @dataclass
 class Step:
     text_pipe : TextPipe
+    pre_ctx : Context
     post_ctx: Context
     ckpt_label: str
     tool_outputs : list[ToolOutput]
@@ -28,7 +29,7 @@ class Step:
 
     @classmethod
     def failed(cls, context : Context):
-        return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[])
+        return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[], pre_ctx=context)
 
 
 @dataclass

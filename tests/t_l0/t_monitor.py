@@ -73,7 +73,7 @@ class MockEngine:
         self.ckpt_label = f'Checkpoint'
 
         text_pipe = TextPipe()
-        step : Step = Step(text_pipe=text_pipe, post_ctx=self.context, ckpt_label=self.ckpt_label, tool_outputs=[])
+        step : Step = Step(text_pipe=text_pipe, pre_ctx=self.context, post_ctx=self.context, ckpt_label=self.ckpt_label, tool_outputs=[])
         self.uuid : str = str(uuid.uuid4())
         self.step_state : State = step.get_state(uuid=self.uuid)
         self.report : Report = Report(sess_uuid=self.uuid, is_successful=True, summary='')
