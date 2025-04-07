@@ -70,13 +70,18 @@ class LotusIO(Timber):
         text = ''
         self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 
-        print('Assistant: ', end='')
-        for chunk in step.text_pipe.get_text_stream():
-            time.sleep(0.05)
-            text += chunk
-            print(chunk, end='')
-        print()
-
+        stream = step.text_pipe.get_text_stream()
+        try:
+            first_chunk = stream.__next__()
+            if first_chunk:
+                print(f'Assistant {first_chunk}', end='')
+                text += first_chunk
+            for chunk in step.text_pipe.get_text_stream():
+                time.sleep(0.05)
+                text += chunk
+                print(chunk, end='')
+        except StopIteration:
+            pass
 
         for o in step.tool_outputs:
             if not TaskTracker.get_name() in o.tool_name:
