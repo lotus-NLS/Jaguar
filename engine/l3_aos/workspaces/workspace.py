@@ -15,7 +15,7 @@ from holytools.logging import Timber
 class Workspace(Timber):
     def __init__(self):
         super().__init__()
-        self.is_active : bool = False
+        self.is_open : bool = False
         self.workspace_actions : list[Tool] = self.create_workspace_actions()
         self.open_action : Tool = self.create_action(mthd=self.open)
         self.close_action : Tool = self.create_action(mthd=self.close)
@@ -54,9 +54,9 @@ class Workspace(Timber):
                 kwargs = {tool_arg.name : tool_arg.get_value() for tool_arg in self.tool_args if tool_arg.is_set()}
                 mthd(**kwargs)
                 if mthd.__name__ == workspace.open.__name__:
-                    workspace.is_active = True
+                    workspace.is_open = True
                 if mthd.__name__ == workspace.close.__name__:
-                    workspace.is_active = False
+                    workspace.is_open = False
 
             def get_desc(self) -> str:
                 desc = docstring if docstring else ''
@@ -70,12 +70,16 @@ class Workspace(Timber):
     def get_actions(self) -> list[Tool]:
         while_open = self.workspace_actions + [self.close_action]
         while_closed = [self.open_action]
-        return while_open if self.is_active else while_closed
+        return while_open if self.is_open else while_closed
 
     def get_action_docs(self) -> list[ToolDoc]:
         return [action.get_doc() for action in self.get_actions()]
 
     # ---------------------------------------------------
+
+    @classmethod
+    def is_system_opened(cls) -> bool:
+        return False
 
     @classmethod
     def get_name(cls) -> str:

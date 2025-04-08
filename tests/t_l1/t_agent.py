@@ -26,18 +26,6 @@ class TestAgent(CredTest):
         self.task_provider: TaskProvider = TaskProvider()
         self.lotusIO: LotusIO = LotusIO(disable_socket=True)
 
-    def test_freeze_ws(self):
-        self.agent.task_tracker.root = self.task_provider.get_task(name='test')
-        self.agent.task_tracker.open_action.execute({})
-        self.agent.task_tracker.close_action.execute({})
-
-        context = self.agent.get_context(inf_config=InfConfig())
-        context_view = context.get_view()
-        print(f'- View of context\n{context_view}')
-
-        self.assertTrue(f'## [Closed workspace] ##' in context_view)
-        time.sleep(0.2)
-
     def test_memory_context(self):
         content = f'Hello there!'
         step = self.agent.talk(msg=content)
@@ -46,25 +34,7 @@ class TestAgent(CredTest):
         print(f'- View of context\n{view}')
         self.assertTrue(content in view)
 
-    def test_tasktracker_context(self):
-        task = Task.from_yaml(s='- Complete this task')
-        work_notice = self.agent.task_tracker.work_notice
-        close_tool = self.agent.task_tracker.close_action
 
-        close_step = None
-        for _ in self.agent.work(task=task, max_steps=1):
-            close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
-
-        gen_ctx_view = close_step.pre_ctx.get_view()
-        self.assertTrue('TaskTracker[Active]' in gen_ctx_view)
-        self.assertTrue(work_notice in gen_ctx_view)
-
-        post_ctx_view = close_step.post_ctx.get_view()
-        self.assertTrue('TaskTracker[Archived]' in post_ctx_view)
-        self.assertTrue('TaskTracker[Active]' not in post_ctx_view)
-
-    # Measure tool docs there
-    # Measure
     def test_aos_context(self):
         ctx = self.agent.get_context(inf_config=self.default_inf_config)
 
@@ -77,7 +47,9 @@ class TestAgent(CredTest):
         self.assertTrue(f'{PythonIDE.__name__}_open' in total_view)
         self.assertTrue(f'{Terminal.__name__}_open' in total_view)
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
-        self.assertTrue(not f'{TaskTracker}_open' in total_view)
+        self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
+
+
 
     #
     # # Test cases for is_working:
@@ -100,6 +72,24 @@ class TestAgent(CredTest):
 
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
+
+    def test_tasktracker_freeze(self):
+        task = Task.from_yaml(s='- Complete this task')
+        work_notice = self.agent.task_tracker.work_notice
+        close_tool = self.agent.task_tracker.close_action
+
+        close_step = None
+        for _ in self.agent.work(task=task, max_steps=1):
+            close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
+
+        gen_ctx_view = close_step.pre_ctx.get_view()
+        self.assertTrue('TaskTracker[Active]' in gen_ctx_view)
+        self.assertTrue(work_notice in gen_ctx_view)
+
+        post_ctx_view = close_step.post_ctx.get_view()
+        self.assertTrue('TaskTracker[Archived]' in post_ctx_view)
+        self.assertTrue('TaskTracker[Active]' not in post_ctx_view)
+        self.assertTrue(work_notice not in post_ctx_view)
 
 
 if __name__ == "__main__":

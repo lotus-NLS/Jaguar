@@ -20,7 +20,7 @@ class TestTracker(AgentTest):
         print(f'Task tree:\n{task.get_tree()}')
         tracker.complete_task(task_id='1')
 
-        self.assertTrue(not tracker.is_active)
+        self.assertTrue(not tracker.is_open)
 
 if __name__ == "__main__":
     TestTracker.execute_all()

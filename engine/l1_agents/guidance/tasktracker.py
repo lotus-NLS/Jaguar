@@ -53,6 +53,9 @@ class TaskTracker(Workspace):
     # -------------------------------
     # Generics
 
+    @classmethod
+    def is_system_opened(cls) -> bool:
+        return True
 
     def get_actions(self) -> list[Tool]:
         actions = super().get_actions()

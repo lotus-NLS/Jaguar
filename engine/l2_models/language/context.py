@@ -21,7 +21,6 @@ class Context(JsonDataclass):
 
     def interweave_workspaces(self, aos : AOS):
         msg_map = self.get_entry_map(aos=aos)
-        print(f'- Currently active workspaces\n{list(msg_map.keys())}')
         for j, m in enumerate(reversed(self.messages)):
             matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
             if m.role == Role.TOOL and not matching_ws_name is None:
@@ -38,7 +37,7 @@ class Context(JsonDataclass):
     @staticmethod
     def get_entry_map(aos : AOS) -> dict[str, Message]:
         msg_map: dict[str, Message] = {}
-        for ws in [workspace for workspace in aos.workspaces if workspace.is_active]:
+        for ws in [workspace for workspace in aos.workspaces if workspace.is_open]:
             try:
                 msg_map[ws.get_name()] = Message.from_workspace(ws=ws)
             except BaseException as e:

@@ -29,7 +29,7 @@ class Agent(Timber):
         self.memory: list[Message] = []
 
         self.aos.add_workspace(ws=self.task_tracker)
-        for ws in self.aos.get_workspaces(active_only=False):
+        for ws in self.aos.get_workspaces():
             hook = self.get_freeze_hook(ws=ws)
             ws.close_action.add_prehook(hook)
 
@@ -53,10 +53,10 @@ class Agent(Timber):
             print()
 
             yield step
-            if not self.task_tracker.is_active:
+            if not self.task_tracker.is_open:
                 break
 
-        if self.task_tracker.is_active:
+        if self.task_tracker.is_open:
             self.task_tracker.close_action.execute({})
 
     # ---------------------------------------------------
@@ -127,7 +127,7 @@ class Agent(Timber):
         context += Context(messages=self.memory)
         context.interweave_workspaces(aos=self.aos)
 
-        if self.task_tracker.is_active:
+        if self.task_tracker.is_open:
             work_entry = Message.system(msg=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 

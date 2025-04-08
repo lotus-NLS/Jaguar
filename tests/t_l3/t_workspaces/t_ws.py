@@ -42,14 +42,14 @@ class TestWorkspace(Unittest):
 
 
     def test_toggle_active_inactive(self):
-        print(f'Workspace active = {self.workspace.is_active}')
-        self.assertFalse(self.workspace.is_active)
+        print(f'Workspace active = {self.workspace.is_open}')
+        self.assertFalse(self.workspace.is_open)
         self.workspace.open_action._do()
-        print(f'Workspace active after open actio = {self.workspace.is_active}')
-        self.assertTrue(self.workspace.is_active)
+        print(f'Workspace active after open actio = {self.workspace.is_open}')
+        self.assertTrue(self.workspace.is_open)
         self.workspace.close_action._do()
-        print(f'Workspace active after close actio = {self.workspace.is_active}')
-        self.assertFalse(self.workspace.is_active)
+        print(f'Workspace active after close actio = {self.workspace.is_open}')
+        self.assertFalse(self.workspace.is_open)
 
 
     def test_get_actions(self):
