@@ -40,10 +40,14 @@ class Terminal(Workspace):
             raise ValueError(f'OS type {os_type} not supported')
 
         try:
-            subprocess.Popen(['gnome-terminal', '--', 'tmux', 'new-session', '-s', 'lotus'], cwd=cwd)
-            time.sleep(2)
             server = libtmux.Server()
-            return server.find_where({"session_name": self.tmux_name})
+            session = server.find_where({"session_name": self.tmux_name})
+            if session is None:
+                command = 'tmux new-session -s lotus -d'
+                subprocess.Popen(['bash', '-c', command], cwd=cwd)
+                time.sleep(2)
+                session = server.find_where({"session_name": self.tmux_name})
+            return session
         except Exception as e:
             self.error(msg=f'An exception occured while trying to start terminal session using executable'
                            f' \"{shell_cmd}\": \"{e}\"')
