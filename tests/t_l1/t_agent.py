@@ -1,10 +1,11 @@
 import time
 
 from engine.l0_main.lotus_io import LotusIO
-from engine.l1_agents import Agent, Task
+from engine.l1_agents import Agent, Task, TaskTracker
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.task.resources.taskprovider import TaskProvider
 from tests.basetests import CredTest
 from tests.t_l2.base import Greet
@@ -17,12 +18,13 @@ class TestAgent(CredTest):
         browser = Browser(google_api_key=self.credentials.google_api_key,
                           searchengine_id=self.credentials.search_engine_id)
         terminal = Terminal()
-        aos = AOS(workspaces=[terminal, browser])
+        ide = PythonIDE()
+        aos = AOS(workspaces=[terminal, browser, ide])
         model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
-        self.agent : Agent = Agent(aos=aos, model=model)
-        self.default_inf_config : InfConfig = InfConfig()
-        self.task_provider : TaskProvider = TaskProvider()
-        self.lotusIO : LotusIO = LotusIO(disable_socket=True)
+        self.agent: Agent = Agent(aos=aos, model=model)
+        self.default_inf_config: InfConfig = InfConfig()
+        self.task_provider: TaskProvider = TaskProvider()
+        self.lotusIO: LotusIO = LotusIO(disable_socket=True)
 
     def test_freeze_ws(self):
         self.agent.task_tracker.root = self.task_provider.get_task(name='test')
@@ -48,7 +50,7 @@ class TestAgent(CredTest):
         task = Task.from_yaml(s='- Complete this task')
         work_notice = self.agent.task_tracker.work_notice
         close_tool = self.agent.task_tracker.close_action
-        
+
         close_step = None
         for _ in self.agent.work(task=task, max_steps=1):
             close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
@@ -63,8 +65,20 @@ class TestAgent(CredTest):
 
     # Measure tool docs there
     # Measure
-    # def test_aos_context(self):
-    #     pass
+    def test_aos_context(self):
+        ctx = self.agent.get_context(inf_config=self.default_inf_config)
+
+        total_view = ''
+        for d in ctx.docs:
+            view = d.get_view()
+            total_view += f'{view}\n'
+        print(f'-> Total tool doc view:\n{total_view}')
+
+        self.assertTrue(f'{PythonIDE.__name__}_open' in total_view)
+        self.assertTrue(f'{Terminal.__name__}_open' in total_view)
+        self.assertTrue(f'{Browser.__name__}_open' in total_view)
+        self.assertTrue(not f'{TaskTracker}_open' in total_view)
+
     #
     # # Test cases for is_working:
     #     # All complete -> Not working
@@ -82,12 +96,10 @@ class TestAgent(CredTest):
         inf_config = InfConfig(required_tool=greet_tool)
         step = self.agent.handle(inf_config=inf_config)
 
-        outputs : list[ToolOutput] = step.tool_outputs
+        outputs: list[ToolOutput] = step.tool_outputs
 
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
-
-
 
 
 if __name__ == "__main__":
