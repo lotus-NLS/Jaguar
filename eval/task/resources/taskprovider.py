@@ -20,8 +20,6 @@ class TaskProvider:
             task = Task.from_yaml(s=remaining)
             self.mandate_dict[name] = task
 
-        print('done')
-
     def get_task(self, name : str) -> Task:
         return self.mandate_dict[name]
 

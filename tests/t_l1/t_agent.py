@@ -1,3 +1,5 @@
+import time
+
 from engine.l0_main.lotus_io import LotusIO
 from engine.l1_agents import Agent, Task
 from engine.l2_models import OpenAIModel, InfConfig
@@ -17,10 +19,22 @@ class TestAgent(CredTest):
         terminal = Terminal()
         aos = AOS(workspaces=[terminal, browser])
         model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
-        self.agent = Agent(aos=aos, model=model)
+        self.agent : Agent = Agent(aos=aos, model=model)
         self.default_inf_config : InfConfig = InfConfig()
         self.task_provider : TaskProvider = TaskProvider()
         self.lotusIO : LotusIO = LotusIO(disable_socket=True)
+
+    def test_freeze_ws(self):
+        self.agent.task_tracker.root = self.task_provider.get_task(name='test')
+        self.agent.task_tracker.open_action.execute({})
+        self.agent.task_tracker.close_action.execute({})
+
+        context = self.agent.get_context(inf_config=InfConfig())
+        context_view = context.get_view()
+        print(f'- View of context\n{context_view}')
+
+        self.assertTrue(f'## [Closed workspace] ##' in context_view)
+        time.sleep(0.2)
 
     def test_memory_context(self):
         content = f'Hello there!'
@@ -49,19 +63,19 @@ class TestAgent(CredTest):
 
     # Measure tool docs there
     # Measure
-    def test_aos_context(self):
-        pass
-
-    # Test cases for is_working:
-        # All complete -> Not working
-        # Subtaks complete -> Not working
-        # Task tracker closed -> Not working
-        # Not all complete -> Working
-    def test_is_working(self):
-        pass
-
-    def test_headlines(self):
-        pass
+    # def test_aos_context(self):
+    #     pass
+    #
+    # # Test cases for is_working:
+    #     # All complete -> Not working
+    #     # Subtaks complete -> Not working
+    #     # Task tracker closed -> Not working
+    #     # Not all complete -> Working
+    # def test_is_working(self):
+    #     pass
+    #
+    # def test_headlines(self):
+    #     pass
 
     def test_required_tool_use(self):
         greet_tool = Greet()
@@ -74,15 +88,6 @@ class TestAgent(CredTest):
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
 
 
-    def test_freeze_ws(self):
-        self.agent.task_tracker.open_action.execute({})
-        self.agent.task_tracker.close_action.execute({})
-
-        context = self.agent.get_context(inf_config=InfConfig())
-        context_view = context.get_view()
-        print(f'- View of context\n{context_view}')
-
-        self.assertTrue(f'## [Closed workspace] ##' in context_view)
 
 
 if __name__ == "__main__":
