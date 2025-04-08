@@ -34,7 +34,6 @@ class TestAgent(CredTest):
         print(f'- View of context\n{view}')
         self.assertTrue(content in view)
 
-
     def test_aos_context(self):
         ctx = self.agent.get_context(inf_config=self.default_inf_config)
 
@@ -49,17 +48,6 @@ class TestAgent(CredTest):
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
         self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
 
-
-
-    #
-    # # Test cases for is_working:
-    #     # All complete -> Not working
-    #     # Subtaks complete -> Not working
-    #     # Task tracker closed -> Not working
-    #     # Not all complete -> Working
-    # def test_is_working(self):
-    #     pass
-    #
     # def test_headlines(self):
     #     pass
 

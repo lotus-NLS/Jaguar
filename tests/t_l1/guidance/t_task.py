@@ -62,7 +62,9 @@ class TestTask(Unittest):
         self.assertIn("This is a comment",root_tree)
 
 
-    def test_subtasks_complete(self):
+    def test_recursively_complete(self):
+        self.assertTrue(not self.root.is_recursively_complete())
+
         self.subtask11.complete()
         self.subtask12.complete()
         self.subtask13.complete()
