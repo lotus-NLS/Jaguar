@@ -16,7 +16,7 @@ from holytools.logging import Timber
 class LotusEngine(Timber):
     def __init__(self):
         super().__init__()
-        self._creds: LotusCredentials = LotusCredentials.from_file()
+        self._creds: LotusCredentials = LotusCredentials.auto()
 
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
         self.agent = self.make_agent(model=model)

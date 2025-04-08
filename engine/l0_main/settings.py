@@ -1,5 +1,6 @@
 from __future__ import annotations
 import dataclasses
+import os
 from dataclasses import dataclass
 
 import openai
@@ -26,12 +27,30 @@ class LotusCredentials(Timber):
         self.info(msg=f'Completed setup for all Settings')
 
     @classmethod
+    def auto(cls):
+        try:
+            creds = cls.from_env()
+        except:
+            creds = cls.from_file()
+        return creds
+
+    @classmethod
+    def from_env(cls) -> LotusCredentials:
+        keys = cls.get_nonoptional_keys()
+        uppercase_keys = [env_key.upper() for env_key in keys]
+        kwargs = {k.lower() : os.environ[k] for k in uppercase_keys}
+        return cls(**kwargs)
+
+    @classmethod
     def from_file(cls) -> LotusCredentials:
         configs = FileConfigs.credentials()
-        keys = set([f.name for f in dataclasses.fields(LotusCredentials) if f.init ])
-        keys = [k for k in keys if not "enable_validation" in k]
+        keys = cls.get_nonoptional_keys()
         kwargs = {k : configs.get(k) for k in keys}
         return cls(**kwargs)
+
+    @classmethod
+    def get_nonoptional_keys(cls) -> list[str]:
+        return [f.name for f in dataclasses.fields(cls) if f.default == dataclasses.MISSING]
 
     # ----------------------------------------------
     # validation
@@ -106,4 +125,8 @@ class LotusCredentials(Timber):
 
 
 if __name__ == "__main__":
-    creds = LotusCredentials.from_file()
+    # creds = LotusCredentials.from_file()
+    # os.environ['OPENAI_API_KEY'] = 'a'
+    # os.environ['GOOGLE_API_KEY'] = 'b'
+    # os.environ['SEARCH_ENGINE_ID'] = 'c'
+    LotusCredentials.auto()
