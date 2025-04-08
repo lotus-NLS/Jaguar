@@ -7,8 +7,8 @@ from typing import Optional
 import tiktoken
 from tiktoken import Encoding
 
+from engine.l2_models.generation import InfConfig, Generation
 from engine.l2_models.language import Message, Context
-from engine.l2_models.generation import InfConfig, Generation, CallOptions
 from holytools.logging import Timber
 
 

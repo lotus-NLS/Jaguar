@@ -15,7 +15,7 @@ class TestWorkflow(Unittest):
 
     def test_get_node(self):
         nodeA = self.workflow.get_node('A')
-        self.assertTrue(nodeA._content == 'A')
+        self.assertTrue(nodeA.name == 'A')
 
     def test_get_outgoing(self):
         exit_tool = self.workflow.get_exit_tool('Start')

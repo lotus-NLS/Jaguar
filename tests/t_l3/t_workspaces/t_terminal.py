@@ -5,7 +5,7 @@ from holytools.devtools import Unittest
 
 # ----------------------------------------------------------------
 
-class TerminalText(Unittest):
+class TerminalTest(Unittest):
     def setUp(self):
         self.terminal : Terminal = Terminal()
 
@@ -23,4 +23,4 @@ class TerminalText(Unittest):
         self.assertTrue(echo_text in text)
 
 if __name__ == "__main__":
-    TerminalText.execute_all()
+    TerminalTest.execute_all()

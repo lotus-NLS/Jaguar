@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import time
-import traceback
 from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
@@ -11,7 +10,6 @@ from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
 from engine.l2_models import Generation, InfConfig
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Message, Context
-from engine.l2_models.language.message import Role
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall, Tool

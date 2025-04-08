@@ -58,7 +58,7 @@ class Workflow:
                 self.outgoing_edge_map[e.source.name] = []
             self.outgoing_edge_map[e.source.name].append(e)
 
-    def get_node(self, name : str):
+    def get_node(self, name : str) -> Node:
         return self.node_map[name]
 
     def get_exit_tool(self, node_name : str) -> NodeNavigation:
