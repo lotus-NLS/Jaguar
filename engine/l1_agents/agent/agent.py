@@ -29,7 +29,7 @@ class Agent(Timber):
         self.memory: list[Message] = []
 
         self.aos.add_workspace(ws=self.task_tracker)
-        for ws in self.aos.get_workspaces():
+        for ws in self.aos.get_workspaces(include_system_opened=True):
             hook = self.get_freeze_hook(ws=ws)
             ws.close_action.add_prehook(hook)
 

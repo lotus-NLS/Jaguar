@@ -74,10 +74,13 @@ class AOS(Timber):
         ws_map = {ws.get_name(): ws for ws in self.get_workspaces()}
         return ws_map[name]
 
-    def get_workspaces(self) -> list[Workspace]:
+    def get_workspaces(self, include_system_opened : bool = False) -> list[Workspace]:
         def is_included(ws : Workspace):
+            if include_system_opened:
+                return True
             if not ws.is_system_opened():
                 return True
             else:
                 return ws.is_open
+
         return [ws for ws in self.workspaces if is_included(ws)]
