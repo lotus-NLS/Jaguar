@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import time
 from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
@@ -58,7 +57,7 @@ class Agent(Timber):
                 break
 
         if self.task_tracker.is_open:
-            self.act(self.task_tracker.close_action.get_toolcall())
+            self.act([self.task_tracker.close_action.get_toolcall()])
 
     # ---------------------------------------------------
     # Main routine

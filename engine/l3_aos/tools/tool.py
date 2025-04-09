@@ -91,8 +91,9 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-    @classmethod
-    def get_toolcall(cls, args_dict : Optional[dict] = None):
-        json_str = json.dumps(args_dict) if args_dict else '{}'
-        return ToolCall(name=cls.get_name(), json_str=json_str)
+    def get_toolcall(self, args_dict : Optional[dict] = None) -> ToolCall:
+        tc = ToolCall.no_args(name=self.get_name())
+        if args_dict:
+            tc.json_str = json.dumps(args_dict)
+        return tc
 

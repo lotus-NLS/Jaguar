@@ -125,8 +125,8 @@ class ToolCall:
         self.json_str : str = json_str
 
     @classmethod
-    def empty(cls) -> ToolCall:
-        return cls(name='', json_str='{}')
+    def no_args(cls, name : str) -> ToolCall:
+        return cls(name=name, json_str='{}')
 
     @classmethod
     def from_dict(cls, attr_dict : dict) -> ToolCall:

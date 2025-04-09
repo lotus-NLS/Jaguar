@@ -29,7 +29,6 @@ class TestAgent(CredTest):
         step = self.agent.talk(msg=content)
         view = step.post_ctx.get_view()
 
-        print(f'- View of context\n{view}')
         self.assertTrue(content in view)
 
     def test_aos_context(self):
@@ -89,9 +88,7 @@ class TestAgent(CredTest):
 class MockAgent(Agent):
     def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
         context = self.get_context(inf_config=inf_config)
-        print(f'Context view:\n{context.get_view()}')
         if not inf_config.required_tool:
-            print(f'Failed step!')
             return Step.failed(context=context)
         else:
             return super().handle(inf_config=inf_config)
