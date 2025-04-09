@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import json
 from abc import abstractmethod
 from logging import Logger
-from typing import Callable
+from typing import Callable, Optional
 
 from func_timeout import func_timeout, FunctionTimedOut
 
 from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
-from .input import ToolArg, ToolDoc
+from .input import ToolArg, ToolDoc, ToolCall
 from .output import MissingArgs, InvalidArgValue, ToolOutput, ToolException
 
 
@@ -90,5 +91,8 @@ class Tool:
     def get_name(cls) -> str:
         return cls.__name__
 
-
+    @classmethod
+    def get_toolcall(cls, args_dict : Optional[dict] = None):
+        json_str = json.dumps(args_dict) if args_dict else '{}'
+        return ToolCall(name=cls.get_name(), json_str=json_str)
 

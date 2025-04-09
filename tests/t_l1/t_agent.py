@@ -52,6 +52,7 @@ class TestAgent(CredTest):
             final_step = step
 
         update_tool_name = self.agent.task_tracker.update_tool.get_name()
+        self.assertTrue(len(final_step.tool_outputs) == 1)
         self.assertTrue(update_tool_name == final_step.tool_outputs[0].tool_name)
 
 
@@ -73,6 +74,7 @@ class TestAgent(CredTest):
         close_step = None
         for _ in self.agent.work(task=task, max_steps=1):
             close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
+            break
 
         gen_ctx_view = close_step.pre_ctx.get_view()
         self.assertTrue('TaskTracker[Active]' in gen_ctx_view)
@@ -84,21 +86,15 @@ class TestAgent(CredTest):
         self.assertTrue(work_notice not in post_ctx_view)
 
 
-
 class MockAgent(Agent):
     def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
         context = self.get_context(inf_config=inf_config)
+        print(f'Context view:\n{context.get_view()}')
         if not inf_config.required_tool:
+            print(f'Failed step!')
             return Step.failed(context=context)
         else:
-            generation = self.model.get_generation(context=context, config=inf_config)
-            pipe = self.write(generation=generation)
-            outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
-
-            headline = self.task_tracker.headline
-            self.task_tracker.headline = None
-            post_context = self.get_context(inf_config=inf_config)
-            return Step(text_pipe=pipe, ckpt_label=headline, pre_ctx=context, post_ctx=post_context, tool_outputs=outputs)
+            return super().handle(inf_config=inf_config)
 
 if __name__ == "__main__":
     ta = TestAgent()
