@@ -47,13 +47,12 @@ class TestAgent(CredTest):
 
     def test_headline(self):
         final_step = None
-        for step in self.agent.work(task=self.example_task, max_steps=6):
+        for step in self.agent.work(task=self.example_task, max_steps=5):
             final_step = step
 
         update_tool_name = self.agent.task_tracker.update_tool.get_name()
         self.assertTrue(len(final_step.tool_outputs) == 1)
         self.assertTrue(update_tool_name == final_step.tool_outputs[0].tool_name)
-
 
     def test_required_tool_use(self):
         greet_tool = Greet()
