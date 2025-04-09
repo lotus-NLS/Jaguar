@@ -16,7 +16,8 @@ class TerminalTest(Unittest):
         self.assertTrue('@' in text)
 
     def test_hello_world(self):
-        self.terminal.open_action._do()
+        tc = ToolCall.from_dict(attr_dict={'workdir_path' : '~'})
+        self.terminal.open_action.execute(tc.get_args_dict())
         echo_text = 'Hello World'
         self.terminal.type(content=f'echo "{echo_text}"')
         text = self.terminal.get_text()
