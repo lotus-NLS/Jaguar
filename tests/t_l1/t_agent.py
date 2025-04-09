@@ -1,15 +1,12 @@
-import time
-
 from engine.l0_main.lotus_io import LotusIO
 from engine.l1_agents import Agent, Task, TaskTracker
-from engine.l2_models import OpenAIModel, InfConfig
+from engine.l2_models import OpenAIModel, InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.task.resources.taskprovider import TaskProvider
 from tests.basetests import CredTest
 from tests.t_l2.base import Greet
-
 
 # ------------------------------------------
 
@@ -21,9 +18,10 @@ class TestAgent(CredTest):
         ide = PythonIDE()
         aos = AOS(workspaces=[terminal, browser, ide])
         model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
-        self.agent: Agent = Agent(aos=aos, model=model)
+        self.agent: Agent = MockAgent(aos=aos, model=model)
         self.default_inf_config: InfConfig = InfConfig()
         self.task_provider: TaskProvider = TaskProvider()
+        self.example_task : Task = self.task_provider.get_task(name='test')
         self.lotusIO: LotusIO = LotusIO(disable_socket=True)
 
     def test_memory_context(self):
@@ -48,8 +46,14 @@ class TestAgent(CredTest):
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
         self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
 
-    # def test_headlines(self):
-    #     pass
+    def test_headline(self):
+        final_step = None
+        for step in self.agent.work(task=self.example_task, max_steps=6):
+            final_step = step
+
+        update_tool_name = self.agent.task_tracker.update_tool.get_name()
+        self.assertTrue(update_tool_name == final_step.tool_outputs[0].tool_name)
+
 
     def test_required_tool_use(self):
         greet_tool = Greet()
@@ -79,6 +83,22 @@ class TestAgent(CredTest):
         self.assertTrue('TaskTracker[Active]' not in post_ctx_view)
         self.assertTrue(work_notice not in post_ctx_view)
 
+
+
+class MockAgent(Agent):
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
+        context = self.get_context(inf_config=inf_config)
+        if not inf_config.required_tool:
+            return Step.failed(context=context)
+        else:
+            generation = self.model.get_generation(context=context, config=inf_config)
+            pipe = self.write(generation=generation)
+            outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
+
+            headline = self.task_tracker.headline
+            self.task_tracker.headline = None
+            post_context = self.get_context(inf_config=inf_config)
+            return Step(text_pipe=pipe, ckpt_label=headline, pre_ctx=context, post_ctx=post_context, tool_outputs=outputs)
 
 if __name__ == "__main__":
     ta = TestAgent()

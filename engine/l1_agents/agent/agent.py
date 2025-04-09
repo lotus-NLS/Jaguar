@@ -41,9 +41,9 @@ class Agent(Timber):
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
         self.task_tracker.root = task
         self.task_tracker.open_action.execute(args_dict={})
+
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
-        time.sleep(0.1)
         print()
 
         self.update_memory(entry=Message.system(msg=f'Now entering work mode. Complete the outlined tasks'))
