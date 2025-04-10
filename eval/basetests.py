@@ -62,10 +62,10 @@ class YesNoTool(Tool):
 
 
 class TaskUnittest(NLU):
-    def evaluate_task_performance(self, task_name : str, prop : str) -> bool:
+    def evaluate_task_performance(self, task_name : str, query : str, prop : str) -> bool:
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_steps=10)
-        response = self.engine.do_talk(query='Please summarize the gathered information')
+        response = self.engine.do_talk(query=query)
 
         return self.evaluateProperty(msg=response, prop=prop)
 
