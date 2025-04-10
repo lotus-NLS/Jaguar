@@ -70,3 +70,55 @@ class TaskUnittest(NLU):
         return self.evaluateProperty(msg=response, prop=prop)
 
 
+
+
+import unittest
+
+from holytools.devtools import Unittest
+from holytools.devtools.testing.runner import Runner
+
+
+class StatisticalUnittest(Unittest):
+    @classmethod
+    def execute_all(cls, reps : int, tolerance : float):
+        result_arr = []
+
+        for _ in range(reps):
+            suite = unittest.TestLoader().loadTestsFromTestCase(cls)
+            runner = Runner(logger=cls.get_logger(), test_name=cls.__name__)
+            results = runner.run(testsuite=suite)
+            result_arr.append(results)
+
+
+        case_0_results = [result.case_reports[0].status for result in result_arr]
+        checkmark_arr = ['✓' if result.lower() == 'Success'.lower() else '✗' for result in case_0_results]
+
+        print(f'-> Results:')
+        print(f'- Cases: {checkmark_arr}')
+        err_ratio = checkmark_arr.count("✗") / len(checkmark_arr)
+        if err_ratio < tolerance:
+            symbol = '<'
+        elif (err_ratio-tolerance) < 1e-3:
+            symbol = '='
+        else:
+            symbol = '>'
+        print(f'- Error ratio:  {err_ratio} {symbol} {tolerance}')
+        print(f'- Verdict: {"OK" if err_ratio < tolerance else "FAIL"}')
+
+    def test_sometimes_ok(self):
+        import random
+        if random.random() < 0.25:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
+    def test_often_ok(self):
+        import random
+        if random.random() < 0.75:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
+
+if __name__ == "__main__":
+    StatisticalUnittest.execute_all(reps=5, tolerance=0.5)
+    # StatisticalUnittest.execute_all()
