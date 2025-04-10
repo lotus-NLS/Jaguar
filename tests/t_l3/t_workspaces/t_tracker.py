@@ -11,7 +11,7 @@ class TestTracker(AgentTest):
 
     def test_autoclose(self):
         task_provider = TaskProvider()
-        task = task_provider.get_task(name='test')
+        task = task_provider.get_task(identifier='test')
 
         tracker = self.agent.task_tracker
         tracker.root = task

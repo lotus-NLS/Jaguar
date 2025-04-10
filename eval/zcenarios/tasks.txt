@@ -17,10 +17,6 @@
     - On Stackexchange
     - Other resources if any appear noteworthy
 - Try out hypothesis
-++cat
-- Search for cat videos
-    - Open Youtube
-    - Enter 'cat videos' in search bar
 ++test
 - Test: Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.
 ++stackexchange
@@ -35,3 +31,9 @@
     - Enter anything  into the text box
     - Note the word appearing after the text input
     - Report back to the user with the word
+++read
+- Find name of last function of calculator module
+    - Open PythonProject located at #1
+    - Open the calculator module
+    - Note the name of the bottommost function
+    - Report back to the user with the name of the function

@@ -1,7 +1,8 @@
 from multiprocessing import Process
 
 from eval.basetests import TaskUnittest
-
+from eval.zcenarios.browser import run_basic_server
+from eval.zcenarios.python import BasicProject
 
 # ---------------------------------------------------
 
@@ -26,9 +27,7 @@ class TerminalTasks(TaskUnittest):
 
 class BrowserTasks(TaskUnittest):
     def test_enter_info(self):
-        from resources.basic_server import run_app
-
-        p = Process(target=run_app, args=(8000,))
+        p = Process(target=run_basic_server, args=(8000,))
         p.start()
 
         query = 'What is the word that was presented to you after entering a word into the text box'
@@ -48,6 +47,12 @@ class BrowserTasks(TaskUnittest):
 
 class PythonTasks(TaskUnittest):
     def test_read_file(self):
+        proj = BasicProject()
+
+        query = 'What is bottom most function in the calculator module?'
+        prop = ('The #msg provides information about the bottom most function in the calculator module. '
+                'It states that the bottom most function is called log')
+        is_successful = self.evaluate_task_performance(task_name=f'read_{proj.proj_dirpath}', prop=prop, query=query)
 
 
 if __name__ == "__main__":

@@ -1,16 +1,18 @@
 import os
+import tempfile
 
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.zcenarios.python import listdir, calculator
 
 
 class BasicProject:
-    def __init__(self, proj_dirpath : str = '/tmp/1213a3cd-7fd4-4fb0-8e3e-0c4f544d4db0'):
-        self.proj_dirpath : str = proj_dirpath
-        if not os.path.isdir(self.proj_dirpath):
-            os.makedirs(self.proj_dirpath)
-            PythonIDE._mkvenv(proj_dirpath=self.proj_dirpath)
+    def __init__(self):
+        self.proj_dirpath : str = tempfile.mkdtemp()
+        os.makedirs(self.proj_dirpath)
+        PythonIDE._mkvenv(proj_dirpath=self.proj_dirpath)
+        self.reset_files()
 
+    def reset_files(self):
         calc_fpath = calculator.__file__
         listdir_fpath = listdir.__file__
 

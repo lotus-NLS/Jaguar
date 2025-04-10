@@ -12,18 +12,27 @@ class TaskProvider:
             parts = content.split('++')
             parts = parts[1:]
 
-        self.mandate_dict = {}
+        self.yaml_dict = {}
         for p in parts:
             lines = p.split('\n')
             name = lines[0]
             remaining = '\n'.join(lines[1:])
-            task = Task.from_yaml(s=remaining)
-            self.mandate_dict[name] = task
+            self.yaml_dict[name] = remaining
 
-    def get_task(self, name : str) -> Task:
-        return self.mandate_dict[name]
+    def get_task(self, identifier : str) -> Task:
+        segments = identifier.split('_')
+        name = segments[0]
+        args = segments[1:]
+        task_content = self.yaml_dict[name]
 
+        for j, seg in enumerate(args):
+            task_content = task_content.replace(f'#{j+1}', seg)
+
+        task = Task.from_yaml(s=task_content)
+        return task
 
 if __name__ == "__main__":
-    testtask = Task.from_yaml(s='- Test: Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.')
-    print(f'done')
+    prov = TaskProvider()
+    task = prov.get_task(identifier='read_/tmp/asdf')
+    print(task.get_tree())
+

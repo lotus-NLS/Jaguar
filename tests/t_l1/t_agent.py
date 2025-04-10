@@ -21,7 +21,7 @@ class TestAgent(CredTest):
         self.agent: Agent = MockAgent(aos=aos, model=model)
         self.default_inf_config: InfConfig = InfConfig()
         self.task_provider: TaskProvider = TaskProvider()
-        self.example_task : Task = self.task_provider.get_task(name='test')
+        self.example_task : Task = self.task_provider.get_task(identifier='test')
         self.lotusIO: LotusIO = LotusIO(disable_socket=True)
 
     def test_memory_context(self):
