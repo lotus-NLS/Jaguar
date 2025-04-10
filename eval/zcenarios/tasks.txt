@@ -37,3 +37,9 @@
     - Open the calculator module
     - Note the name of the bottommost function
     - Report back to the user with the name of the function
+++run
+- Obtain return message from API endpoint
+    - Open the PythonProject located at #1
+    - Open the api_retrieval module
+    - Run it
+    - Report back with the content of the received message

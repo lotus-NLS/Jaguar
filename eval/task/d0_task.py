@@ -53,6 +53,28 @@ class PythonTasks(TaskUnittest):
         prop = ('The #msg provides information about the bottom most function in the calculator module. '
                 'It states that the bottom most function is called log')
         is_successful = self.evaluate_task_performance(task_name=f'read_{proj.proj_dirpath}', prop=prop, query=query)
+        self.assertTrue(is_successful)
+
+    def test_run_api_retriever(self):
+        proj = BasicProject()
+
+        query = 'What was the content of the recieved message?'
+        prop = 'The #msg states that the content of the received message was Farfalle'
+        is_successful = self.evaluate_task_performance(task_name=f'run_{proj.proj_dirpath}', prop=prop, query=query)
+        self.assertTrue(is_successful)
+
+    @staticmethod
+    def run_api_server():
+        from flask import Flask
+
+        app = Flask(__name__)
+
+        @app.route('/')
+        def farfalle():
+            return {'message': 'Farfalle'}
+
+        if __name__ == '__main__':
+            app.run(port=8002)
 
 
 if __name__ == "__main__":

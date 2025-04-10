@@ -18,6 +18,7 @@ class BasicProject:
 
         self.copy_file(source_fpath=calc_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'calculator.py'))
         self.copy_file(source_fpath=listdir_fpath, dest_fpath=os.path.join(self.proj_dirpath, 'listdir.py'))
+        self.copy_file(source_fpath=__file__, dest_fpath=os.path.join(self.proj_dirpath, 'api_retrieval.py'))
 
     @staticmethod
     def copy_file(source_fpath: str, dest_fpath: str):
