@@ -23,3 +23,9 @@
     - Enter 'cat videos' in search bar
 ++test
 - Test: Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.
+++stackexchange
+- Retrieve the first word from stackexchange answer
+    - Open the browser
+    - Visit the website https://stackoverflow.com/questions/860550/stack-overflows-from-deep-recursion-in-java?noredirect=1&lq=1
+    - Note the first word of the question with the most upvotes
+    - Report back to the user with the first word

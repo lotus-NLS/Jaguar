@@ -61,7 +61,16 @@ class YesNoTool(Tool):
         return [self.y_n_arg]
 
 
-class EvaluationTask(NLU):
+class TaskUnittest(NLU):
+    def evaluate_task_performance(self, task_name : str, prop : str) -> bool:
+        task = self.task_provider.get_task(task_name)
+        self.engine.do_task(task=task, max_steps=10)
+        response = self.engine.do_talk(query='Please summarize the gathered information')
+
+        return self.evaluateProperty(msg=response, prop=prop)
+
+
+class JudgementEval(NLU):
     def test_spelling(self):
         msg = """The newly estbalsihed estate is one of the most luxurious in the entire region."""
         prop = f'The #msg contains no spelling errors'
@@ -90,4 +99,4 @@ class EvaluationTask(NLU):
 
 
 if __name__ == "__main__":
-    EvaluationTask.execute_all()
+    JudgementEval.execute_all()
