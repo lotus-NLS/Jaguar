@@ -46,6 +46,10 @@ class BrowserTasks(TaskUnittest):
         self.assertTrue(is_successful)
 
 
+class PythonTasks(TaskUnittest):
+    def test_read_file(self):
+
+
 if __name__ == "__main__":
     bt = BrowserTasks()
     bt.setUpClass()

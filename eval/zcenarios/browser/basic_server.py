@@ -1,7 +1,7 @@
 import time
 
 
-def run_app(port : int):
+def run_basic_server(port : int):
     from flask import Flask, render_template_string
 
     app = Flask(__name__)
@@ -18,7 +18,7 @@ def run_app(port : int):
 if __name__ == "__main__":
     from multiprocessing import Process
 
-    p = Process(target=run_app)
+    p = Process(target=run_basic_server)
     p.start()
 
     time.sleep(2)
