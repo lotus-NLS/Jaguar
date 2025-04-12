@@ -13,8 +13,8 @@ from eval.zcenarios.python import BasicProject
 
 class TerminalTasks(TaskUnittest):
     def test_gpu_research(self):
-        query = ('Please state the model of the GPU that you found. Include Manufacturer, Product series'
-                'and the full model number. This full information consitutes the #keyword')
+        query = ('Please state the model of the GPU that you found. Like so'
+                 '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
 
         gpu_model = 'NVIDIA GeForce GTX 1060'
         gpu_research = self.keyword_task_eval(task_name='simplehardware', query=query, keyword=gpu_model, fuzzy=True)
@@ -127,7 +127,8 @@ class PythonTasks(TaskUnittest):
 
 if __name__ == "__main__":
     tt = TerminalTasks.ready()
-    tt.execute_all()
+    # tt.test_gpu_research()
+    tt.test_hardware_summary()
 
     # bt = BrowserTasks.ready()
     # bt.test_installation_navigation()
