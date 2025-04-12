@@ -3,6 +3,7 @@ import tempfile
 from multiprocessing import Process
 
 from engine.l3_aos import Terminal, Browser
+from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.base import TaskUnittest
 from eval.zcenarios.browser import run_basic_server
 from eval.zcenarios.python import BasicProject
@@ -93,6 +94,23 @@ class PythonTasks(TaskUnittest):
         is_successful = self.keyword_task_eval(task_name=f'run_{proj.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
+    def test_build_and_run(self):
+        proj = BasicProject()
+
+        task = self.task_provider.get_task(f'build_{proj.proj_dirpath}')
+        self.engine.do_task(task=task, max_steps=10)
+
+        python_ide : PythonIDE = self.engine.agent.aos.get_ws(name=PythonIDE.get_name())
+        hello_fpath = os.path.join(proj.proj_dirpath, 'hello.py')
+        output = python_ide.output_map[hello_fpath]
+        expected_output = 'Hello World :)'
+
+        print(f'- Output:\n{output}')
+        print(f'- Expected output:\n{expected_output}')
+
+        self.assertTrue(expected_output in output)
+
+
     @staticmethod
     def run_api_server():
         from flask import Flask
@@ -108,5 +126,13 @@ class PythonTasks(TaskUnittest):
 
 
 if __name__ == "__main__":
-    bt = BrowserTasks.ready()
-    bt.test_installation_navigation()
+    # bt = BrowserTasks.ready()
+    # bt.test_installation_navigation()
+
+    pt = PythonTasks.ready()
+    pt.test_build_and_run()
+
+    # proj = BasicProject()
+    # print(f'Created basic projecct at {proj.proj_dirpath}')
+    # ide = PythonIDE()
+    # ide.open(project_dirpath=proj.proj_dirpath)

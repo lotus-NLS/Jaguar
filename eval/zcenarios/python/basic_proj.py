@@ -8,7 +8,6 @@ from eval.zcenarios.python import listdir, calculator
 class BasicProject:
     def __init__(self):
         self.proj_dirpath : str = tempfile.mkdtemp()
-        os.makedirs(self.proj_dirpath)
         PythonIDE._mkvenv(proj_dirpath=self.proj_dirpath)
         self.reset_files()
 

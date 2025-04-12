@@ -53,4 +53,10 @@
 - Navigate to the installation page of Ros2 humble hawksbill
     - Open browser on the URL https://docs.ros.org/en/humble/
     - Navigate to the installation page
-    - Complete task
+    - Mark task as completed
+++build
+- Build and run a simple hello world file
+    - Open the python project at #1
+    - Open a file 'hello.py'
+    - Write print('Hello World :)')
+    - Mark task as completed
