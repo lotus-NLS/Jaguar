@@ -23,6 +23,9 @@ class LotusEngine(Timber):
         self._evalutor : Evaluator = Evaluator(model=model)
         self.IO : LotusIO = LotusIO()
 
+    def reset(self):
+        self.agent = self.make_agent(model=self.agent.model)
+
     def make_agent(self, model : LLM) -> Agent:
         creds  = self._creds
         aos = AOS.full(google_api_key=creds.google_api_key, searchengine_id=creds.search_engine_id)

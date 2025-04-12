@@ -51,6 +51,9 @@ class NLU(Unittest):
 
 
 class TaskUnittest(NLU):
+    def setUp(self):
+        self.engine.reset()
+
     def semantic_task_eval(self, task_name : str, query : str, prop : str) -> bool:
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_steps=10)

@@ -2,7 +2,7 @@ import os.path
 import tempfile
 from multiprocessing import Process
 
-from engine.l3_aos import Terminal, Browser
+from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.base import TaskUnittest
 from eval.zcenarios.browser import run_basic_server
@@ -126,11 +126,14 @@ class PythonTasks(TaskUnittest):
 
 
 if __name__ == "__main__":
+    tt = TerminalTasks.ready()
+    tt.execute_all()
+
     # bt = BrowserTasks.ready()
     # bt.test_installation_navigation()
 
-    pt = PythonTasks.ready()
-    pt.test_build_and_run()
+    # pt = PythonTasks.ready()
+    # pt.test_build_and_run()
 
     # proj = BasicProject()
     # print(f'Created basic projecct at {proj.proj_dirpath}')

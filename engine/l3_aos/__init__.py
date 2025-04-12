@@ -1,2 +1,2 @@
+from .workspaces import Workspace
 from .aos import AOS
-from .workspaces import *
