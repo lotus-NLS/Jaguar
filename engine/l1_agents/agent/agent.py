@@ -32,6 +32,13 @@ class Agent(Timber):
             hook = self.get_freeze_hook(ws=ws)
             ws.close_action.add_prehook(hook)
 
+    def get_freeze_hook(self, ws : Workspace):
+        def freeze_ws(frozen_ws: Workspace = ws):
+            entry = Message.from_workspace(ws=frozen_ws, active=False)
+            entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
+            self.update_memory(entry=entry)
+        return freeze_ws
+
     def talk(self, msg : str) -> Step:
         self.memory.append(Message.user(msg=msg))
         return self.handle()
@@ -109,14 +116,7 @@ class Agent(Timber):
         return outputs
 
     # ---------------------------------------------------
-    # language
-
-    def get_freeze_hook(self, ws : Workspace):
-        def freeze_ws(frozen_ws: Workspace = ws):
-            entry = Message.from_workspace(ws=frozen_ws, active=False)
-            entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
-            self.update_memory(entry=entry)
-        return freeze_ws
+    # context
 
     def update_memory(self, entry : Message):
         self.memory.append(entry)

@@ -37,7 +37,6 @@ class BrowserTasks(TaskUnittest):
 
         p.kill()
 
-
     def test_stackexchange(self):
         query = 'What is the first word on the most upvoted answer from the stackexchange post?'
         prop = 'The #msg provides information about the first result of the search. '
