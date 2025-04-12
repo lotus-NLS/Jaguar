@@ -27,17 +27,17 @@ class Agent(Timber):
         self.identity : Core = core
         self.memory: list[Message] = []
 
-        self.aos.add_workspace(ws=self.task_tracker)
-        for ws in self.aos.get_workspaces(include_system_opened=True):
-            hook = self.get_freeze_hook(ws=ws)
-            ws.close_action.add_prehook(hook)
+        def get_freeze_hook(ws : Workspace):
+            def freeze_ws(frozen_ws: Workspace = ws):
+                entry = Message.from_workspace(ws=frozen_ws, active=False)
+                entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
+                self.update_memory(entry=entry)
+            return freeze_ws
 
-    def get_freeze_hook(self, ws : Workspace):
-        def freeze_ws(frozen_ws: Workspace = ws):
-            entry = Message.from_workspace(ws=frozen_ws, active=False)
-            entry.add(msg=f'## [Closed workspace] ## {frozen_ws.get_name()} with following final state:', at_start=True)
-            self.update_memory(entry=entry)
-        return freeze_ws
+        self.aos.add_workspace(ws=self.task_tracker)
+        for w in self.aos.get_workspaces(include_system_opened=True):
+            hook = get_freeze_hook(ws=w)
+            w.close_action.add_prehook(hook)
 
     def talk(self, msg : str) -> Step:
         self.memory.append(Message.user(msg=msg))
@@ -45,15 +45,15 @@ class Agent(Timber):
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
+
         self.task_tracker.root = task
         open_tool = self.task_tracker.open_action
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
 
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         report_frequency = 5
-        print()
 
-        self.update_memory(entry=Message.system(msg=f'Now entering work mode. Complete the outlined tasks'))
+        self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
