@@ -9,11 +9,11 @@ from eval.zcenarios.python import BasicProject
 
 class TerminalTasks(TaskUnittest):
     def test_gpu_research(self):
-        prop = ('The #msg provides information about the GPU model. It states that the grpahics card is'
-                    'an NVIDIA GeForce GTX 1060')
-        report_query = 'Please state the model of the GPU that you found'
+        query = ('Please state the model of the GPU that you found. Include Manufacturer, Product series'
+                'and the full model number. This full information consitutes the #keyword')
 
-        gpu_research = self.semantic_task_eval(task_name='simplehardware', prop=prop, query=report_query)
+        gpu_model = 'NVIDIA GeForce GTX 1060'
+        gpu_research = self.keyword_task_eval(task_name='simplehardware', query=query, keyword=gpu_model, fuzzy=True)
         self.assertTrue(gpu_research)
 
     def test_hardware_summary(self):
@@ -74,7 +74,5 @@ class PythonTasks(TaskUnittest):
 
 
 if __name__ == "__main__":
-    bt = BrowserTasks()
-    bt.setUpClass()
-    bt.setUp()
-    bt.test_enter_info()
+    tt = TerminalTasks.ready()
+    tt.test_gpu_research()

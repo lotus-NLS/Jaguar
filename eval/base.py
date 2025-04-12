@@ -1,3 +1,5 @@
+import fuzzywuzzy.fuzz
+
 from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l2_models import OpenAIModel, InfConfig
@@ -53,7 +55,7 @@ class TaskUnittest(NLU):
 
         return self.evaluateProperty(msg=response, prop=prop)
 
-    def keyword_task_eval(self, task_name : str, query : str, keyword : str) -> bool:
+    def keyword_task_eval(self, task_name : str, query : str, keyword : str, fuzzy : bool = False) -> bool:
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_steps=10)
 
@@ -63,9 +65,17 @@ class TaskUnittest(NLU):
         self.engine.agent.handle(inf_config=inf_config)
         given_keyword = tool.keyword_arg.get_value()
 
+        print('\n-> Keyword task evaluation:')
         print(f'- Given keyword: {given_keyword}'
               f'\n- Expected keyword: {keyword}')
-        return given_keyword == keyword
+
+        if fuzzy:
+            tol = 75
+            accuracy = fuzzywuzzy.fuzz.ratio(given_keyword, keyword)
+            print(f'- Fuzzy accuracy: {accuracy}')
+            return accuracy > tol
+        else:
+            return given_keyword == keyword
 
 class KeywordProviderTool(Tool):
     def __init__(self):
