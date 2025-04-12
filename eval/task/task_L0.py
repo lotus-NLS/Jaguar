@@ -1,5 +1,8 @@
+import os.path
+import tempfile
 from multiprocessing import Process
 
+from engine.l3_aos import Terminal, Browser
 from eval.base import TaskUnittest
 from eval.zcenarios.browser import run_basic_server
 from eval.zcenarios.python import BasicProject
@@ -28,6 +31,27 @@ class TerminalTasks(TaskUnittest):
 
         self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict)
 
+    def test_nano(self):
+        fpath = tempfile.mktemp()
+        content = 'Ramen'
+        task = self.task_provider.get_task(f'nano_{fpath}_{content}')
+        self.engine.do_task(task, max_steps=10)
+
+        workspaces = self.engine.agent.aos.get_workspaces()
+        terminal = [ws for ws in workspaces if ws.get_name() == Terminal.get_name()][0]
+
+        text = terminal.get_text()
+        self.assertTrue('GNU nano' not in text)
+
+        if not os.path.isfile(fpath):
+            self.fail('File was not created')
+
+        with open(fpath, 'r') as f:
+            file_content = f.read()
+            print(f'-Actual content  : "{file_content}"')
+            print(f'-Expected content: "{content}"')
+            self.assertTrue(file_content == content)
+
 class BrowserTasks(TaskUnittest):
     def test_enter_info(self):
         p = Process(target=run_basic_server, args=(8000,))
@@ -37,7 +61,6 @@ class BrowserTasks(TaskUnittest):
                  'The word that was presented to you is the #keyword')
         is_successful = self.keyword_task_eval(task_name='enter', query=query, keyword='Spaetzle')
         self.assertTrue(is_successful)
-
         p.kill()
 
     def test_stackexchange(self):
@@ -45,6 +68,14 @@ class BrowserTasks(TaskUnittest):
                  'The first word is the required #keyword')
         is_successful = self.keyword_task_eval(task_name='stackexchange', query=query, keyword='Increasing')
         self.assertTrue(is_successful)
+
+    def test_installation_navigation(self):
+        task = self.task_provider.get_task('rosinstall')
+        self.engine.do_task(task=task, max_steps=10)
+
+        browser : Browser = self.engine.agent.aos.get_ws(name=Browser.get_name())
+        url = browser.emulator.get_url()
+        self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
 class PythonTasks(TaskUnittest):
@@ -77,6 +108,5 @@ class PythonTasks(TaskUnittest):
 
 
 if __name__ == "__main__":
-    tt = TerminalTasks.ready()
-    # tt.test_gpu_research()
-    tt.test_hardware_summary()
+    bt = BrowserTasks.ready()
+    bt.test_installation_navigation()

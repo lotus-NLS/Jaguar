@@ -43,3 +43,14 @@
     - Open the api_retrieval module
     - Run it
     - Report back with the content of the received message
+++nano
+- Write out file at specified location and content using nano
+    - Open Terminal
+    - Open the filepath #1 using nano
+    - Write content #2 into the file
+    - Exit nano
+++rosinstall
+- Navigate to the installation page of Ros2 humble hawksbill
+    - Open browser on the URL https://docs.ros.org/en/humble/
+    - Navigate to the installation page
+    - Complete task

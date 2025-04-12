@@ -84,3 +84,7 @@ class AOS(Timber):
                 return ws.is_open
 
         return [ws for ws in self.workspaces if is_included(ws)]
+
+    def get_ws(self, name : str) -> Workspace:
+        ws_dict = {ws.get_name(): ws for ws in self.workspaces}
+        return ws_dict[name]

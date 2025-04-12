@@ -19,7 +19,7 @@ class LotusEngine(Timber):
         self._creds: LotusCredentials = LotusCredentials.auto()
 
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
-        self.agent = self.make_agent(model=model)
+        self.agent : Agent = self.make_agent(model=model)
         self._evalutor : Evaluator = Evaluator(model=model)
         self.IO : LotusIO = LotusIO()
 
