@@ -177,4 +177,5 @@ class Task:
             indent = '\t' + pre_indent if not self.is_root else ''
             tree += f'{st.get_tree(pre_indent=indent)}'
 
+        tree = tree.rstrip()
         return tree

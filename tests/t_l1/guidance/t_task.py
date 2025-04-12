@@ -1,5 +1,7 @@
 from engine.l1_agents.guidance.tasktracker import Task
+from eval.zcenarios.taskprovider import TaskProvider
 from holytools.devtools import Unittest
+from tests.t_l1.guidance.t_tracker import TestTaskProvider
 
 
 class TestTask(Unittest):
@@ -23,12 +25,18 @@ class TestTask(Unittest):
         self.task1.complete()
         self.task4.complete()
 
+        self.oneline_task = Task.from_yaml(s='- Task 1')
+
     def test_get_Tree(self):
         tree = self.root.get_tree()
         self.assertIn(f'	[x] 12: Subtask 1.2', tree)
         self.assertIn(f'[ ] 2: Task 2',tree)
-
         print(f'Exmple root tree task tree:\n{tree}')
+
+        basic_tree = self.oneline_task.get_tree()
+        print(f'One line task tree:\n{basic_tree}')
+        self.assertTrue(not '2:' in basic_tree)
+
 
     def test_get_by_id(self):
         print(f'Name of task wiith id 1: {self.root.get_descendant("1")._content}')
@@ -77,5 +85,9 @@ class TestTask(Unittest):
 
         self.assertTrue(self.root.is_recursively_handled())
 
+    def test_get_retry(self):
+        pass
+
 if __name__ == '__main__':
-    TestTask.execute_all()
+    # TestTask.execute_all()
+    TestTaskProvider.execute_all()

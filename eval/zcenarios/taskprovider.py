@@ -28,6 +28,7 @@ class TaskProvider:
         for j, seg in enumerate(args):
             task_content = task_content.replace(f'#{j+1}', seg)
 
+        task_content = task_content.strip()
         task = Task.from_yaml(s=task_content)
         return task
 

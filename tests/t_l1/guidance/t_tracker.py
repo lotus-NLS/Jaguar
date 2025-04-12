@@ -1,7 +1,18 @@
 from eval.zcenarios.taskprovider import TaskProvider
+from holytools.devtools import Unittest
 from tests.basetests import AgentTest
 
 # ---------------------------------------------------
+
+class TestTaskProvider(Unittest):
+    def test_retrieval(self):
+        provider = TaskProvider()
+        task = provider.get_task(identifier='test')
+        tree = task.get_tree()
+        print(f'- Task tree:\n"{tree}"')
+        self.assertTrue('Test' in tree)
+        self.assertTrue(len(tree.split('\n')) == 1)
+
 
 class TestTracker(AgentTest):
     def test_no_root(self):
@@ -23,4 +34,5 @@ class TestTracker(AgentTest):
         self.assertTrue(not tracker.is_open)
 
 if __name__ == "__main__":
-    TestTracker.execute_all()
+    # TestTracker.execute_all()
+    TestTaskProvider.execute_all()
