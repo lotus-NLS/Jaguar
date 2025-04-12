@@ -30,7 +30,8 @@ class TerminalTasks(TaskUnittest):
             'Motherboard': 'ASRock Z390 Pro4'
         }
 
-        self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict)
+        is_accurate = self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict)
+        self.assertTrue(is_accurate)
 
     def test_nano(self):
         fpath = tempfile.mktemp()
@@ -130,4 +131,4 @@ if __name__ == "__main__":
     # bt = BrowserTasks.ready()
     # pt = PythonTasks.ready()
 
-    tt.execute_all()
+    tt.test_hardware_summary()

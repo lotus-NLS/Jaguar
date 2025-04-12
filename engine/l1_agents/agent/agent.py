@@ -56,7 +56,7 @@ class Agent(Timber):
         self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
         self.update_memory(entry=Message.system(msg=f'Start by exploring and weighing your options, then'
                                                     f'outline a plan of action'))
-        step = self.handle(inf_config=InfConfig.text_only())
+        self.handle(inf_config=InfConfig.text_only())
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
@@ -65,6 +65,14 @@ class Agent(Timber):
             yield step
             if not self.task_tracker.is_open:
                 break
+
+        if self.task_tracker.is_open:
+            new_root = self.task_tracker.root.collect_retry()
+            if new_root:
+                self.update_memory(entry=Message.system(msg=f'Some tasks have been marked for a second go around'
+                                                            f'Please start by reflecting on the issues with attempting this task'
+                                                            f'and then explore alternative ways of accomplishing these tasks'))
+                self.work(task=new_root, max_steps=max_steps)
 
         if self.task_tracker.is_open:
             self.act([self.task_tracker.close_action.get_toolcall()])
