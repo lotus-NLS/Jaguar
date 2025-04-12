@@ -26,10 +26,10 @@ class Terminal(Workspace):
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.tmux_session = self._open_session(cwd=cwd)
+        self.type(content='clear')
 
     def close(self):
         """Closes the terminal"""
-        self.type(content='clear')
         self.tmux_session = None
 
     def _open_session(self, cwd : str) -> Session:
@@ -81,17 +81,15 @@ class Terminal(Workspace):
         return text
 
 
-
 if __name__ == "__main__":
     t = Terminal()
     t.open_action.execute({})
 
     t.type(content='echo Hellomydude')
     t1 = t.get_text()
-    print(f'After typing: {t1}')
+    print(f'\nAfter typing:\n{t1}\n')
 
     t.close_action.execute({})
     t.open_action.execute({})
-
     t2 = t.get_text()
-    print(f'After re-opening: {t2}')
+    print(f'\nAfter re-opening:\n{t2}')
