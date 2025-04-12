@@ -13,6 +13,8 @@ class TestTask(Unittest):
         self.subtask12 = self.task1.add_subtask("Subtask 1.2")
         self.subtask13 = self.task1.add_subtask("Subtask 1.3")
         self.subtask21 = self.task2.add_subtask("Subtask 2.1")
+        self.subtask211 = self.subtask21.add_subtask("Subtask 2.1.1")
+        self.subtask212 = self.subtask21.add_subtask("Subtask 2.1.2")
 
         self.yaml_tree= (f'- Task 1\n'
                     f' -Subtask 1.1\n'
@@ -24,6 +26,25 @@ class TestTask(Unittest):
         self.task4.complete()
 
         self.oneline_task = Task.from_yaml(s='- Task 1')
+
+    def test_comment(self):
+        self.task1.add_comment("This is a comment")
+        root_tree = self.root.get_tree()
+        print(f'Root Tree:\n{root_tree}')
+        self.assertIn("This is a comment",root_tree)
+
+    def test_from_yaml_str(self):
+        yaml_str = (f'- Task 1\n'
+                    f'    -Subtask 1.1\n'
+                    f'- Task 2')
+        root = Task.from_yaml(yaml_str)
+        tree = root.get_tree()
+
+        lines = yaml_str.split()
+        print(f'Yaml generated task tree: \n{tree}')
+        for l in lines:
+            l = l.strip(f' -')
+            self.assertIn(l, tree)
 
     def test_get_Tree(self):
         tree = self.root.get_tree()
@@ -49,29 +70,14 @@ class TestTask(Unittest):
         with self.assertRaises(ValueError):
             self.root.get_descendant('0')
 
-    def test_complete(self):
-        self.root.complete()
+    def test_get_retry(self):
+        self.subtask21.retry()
+        self.task4.retry()
+        new_root = self.root.collect_retry()
+        print(f'Retry tree:\n"{new_root.get_tree()}"')
 
-
-    def test_from_yaml_str(self):
-        yaml_str = (f'- Task 1\n'
-                    f'    -Subtask 1.1\n'
-                    f'- Task 2')
-        root = Task.from_yaml(yaml_str)
-        tree = root.get_tree()
-
-        lines = yaml_str.split()
-        print(f'Yaml generated task tree: \n{tree}')
-        for l in lines:
-            l = l.strip(f' -')
-            self.assertIn(l, tree)
-
-    def test_comment(self):
-        self.task1.add_comment("This is a comment")
-        root_tree = self.root.get_tree()
-        print(f'Root Tree:\n{root_tree}')
-        self.assertIn("This is a comment",root_tree)
-
+        optional_task = self.oneline_task.collect_retry()
+        self.assertTrue(optional_task is None)
 
     def test_recursively_complete(self):
         self.assertTrue(not self.root.is_recursively_handled())
@@ -88,8 +94,7 @@ class TestTask(Unittest):
 
         self.assertTrue(self.root.is_recursively_handled())
 
-    def test_get_retry(self):
-        pass
+
 
 if __name__ == '__main__':
     TestTask.execute_all()

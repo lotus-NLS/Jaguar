@@ -83,6 +83,21 @@ class Task:
         self.is_retry : bool = False
         self.subtasks : list[Task] = []
 
+    def collect_retry(self) -> Optional[Task]:
+        if len(self.subtasks) == 0:
+            return Task(content=self._content) if self.is_retry else None
+        else:
+            if self.is_retry:
+                retryable_subtasks = [Task(content=t._content) for t in self.subtasks]
+            else:
+                retryable_subtasks = [st.collect_retry() for st in self.subtasks]
+                retryable_subtasks = [st for st in retryable_subtasks if st is not None]
+
+            new_task = Task(content=self._content, is_root=self.is_root)
+            for st in retryable_subtasks:
+                new_task.subtasks.append(st)
+            return new_task if len(retryable_subtasks) > 0 else None
+
     def is_recursively_handled(self) -> bool:
         if not self.subtasks:
             return self.is_complete or self.is_retry
