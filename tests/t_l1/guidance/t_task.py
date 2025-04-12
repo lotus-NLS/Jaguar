@@ -1,7 +1,5 @@
 from engine.l1_agents.guidance.tasktracker import Task
-from eval.zcenarios.taskprovider import TaskProvider
 from holytools.devtools import Unittest
-from tests.t_l1.guidance.t_tracker import TestTaskProvider
 
 
 class TestTask(Unittest):
@@ -31,12 +29,17 @@ class TestTask(Unittest):
         tree = self.root.get_tree()
         self.assertIn(f'	[x] 12: Subtask 1.2', tree)
         self.assertIn(f'[ ] 2: Task 2',tree)
-        print(f'Exmple root tree task tree:\n{tree}')
+        print(f'- Exmple root tree task tree:\n{tree}')
+
+        partial_tree = """[x] 1: Task 1
+	[x] 11: Subtask 1.1
+	[x] 12: Subtask 1.2
+	[x] 13: Subtask 1.3"""
+        self.assertIn(partial_tree, tree)
 
         basic_tree = self.oneline_task.get_tree()
-        print(f'One line task tree:\n{basic_tree}')
-        self.assertTrue(not '2:' in basic_tree)
-
+        print(f'Example root tree task tree:\n"{basic_tree}"')
+        self.assertTrue('[ ] 1: Task 1' == basic_tree)
 
     def test_get_by_id(self):
         print(f'Name of task wiith id 1: {self.root.get_descendant("1")._content}')
@@ -89,5 +92,4 @@ class TestTask(Unittest):
         pass
 
 if __name__ == '__main__':
-    # TestTask.execute_all()
-    TestTaskProvider.execute_all()
+    TestTask.execute_all()
