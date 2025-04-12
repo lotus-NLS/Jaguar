@@ -1,5 +1,3 @@
-import os
-
 from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents import Agent
@@ -22,7 +20,7 @@ class CredTest(Unittest):
 class AgentTest(CredTest):
     def setUp(self):
         model = OpenAIModel.default_model(api_key=self.openai_apikey)
-        aos = AOS(workspaces=[])
+        aos = AOS.empty()
         self.agent = Agent(aos=aos, model=model)
 
 class EngineTest(CredTest):

@@ -33,6 +33,6 @@ class TaskProvider:
 
 if __name__ == "__main__":
     prov = TaskProvider()
-    task = prov.get_task(identifier='read_/tmp/asdf')
-    print(task.get_tree())
+    asdf_task = prov.get_task(identifier='read_/tmp/asdf')
+    print(asdf_task.get_tree())
 

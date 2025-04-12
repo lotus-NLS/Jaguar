@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Optional
 
+from engine.l3_aos import Browser
 from engine.l3_aos.tools import Tool, ToolCall, ToolOutput, ToolDoc
 from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.workspaces.python_ide import PythonIDE
 from engine.l3_aos.workspaces.terminal import Terminal
 from holytools.logging import Timber
 
@@ -11,26 +13,20 @@ from holytools.logging import Timber
 # ---------------------------------------------------------
 
 class AOS(Timber):
-    def __init__(self, workspaces : list[Workspace], cautious_mode : bool = False):
+    def __init__(self, browser : Optional[Browser] = None, terminal : Optional[Terminal] = None, ide : Optional[PythonIDE] = None):
         super().__init__()
+
+        self.browser : Optional[Browser] = browser
+        self.terminal : Optional[Terminal] = terminal
+        self.ide : Optional[PythonIDE] = ide
+
         self.workspaces : list[Workspace] = []
-        for ws in workspaces:
+        for ws in [ws for ws in [terminal, browser, ide] if ws is not None]:
             self.add_workspace(ws)
-        self.cautious_mode : bool = cautious_mode
 
     def process(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
         outputs: list[ToolOutput] = []
         tools_map = {t.get_name(): t for t in self.get_tools()}
-
-        if self.cautious_mode and len(tool_calls) > 0:
-            tool_calls_report = [f'{call.name} with args {call.json_str}' for call in tool_calls]
-            notice_str = f'Following tool call(s) requests permission:'
-            for r in tool_calls_report:
-                notice_str += f'\n- {r}'
-            notice_str += f'\n- Allow execution? (y/n)'
-            user_input = input(notice_str)
-            if user_input.lower() != 'y':
-                return [ToolOutput.failed(reason='Execution was denied')]
 
         for call in tool_calls:
             try:
@@ -52,8 +48,16 @@ class AOS(Timber):
             raise ValueError('Workspace names must be unique')
 
     @classmethod
+    def empty(cls) -> AOS:
+        return cls(browser=None, terminal=None, ide=None)
+
+    @classmethod
+    def full(cls, google_api_key : str, searchengine_id : str) -> AOS:
+        return cls(browser=Browser(google_api_key=google_api_key, searchengine_id=searchengine_id), terminal=Terminal(), ide=PythonIDE())
+
+    @classmethod
     def terminal_only(cls) -> AOS:
-        return cls(workspaces=[Terminal()])
+        return cls(terminal=Terminal())
 
     # ------------------------------------------------------------------
     # get

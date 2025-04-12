@@ -1,4 +1,4 @@
-from eval.task.resources.taskprovider import TaskProvider
+from eval.zcenarios.taskprovider import TaskProvider
 from tests.basetests import AgentTest
 
 # ---------------------------------------------------

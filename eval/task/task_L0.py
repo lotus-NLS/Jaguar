@@ -74,7 +74,7 @@ class BrowserTasks(TaskUnittest):
         task = self.task_provider.get_task('rosinstall')
         self.engine.do_task(task=task, max_steps=10)
 
-        browser : Browser = self.engine.agent.aos.get_ws(name=Browser.get_name())
+        browser : Browser = self.engine.agent.aos.browser
         url = browser.emulator.get_url()
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
@@ -100,7 +100,7 @@ class PythonTasks(TaskUnittest):
         task = self.task_provider.get_task(f'build_{proj.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 
-        python_ide : PythonIDE = self.engine.agent.aos.get_ws(name=PythonIDE.get_name())
+        python_ide : PythonIDE = self.engine.agent.aos.ide
         hello_fpath = os.path.join(proj.proj_dirpath, 'hello.py')
         output = python_ide.output_map[hello_fpath]
         expected_output = 'Hello World :)'

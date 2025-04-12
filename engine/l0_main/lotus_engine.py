@@ -7,9 +7,9 @@ from engine.l1_agents.guidance.workflow import Workflow, Node
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM
-from engine.l3_aos import AOS, Terminal, Browser
-from engine.l3_aos.workspaces.python_ide import PythonIDE
+from engine.l3_aos import AOS
 from holytools.logging import Timber
+
 
 # ---------------------------------------------------------
 
@@ -25,10 +25,7 @@ class LotusEngine(Timber):
 
     def make_agent(self, model : LLM) -> Agent:
         creds  = self._creds
-        browser = Browser(google_api_key=creds.google_api_key, searchengine_id=creds.search_engine_id)
-        terminal = Terminal()
-        ide = PythonIDE()
-        aos = AOS(workspaces=[terminal, browser, ide])
+        aos = AOS.full(google_api_key=creds.google_api_key, searchengine_id=creds.search_engine_id)
 
         return Agent(aos=aos, model=model)
 

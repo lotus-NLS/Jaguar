@@ -4,7 +4,7 @@ from engine.l2_models import OpenAIModel, InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.task.resources.taskprovider import TaskProvider
+from eval.zcenarios.taskprovider import TaskProvider
 from tests.basetests import CredTest
 from tests.t_l2.base import Greet
 
@@ -12,11 +12,7 @@ from tests.t_l2.base import Greet
 
 class TestAgent(CredTest):
     def setUp(self):
-        browser = Browser(google_api_key=self.credentials.google_api_key,
-                          searchengine_id=self.credentials.search_engine_id)
-        terminal = Terminal()
-        ide = PythonIDE()
-        aos = AOS(workspaces=[terminal, browser, ide])
+        aos = AOS.full(self.credentials.google_apikey, self.credentials.search_engine_id)
         model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
         self.agent: Agent = MockAgent(aos=aos, model=model)
         self.default_inf_config: InfConfig = InfConfig()
