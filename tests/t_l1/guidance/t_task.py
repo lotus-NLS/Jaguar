@@ -63,7 +63,7 @@ class TestTask(Unittest):
 
 
     def test_recursively_complete(self):
-        self.assertTrue(not self.root.is_recursively_complete())
+        self.assertTrue(not self.root.is_recursively_handled())
 
         self.subtask11.complete()
         self.subtask12.complete()
@@ -75,7 +75,7 @@ class TestTask(Unittest):
         tree = self.root.get_tree()
         print(f'- Task tree:\n{tree}')
 
-        self.assertTrue(self.root.is_recursively_complete())
+        self.assertTrue(self.root.is_recursively_handled())
 
 if __name__ == '__main__':
     TestTask.execute_all()

@@ -127,16 +127,7 @@ class PythonTasks(TaskUnittest):
 
 if __name__ == "__main__":
     tt = TerminalTasks.ready()
-    # tt.test_gpu_research()
-    tt.test_hardware_summary()
-
     # bt = BrowserTasks.ready()
-    # bt.test_installation_navigation()
-
     # pt = PythonTasks.ready()
-    # pt.test_build_and_run()
 
-    # proj = BasicProject()
-    # print(f'Created basic projecct at {proj.proj_dirpath}')
-    # ide = PythonIDE()
-    # ide.open(project_dirpath=proj.proj_dirpath)
+    tt.execute_all()

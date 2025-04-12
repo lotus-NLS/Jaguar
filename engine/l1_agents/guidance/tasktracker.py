@@ -37,13 +37,13 @@ class TaskTracker(Workspace):
         """Completes task [task_id]"""
         self.root.get_descendant(task_id).complete()
 
-        is_working = not self.root.is_recursively_complete()
+        is_working = not self.root.is_recursively_handled()
         if not is_working:
             self.close_action.execute(args_dict={})
 
-    def fail_task(self, task_id : str):
-        """Marks [task_id] as failed, unnecessary or discarded"""
-        self.root.get_descendant(task_id).fail()
+    def retry(self, task_id : str):
+        """Marks [task_id] in need of retry. A retry routine will be initiated later on"""
+        self.root.get_descendant(task_id).retry()
 
     # -------------------------------
     # Generics
@@ -80,14 +80,14 @@ class Task:
 
         self.comment : str = ''
         self.is_complete : bool = False
-        self.is_failed : bool = False
+        self.is_retry : bool = False
         self.subtasks : list[Task] = []
 
-    def is_recursively_complete(self) -> bool:
+    def is_recursively_handled(self) -> bool:
         if not self.subtasks:
-            return self.is_complete
+            return self.is_complete or self.is_retry
         else:
-            return all(st.is_recursively_complete() for st in self.subtasks)
+            return all(st.is_recursively_handled() for st in self.subtasks)
 
     def get_content(self) -> str:
         if self.is_root:
@@ -137,10 +137,10 @@ class Task:
         for st in self.subtasks:
             st.complete()
 
-    def fail(self):
-        self.is_failed = True
+    def retry(self):
+        self.is_retry = True
         for st in self.subtasks:
-            st.fail()
+            st.retry()
 
     # --------------------------------------------
     # get
@@ -162,7 +162,7 @@ class Task:
         if not self.is_root:
             if self.is_complete:
                 mark = 'x'
-            elif self.is_failed:
+            elif self.is_retry:
                 mark = '🚫'
             else:
                 mark = ' '
