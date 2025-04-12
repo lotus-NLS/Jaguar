@@ -31,8 +31,8 @@ class NLU(Unittest):
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
         context += Context.singleton(entry=Message.agent(msg=eval_text))
-        options = InfConfig(required_tool=yn)
-        yn_generation = self.model.get_generation(context=context, config=options)
+        yn_inf_config = InfConfig(required_tool=yn)
+        yn_generation = self.model.get_generation(context=context, config=yn_inf_config)
         yn_generation.exhaust()
         text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
 
@@ -44,6 +44,42 @@ class NLU(Unittest):
               f'Eval : {eval_text}\n'
               f'Answer: {yn.y_n_arg.get_value()}')
         return yn.y_n_arg.get_value() == 'y'
+
+class TaskUnittest(NLU):
+    def semantic_task_eval(self, task_name : str, query : str, prop : str) -> bool:
+        task = self.task_provider.get_task(task_name)
+        self.engine.do_task(task=task, max_steps=10)
+        response = self.engine.do_talk(query=query)
+
+        return self.evaluateProperty(msg=response, prop=prop)
+
+    def keyword_task_eval(self, task_name : str, query : str, keyword : str) -> bool:
+        task = self.task_provider.get_task(task_name)
+        self.engine.do_task(task=task, max_steps=10)
+
+        self.engine.agent.update_memory(entry=Message.user(msg=query))
+        tool = KeywordProviderTool()
+        inf_config = InfConfig(required_tool=tool)
+        self.engine.agent.handle(inf_config=inf_config)
+        given_keyword = tool.keyword_arg.get_value()
+
+        print(f'- Given keyword: {given_keyword}'
+              f'\n- Expected keyword: {keyword}')
+        return given_keyword == keyword
+
+class KeywordProviderTool(Tool):
+    def __init__(self):
+        super().__init__()
+        self.keyword_arg : ToolArg = ToolArg(name=f'Keyword', dtype=str)
+
+    def _do(self):
+        pass
+
+    def get_desc(self) -> str:
+        return f'Fill in the #keyword if you were successful in learning it in the prior step'
+
+    def get_args(self) -> list[ToolArg]:
+        return [self.keyword_arg]
 
 
 class YesNoTool(Tool):
@@ -59,16 +95,6 @@ class YesNoTool(Tool):
 
     def get_args(self) -> list[ToolArg]:
         return [self.y_n_arg]
-
-
-class TaskUnittest(NLU):
-    def evaluate_task_performance(self, task_name : str, query : str, prop : str) -> bool:
-        task = self.task_provider.get_task(task_name)
-        self.engine.do_task(task=task, max_steps=10)
-        response = self.engine.do_talk(query=query)
-
-        return self.evaluateProperty(msg=response, prop=prop)
-
 
 
 

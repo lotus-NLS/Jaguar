@@ -31,6 +31,12 @@ class Step:
     def failed(cls, context : Context):
         return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[], pre_ctx=context)
 
+    def get_writing(self) -> str:
+        text_stream = self.text_pipe.get_text_stream()
+        content = ''
+        for w in text_stream:
+            content += w
+        return content
 
 @dataclass
 class State(JsonDataclass):

@@ -23,8 +23,8 @@
 - Retrieve the first word from stackexchange answer
     - Open the browser
     - Visit the website https://stackoverflow.com/questions/860550/stack-overflows-from-deep-recursion-in-java?noredirect=1&lq=1
-    - Note the first word of the question with the most upvotes
-    - Report back to the user with the first word
+    - Note the first word of the question with the most upvotes, this is the #keyword
+    - Report the #keyword back to the user using the provided tool
 ++enter
 - Retrieve word appearing after text input
     - Go to localhost:8001

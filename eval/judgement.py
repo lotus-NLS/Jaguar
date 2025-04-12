@@ -1,4 +1,4 @@
-from eval.basetests import NLU
+from eval.base import NLU
 
 
 class JudgementEval(NLU):
