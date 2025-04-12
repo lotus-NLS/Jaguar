@@ -17,13 +17,16 @@ class TerminalTasks(TaskUnittest):
         self.assertTrue(gpu_research)
 
     def test_hardware_summary(self):
-        prop = ('The #msg gives information about each of the following hardware devices:'
-                    'CPU, GPU, RAM, Disks and Motherboard')
-        report_query = ('Please summarize the hardware information that you found. '
-                        'Include the CPU, GPU, RAM, Disks and Motherboard')
-        is_successful = self.semantic_task_eval(task_name='hardware', prop=prop, query=report_query)
-        self.assertTrue(is_successful)
+        query = 'Please use the dict report tool to report your findings'
+        target_dict = {
+            'GPU': 'GeForce GTX 1060 6GB',
+            'CPU': 'Intel Core i3-8100 CPU',
+            'RAM storage in GB': '32GiB',
+            'Downrounded Root drive storage in GB': '931',
+            'Motherboard': 'ASRock Z390 Pro4'
+        }
 
+        self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict)
 
 class BrowserTasks(TaskUnittest):
     def test_enter_info(self):
@@ -75,4 +78,5 @@ class PythonTasks(TaskUnittest):
 
 if __name__ == "__main__":
     tt = TerminalTasks.ready()
-    tt.test_gpu_research()
+    # tt.test_gpu_research()
+    tt.test_hardware_summary()

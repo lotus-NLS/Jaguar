@@ -1,3 +1,5 @@
+import json
+
 import fuzzywuzzy.fuzz
 
 from engine.l0_main.lotus_engine import LotusEngine
@@ -47,6 +49,7 @@ class NLU(Unittest):
               f'Answer: {yn.y_n_arg.get_value()}')
         return yn.y_n_arg.get_value() == 'y'
 
+
 class TaskUnittest(NLU):
     def semantic_task_eval(self, task_name : str, query : str, prop : str) -> bool:
         task = self.task_provider.get_task(task_name)
@@ -77,6 +80,42 @@ class TaskUnittest(NLU):
         else:
             return given_keyword == keyword
 
+    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str]):
+
+        class DictProviderTool(Tool):
+            def __init__(self):
+                super().__init__()
+                self.tool_args_dict = {}
+                for key in target_dict:
+                     self.tool_args_dict[key] = ToolArg(name=key)
+
+            def get_desc(self) -> str:
+                return f'Allows you to fill in the value for every #key'
+
+            def get_args(self) -> list[ToolArg]:
+                return list(self.tool_args_dict.values())
+
+            def _do(self):
+                pass
+
+        task = self.task_provider.get_task(task_name)
+        self.engine.do_task(task=task, max_steps=10)
+        self.engine.agent.update_memory(entry=Message.user(msg=query))
+
+        tool = DictProviderTool()
+        inf_config = InfConfig(required_tool=tool)
+        self.engine.agent.handle(inf_config=inf_config)
+
+        given_dict = {}
+        for k in target_dict:
+            given_dict[k] = tool.tool_args_dict[k].get_value()
+
+        print(f'- Given dictionary: {json.dumps(given_dict, indent=2)}')
+        print(f'- Target dictionary: {json.dumps(target_dict, indent=2)}')
+
+        dict_equals = json.dumps(given_dict, sort_keys=True) == json.dumps(target_dict, sort_keys=True)
+        return dict_equals
+
 class KeywordProviderTool(Tool):
     def __init__(self):
         super().__init__()
@@ -106,55 +145,55 @@ class YesNoTool(Tool):
     def get_args(self) -> list[ToolArg]:
         return [self.y_n_arg]
 
-
-
-import unittest
-
-from holytools.devtools import Unittest
-from holytools.devtools.testing.runner import Runner
-
-
-class StatisticalUnittest(Unittest):
-    @classmethod
-    def execute_all(cls, reps : int, tolerance : float):
-        result_arr = []
-
-        for _ in range(reps):
-            suite = unittest.TestLoader().loadTestsFromTestCase(cls)
-            runner = Runner(logger=cls.get_logger(), test_name=cls.__name__)
-            results = runner.run(testsuite=suite)
-            result_arr.append(results)
-
-
-        case_0_results = [result.case_reports[0].status for result in result_arr]
-        checkmark_arr = ['✓' if result.lower() == 'Success'.lower() else '✗' for result in case_0_results]
-
-        print(f'-> Results:')
-        print(f'- Cases: {checkmark_arr}')
-        err_ratio = checkmark_arr.count("✗") / len(checkmark_arr)
-        if err_ratio < tolerance:
-            symbol = '<'
-        elif (err_ratio-tolerance) < 1e-3:
-            symbol = '='
-        else:
-            symbol = '>'
-        print(f'- Error ratio:  {err_ratio} {symbol} {tolerance}')
-        print(f'- Verdict: {"OK" if err_ratio < tolerance else "FAIL"}')
-
-    def test_sometimes_ok(self):
-        import random
-        if random.random() < 0.25:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
-
-    def test_often_ok(self):
-        import random
-        if random.random() < 0.75:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
-
-if __name__ == "__main__":
-    StatisticalUnittest.execute_all(reps=5, tolerance=0.5)
-    # StatisticalUnittest.execute_all()
+#
+#
+# import unittest
+#
+# from holytools.devtools import Unittest
+# from holytools.devtools.testing.runner import Runner
+#
+#
+# class StatisticalUnittest(Unittest):
+#     @classmethod
+#     def execute_all(cls, reps : int, tolerance : float):
+#         result_arr = []
+#
+#         for _ in range(reps):
+#             suite = unittest.TestLoader().loadTestsFromTestCase(cls)
+#             runner = Runner(logger=cls.get_logger(), test_name=cls.__name__)
+#             results = runner.run(testsuite=suite)
+#             result_arr.append(results)
+#
+#
+#         case_0_results = [result.case_reports[0].status for result in result_arr]
+#         checkmark_arr = ['✓' if result.lower() == 'Success'.lower() else '✗' for result in case_0_results]
+#
+#         print(f'-> Results:')
+#         print(f'- Cases: {checkmark_arr}')
+#         err_ratio = checkmark_arr.count("✗") / len(checkmark_arr)
+#         if err_ratio < tolerance:
+#             symbol = '<'
+#         elif (err_ratio-tolerance) < 1e-3:
+#             symbol = '='
+#         else:
+#             symbol = '>'
+#         print(f'- Error ratio:  {err_ratio} {symbol} {tolerance}')
+#         print(f'- Verdict: {"OK" if err_ratio < tolerance else "FAIL"}')
+#
+#     def test_sometimes_ok(self):
+#         import random
+#         if random.random() < 0.25:
+#             self.assertTrue(True)
+#         else:
+#             self.assertTrue(False)
+#
+#     def test_often_ok(self):
+#         import random
+#         if random.random() < 0.75:
+#             self.assertTrue(True)
+#         else:
+#             self.assertTrue(False)
+#
+# if __name__ == "__main__":
+#     StatisticalUnittest.execute_all(reps=5, tolerance=0.5)
+#     # StatisticalUnittest.execute_all()
