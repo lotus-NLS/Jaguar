@@ -9,5 +9,6 @@ pillow
 libtmux
 pylint
 flask_socketio
+fuzzywuzzy
 holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git
 pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape.git
