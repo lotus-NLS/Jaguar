@@ -1,59 +1,16 @@
 import json
-import os.path
-from logging import Logger
 
 import fuzzywuzzy.fuzz
-from engine.l0_main.lotus_engine import LotusEngine
-from engine.l0_main.settings import LotusCredentials
-from engine.l2_models import OpenAIModel, InfConfig
-from engine.l2_models.language import Message, Context
-from engine.l2_models.llm import LLM
+
+from engine.l2_models import InfConfig
+from engine.l2_models.language import Message
 from engine.l3_aos.tools import Tool, ToolArg
-from eval.scenarios.taskprovider import TaskProvider
-from holytools.devtools import Unittest
-from holytools.logging import LoggerFactory, LoggingTools
+from eval.nlu import NLU
 
 
 # ---------------------------------------------------
 
-class NLU(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        configs : LotusCredentials = LotusCredentials.from_file()
-        cls.model : LLM = OpenAIModel.default_model(api_key=configs.openai_api_key)
-        cls.task_provider : TaskProvider = TaskProvider()
-        cls.engine : LotusEngine = LotusEngine()
-
-    def evaluateProperty(self, msg : str, prop : str) -> bool:
-        yn = YesNoTool()
-        query = (f'Please evaluate whether or not the following #property holds for the given #msg\n'
-                          f'    - #property: \"{prop}\"\n'
-                          f'    - #msg     : \"{msg}\"')
-        entries = [Message.user(msg=query)]
-        docs = [yn.get_doc()]
-        context = Context(messages=entries, docs=docs)
-
-        generation = self.model.get_generation(context=context, config=InfConfig.text_only())
-        generation.exhaust()
-        eval_text, calls = generation.get_text(), generation.get_tool_calls()
-
-        context += Context.singleton(entry=Message.agent(msg=eval_text))
-        yn_inf_config = InfConfig(required_tool=yn)
-        yn_generation = self.model.get_generation(context=context, config=yn_inf_config)
-        yn_generation.exhaust()
-        text, calls = yn_generation.get_text(), yn_generation.get_tool_calls()
-
-        self.assertTrue(len(calls) == 1)
-        yn.execute(args_dict=calls[0].get_args_dict())
-
-        print(f'\n- Evaluation results:')
-        print(f'Query: {query}\n'
-              f'Eval : {eval_text}\n'
-              f'Answer: {yn.y_n_arg.get_value()}')
-        return yn.y_n_arg.get_value() == 'y'
-
-
-class TaskUnittest(NLU):
+class Uniteval(NLU):
     def setUp(self):
         self.engine.reset()
 
@@ -87,7 +44,6 @@ class TaskUnittest(NLU):
             return given_keyword == keyword
 
     def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False):
-
         class DictProviderTool(Tool):
             def __init__(self):
                 super().__init__()
@@ -121,17 +77,18 @@ class TaskUnittest(NLU):
 
         dicts_match = True
         fuzzy_tol = 75
-        for key in given_dict:
-            v1, v2 = given_dict[key], target_dict[key]
+        for k in given_dict:
+            v1, v2 = given_dict[k], target_dict[k]
             values_match = fuzzywuzzy.fuzz.ratio(v1, v2) > fuzzy_tol if fuzzy else v1 == v2
             if not values_match:
                 dicts_match = False
             if not values_match and fuzzy:
-                print(f'- Fuzzy ratio {fuzzywuzzy.fuzz.ratio(v1, v2)} below tol {fuzzy_tol} for key "{key}": \n'
+                print(f'- Fuzzy ratio {fuzzywuzzy.fuzz.ratio(v1, v2)} below tol {fuzzy_tol} for key "{k}": \n'
                       f'    - Given value : "{v1}"\n'
                       f'    - Target value: "{v2}"')
 
         print(dicts_match)
+
 
 class KeywordProviderTool(Tool):
     def __init__(self):
@@ -148,20 +105,3 @@ class KeywordProviderTool(Tool):
         return [self.keyword_arg]
 
 
-class YesNoTool(Tool):
-    def __init__(self):
-        super().__init__()
-        self.y_n_arg : ToolArg = ToolArg(name=f'YesOrNo', choices=[f'y', 'n'])
-
-    def _do(self):
-        pass
-
-    def get_desc(self) -> str:
-        return f'Answers the user query about the target message with yes(y) or no(n)'
-
-    def get_args(self) -> list[ToolArg]:
-        return [self.y_n_arg]
-
-
-if __name__ == "__main__":
-    pass
