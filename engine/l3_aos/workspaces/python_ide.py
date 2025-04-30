@@ -3,9 +3,9 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 import subprocess
-from engine.l3_aos import Workspace
 import re
 
+from engine.l3_aos.workspaces.workspace import Workspace
 from holytools.fsys import Directory
 from holytools.userIO import MessageFormatter
 from pylint import lint

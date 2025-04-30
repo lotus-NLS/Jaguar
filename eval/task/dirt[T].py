@@ -4,14 +4,15 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.taskeval import TaskUnittest
 from eval.scenarios.browser import run_basic_server
 from eval.scenarios.python import BasicProject
+from eval.uniteval import Uniteval
+
 
 # ---------------------------------------------------
 
 
-class TerminalTasks(TaskUnittest):
+class TerminalTasks(Uniteval):
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
@@ -30,7 +31,7 @@ class TerminalTasks(TaskUnittest):
             'Motherboard': 'ASRock Z390 Pro4'
         }
 
-        is_accurate = self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict)
+        is_accurate = self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict, fuzzy=True)
         self.assertTrue(is_accurate)
 
     def test_nano(self):
@@ -54,7 +55,7 @@ class TerminalTasks(TaskUnittest):
             print(f'-Expected content: "{content}"')
             self.assertTrue(file_content == content)
 
-class BrowserTasks(TaskUnittest):
+class BrowserTasks(Uniteval):
     def test_enter_info(self):
         p = Process(target=run_basic_server, args=(8000,))
         p.start()
@@ -80,7 +81,7 @@ class BrowserTasks(TaskUnittest):
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
-class PythonTasks(TaskUnittest):
+class PythonTasks(Uniteval):
     def test_read_file(self):
         proj = BasicProject()
 

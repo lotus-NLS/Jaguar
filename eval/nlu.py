@@ -63,3 +63,4 @@ class YesNoTool(Tool):
 
     def get_args(self) -> list[ToolArg]:
         return [self.y_n_arg]
+
