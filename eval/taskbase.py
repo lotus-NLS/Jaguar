@@ -3,7 +3,6 @@ import os.path
 from logging import Logger
 
 import fuzzywuzzy.fuzz
-
 from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l2_models import OpenAIModel, InfConfig
@@ -87,7 +86,7 @@ class TaskUnittest(NLU):
         else:
             return given_keyword == keyword
 
-    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str]):
+    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False):
 
         class DictProviderTool(Tool):
             def __init__(self):
@@ -120,8 +119,19 @@ class TaskUnittest(NLU):
         print(f'- Given dictionary: {json.dumps(given_dict, indent=2)}')
         print(f'- Target dictionary: {json.dumps(target_dict, indent=2)}')
 
-        dict_equals = json.dumps(given_dict, sort_keys=True) == json.dumps(target_dict, sort_keys=True)
-        return dict_equals
+        dicts_match = True
+        fuzzy_tol = 75
+        for key in given_dict:
+            v1, v2 = given_dict[key], target_dict[key]
+            values_match = fuzzywuzzy.fuzz.ratio(v1, v2) > fuzzy_tol if fuzzy else v1 == v2
+            if not values_match:
+                dicts_match = False
+            if not values_match and fuzzy:
+                print(f'- Fuzzy ratio {fuzzywuzzy.fuzz.ratio(v1, v2)} below tol {fuzzy_tol} for key "{key}": \n'
+                      f'    - Given value : "{v1}"\n'
+                      f'    - Target value: "{v2}"')
+
+        print(dicts_match)
 
 class KeywordProviderTool(Tool):
     def __init__(self):
@@ -153,70 +163,5 @@ class YesNoTool(Tool):
         return [self.y_n_arg]
 
 
-
-import unittest
-
-from holytools.devtools import Unittest
-from holytools.devtools.testing.runner import Runner
-
-
-class StatisticalUnittest(Unittest):
-
-    @classmethod
-    def get_logger(cls) -> Logger:
-        this_dir = os.path.dirname(__file__)
-        log_dir = os.path.join(this_dir, 'logs')
-        if not os.path.isdir(log_dir):
-            os.makedirs(log_dir)
-
-        timestamp = LoggingTools.get_timestamp()
-        logs_fpath = os.path.join(log_dir, f'logs_{timestamp}.txt')
-        if not cls._logger:
-            cls._logger = LoggerFactory.get_logger(include_location=False,
-                                                   include_timestamp=False,
-                                                   name=cls.__name__,
-                                                   use_stdout=True, log_fpath=logs_fpath)
-        return cls._logger
-
-    @classmethod
-    def execute_all(cls, reps : int, tolerance : float):
-        result_arr = []
-
-        for _ in range(reps):
-            suite = unittest.TestLoader().loadTestsFromTestCase(cls)
-            runner = Runner(logger=cls.get_logger(), test_name=cls.__name__)
-            results = runner.run(testsuite=suite)
-            result_arr.append(results)
-
-        case_0_results = [result.case_reports[0].status for result in result_arr]
-        checkmark_arr = ['✓' if result.lower() == 'Success'.lower() else '✗' for result in case_0_results]
-
-        print(f'-> Results:')
-        print(f'- Cases: {checkmark_arr}')
-        err_ratio = checkmark_arr.count("✗") / len(checkmark_arr)
-        if err_ratio < tolerance:
-            symbol = '<'
-        elif (err_ratio-tolerance) < 1e-3:
-            symbol = '='
-        else:
-            symbol = '>'
-        print(f'- Error ratio:  {err_ratio} {symbol} {tolerance}')
-        print(f'- Verdict: {"OK" if err_ratio < tolerance else "FAIL"}')
-
-    def test_sometimes_ok(self):
-        import random
-        if random.random() < 0.25:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
-
-    def test_often_ok(self):
-        import random
-        if random.random() < 0.75:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
-
 if __name__ == "__main__":
-    StatisticalUnittest.execute_all(reps=5, tolerance=0.5)
-    # StatisticalUnittest.execute_all()
+    pass
