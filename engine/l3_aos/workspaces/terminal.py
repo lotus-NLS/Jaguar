@@ -43,7 +43,7 @@ class Terminal(Workspace):
             server = libtmux.Server()
             session = server.find_where({"session_name": self.tmux_name})
             if session is None:
-                command = 'sudo tmux new-session -s lotus -d'
+                command = 'tmux new-session -s lotus -d'
                 subprocess.Popen(['bash', '-c', command], cwd=cwd)
                 time.sleep(2)
                 session = server.find_where({"session_name": self.tmux_name})
