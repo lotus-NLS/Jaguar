@@ -1,4 +1,4 @@
-from eval.zcenarios.taskprovider import TaskProvider
+from eval.scenarios.taskprovider import TaskProvider
 from holytools.devtools import Unittest
 from tests.basetests import AgentTest
 

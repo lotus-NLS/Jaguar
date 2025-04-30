@@ -2,7 +2,7 @@ import os
 import tempfile
 
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.zcenarios.python import listdir, calculator
+from eval.scenarios.python import listdir, calculator
 
 
 class BasicProject:
