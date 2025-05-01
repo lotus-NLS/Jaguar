@@ -59,13 +59,13 @@ class Terminal(Workspace):
     # ---------------------------------------------------------
     # actions
 
-    def send(self, content : str) :
-        """Sends content to current terminal session. Can be used to execute commands, answer prompts or write in text file. Commands are only executed if an Enter press (=Newline) is included in the content"""
+    def send(self, content : str, send_enter_after : bool = False) :
+        """Sends content to current terminal session. Can be used to execute commands, answer prompts or write in text file. Commands are only executed if an Enter press (=Newline) is included in the content or send_enter_after content is toggled on"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
 
 
-        pane.send_keys(cmd=content, enter=False)
+        pane.send_keys(cmd=content, enter=send_enter_after)
 
     def press_keys(self, key1 : str, key2 : str):
         """Presses a combinatino of keys at the same time. Use key1 = C, s, M to press Ctrl + [key2], Shift + [key2] and Alt + [key2] respectively. Use key1 = 'E', key2 = '' to press enter"""
