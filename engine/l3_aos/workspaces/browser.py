@@ -39,7 +39,10 @@ class Browser(Workspace):
                 search_results += f'({index}): {r}\n'
             self.search_context = search_results
         else:
-            self.emulator.visit(url=url)
+            try:
+                self.emulator.visit(url=url)
+            except Exception as e:
+                raise ConnectionError(f'Failed to connect to url {url}')
 
     def enter_text(self, input_field_idx : int, content : str):
         """Enters text and into the specified input field"""
@@ -78,5 +81,5 @@ class Browser(Workspace):
         return None
 
 if __name__ == "__main__":
-    docstring = Browser.__doc__
-    print(docstring)
+    b = Browser(google_api_key=None, searchengine_id=None)
+    b.open_action.execute({'url' : 'http://localhost:5000/context'})
