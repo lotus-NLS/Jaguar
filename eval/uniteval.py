@@ -75,10 +75,13 @@ class Uniteval(NLU):
         print(f'- Given dictionary: {json.dumps(given_dict, indent=2)}')
         print(f'- Target dictionary: {json.dumps(target_dict, indent=2)}')
 
+
+
         dicts_match = True
         fuzzy_tol = 75
         for k in given_dict:
             v1, v2 = given_dict[k], target_dict[k]
+
             values_match = fuzzywuzzy.fuzz.ratio(v1, v2) > fuzzy_tol if fuzzy else v1 == v2
             if not values_match:
                 dicts_match = False
@@ -89,6 +92,19 @@ class Uniteval(NLU):
 
         print(dicts_match)
 
+    @staticmethod
+    def values_match(v1: str, v2: str, fuzzy : bool, fuzzy_tol : int = 75):
+        if '|' in v2:
+            v21, v22 = v2.split('|')
+            v21_match = Uniteval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            v22_match = Uniteval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            return v21_match or v22_match
+
+        if fuzzy:
+            match = fuzzywuzzy.fuzz.ratio(v1, v2) > fuzzy_tol
+        else:
+            match = v1 == v2
+        return match
 
 class KeywordProviderTool(Tool):
     def __init__(self):
