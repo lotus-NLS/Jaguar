@@ -4,8 +4,8 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.zcenarios.browser import run_basic_server
-from eval.zcenarios.python import BasicProject
+from eval.cenarios.browser import run_basic_server
+from eval.cenarios.python import BasicProject
 from eval.uniteval import Uniteval
 
 
@@ -34,7 +34,7 @@ class TerminalTasks(Uniteval):
     def test_nano(self):
         fpath = tempfile.mktemp()
         content = 'Ramen'
-        task = self.task_provider.get_task(f'nano_{fpath}_{content}')
+        task = self.task_provider.get_task(f'nano\0{fpath}\0{content}')
         self.engine.do_task(task, max_steps=10)
 
         workspaces = self.engine.agent.aos.get_workspaces()
@@ -50,7 +50,7 @@ class TerminalTasks(Uniteval):
             file_content = f.read()
             print(f'-Actual content  : "{file_content}"')
             print(f'-Expected content: "{content}"')
-            self.assertTrue(file_content == content)
+            self.assertTrue(file_content == f'{content}\n')
 
 class BrowserTasks(Uniteval):
     def test_enter_info(self):

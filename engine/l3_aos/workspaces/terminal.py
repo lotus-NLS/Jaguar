@@ -27,7 +27,7 @@ class Terminal(Workspace):
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.tmux_session = self._open_session(cwd=cwd)
-        self.type(content='clear\n')
+        self.send(content='clear\n')
 
     def close(self):
         """Closes the terminal"""
@@ -59,18 +59,26 @@ class Terminal(Workspace):
     # ---------------------------------------------------------
     # actions
 
-    def type(self, content : str) :
-        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text file. Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively. Use \n for pressing enter"""
+    def send(self, content : str) :
+        """Sends content to current terminal session. Can be used to execute commands, answer prompts or write in text file. Commands are only executed if an Enter press (=Newline) is included in the content"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
 
-        content = content.replace('\\n', '\n')
-        parts = content.split('\n')
-        pane.send_keys(parts[0], enter=False)
 
-        for p in [p for p in  parts[1:]]:
-            pane.send_keys(p, enter=False)
-            pane.enter()
+        pane.send_keys(cmd=content, enter=False)
+
+    def press_keys(self, key1 : str, key2 : str):
+        """Presses a combinatino of keys at the same time. Use key1 = C, s, M to press Ctrl + [key2], Shift + [key2] and Alt + [key2] respectively. Use key1 = 'E', key2 = '' to press enter"""
+
+        window = self.tmux_session.windows[0]
+        pane = window.panes[0]
+        if key1 == 'E':
+            pane.send_keys('', enter=True)
+            return
+
+        if key1 in ['C', 's', 'M']:
+            key1 = f'{key1}-'
+        pane.send_keys(cmd=key1+key2, enter=False)
 
     # ---------------------------------------------------------
     # language
@@ -95,7 +103,7 @@ if __name__ == "__main__":
         user_input = input()
         if user_input == 'exit':
             break
-        t.type(user_input)
+        t.send(user_input)
 
     with open('/home/daniel/testdir/example.txt', 'r') as f:
         fcontent = f.read()

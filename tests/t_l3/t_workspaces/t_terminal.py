@@ -19,7 +19,7 @@ class TerminalTest(Unittest):
         tc = ToolCall.from_dict(attr_dict={'workdir_path' : '~'})
         self.terminal.open_action.execute(tc.get_args_dict())
         echo_text = 'Hello World'
-        self.terminal.type(content=f'echo "{echo_text}"')
+        self.terminal.send(content=f'echo "{echo_text}"')
         text = self.terminal.get_text()
         self.assertTrue(echo_text in text)
 

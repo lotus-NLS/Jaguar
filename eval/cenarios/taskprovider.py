@@ -20,7 +20,7 @@ class TaskProvider:
             self.yaml_dict[name] = remaining
 
     def get_task(self, identifier : str) -> Task:
-        segments = identifier.split('_')
+        segments = identifier.split('\0')
         name = segments[0]
         args = segments[1:]
         task_content = self.yaml_dict[name]
