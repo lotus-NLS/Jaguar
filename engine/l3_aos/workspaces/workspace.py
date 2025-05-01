@@ -16,8 +16,12 @@ class Workspace(Timber):
     def __init__(self):
         super().__init__()
         self.is_open : bool = False
+        self.target_methods = ModuleInspector.get_methods(obj=self, include_inherited=False, include_private=False)
         self.workspace_actions : list[Tool] = self.create_workspace_actions()
-        self.open_action : Tool = self.create_action(mthd=self.open)
+
+        target_method_names = [m.__name__ for m in self.target_methods]
+        open_action_doc = f'{self.open.__doc__}; {self.get_name()} offers functions {target_method_names}'
+        self.open_action : Tool = self.create_action(mthd=self.open, doc_override=open_action_doc)
         self.close_action : Tool = self.create_action(mthd=self.close)
 
     @abstractmethod
@@ -29,16 +33,15 @@ class Workspace(Timber):
         pass
 
     def create_workspace_actions(self) -> list[Tool]:
-        target_methods =  ModuleInspector.get_methods(obj=self, include_inherited=False, include_private=False)
-        actions = [self.create_action(mthd=m) for m in target_methods]
+        actions = [self.create_action(mthd=m) for m in self.target_methods]
         return actions
 
-    def create_action(self, mthd : Callable) -> Tool:
+    def create_action(self, mthd : Callable, doc_override : str = '') -> Tool:
         if not inspect.ismethod(mthd):
             raise TypeError(f'{self.create_action.__name__} only accepts bound method, method \"{mthd.__name__}\" is unbound')
 
         workspace = self
-        docstring = mthd.__doc__
+        docstring = doc_override or mthd.__doc__
 
         class WorkspaceAction(Tool):
             def __init__(self):
