@@ -2,18 +2,18 @@ import os.path
 import tempfile
 from multiprocessing import Process
 
-
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.cenarios.browser.basic_server import BrowserServers
-from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
 from eval.cenarios.python import BasicProject
-from eval.uniteval import Uniteval
+from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
+from eval.task.taskeval import TaskEval
 from holytools.network import IpProvider
+
 
 # ---------------------------------------------------
 
-class TerminalTasks(Uniteval):
+class TerminalTasks(TaskEval):
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
@@ -62,7 +62,7 @@ class TerminalTasks(Uniteval):
             self.assertTrue(file_content == expected_content)
 
 
-class BrowserTasks(Uniteval):
+class BrowserTasks(TaskEval):
     def test_enter_text(self):
         port = IpProvider.get_free_port()
         p = Process(target=BrowserServers.run_enter_server, args=(port,))
@@ -70,7 +70,7 @@ class BrowserTasks(Uniteval):
 
         query = ('What is the word that was presented to you after entering a word into the text box?'
                  'The word that was presented to you is the #keyword')
-        is_successful = self.keyword_eval(task_name=f'enter\0{port}', query=query, keyword='Spaetzle')
+        is_successful = self.keyword_eval(task_name=f'enter_text\0{port}', query=query, keyword='Spaetzle')
         self.assertTrue(is_successful)
         p.kill()
 
@@ -89,12 +89,12 @@ class BrowserTasks(Uniteval):
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
-class PythonTasks(Uniteval):
+class PythonTasks(TaskEval):
     def test_read_file(self):
         proj = BasicProject()
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
 
-        is_successful = self.keyword_eval(task_name=f'read\0{proj.proj_dirpath}', keyword='log', query=query)
+        is_successful = self.keyword_eval(task_name=f'read_file\0{proj.proj_dirpath}', keyword='log', query=query)
         self.assertTrue(is_successful)
 
     def test_run_api_call(self):
@@ -103,12 +103,12 @@ class PythonTasks(Uniteval):
         p.start()
 
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
-        is_successful = self.keyword_eval(task_name=f'run\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
+        is_successful = self.keyword_eval(task_name=f'run_api_call\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):
         proj = BasicProject()
-        task = self.task_provider.get_task(f'build\0{proj.proj_dirpath}')
+        task = self.task_provider.get_task(f'build_and_run\0{proj.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 
         python_ide : PythonIDE = self.engine.agent.aos.ide
@@ -121,11 +121,5 @@ class PythonTasks(Uniteval):
         self.assertTrue(expected_output in output)
 
 if __name__ == "__main__":
-    # tt = TerminalTasks.ready()
-    # bt = BrowserTasks.ready()
     pt = PythonTasks.ready()
     pt.execute_statistically(reps=5, min_success_percent=80)
-
-    # port = IpProvider.get_free_port()
-    # p = Process(target=run_basic_server, args=(port,))
-    # p.start()

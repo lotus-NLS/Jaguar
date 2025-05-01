@@ -1,0 +1,8 @@
+------> PythonTasks.test_build_and_run 
+Status: ERROR
+KeyError: 'build'
+File "/home/daniel/lotus/engine/eval/task/dirt[T].py", line 111, in test_build_and_run
+    task = self.task_provider.get_task(f'build\0{proj.proj_dirpath}')KeyError: 'build'
+File "/home/daniel/lotus/engine/eval/cenarios/task_provider.py", line 22, in get_task
+    task_content = self.yaml_dict[name]
+

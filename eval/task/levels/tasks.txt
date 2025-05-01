@@ -1,5 +1,10 @@
 ++test
 - Test: Mark this task in the TaskTracker as completed. It only serves to test the tasktracker completion functionality.
+++gpu
+- Determine GPU model
+    - Open Terminal
+    - Launch command to determine GPU
+    - Determine model
 ++hardware
 - Acquire hardware information. You will be prompted for each component at the end of the task
     - CPU information
@@ -7,11 +12,6 @@
     - RAM information
     - Disk information
     - Motherboard information
-++gpu
-- Determine GPU model
-    - Open Terminal
-    - Launch command to determine GPU
-    - Determine model
 ++nano
 - Write out file at specified location and content using nano
     - Open Terminal
