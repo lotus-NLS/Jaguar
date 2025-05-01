@@ -4,7 +4,6 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
-from eval.cenarios.taskprovider import TaskProvider
 from holytools.devtools import Unittest
 
 
@@ -15,7 +14,6 @@ class NLU(Unittest):
     def setUpClass(cls):
         configs : LotusCredentials = LotusCredentials.from_file()
         cls.model : LLM = OpenAIModel.default_model(api_key=configs.openai_api_key)
-        cls.task_provider : TaskProvider = TaskProvider()
         cls.engine : LotusEngine = LotusEngine()
 
     def evaluateProperty(self, msg : str, prop : str) -> bool:
@@ -59,4 +57,6 @@ class YesNoTool(Tool):
 
     def get_args(self) -> list[ToolArg]:
         return [self.y_n_arg]
+
+
 

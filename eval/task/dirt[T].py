@@ -12,7 +12,6 @@ from holytools.network import IpProvider
 
 # ---------------------------------------------------
 
-
 class TerminalTasks(Uniteval):
     
     def test_gpu_research(self):
@@ -113,7 +112,7 @@ class PythonTasks(Uniteval):
     def test_build_and_run(self):
         proj = BasicProject()
 
-        task = self.task_provider.get_task(f'build_{proj.proj_dirpath}')
+        task = self.task_provider.get_task(f'build\0{proj.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 
         python_ide : PythonIDE = self.engine.agent.aos.ide

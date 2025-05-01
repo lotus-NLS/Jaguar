@@ -11,4 +11,4 @@ include = ["engine*", "eval*"]
 DEP002 = ["python-Levenshtein"]
 
 [tool.setuptools.package-data]
-"eval.cenarios" = ["*", "*/*"]
+"eval" = ["*", "*/*", "*/*/*"]
