@@ -1,14 +1,14 @@
 import os
+import subprocess
 import tempfile
 
-from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.cenarios.python import listdir, calculator
 
 
 class BasicProject:
     def __init__(self):
         self.proj_dirpath : str = tempfile.mkdtemp()
-        PythonIDE._mkvenv(proj_dirpath=self.proj_dirpath)
+        subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])
         self.reset_files()
 
     def reset_files(self):
