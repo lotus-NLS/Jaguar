@@ -121,5 +121,5 @@ class PythonTasks(TaskEval):
         self.assertTrue(expected_output in output)
 
 if __name__ == "__main__":
-    pt = PythonTasks.ready()
+    pt = BrowserTasks.ready()
     pt.execute_statistically(reps=5, min_success_percent=80)
