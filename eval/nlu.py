@@ -8,7 +8,7 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos.tools import Tool, ToolArg
-from eval.scenarios.taskprovider import TaskProvider
+from eval.a_scenarios.taskprovider import TaskProvider
 from holytools.devtools import Unittest
 
 

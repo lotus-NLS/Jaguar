@@ -4,8 +4,8 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.scenarios.browser import run_basic_server
-from eval.scenarios.python import BasicProject
+from eval.a_scenarios.browser import run_basic_server
+from eval.a_scenarios.python import BasicProject
 from eval.uniteval import Uniteval
 
 
