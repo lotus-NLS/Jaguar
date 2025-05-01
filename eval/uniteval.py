@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import fuzzywuzzy.fuzz
 
@@ -15,7 +16,8 @@ class Uniteval(NLU):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        task_fpath = os.path.join(cls.__module__.__file__, 'tasks.txt')
+        cls_dirpath = os.path.dirname(sys.modules[cls.__module__].__file__)
+        task_fpath = os.path.join(cls_dirpath, 'tasks.txt')
         cls.task_provider : TaskProvider = TaskProvider(tasks_fpath=task_fpath)
 
     def setUp(self):
@@ -109,6 +111,7 @@ class Uniteval(NLU):
         else:
             match = v1 == v2
         return match
+
 
 class KeywordProviderTool(Tool):
     def __init__(self):

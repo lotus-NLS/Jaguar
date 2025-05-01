@@ -52,4 +52,5 @@
     - Open the python project at #1
     - Open a file 'hello.py'
     - Write "print('Hello World :)')"
+    - Run file
     - Mark task as completed

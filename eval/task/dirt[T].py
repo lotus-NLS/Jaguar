@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # tt = TerminalTasks.ready()
     # bt = BrowserTasks.ready()
     pt = PythonTasks.ready()
-    pt.test_run_api_retriever()
+    pt.test_build_and_run()
 
     # port = IpProvider.get_free_port()
     # p = Process(target=run_basic_server, args=(port,))
