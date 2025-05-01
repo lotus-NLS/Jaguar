@@ -32,7 +32,7 @@ class TerminalTasks(Uniteval):
         target_dict = {
             'GPU': 'GeForce GTX 1060 6GB',
             'CPU': 'Intel Core i3-8100 CPU @ 3.60 GHz',
-            'RAM storage in GB': '32|31',
+            'RAM storage in GB': '32||31',
             'Largest drive storage in GiB': '931',
             'Motherboard': 'ASRock Z390 Pro4'
         }

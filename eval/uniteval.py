@@ -43,7 +43,7 @@ class Uniteval(NLU):
         else:
             return given_keyword == keyword
 
-    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False):
+    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False) -> bool:
         class DictProviderTool(Tool):
             def __init__(self):
                 super().__init__()
@@ -75,14 +75,11 @@ class Uniteval(NLU):
         print(f'- Given dictionary: {json.dumps(given_dict, indent=2)}')
         print(f'- Target dictionary: {json.dumps(target_dict, indent=2)}')
 
-
-
         dicts_match = True
         fuzzy_tol = 75
         for k in given_dict:
             v1, v2 = given_dict[k], target_dict[k]
-
-            values_match = fuzzywuzzy.fuzz.ratio(v1, v2) > fuzzy_tol if fuzzy else v1 == v2
+            values_match = self.values_match(v1, v2, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
             if not values_match:
                 dicts_match = False
             if not values_match and fuzzy:
@@ -90,12 +87,12 @@ class Uniteval(NLU):
                       f'    - Given value : "{v1}"\n'
                       f'    - Target value: "{v2}"')
 
-        print(dicts_match)
+        return dicts_match
 
     @staticmethod
     def values_match(v1: str, v2: str, fuzzy : bool, fuzzy_tol : int = 75):
         if '|' in v2:
-            v21, v22 = v2.split('|')
+            v21, v22 = v2.split('||')
             v21_match = Uniteval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
             v22_match = Uniteval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
             return v21_match or v22_match
