@@ -18,14 +18,12 @@ class Core:
     def GOTO(cls):
         return cls(identity=Identity.GOTO)
 
-    def as_system_entry(self) -> Message:
-        return Message.system(msg=self.as_str())
-
-    def as_str(self) -> str:
+    def as_system_entry(self, ws_names : list[str]) -> Message:
         msg = f'{self.identity.value}\n'
         msg += f'You operate on the OS: {self.os_information}. '
         msg += f'The current date is {self.get_date()} and the current time in this moment is {self.get_time()}.'
-        return msg
+        msg += f'The following workspaces are available to you: {ws_names}'
+        return Message.system(msg=msg)
 
     @staticmethod
     def get_os_info():

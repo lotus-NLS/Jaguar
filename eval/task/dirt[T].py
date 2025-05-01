@@ -138,7 +138,8 @@ class PythonTasks(Uniteval):
 if __name__ == "__main__":
     # tt = TerminalTasks.ready()
     bt = BrowserTasks.ready()
-    bt.test_enter_info()
+    # bt.test_enter_info()
+    bt.test_stackexchange()
 
     # port = IpProvider.get_free_port()
     # p = Process(target=run_basic_server, args=(port,))

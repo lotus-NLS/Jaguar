@@ -137,7 +137,8 @@ class Agent(Timber):
         self.memory.append(entry)
 
     def get_context(self, inf_config : InfConfig) -> Context:
-        context = Context(messages=[self.identity.as_system_entry()])
+        ws_names = [ws.get_name() for ws in self.aos.get_workspaces()]
+        context = Context(messages=[self.identity.as_system_entry(ws_names=ws_names)])
         context += Context(docs=self.aos.get_docs(required_tool=inf_config.required_tool))
         context += Context(messages=self.memory)
         context.interweave_workspaces(aos=self.aos)
