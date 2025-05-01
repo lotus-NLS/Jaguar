@@ -1,3 +1,4 @@
+import os.path
 import time
 
 
@@ -5,10 +6,11 @@ def run_basic_server(port : int):
     from flask import Flask, render_template_string
 
     app = Flask(__name__)
+    dirpath = os.path.dirname(__file__)
 
     @app.route('/')
     def index():
-        with open('helloworld.html', 'r') as f:
+        with open(f'{dirpath}/helloworld.html', 'r') as f:
             HTML_TEMPLATE = f.read()
             return render_template_string(HTML_TEMPLATE)
 

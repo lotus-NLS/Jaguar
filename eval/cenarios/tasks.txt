@@ -25,8 +25,8 @@
     - Report the #keyword back to the user using the provided tool
 ++enter
 - Retrieve word appearing after text input
-    - Go to localhost:8001
-    - Enter anything  into the text box
+    - Go to localhost:#1
+    - Enter anything into the text box
     - Note the word appearing after the text input
     - Report back to the user with the word
 ++read

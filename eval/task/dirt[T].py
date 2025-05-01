@@ -7,12 +7,21 @@ from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.cenarios.browser import run_basic_server
 from eval.cenarios.python import BasicProject
 from eval.uniteval import Uniteval
-
+from holytools.network import IpProvider
 
 # ---------------------------------------------------
 
 
 class TerminalTasks(Uniteval):
+    
+    def test_gpu_research(self):
+        query = ('Please state the model of the GPU that you found. Like so'
+                 '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
+
+        gpu_model = 'NVIDIA GeForce GTX 1060'
+        gpu_research = self.keyword_task_eval(task_name='simplehardware', query=query, keyword=gpu_model, fuzzy=True)
+        self.assertTrue(gpu_research)
+    
     def test_hardware_summary(self):
         query = ('Please use the dict report tool to report your findings in the following format:'
                  '  - GPU: [Manufacturer, Series, Model, Memory]'
@@ -53,14 +62,16 @@ class TerminalTasks(Uniteval):
             print(f'-Expected content: "{expected_content}"')
             self.assertTrue(file_content == expected_content)
 
+
 class BrowserTasks(Uniteval):
     def test_enter_info(self):
-        p = Process(target=run_basic_server, args=(8000,))
+        port = IpProvider.get_free_port()
+        p = Process(target=run_basic_server, args=(port,))
         p.start()
 
         query = ('What is the word that was presented to you after entering a word into the text box?'
                  'The word that was presented to you is the #keyword')
-        is_successful = self.keyword_task_eval(task_name='enter', query=query, keyword='Spaetzle')
+        is_successful = self.keyword_task_eval(task_name=f'enter\0{port}', query=query, keyword='Spaetzle')
         self.assertTrue(is_successful)
         p.kill()
 
@@ -110,7 +121,6 @@ class PythonTasks(Uniteval):
 
         self.assertTrue(expected_output in output)
 
-
     @staticmethod
     def run_api_server():
         from flask import Flask
@@ -127,7 +137,10 @@ class PythonTasks(Uniteval):
 
 if __name__ == "__main__":
     # tt = TerminalTasks.ready()
-    bt = BrowserTasks.ready()
-    # pt = PythonTasks.ready()
+    # bt = BrowserTasks.ready()
+    # bt.test_enter_info()
 
-    bt.test_nano()
+
+    port = IpProvider.get_free_port()
+    p = Process(target=run_basic_server, args=(port,))
+    p.start()
