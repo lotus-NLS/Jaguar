@@ -31,8 +31,8 @@ class Uniteval(NLU):
         given_keyword = tool.keyword_arg.get_value()
 
         print('\n-> Keyword task evaluation:')
-        print(f'- Given keyword: {given_keyword}'
-              f'\n- Expected keyword: {keyword}')
+        print(f'- Given keyword: "{given_keyword}"'
+              f'\n- Expected keyword: "{keyword}"')
 
         if fuzzy:
             tol = 75

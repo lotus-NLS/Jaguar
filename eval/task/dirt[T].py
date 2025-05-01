@@ -65,8 +65,7 @@ class TerminalTasks(Uniteval):
 
 class BrowserTasks(Uniteval):
     def test_enter_info(self):
-        # port = IpProvider.get_free_port()
-        port = 80000
+        port = IpProvider.get_free_port()
         p = Process(target=run_basic_server, args=(port,))
         p.start()
 
