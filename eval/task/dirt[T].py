@@ -48,9 +48,10 @@ class TerminalTasks(Uniteval):
 
         with open(fpath, 'r') as f:
             file_content = f.read()
+            expected_content = f'{content}\n'
             print(f'-Actual content  : "{file_content}"')
-            print(f'-Expected content: "{content}"')
-            self.assertTrue(file_content == f'{content}\n')
+            print(f'-Expected content: "{expected_content}"')
+            self.assertTrue(file_content == expected_content)
 
 class BrowserTasks(Uniteval):
     def test_enter_info(self):
@@ -125,8 +126,8 @@ class PythonTasks(Uniteval):
 
 
 if __name__ == "__main__":
-    tt = TerminalTasks.ready()
-    # bt = BrowserTasks.ready()
+    # tt = TerminalTasks.ready()
+    bt = BrowserTasks.ready()
     # pt = PythonTasks.ready()
 
-    tt.test_nano()
+    bt.test_nano()
