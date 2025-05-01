@@ -2,6 +2,7 @@ import os.path
 import tempfile
 from multiprocessing import Process
 
+
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.cenarios.browser import run_basic_server
@@ -101,6 +102,10 @@ class PythonTasks(Uniteval):
     def test_run_api_retriever(self):
         proj = BasicProject()
 
+        from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
+        p = Process(target=self.run_api_server, args=(API_RETRIEVAL_PORT,))
+        p.start()
+
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
         is_successful = self.keyword_task_eval(task_name=f'run\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
@@ -122,17 +127,15 @@ class PythonTasks(Uniteval):
         self.assertTrue(expected_output in output)
 
     @staticmethod
-    def run_api_server():
+    def run_api_server(port : int):
         from flask import Flask
 
         app = Flask(__name__)
-
         @app.route('/')
         def farfalle():
             return {'message': 'Farfalle'}
 
-        if __name__ == '__main__':
-            app.run(port=8002)
+        app.run(port=port)
 
 
 if __name__ == "__main__":
