@@ -1,0 +1,37 @@
+[Warning]: Unclosed resource: "subprocess 86761 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 87196 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 87599 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 88140 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 88669 is still running\."Enable trace_resourcewarning to obtain object trace
+------> BrowserTasks.test_enter_text 
+Result       : ['✓', '✓', '✓', '✓', '✓']
+Success rate : 100.0%
+Status       : SUCCESS
+
+[Warning]: Unclosed resource: "subprocess 89203 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 89780 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 90312 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 90849 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 91484 is still running\."Enable trace_resourcewarning to obtain object trace
+------> BrowserTasks.test_rosinstall 
+Result       : ['✓', '✓', '✓', '✓', '✓']
+Success rate : 100.0%
+Status       : SUCCESS
+
+[Warning]: Unclosed resource: "subprocess 92198 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 92803 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 93406 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 93993 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 94573 is still running\."Enable trace_resourcewarning to obtain object trace
+------> BrowserTasks.test_stackexchange 
+Result       : ['✓', '✓', '✓', '✓', '✓']
+Success rate : 100.0%
+Status       : SUCCESS
+
+------------------------------ Summary ------------------------------
+BrowserTasks.test_enter_text                      SUCCESS    126.439s 
+BrowserTasks.test_rosinstall                      SUCCESS    159.255s 
+BrowserTasks.test_stackexchange                   SUCCESS    193.32s  
+[92m
+✓ 3/3 tests ran successfully![0m
+======================================================================
