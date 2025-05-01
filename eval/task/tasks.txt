@@ -7,47 +7,47 @@
     - RAM information
     - Disk information
     - Motherboard information
-++simplehardware
+++gpu
 - Determine GPU model
     - Open Terminal
     - Launch command to determine GPU
     - Determine model
+++nano
+- Write out file at specified location and content using nano
+    - Open Terminal
+    - Open the filepath #1 using nano
+    - Write content #2 into the file.
 ++stackexchange
 - Retrieve the first word from stackexchange answer
     - Open the browser
     - Visit the website https://stackoverflow.com/questions/860550/stack-overflows-from-deep-recursion-in-java?noredirect=1&lq=1
     - Note the first word of the question with the most upvotes, this is the #keyword
     - Report the #keyword back to the user using the provided tool
-++enter
+++enter_text
 - Retrieve word appearing after text input
     - Go to localhost:#1
     - Enter anything into the text box
     - Note the word appearing after the text input
     - Report back to the user with the word
-++read
-- Find name of last function of calculator module
-    - Open PythonProject located at #1
-    - Open the calculator module
-    - Note the name of the bottommost function
-    - Report back to the user with the name of the function
-++run
-- Obtain return message from API endpoint
-    - Open the PythonProject located at #1
-    - Open the api_retrieval module
-    - Run it
-    - Report back with the content of the received message
-++nano
-- Write out file at specified location and content using nano
-    - Open Terminal
-    - Open the filepath #1 using nano
-    - Write content #2 into the file.
-    - Exit nano
 ++rosinstall
 - Navigate to the installation page of Ros2 humble hawksbill
     - Open browser on the URL https://docs.ros.org/en/humble/
     - Navigate to the installation page
     - Mark task as completed
-++build
+++read_file
+- Find name of last function of calculator module
+    - Open PythonProject located at #1
+    - Open the calculator module
+    - Note the name of the bottommost function
+    - Report back to the user with the name of the function
+++run_api_call
+- Obtain return message from API endpoint
+    - Open the PythonProject located at #1
+    - Open the api_retrieval module
+    - Run it
+    - Report back with the content of the received message
+    - Exit nano
+++build_and_run
 - Build and run a simple hello world file
     - Open the python project at #1
     - Open a file 'hello.py'

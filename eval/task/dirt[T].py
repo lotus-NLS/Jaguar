@@ -5,7 +5,8 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.cenarios.browser import run_basic_server
+from eval.cenarios.browser.basic_server import BrowserServers
+from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
 from eval.cenarios.python import BasicProject
 from eval.uniteval import Uniteval
 from holytools.network import IpProvider
@@ -13,15 +14,14 @@ from holytools.network import IpProvider
 # ---------------------------------------------------
 
 class TerminalTasks(Uniteval):
-    
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
-
         gpu_model = 'NVIDIA GeForce GTX 1060'
-        gpu_research = self.keyword_task_eval(task_name='simplehardware', query=query, keyword=gpu_model, fuzzy=True)
-        self.assertTrue(gpu_research)
-    
+
+        is_accurate = self.keyword_eval(task_name='gpu', query=query, keyword=gpu_model, fuzzy=True)
+        self.assertTrue(is_accurate)
+
     def test_hardware_summary(self):
         query = ('Please use the dict report tool to report your findings in the following format:'
                  '  - GPU: [Manufacturer, Series, Model, Memory]'
@@ -37,7 +37,7 @@ class TerminalTasks(Uniteval):
             'Motherboard': 'ASRock Z390 Pro4'
         }
 
-        is_accurate = self.dict_task_eval(task_name='hardware', query=query, target_dict=target_dict, fuzzy=True)
+        is_accurate = self.dict_eval(task_name='hardware', query=query, target_dict=target_dict, fuzzy=True)
         self.assertTrue(is_accurate)
 
     def test_nano(self):
@@ -48,7 +48,6 @@ class TerminalTasks(Uniteval):
 
         workspaces = self.engine.agent.aos.get_workspaces()
         terminal = [ws for ws in workspaces if ws.get_name() == Terminal.get_name()][0]
-
         text = terminal.get_text()
         self.assertTrue('GNU nano' not in text)
 
@@ -64,24 +63,24 @@ class TerminalTasks(Uniteval):
 
 
 class BrowserTasks(Uniteval):
-    def test_enter_info(self):
+    def test_enter_text(self):
         port = IpProvider.get_free_port()
-        p = Process(target=run_basic_server, args=(port,))
+        p = Process(target=BrowserServers.run_enter_server, args=(port,))
         p.start()
 
         query = ('What is the word that was presented to you after entering a word into the text box?'
                  'The word that was presented to you is the #keyword')
-        is_successful = self.keyword_task_eval(task_name=f'enter\0{port}', query=query, keyword='Spaetzle')
+        is_successful = self.keyword_eval(task_name=f'enter\0{port}', query=query, keyword='Spaetzle')
         self.assertTrue(is_successful)
         p.kill()
 
     def test_stackexchange(self):
         query = ('What is the first word on the most upvoted answer from the stackexchange post?'
                  'The first word is the required #keyword')
-        is_successful = self.keyword_task_eval(task_name='stackexchange', query=query, keyword='Increasing')
+        is_successful = self.keyword_eval(task_name='stackexchange', query=query, keyword='Increasing')
         self.assertTrue(is_successful)
 
-    def test_installation_navigation(self):
+    def test_rosinstall(self):
         task = self.task_provider.get_task('rosinstall')
         self.engine.do_task(task=task, max_steps=10)
 
@@ -93,25 +92,22 @@ class BrowserTasks(Uniteval):
 class PythonTasks(Uniteval):
     def test_read_file(self):
         proj = BasicProject()
-
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
-        is_successful = self.keyword_task_eval(task_name=f'read\0{proj.proj_dirpath}', keyword='log', query=query)
+
+        is_successful = self.keyword_eval(task_name=f'read\0{proj.proj_dirpath}', keyword='log', query=query)
         self.assertTrue(is_successful)
 
-    def test_run_api_retriever(self):
+    def test_run_api_call(self):
         proj = BasicProject()
-
-        from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
-        p = Process(target=self.run_api_server, args=(API_RETRIEVAL_PORT,))
+        p = Process(target=BrowserServers.run_api_server, args=(API_RETRIEVAL_PORT,))
         p.start()
 
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
-        is_successful = self.keyword_task_eval(task_name=f'run\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
+        is_successful = self.keyword_eval(task_name=f'run\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):
         proj = BasicProject()
-
         task = self.task_provider.get_task(f'build\0{proj.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 
@@ -122,26 +118,13 @@ class PythonTasks(Uniteval):
 
         print(f'- Output:\n{output}')
         print(f'- Expected output:\n{expected_output}')
-
         self.assertTrue(expected_output in output)
-
-    @staticmethod
-    def run_api_server(port : int):
-        from flask import Flask
-
-        app = Flask(__name__)
-        @app.route('/')
-        def farfalle():
-            return {'message': 'Farfalle'}
-
-        app.run(port=port)
-
 
 if __name__ == "__main__":
     # tt = TerminalTasks.ready()
     # bt = BrowserTasks.ready()
     pt = PythonTasks.ready()
-    pt.test_build_and_run()
+    pt.execute_statistically(reps=5, min_success_percent=80)
 
     # port = IpProvider.get_free_port()
     # p = Process(target=run_basic_server, args=(port,))

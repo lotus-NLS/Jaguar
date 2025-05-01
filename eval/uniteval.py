@@ -4,33 +4,29 @@ import sys
 
 import fuzzywuzzy.fuzz
 
+from engine.l0_main.lotus_engine import LotusEngine
 from engine.l2_models import InfConfig
 from engine.l2_models.language import Message
 from engine.l3_aos.tools import Tool, ToolArg
-from engine.l1_agents import Task
-from eval.nlu import NLU
+from eval.cenarios.task_provider import TaskProvider
+from holytools.devtools import Unittest
+
 
 # ---------------------------------------------------
 
-class Uniteval(NLU):
+class Uniteval(Unittest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls_dirpath = os.path.dirname(sys.modules[cls.__module__].__file__)
         task_fpath = os.path.join(cls_dirpath, 'tasks.txt')
         cls.task_provider : TaskProvider = TaskProvider(tasks_fpath=task_fpath)
+        cls.engine : LotusEngine = LotusEngine()
 
     def setUp(self):
         self.engine.reset()
 
-    def semantic_task_eval(self, task_name : str, query : str, prop : str) -> bool:
-        task = self.task_provider.get_task(task_name)
-        self.engine.do_task(task=task, max_steps=10)
-        response = self.engine.do_talk(query=query)
-
-        return self.evaluateProperty(msg=response, prop=prop)
-
-    def keyword_task_eval(self, task_name : str, query : str, keyword : str, fuzzy : bool = False) -> bool:
+    def keyword_eval(self, task_name : str, query : str, keyword : str, fuzzy : bool = False) -> bool:
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_steps=10)
 
@@ -52,7 +48,7 @@ class Uniteval(NLU):
         else:
             return given_keyword == keyword
 
-    def dict_task_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False) -> bool:
+    def dict_eval(self, task_name : str, query : str, target_dict : dict[str, str], fuzzy : bool = False) -> bool:
         class DictProviderTool(Tool):
             def __init__(self):
                 super().__init__()
@@ -128,31 +124,6 @@ class KeywordProviderTool(Tool):
         return [self.keyword_arg]
 
 
-class TaskProvider:
-    def __init__(self, tasks_fpath : str):
-        with open(tasks_fpath, 'r') as f:
-            content = f.read()
-            parts = content.split('++')
-            parts = parts[1:]
 
-        self.yaml_dict = {}
-        for p in parts:
-            lines = p.split('\n')
-            name = lines[0]
-            remaining = '\n'.join(lines[1:])
-            self.yaml_dict[name] = remaining
-
-    def get_task(self, identifier : str) -> Task:
-        segments = identifier.split('\0')
-        name = segments[0]
-        args = segments[1:]
-        task_content = self.yaml_dict[name]
-
-        for j, seg in enumerate(args):
-            task_content = task_content.replace(f'#{j+1}', seg)
-
-        task_content = task_content.strip()
-        task = Task.from_yaml(s=task_content)
-        return task
 
 
