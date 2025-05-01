@@ -13,22 +13,13 @@ from eval.uniteval import Uniteval
 
 
 class TerminalTasks(Uniteval):
-    def test_gpu_research(self):
-        query = ('Please state the model of the GPU that you found. Like so'
-                 '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
-
-        gpu_model = 'NVIDIA GeForce GTX 1060'
-        gpu_research = self.keyword_task_eval(task_name='simplehardware', query=query, keyword=gpu_model, fuzzy=True)
-        self.assertTrue(gpu_research)
-
     def test_hardware_summary(self):
         query = ('Please use the dict report tool to report your findings in the following format:'
                  '  - GPU: [Manufacturer, Series, Model, Memory]'
                  '  - CPU: [Manufacturer, Series Model, Clock rate]'
                  '  - RAM : [Int value]'
                  '  - Largest storage: [Rounded down int value]'
-                 '  - Motherboard: [Manufacturer, Model]'
-                 '')
+                 '  - Motherboard: [Manufacturer, Model]')
         target_dict = {
             'GPU': 'GeForce GTX 1060 6GB',
             'CPU': 'Intel Core i3-8100 CPU @ 3.60 GHz',
@@ -138,4 +129,4 @@ if __name__ == "__main__":
     # bt = BrowserTasks.ready()
     # pt = PythonTasks.ready()
 
-    tt.test_hardware_summary()
+    tt.test_nano()

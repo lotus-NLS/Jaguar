@@ -27,7 +27,7 @@ class Terminal(Workspace):
         if not os.path.isdir(cwd):
             raise InvalidArgValue(f'Invalid directory path: {cwd} is not a directory')
         self.tmux_session = self._open_session(cwd=cwd)
-        self.type(content='clear')
+        self.type(content='clear\n')
 
     def close(self):
         """Closes the terminal"""
@@ -60,11 +60,15 @@ class Terminal(Workspace):
     # actions
 
     def type(self, content : str) :
-        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text file. Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively"""
+        """Types in current terminal session. Can be used to execute commands, answer prompts or write in text file. Use C-[key], s-[key], M-[key] to press Ctrl+[key], Shift+[key] and Alt+[key] respectively. Use \n for pressing enter"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
+
+        content = content.replace('\\n', '\n')
         parts = content.split('\n')
-        for p in [p for p in  parts if not len(p) == 0]:
+        pane.send_keys(parts[0], enter=False)
+
+        for p in [p for p in  parts[1:]]:
             pane.send_keys(p, enter=False)
             pane.enter()
 
@@ -87,11 +91,12 @@ if __name__ == "__main__":
     t = Terminal()
     t.open_action.execute({})
 
-    t.type(content='echo Hellomydude')
-    t1 = t.get_text()
-    print(f'\nAfter typing:\n{t1}\n')
+    while True:
+        user_input = input()
+        if user_input == 'exit':
+            break
+        t.type(user_input)
 
-    t.close_action.execute({})
-    t.open_action.execute({})
-    t2 = t.get_text()
-    print(f'\nAfter re-opening:\n{t2}')
+    with open('/home/daniel/testdir/example.txt', 'r') as f:
+        fcontent = f.read()
+        print(f'"{fcontent}"')
