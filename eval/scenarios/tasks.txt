@@ -6,7 +6,6 @@
         - RAM information
         - Disk information
         - Motherboard information
-    - Write out summary
 ++simplehardware
 - Determine GPU model
     - Open Terminal
