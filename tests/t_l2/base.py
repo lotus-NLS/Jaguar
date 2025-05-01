@@ -20,7 +20,7 @@ class OpenAITest(CredTest):
         self.text_only = InfConfig.text_only()
         self.tool_allowed = InfConfig()
 
-        self.default_model : OpenAIModel = OpenAIModel.default_model(api_key=self.openai_apikey)
+        self.default_model : OpenAIModel = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.textbox = TextBox()
 
     def get_results(self, entries : list[Message], docs : list[ToolDoc], options : InfConfig) -> tuple[str, list[ToolCall]]:

@@ -9,7 +9,7 @@ class BrowserTest(CredTest):
     def setUp(self):
         self.beaver_test = 'https://en.wikipedia.org/wiki/Beaver'
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'
-        self.browser : Browser = Browser(google_api_key=self.google_apikey,
+        self.browser : Browser = Browser(google_api_key=self.google_api_key,
                                          searchengine_id=self.searchengine_id,
                                          headless=not self.has_graphic_capabilities())
 

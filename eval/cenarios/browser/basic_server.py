@@ -1,7 +1,8 @@
 import os.path
-import sys
 import time
+
 from flask import Flask, render_template_string
+
 
 def run_basic_server(port : int):
     app = Flask(__name__)

@@ -12,19 +12,19 @@ class CredTest(Unittest):
     @classmethod
     def setUpClass(cls):
         credentials : LotusCredentials = LotusCredentials.auto()
-        cls.credentials = credentials
+        # cls.creds : LotusCredentials = credentials
         cls.searchengine_id : str = credentials.search_engine_id
-        cls.google_apikey : str = credentials.google_api_key
-        cls.openai_apikey : str = credentials.openai_api_key
+        cls.google_api_key : str = credentials.google_api_key
+        cls.openai_api_key : str = credentials.openai_api_key
 
 class AgentTest(CredTest):
     def setUp(self):
-        model = OpenAIModel.default_model(api_key=self.openai_apikey)
+        model = OpenAIModel.default_model(api_key=self.openai_api_key)
         aos = AOS.empty()
         self.agent = Agent(aos=aos, model=model)
 
 class EngineTest(CredTest):
     def setUp(self):
-        self.model : LLM = OpenAIModel.default_model(api_key=self.openai_apikey)
+        self.model : LLM = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.engine : LotusEngine = LotusEngine()
         self.agent : Agent = self.engine.agent

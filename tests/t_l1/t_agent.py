@@ -12,8 +12,8 @@ from tests.t_l2.base import Greet
 
 class TestAgent(CredTest):
     def setUp(self):
-        aos = AOS.full(self.credentials.google_apikey, self.credentials.search_engine_id)
-        model = OpenAIModel.default_model(api_key=self.credentials.openai_api_key)
+        aos = AOS.full(self.google_api_key, self.searchengine_id)
+        model = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.agent: Agent = MockAgent(aos=aos, model=model)
         self.default_inf_config: InfConfig = InfConfig()
         self.task_provider: TaskProvider = TaskProvider()

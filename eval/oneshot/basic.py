@@ -40,7 +40,7 @@ class TestFileStructure(CredTest):
     def test_path_access(self):
         root_dir = Directory(path=self.tmp_dirpath)
         dir_view = root_dir.get_tree()
-        model = OpenAIModel.default_model(api_key=self.openai_apikey)
+        model = OpenAIModel.default_model(api_key=self.openai_api_key)
 
         ctx = Context.singleton(entry=Message.agent(msg=dir_view))
         ctx += Context.singleton(entry=Message.user(msg=f'Give the file path of file {self.random_folder.name}'

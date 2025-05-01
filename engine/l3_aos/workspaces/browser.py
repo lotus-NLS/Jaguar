@@ -40,7 +40,7 @@ class Browser(Workspace):
         else:
             try:
                 self.emulator.visit(url=url)
-            except Exception as e:
+            except Exception:
                 raise ConnectionError(f'Failed to connect to url {url}')
 
     def enter_text(self, input_field_idx : int, content : str):

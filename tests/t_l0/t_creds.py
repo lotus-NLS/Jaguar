@@ -16,8 +16,9 @@ class TestLotusCredentials(CredTest):
     # tests
 
     def test_creds_work(self):
-        self.credentials.validate_openai()
-        self.credentials.validate_search_engine()
+        creds = LotusCredentials(openai_api_key=self.openai_api_key,google_api_key=self.google_api_key,search_engine_id=self.searchengine_id)
+        creds.validate_openai()
+        creds.validate_search_engine()
 
     @staticmethod
     def measure_startup_time():
