@@ -95,14 +95,14 @@ class PythonTasks(Uniteval):
         proj = BasicProject()
 
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
-        is_successful = self.keyword_task_eval(task_name=f'read_{proj.proj_dirpath}', keyword='log', query=query)
+        is_successful = self.keyword_task_eval(task_name=f'read\0{proj.proj_dirpath}', keyword='log', query=query)
         self.assertTrue(is_successful)
 
     def test_run_api_retriever(self):
         proj = BasicProject()
 
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
-        is_successful = self.keyword_task_eval(task_name=f'run_{proj.proj_dirpath}', query=query, keyword='Farfalle')
+        is_successful = self.keyword_task_eval(task_name=f'run\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):
@@ -137,9 +137,9 @@ class PythonTasks(Uniteval):
 
 if __name__ == "__main__":
     # tt = TerminalTasks.ready()
-    bt = BrowserTasks.ready()
-    # bt.test_enter_info()
-    bt.test_stackexchange()
+    # bt = BrowserTasks.ready()
+    pt = PythonTasks.ready()
+    pt.test_run_api_retriever()
 
     # port = IpProvider.get_free_port()
     # p = Process(target=run_basic_server, args=(port,))

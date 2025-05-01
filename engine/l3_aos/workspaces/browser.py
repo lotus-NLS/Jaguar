@@ -6,7 +6,6 @@ from engine.l3_aos.workspaces.workspace import Workspace
 from pyscrape.search import SearchEngine
 from pyscrape.browse import BrowserEmulator
 
-
 # ---------------------------------------------------------
 
 class Browser(Workspace):
