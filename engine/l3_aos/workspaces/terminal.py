@@ -19,6 +19,7 @@ class Terminal(Workspace):
         super().__init__()
         self.tmux_session : Optional[Session] = None
         self.tmux_name : str = 'lotus'
+        self.use_root : bool = True
 
     def open(self, workdir_path : str = '~/testdir'):
         """Opens a terminal in the specified working directory available only to you"""
@@ -43,7 +44,8 @@ class Terminal(Workspace):
             server = libtmux.Server()
             session = server.find_where({"session_name": self.tmux_name})
             if session is None:
-                command = 'tmux new-session -s lotus -d "sudo -i"'
+                conditional_root = "sudo -i" if self.use_root else ""
+                command = f'tmux new-session -s lotus -d {conditional_root}'
                 subprocess.Popen(['bash', '-c', command], cwd=cwd)
                 time.sleep(2)
                 session = server.find_where({"session_name": self.tmux_name})
