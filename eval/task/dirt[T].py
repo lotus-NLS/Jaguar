@@ -22,12 +22,18 @@ class TerminalTasks(Uniteval):
         self.assertTrue(gpu_research)
 
     def test_hardware_summary(self):
-        query = 'Please use the dict report tool to report your findings'
+        query = ('Please use the dict report tool to report your findings in the following format:'
+                 '  - GPU: [Manufacturer, Series, Model, Memory]'
+                 '  - CPU: [Manufacturer, Series Model, Clock rate]'
+                 '  - RAM : [Int value]'
+                 '  - Largest storage: [Rounded down int value]'
+                 '  - Motherboard: [Manufacturer, Model]'
+                 '')
         target_dict = {
             'GPU': 'GeForce GTX 1060 6GB',
-            'CPU': 'Intel Core i3-8100 CPU',
-            'RAM storage in GB (Int value)': '32',
-            'Largest drive storage in GiB (Int value, Rounded down)': '931',
+            'CPU': 'Intel Core i3-8100 CPU @ 3.60 GHz',
+            'RAM storage in GB': '32',
+            'Largest drive storage in GiB': '931',
             'Motherboard': 'ASRock Z390 Pro4'
         }
 
