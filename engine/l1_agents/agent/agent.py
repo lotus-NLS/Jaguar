@@ -56,7 +56,7 @@ class Agent(Timber):
         self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
         self.update_memory(entry=Message.system(msg=f'Start by exploring and weighing your options, then'
                                                     f'outline a plan of action'))
-        self.handle(inf_config=InfConfig.text_only())
+        yield self.handle(inf_config=InfConfig.text_only())
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)

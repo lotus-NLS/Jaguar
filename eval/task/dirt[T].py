@@ -26,8 +26,8 @@ class TerminalTasks(Uniteval):
         target_dict = {
             'GPU': 'GeForce GTX 1060 6GB',
             'CPU': 'Intel Core i3-8100 CPU',
-            'RAM storage in GB': '32GiB',
-            'Downrounded Root drive storage in GB': '931',
+            'RAM storage in GB (Int value)': '32',
+            'Largest drive storage in GiB (Int value, Rounded down)': '931',
             'Motherboard': 'ASRock Z390 Pro4'
         }
 
