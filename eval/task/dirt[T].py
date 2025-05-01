@@ -65,7 +65,8 @@ class TerminalTasks(Uniteval):
 
 class BrowserTasks(Uniteval):
     def test_enter_info(self):
-        port = IpProvider.get_free_port()
+        # port = IpProvider.get_free_port()
+        port = 80000
         p = Process(target=run_basic_server, args=(port,))
         p.start()
 
@@ -137,10 +138,9 @@ class PythonTasks(Uniteval):
 
 if __name__ == "__main__":
     # tt = TerminalTasks.ready()
-    # bt = BrowserTasks.ready()
-    # bt.test_enter_info()
+    bt = BrowserTasks.ready()
+    bt.test_enter_info()
 
-
-    port = IpProvider.get_free_port()
-    p = Process(target=run_basic_server, args=(port,))
-    p.start()
+    # port = IpProvider.get_free_port()
+    # p = Process(target=run_basic_server, args=(port,))
+    # p.start()

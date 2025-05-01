@@ -1,10 +1,9 @@
 import os.path
+import sys
 import time
-
+from flask import Flask, render_template_string
 
 def run_basic_server(port : int):
-    from flask import Flask, render_template_string
-
     app = Flask(__name__)
     dirpath = os.path.dirname(__file__)
 
@@ -14,7 +13,7 @@ def run_basic_server(port : int):
             HTML_TEMPLATE = f.read()
             return render_template_string(HTML_TEMPLATE)
 
-    app.run(debug=True, port=port)
+    app.run(port=port)
 
 
 if __name__ == "__main__":
