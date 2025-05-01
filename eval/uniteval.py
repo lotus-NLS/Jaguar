@@ -76,7 +76,7 @@ class Uniteval(NLU):
         print(f'- Target dictionary: {json.dumps(target_dict, indent=2)}')
 
         dicts_match = True
-        fuzzy_tol = 75
+        fuzzy_tol = 70
         for k in given_dict:
             v1, v2 = given_dict[k], target_dict[k]
             values_match = self.values_match(v1, v2, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)

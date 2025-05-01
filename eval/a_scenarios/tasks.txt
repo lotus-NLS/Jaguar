@@ -1,11 +1,10 @@
 ++hardware
-- Provide user with summary of hardware
-    - Acquire information
-        - CPU information
-        - GPU information
-        - RAM information
-        - Disk information
-        - Motherboard information
+- Acquire hardware information. You will be prompted for each component at the end of the task
+    - CPU information
+    - GPU information
+    - RAM information
+    - Disk information
+    - Motherboard information
 ++simplehardware
 - Determine GPU model
     - Open Terminal
