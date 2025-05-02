@@ -43,7 +43,7 @@ class CallOptions:
 class InfConfig:
     required_tool : Optional[Tool] = None
     timeout : float = 10
-    input_tokens_max: int = 2**15
+    input_tokens_max: int = 2**16
     disable_call: bool = False
     output_tokens_max : Optional[int] = None
     debugging : bool = True
