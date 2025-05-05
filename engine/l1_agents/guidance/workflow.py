@@ -158,6 +158,31 @@ class Workflow:
                         start_node=lib_node,
                         notice=notice)
 
+    @classmethod
+    def edit(cls, project_dirpath : str, filepath : str, change_description : str):
+        notice = (f'You are tasked with making an edit in the project {project_dirpath} in file {filepath}.'
+                  f'Here is a description of the intended change: {change_description}'
+                  f'You will be guided through this process through the TaskTracker tool'
+                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                  f'As soon as you finish this section of tasks the next section will be presented to you')
+
+        planning_ys = (f'- Familiarize and outline'
+                       f'   - Familiarize yourself with the classes/functions in {filepath}'
+                       f'   - Outline where changes will have to be made')
+        planning_task = Task.from_yaml(s=planning_ys)
+
+        changes_ys = (f'- Implement changes'
+                      f'    - Write outlined changes in file'
+                      f'    - Fix inspection issues if any arise')
+        changes_task = Task.from_yaml(s=changes_ys)
+
+        planning_node = Node(name='Planning', task=planning_task, max_steps=10)
+        changes_task = Node(name='Changes', task=changes_task, max_steps=10)
+        edge = Edge(source=planning_node, target=changes_task, case='Success')
+
+        return Workflow(nodes=[planning_node, changes_task],edges=[edge], notice=notice, start_node=planning_node)
+
+
 
     @classmethod
     def example(cls) -> Workflow:
