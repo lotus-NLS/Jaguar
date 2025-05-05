@@ -159,8 +159,6 @@ class Workflow:
                         notice=notice)
 
 
-
-
     @classmethod
     def example(cls) -> Workflow:
         n1 = Node.single_directive(name='start', directive='Test task A. Mark this task completed')
