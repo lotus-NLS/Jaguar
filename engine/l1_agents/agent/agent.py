@@ -13,12 +13,10 @@ from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
 from engine.l3_aos.workspaces import Workspace
-from holytools.logging import Timber
-
 
 # ---------------------------------------------------------
 
-class Agent(Timber):
+class Agent:
     def __init__(self, model : LLM, aos : AOS, core : Core = Core.GOTO()):
         super().__init__()
         self.model: LLM = model
@@ -44,8 +42,6 @@ class Agent(Timber):
         return self.handle()
 
     def work(self, task : Task, max_steps : int) -> Iterator[Step]:
-        self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
-
         self.task_tracker.root = task
         open_tool = self.task_tracker.open_action
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
@@ -62,9 +58,8 @@ class Agent(Timber):
         for j in range(max_steps):
             inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
-            print()
-
             yield step
+
             if not self.task_tracker.is_open:
                 break
 
@@ -90,13 +85,9 @@ class Agent(Timber):
             pipe = self.write(generation=generation)
             outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
         except APITimeoutError:
-            error_msg = f'OpenAI API request timed out after {inf_config.timeout} seconds'
-            self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
-            return Step.failed(context=context)
+            return Step.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
         except APIError:
-            error_msg = f'OpenAI API request failed'
-            self.error(f'{Agent.__name__}.{Agent.handle.__name__}: {error_msg}')
-            return Step.failed(context=context)
+            return Step.failed(context=context, err_msg=f'OpenAI API request failed')
 
         headline = self.task_tracker.headline
         self.task_tracker.headline = None
@@ -107,6 +98,7 @@ class Agent(Timber):
         pipe = TextPipe()
         for chunk in generation:
             pipe.put(chunk.get_text())
+        pipe.put('\n')
         pipe.stop()
 
         text = generation.get_text()

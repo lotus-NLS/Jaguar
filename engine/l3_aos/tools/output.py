@@ -4,9 +4,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Any
 
-from holytools.logging import LoggerFactory
-
-tool_output_logger = LoggerFactory.get_logger(name=__name__)
 
 # --------------------------------------------------
 
@@ -50,7 +47,6 @@ class ToolOutput:
 
     def log_update(self, update : ProgressUpdate):
         self.progress_msgs.append(update)
-        tool_output_logger.info(str(update))
 
     # -----------------------------------------------------------
 

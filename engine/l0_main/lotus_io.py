@@ -64,6 +64,10 @@ class LotusIO(Timber):
         socketio.start_background_task(send_outgoing)
 
     def observe(self, step : Step) -> str:
+        if step.is_failed():
+            self.error(f'Failed step: {step.err_msg}')
+            return ''
+
         text = ''
         self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 

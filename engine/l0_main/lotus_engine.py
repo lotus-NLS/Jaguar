@@ -2,7 +2,7 @@ import time
 
 from engine.l0_main.lotus_io import LotusIO
 from engine.l0_main.settings import LotusCredentials
-from engine.l1_agents import Agent, Evaluator, Task
+from engine.l1_agents import Agent, Task
 from engine.l1_agents.guidance.workflow import Workflow, Node
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message
@@ -48,7 +48,7 @@ class LotusEngine(Timber):
         self.agent.update_memory(entry=workflow_description)
 
         while True:
-            print(f'\n## Now starting work on node: {node.name}')
+            self.info(f'\n## Now starting work on node: {node.name}')
             self.do_task(task=node.task, max_steps=node.max_steps)
 
             if not node.name in wf.outgoing_edge_map:
@@ -63,6 +63,7 @@ class LotusEngine(Timber):
         return node
 
     def do_task(self, task : Task, max_steps : int, halt_every_step : bool = False):
+        self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
         writings : list[str] = []
         for step in self.agent.work(task=task, max_steps=max_steps):
             w = self.IO.observe(step=step)
@@ -72,7 +73,7 @@ class LotusEngine(Timber):
                 time.sleep(0.02)
                 input(f'Press enter to continue ...')
 
-        print(f'- Finished work mode after {len(writings)} steps\n')
+        self.info(f'- Finished work mode after {len(writings)} steps\n')
 
     def do_talk(self, query : str) -> str:
         user_mesage = Message.user(msg=query)

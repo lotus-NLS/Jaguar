@@ -5,7 +5,7 @@ from engine.l2_models import Step
 from engine.l2_models.generation.step import TextPipe, State, Report
 from engine.l2_models.language import Context
 from holytools.devtools import Unittest
-from holytools.devtools.testing.runner import BlockedTester
+from holytools.devtools.testing.unit import BlockedTester
 
 
 # ------------------------------------------------------

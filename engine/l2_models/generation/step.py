@@ -23,13 +23,17 @@ class Step:
     ckpt_label: str
     tool_outputs : list[ToolOutput]
     is_final : bool = False
+    err_msg : Optional[str] = None
 
     def get_state(self, uuid : str) -> State:
         return State(post_context=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
+    def is_failed(self) -> bool:
+        return self.ckpt_label == 'failed'
+
     @classmethod
-    def failed(cls, context : Context):
-        return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[], pre_ctx=context)
+    def failed(cls, context : Context, err_msg : str):
+        return cls(text_pipe=TextPipe.failed(), post_ctx=context, ckpt_label='failed', tool_outputs=[], pre_ctx=context, err_msg=err_msg)
 
     def get_writing(self) -> str:
         text_stream = self.text_pipe.get_text_stream()
