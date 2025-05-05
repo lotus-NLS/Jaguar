@@ -43,12 +43,14 @@ class Terminal(Workspace):
         try:
             server = libtmux.Server()
             session = server.find_where({"session_name": self.tmux_name})
-            if session is None:
-                conditional_root = "sudo -i" if self.use_root else ""
-                command = f'tmux new-session -s lotus -d {conditional_root}'
-                subprocess.Popen(['bash', '-c', command], cwd=cwd)
-                time.sleep(2)
-                session = server.find_where({"session_name": self.tmux_name})
+            if session:
+                session.kill_session()
+
+            conditional_root = "sudo -i" if self.use_root else ""
+            command = f'tmux new-session -s lotus -d {conditional_root}'
+            subprocess.Popen(['bash', '-c', command], cwd=cwd)
+            time.sleep(2)
+            session = server.find_where({"session_name": self.tmux_name})
             return session
         except Exception as e:
             self.error(msg=f'An exception occured while trying to start terminal session using executable'

@@ -17,6 +17,7 @@
     - Open Terminal
     - Open the filepath #1 using nano
     - Write content #2 into the file.
+    - Close nano
 ++stackexchange
 - Retrieve the first word from stackexchange answer
     - Open the browser

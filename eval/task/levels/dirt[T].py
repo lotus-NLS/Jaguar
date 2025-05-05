@@ -44,7 +44,7 @@ class TerminalTasks(TaskEval):
         fpath = tempfile.mktemp()
         content = 'Ramen'
         task = self.task_provider.get_task(f'nano\0{fpath}\0{content}')
-        self.engine.do_task(task, max_steps=10)
+        self.engine.do_task(task, max_steps=15)
 
         workspaces = self.engine.agent.aos.get_workspaces()
         terminal = [ws for ws in workspaces if ws.get_name() == Terminal.get_name()][0]
@@ -120,6 +120,7 @@ class PythonTasks(TaskEval):
         print(f'- Expected output:\n{expected_output}')
         self.assertTrue(expected_output in output)
 
+
 if __name__ == "__main__":
-    pt = BrowserTasks.ready()
-    pt.execute_statistically(reps=5, min_success_percent=80)
+    pt = TerminalTasks.ready()
+    pt.execute_statistically(reps=5, min_success_percent=80, test_names=['test_nano'])

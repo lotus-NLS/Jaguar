@@ -77,6 +77,7 @@ class LotusIO(Timber):
                 time.sleep(0.05)
                 text += chunk
                 print(chunk, end='')
+            print('\n')
         except StopIteration:
             pass
 
