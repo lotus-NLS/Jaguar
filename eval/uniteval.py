@@ -35,7 +35,8 @@ class UnitEval(Unittest):
             ut = cls.ready()
             ut.execute_stats(reps=reps, min_success_percent=100, test_names=test_names)
 
-        script_dirpath = os.path.dirname(__file__)
+        module = sys.modules[cls.__module__]
+        script_dirpath = os.path.dirname(module.__file__)
         log_fpath = os.path.join(script_dirpath, f'{cls.__name__}.txt')
         with open(log_fpath, 'a') as f:
             f.write(log_capture.get_stored())
@@ -137,8 +138,4 @@ class KeywordProviderTool(Tool):
 
     def get_args(self) -> list[ToolArg]:
         return [self.keyword_arg]
-
-
-
-
 
