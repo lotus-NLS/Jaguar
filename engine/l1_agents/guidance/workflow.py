@@ -182,6 +182,38 @@ class Workflow:
 
         return Workflow(nodes=[planning_node, changes_task],edges=[edge], notice=notice, start_node=planning_node)
 
+    @classmethod
+    def debug(cls, project_dirpath : str, filepath : str, bug_description : str):
+        notice = (f'You are tasked with debugging behaviour of the file {filepath} in {project_dirpath}'
+                  f'through the code state squeeze method. '
+                  f'Here is a description of the bug appearing in {filepath}: {bug_description}'
+                  f'The code state squeeze method involves'
+                  f'creating a bugfree minimal example of the behaviour of the described module and then'
+                  f'iteratively working towards the live bugful state until the bug appears to locate which lines'
+                  f'introduced the bug.')
+
+        familiarize_ys = (f'- Familiarize yourself with the module'
+                          f'    - Open the file at {filepath}'
+                          f'    - Take note of the module and its components and functions')
+        famil_task = Task.from_yaml(s=familiarize_ys)
+
+        minimal_example = (f'- Outline the minimal example'
+                           f'   - Summarize the essential functions of this module'
+                           f'   - Write out a minimal bugfree example in same directory')
+        minimal_task = Task.from_yaml(s=minimal_example)
+
+        converge = (f'- Converge the minimal example against live bugful state'
+                    f'  - Run the minmal minmal bugfree example'
+                    f'  - Confirm that the bug is gone'
+                    f'  - Iteratively introduce more components/features of the original live state')
+        converge_task = Task.from_yaml(s=converge)
+
+        nodes = [Node(name='Familiarize', task=famil_task, max_steps=10),
+                Node(name='Minimal example', task=minimal_task, max_steps=10),
+                Node(name='Converge', task=converge_task, max_steps=10)]
+
+        edges = Edge.linear_chain(nodes=nodes)
+        return Workflow(nodes=nodes, edges=edges, start_node=nodes[0], notice=notice)
 
 
     @classmethod

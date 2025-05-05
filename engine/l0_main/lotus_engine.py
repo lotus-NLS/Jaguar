@@ -10,7 +10,6 @@ from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from holytools.logging import Timber
 
-
 # ---------------------------------------------------------
 
 class LotusEngine(Timber):
@@ -81,8 +80,8 @@ class LotusEngine(Timber):
 
         step = self.agent.talk(msg=query)
         response = self.IO.observe(step=step)
-
         return response
+
 
 if __name__ == "__main__":
     engine = LotusEngine()
