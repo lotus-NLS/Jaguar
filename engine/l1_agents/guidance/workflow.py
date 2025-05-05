@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os.path
 from dataclasses import dataclass
+from typing import Optional
 
 from engine.l1_agents.guidance.tasktracker import Task
 from engine.l3_aos.tools import Tool, ToolArg
@@ -13,7 +14,11 @@ from holytools.fileIO import SegmentProvider
 class Node:
     name : str
     max_steps : int
-    task : Task
+    task : Optional[Task]
+
+    @classmethod
+    def final(cls, name : str) -> Node:
+        return Node(name=name, task=None, max_steps=0)
 
     @classmethod
     def single_directive(cls, name : str, directive : str, max_steps : int = 5):
@@ -97,6 +102,63 @@ class Workflow:
 
         testWorkflow = Workflow(start_node=n0, nodes=[n0, n1], edges=edges, notice=notice)
         return testWorkflow
+
+
+    @classmethod
+    def build(cls, project_dirpath : str, filename : str, description : str):
+        proj_name = os.path.basename(project_dirpath)
+        notice = (f'You are tasked with building an additional module in project {proj_name} in file {filename}'
+                  f'Here is a description of the intended module: {description}'
+                  f'You will be guided through this process through the TaskTracker tool'
+                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                  f'As soon as you finish this section of tasks the next section will be presented to you')
+
+        lib_ys = (f'- Determine suitable library if any needed'
+                   f'   - Reason whether any python library is needed'
+                   f'   - If library needed explore choices. Else mark done')
+        lib_task = Task.from_yaml(s=lib_ys)
+
+
+        build_ys = (f'- Implement an initial draft of the module'
+                      f'    - Outline how you would implement these requirements'
+                      f'    - Write out an initial draft of the module')
+        build_task = Task.from_yaml(s=build_ys)
+
+        inspection_ys = (f'- Address inspection problems'
+                           f'   - Take stock of inspection issues'
+                           f'   - Formulate solution and attempt to solve'
+                           f'   - If unsuccessful try solution for second time'
+                           f'   - If still unsucessful quit task')
+        inspection_task = Task.from_yaml(s=inspection_ys)
+
+        run_ys = (f'- Run and iterate until requirements fulfilled:'
+                      f'    - Run  file'
+                      f'    - Take note of errors or unintended behaviour'
+                      f'    - Edit file to take care of errors'
+                      f'    - Repeat above steps until behaviour aligns with intentions')
+        run_task = Task.from_yaml(s=run_ys)
+
+        lib_node = Node(name=f'Determine lib', task=lib_task, max_steps=5)
+        build_node = Node(name=f'Build module', task=build_task, max_steps=20)
+        inspect_node = Node(name=f'Inspect module', task=inspection_task, max_steps=10)
+        iterate_node = Node(name=f'Run module', task=run_task, max_steps=10)
+        inspection_issue = Node(f'Inspection failed!', task=None, max_steps=0)
+        iterate_issue = Node(f'Iteration failed!', task=None, max_steps=0)
+        build_success = Node(f'Build success!', task=None, max_steps=0)
+
+        lib_build_edge = Edge(source=lib_node, target=build_node, case='Success')
+        build_inspect_edge = Edge(source=build_node, target=inspect_node, case='Success')
+        inspect_iterate_edge = Edge(source=inspect_node, target=iterate_node, case='Success')
+        inspect_failure_edge = Edge(source=inspect_node, target=inspection_issue, case='Failure')
+        iterate_success_edge = Edge(source=iterate_node, target=build_success, case='Success')
+        iterate_failure_edge = Edge(source=iterate_node, target=iterate_issue, case='Failure')
+
+        return Workflow(nodes=[lib_node, build_node, inspect_node, iterate_node, inspection_issue, iterate_issue, build_success],
+                        edges=[lib_build_edge, build_inspect_edge, inspect_iterate_edge, inspect_failure_edge,iterate_success_edge, iterate_failure_edge],
+                        start_node=lib_node,
+                        notice=notice)
+
+
 
 
     @classmethod
