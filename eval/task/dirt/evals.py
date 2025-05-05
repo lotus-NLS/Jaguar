@@ -7,13 +7,13 @@ from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.cenarios.browser.basic_server import BrowserServers
 from eval.cenarios.python import BasicProject
 from eval.cenarios.python.api_retrieval import API_RETRIEVAL_PORT
-from eval.task.taskeval import TaskEval
+from eval.uniteval import UnitEval
 from holytools.network import IpProvider
 from holytools.logging import CaptureLogs
 
 # ---------------------------------------------------
 
-class TerminalTasks(TaskEval):
+class TerminalEval(UnitEval):
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
@@ -62,7 +62,7 @@ class TerminalTasks(TaskEval):
             self.assertTrue(file_content == expected_content)
 
 
-class BrowserTasks(TaskEval):
+class BrowserEval(UnitEval):
     def test_enter_text(self):
         port = IpProvider.get_free_port()
         p = Process(target=BrowserServers.run_enter_server, args=(port,))
@@ -89,7 +89,7 @@ class BrowserTasks(TaskEval):
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
-class PythonTasks(TaskEval):
+class PythonEval(UnitEval):
     def test_read_file(self):
         proj = BasicProject()
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
@@ -131,10 +131,10 @@ if __name__ == "__main__":
     log_capture = CaptureLogs()
     with log_capture:
         if args.script == 'nano':
-            TerminalTasks.evaluate(test_names=['test_nano'])
+            TerminalEval.evaluate(test_names=['test_nano'])
         elif args.script == 'python':
-            PythonTasks.evaluate(reps=1)
+            PythonEval.evaluate(reps=1)
         elif args.script == 'terminal':
-            TerminalTasks.evaluate()
+            TerminalEval.evaluate()
         else:
             raise ValueError(f'Unknown script: {args.script}')

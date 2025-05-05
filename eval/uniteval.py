@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from typing import Optional
 
 import fuzzywuzzy.fuzz
 
@@ -10,11 +11,11 @@ from engine.l2_models.language import Message
 from engine.l3_aos.tools import Tool, ToolArg
 from eval.cenarios.task_provider import TaskProvider
 from holytools.devtools import Unittest
-
+from holytools.logging import CaptureLogs
 
 # ---------------------------------------------------
 
-class Uniteval(Unittest):
+class UnitEval(Unittest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -25,6 +26,20 @@ class Uniteval(Unittest):
 
     def setUp(self):
         self.engine.reset()
+
+    @classmethod
+    def evaluate(cls, reps : int = 5, test_names : Optional[list[str]] = None):
+        log_capture = CaptureLogs()
+
+        with log_capture:
+            ut = cls.ready()
+            ut.execute_stats(reps=reps, min_success_percent=100, test_names=test_names)
+
+        script_dirpath = os.path.dirname(__file__)
+        log_fpath = os.path.join(script_dirpath, f'{cls.__name__}.txt')
+        with open(log_fpath, 'a') as f:
+            f.write(log_capture.get_stored())
+
 
     def keyword_eval(self, task_name : str, query : str, keyword : str, fuzzy : bool = False) -> bool:
         task = self.task_provider.get_task(task_name)
@@ -98,8 +113,8 @@ class Uniteval(Unittest):
     def values_match(v1: str, v2: str, fuzzy : bool, fuzzy_tol : int = 75):
         if '|' in v2:
             v21, v22 = v2.split('||')
-            v21_match = Uniteval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
-            v22_match = Uniteval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            v21_match = UnitEval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            v22_match = UnitEval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
             return v21_match or v22_match
 
         if fuzzy:
