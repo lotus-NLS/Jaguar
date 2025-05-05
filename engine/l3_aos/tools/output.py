@@ -15,7 +15,7 @@ class ToolOutput:
 
     def __post_init__(self):
         super().__init__()
-        self.progress_msgs : list[ProgressUpdate] = []
+        self.prog_updates : list[ProgressUpdate] = []
 
     @classmethod
     def failed(cls, reason : str):
@@ -46,7 +46,7 @@ class ToolOutput:
         self.log_update(ProgressUpdate.finish(content=msg))
 
     def log_update(self, update : ProgressUpdate):
-        self.progress_msgs.append(update)
+        self.prog_updates.append(update)
 
     # -----------------------------------------------------------
 
@@ -54,7 +54,7 @@ class ToolOutput:
         EXCEPTION = ProgressUpdate.exception(content='')
         FAILED = ProgressUpdate.failed(content='')
 
-        for progress in self.progress_msgs:
+        for progress in self.prog_updates:
             if progress.update_type == EXCEPTION.update_type:
                 return ExitStatus.EXCEPTION
             if progress.update_type in [FAILED.update_type]:
@@ -74,7 +74,7 @@ class ToolOutput:
         FAILED = ProgressUpdate.failed(content='')
         EXCEPTION = ProgressUpdate.exception(content='')
 
-        return [progress.content for progress in self.progress_msgs if progress.update_type in [FAILED.update_type, EXCEPTION.update_type]]
+        return [progress.content for progress in self.prog_updates if progress.update_type in [FAILED.update_type, EXCEPTION.update_type]]
 
 
 class ExitStatus(Enum):

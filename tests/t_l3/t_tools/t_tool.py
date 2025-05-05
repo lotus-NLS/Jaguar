@@ -24,12 +24,12 @@ class TestTool(ToolTest):
     def test_exception(self):
         output = self.invalid_tool.execute(self.valid_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.EXCEPTION)
-        self.assertTrue(any(msg.update_type == self.EXCEPTION.update_type for msg in output.progress_msgs))
+        self.assertTrue(any(msg.update_type == self.EXCEPTION.update_type for msg in output.prog_updates))
 
     def test_missing_required_arg(self):
         output = self.simple_tool.execute(self.empty_tool_call.get_args_dict())
         self.assertEqual(output.get_exit_status(), ExitStatus.FAILED)
-        self.assertTrue(any(msg.update_type == self.FAILED.update_type for msg in output.progress_msgs))
+        self.assertTrue(any(msg.update_type == self.FAILED.update_type for msg in output.prog_updates))
 
     def test_invalid_arg(self):
         output = self.simple_tool.execute(self.invalid_tool_call.get_args_dict())
