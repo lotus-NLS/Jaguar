@@ -1855,3 +1855,18 @@ TerminalTasks.test_nano                           SUCCESS    109.217s
 [92m
 ✓ 1/1 tests ran successfully![0m
 ======================================================================
+[Warning]: Unclosed resource: "subprocess 13360 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 13488 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 13629 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 13776 is still running\."Enable trace_resourcewarning to obtain object trace
+[Warning]: Unclosed resource: "subprocess 13903 is still running\."Enable trace_resourcewarning to obtain object trace
+------> TerminalTasks.test_nano 
+Result       : ['✓', '✗', '✗', '✓', '✓']
+Success rate : 60.0%
+Status       : FAIL
+
+------------------------------ Summary ------------------------------
+TerminalTasks.test_nano                           FAIL       113.001s 
+[91m
+❌ 1/1 tests had errors or failures![0m
+======================================================================

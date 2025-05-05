@@ -17,7 +17,7 @@
     - Open Terminal
     - Open the filepath #1 using nano
     - Write content #2 into the file.
-    - Close nano
+    - Exit nano but dont close terminal
 ++stackexchange
 - Retrieve the first word from stackexchange answer
     - Open the browser
@@ -47,7 +47,6 @@
     - Open the api_retrieval module
     - Run it
     - Report back with the content of the received message
-    - Exit nano
 ++build_and_run
 - Build and run a simple hello world file
     - Open the python project at #1
