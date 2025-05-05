@@ -146,7 +146,7 @@ class ViewProvider:
     def __init__(self, proj_dirpath : str):
         self.proj_dirpath : str = proj_dirpath
         self.excluded_patterns : list[str] = ['.*\\.pyc']
-        self.excluded_dirs : list[str] = ['.venv', '.git', '.idea']
+        self.excluded_dirs : list[str] = ['.venv', '.git', '.idea', 'build']
 
     def get_metadata(self, interpreter_fpath : str) -> str:
         venv = os.path.relpath(interpreter_fpath, self.proj_dirpath) if interpreter_fpath else None

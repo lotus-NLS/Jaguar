@@ -121,32 +121,27 @@ class Workflow:
         lib_ys = (f'- Determine suitable library if any needed'
                    f'   - Reason whether any python library is needed'
                    f'   - If library needed explore choices. Else mark done')
-        lib_task = Task.from_yaml(s=lib_ys)
-
 
         build_ys = (f'- Implement an initial draft of the module'
                       f'    - Outline how you would implement these requirements'
                       f'    - Write out an initial draft of the module')
-        build_task = Task.from_yaml(s=build_ys)
 
         inspection_ys = (f'- Address inspection problems'
                            f'   - Take stock of inspection issues'
                            f'   - Formulate solution and attempt to solve'
                            f'   - If unsuccessful try solution for second time'
                            f'   - If still unsucessful quit task')
-        inspection_task = Task.from_yaml(s=inspection_ys)
 
         run_ys = (f'- Run and iterate until requirements fulfilled:'
                       f'    - Run  file'
                       f'    - Take note of errors or unintended behaviour'
                       f'    - Edit file to take care of errors'
                       f'    - Repeat above steps until behaviour aligns with intentions')
-        run_task = Task.from_yaml(s=run_ys)
 
-        lib_node = Node(name=f'Determine lib', task=lib_task, max_steps=5)
-        build_node = Node(name=f'Build module', task=build_task, max_steps=20)
-        inspect_node = Node(name=f'Inspect module', task=inspection_task, max_steps=10)
-        iterate_node = Node(name=f'Run module', task=run_task, max_steps=10)
+        lib_node = Node.from_yaml(yaml_str=lib_ys, max_steps=10)
+        build_node = Node.from_yaml(yaml_str=build_ys, max_steps=10)
+        inspect_node = Node.from_yaml(yaml_str=inspection_ys, max_steps=10)
+        iterate_node = Node.from_yaml(yaml_str=run_ys, max_steps=10)
         inspection_issue = Node(f'Inspection failed!', task=None, max_steps=0)
         iterate_issue = Node(f'Iteration failed!', task=None, max_steps=0)
         build_success = Node(f'Build success!', task=None, max_steps=0)
@@ -199,22 +194,19 @@ class Workflow:
         familiarize_ys = (f'- Familiarize yourself with the module'
                           f'    - Open the file at {filepath}'
                           f'    - Take note of the module and its components and functions')
-        famil_task = Task.from_yaml(s=familiarize_ys)
 
         minimal_example = (f'- Outline the minimal example'
                            f'   - Summarize the essential functions of this module'
                            f'   - Write out a minimal bugfree example in same directory')
-        minimal_task = Task.from_yaml(s=minimal_example)
 
         converge = (f'- Converge the minimal example against live bugful state'
                     f'  - Run the minmal minmal bugfree example'
                     f'  - Confirm that the bug is gone'
                     f'  - Iteratively introduce more components/features of the original live state')
-        converge_task = Task.from_yaml(s=converge)
 
-        nodes = [Node(name='Familiarize', task=famil_task, max_steps=10),
-                Node(name='Minimal example', task=minimal_task, max_steps=10),
-                Node(name='Converge', task=converge_task, max_steps=10)]
+        nodes = [Node.from_yaml(yaml_str=familiarize_ys, max_steps=10),
+                Node.from_yaml(yaml_str=minimal_example, max_steps=10),
+                Node.from_yaml(yaml_str=converge, max_steps=10)]
 
         edges = Edge.linear_chain(nodes=nodes)
         return Workflow(nodes=nodes, edges=edges, start_node=nodes[0], notice=notice)
@@ -228,8 +220,6 @@ class Workflow:
         return cls(start_node=n1, nodes=[n1, n2], edges=[edge], notice='You will be guided through this workflow through a series of'
                                                                        'task lists. They will each be presented to you in thie TaskTracker tool'
                                                                        'Only the active TaskTracker tool is relevant.')
-
-
     @classmethod
     def get_default_notice(cls) -> str:
         return (f'You will be guided through this process through the TaskTracker tool'
