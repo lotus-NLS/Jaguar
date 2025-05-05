@@ -122,5 +122,20 @@ class PythonTasks(TaskEval):
 
 
 if __name__ == "__main__":
-    pt = TerminalTasks.ready()
-    pt.execute_statistically(reps=5, min_success_percent=80, test_names=['test_nano'])
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--script', type=str, required=True)
+    args = parser.parse_args()
+
+    if args.script == 'nano':
+        tt = TerminalTasks.ready()
+        tt.execute_statistically(reps=5, min_success_percent=80, test_names=['test_nano'])
+    elif args.script == 'python':
+        py = PythonTasks.ready()
+        py.execute_statistically(reps=5, min_success_percent=80)
+    elif args.script == 'terminal':
+        tt = TerminalTasks.ready()
+        tt.execute_statistically(reps=5, min_success_percent=80)
+    else:
+        raise ValueError(f'Unknown script: {args.script}')

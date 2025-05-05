@@ -18,7 +18,7 @@ class Terminal(Workspace):
     def __init__(self):
         super().__init__()
         self.tmux_session : Optional[Session] = None
-        self.tmux_name : str = 'lotus'
+        self.tmux_name : str = 'jaguar'
         self.use_root : bool = True
 
     def open(self, workdir_path : str = '~/testdir'):
@@ -47,7 +47,7 @@ class Terminal(Workspace):
                 session.kill_session()
 
             conditional_root = "sudo -i" if self.use_root else ""
-            command = f'tmux new-session -s lotus -d {conditional_root}'
+            command = f'tmux new-session -s {self.tmux_name} -d {conditional_root}'
             subprocess.Popen(['bash', '-c', command], cwd=cwd)
             time.sleep(2)
             session = server.find_where({"session_name": self.tmux_name})
