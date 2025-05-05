@@ -98,13 +98,14 @@ class Agent:
         pipe = TextPipe()
         for chunk in generation:
             pipe.put(chunk.get_text())
-        pipe.put('\n')
-        pipe.stop()
+
 
         text = generation.get_text()
         if text:
             self.update_memory(entry=Message.agent(msg=text))
+            pipe.put('\n')
 
+        pipe.stop()
         return pipe
 
     def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolOutput]:

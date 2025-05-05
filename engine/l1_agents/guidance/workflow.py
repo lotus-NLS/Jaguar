@@ -25,6 +25,13 @@ class Node:
         task = Task.from_yaml(s=f'-{directive}')
         return Node(name=name, task=task, max_steps=max_steps)
 
+    @classmethod
+    def from_yaml(cls, yaml_str : str,  max_steps : int):
+        first_line = yaml_str.split('\n')[0]
+        first_line.strip('-').strip()
+        task = Task.from_yaml(s=yaml_str)
+        return Node(name=first_line, task=task,max_steps=max_steps)
+
 @dataclass
 class Edge:
     source : Node
@@ -109,9 +116,7 @@ class Workflow:
         proj_name = os.path.basename(project_dirpath)
         notice = (f'You are tasked with building an additional module in project {proj_name} in file {filename}'
                   f'Here is a description of the intended module: {description}'
-                  f'You will be guided through this process through the TaskTracker tool'
-                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
-                  f'As soon as you finish this section of tasks the next section will be presented to you')
+                  f'{cls.get_default_notice()}')
 
         lib_ys = (f'- Determine suitable library if any needed'
                    f'   - Reason whether any python library is needed'
@@ -161,10 +166,8 @@ class Workflow:
     @classmethod
     def edit(cls, project_dirpath : str, filepath : str, change_description : str):
         notice = (f'You are tasked with making an edit in the project {project_dirpath} in file {filepath}.'
-                  f'Here is a description of the intended change: {change_description}'
-                  f'You will be guided through this process through the TaskTracker tool'
-                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
-                  f'As soon as you finish this section of tasks the next section will be presented to you')
+                  f'Here is a description of the intended change: {change_description}. '
+                  f'{cls.get_default_notice()}')
 
         planning_ys = (f'- Familiarize and outline'
                        f'   - Familiarize yourself with the classes/functions in {filepath}'
@@ -190,7 +193,8 @@ class Workflow:
                   f'The code state squeeze method involves'
                   f'creating a bugfree minimal example of the behaviour of the described module and then'
                   f'iteratively working towards the live bugful state until the bug appears to locate which lines'
-                  f'introduced the bug.')
+                  f'introduced the bug.'
+                  f'{cls.get_default_notice()}')
 
         familiarize_ys = (f'- Familiarize yourself with the module'
                           f'    - Open the file at {filepath}'
@@ -225,6 +229,12 @@ class Workflow:
                                                                        'task lists. They will each be presented to you in thie TaskTracker tool'
                                                                        'Only the active TaskTracker tool is relevant.')
 
+
+    @classmethod
+    def get_default_notice(cls) -> str:
+        return (f'You will be guided through this process through the TaskTracker tool'
+                f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                f'As soon as you finish this section of tasks the next section will be presented to you')
 
 class NodeNavigation(Tool):
     def __init__(self, edges : list[Edge]):
