@@ -2,10 +2,10 @@ import os
 import subprocess
 import tempfile
 
-from eval.cenarios.python import listdir, calculator, api_retrieval
+from eval.task.scenarios.python import calculator, listdir, api_retrieval
 
 
-class BasicProject:
+class BasicPythonProject:
     def __init__(self):
         self.proj_dirpath : str = tempfile.mkdtemp()
         subprocess.run(['python3', '-m', 'venv', f'{self.proj_dirpath}/.venv'])

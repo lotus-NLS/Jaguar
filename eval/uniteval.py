@@ -9,7 +9,6 @@ from engine.l0_main.lotus_engine import LotusEngine
 from engine.l2_models import InfConfig
 from engine.l2_models.language import Message
 from engine.l3_aos.tools import Tool, ToolArg
-from eval.cenarios.task_provider import TaskProvider
 from holytools.devtools import Unittest
 from holytools.logging import CaptureLogs
 
@@ -41,8 +40,21 @@ class UnitEval(Unittest):
         with open(log_fpath, 'a') as f:
             f.write(log_capture.get_stored())
 
-
     def keyword_eval(self, task_name : str, query : str, keyword : str, fuzzy : bool = False) -> bool:
+        class KeywordProviderTool(Tool):
+            def __init__(self):
+                super().__init__()
+                self.keyword_arg: ToolArg = ToolArg(name=f'Keyword', dtype=str)
+
+            def _do(self):
+                pass
+
+            def get_desc(self) -> str:
+                return f'Fill in the #keyword if you were successful in learning it in the prior step'
+
+            def get_args(self) -> list[ToolArg]:
+                return [self.keyword_arg]
+
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_steps=10)
 
@@ -123,19 +135,3 @@ class UnitEval(Unittest):
         else:
             match = v1 == v2
         return match
-
-
-class KeywordProviderTool(Tool):
-    def __init__(self):
-        super().__init__()
-        self.keyword_arg : ToolArg = ToolArg(name=f'Keyword', dtype=str)
-
-    def _do(self):
-        pass
-
-    def get_desc(self) -> str:
-        return f'Fill in the #keyword if you were successful in learning it in the prior step'
-
-    def get_args(self) -> list[ToolArg]:
-        return [self.keyword_arg]
-
