@@ -38,6 +38,14 @@ class Agent:
             hook = get_freeze_hook(ws=w)
             w.close_action.add_prehook(hook)
 
+    @classmethod
+    def project(cls, project_dirpath : str, project_desc : str, model : LLM, aos : AOS, core : Core = Core.GOTO()):
+        core.identity += (f'You are currently working on the project located at {project_dirpath}.'
+                          f'Here is a description of this project: {project_desc}')
+        agent = cls(model=model, aos=aos, core=core)
+        agent.aos.ide.open_action.execute(args_dict={'project_dirpath' : project_dirpath})
+        agent.aos.ide.prevent_close = True
+
     def talk(self, msg : str) -> Step:
         self.memory.append(Message.user(msg=msg))
         return self.handle()

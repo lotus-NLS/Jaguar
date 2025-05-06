@@ -4,9 +4,8 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.task.scenarios.browser.basic_server import BrowserServers
-from eval.task.scenarios.python import BasicPythonProject
-from eval.task.scenarios.python.api_retrieval import API_RETRIEVAL_PORT
+from eval.task.dirt.frame.basic_server import BrowserServers
+from eval.task.dirt.project.api_retrieval import API_RETRIEVAL_PORT
 from eval.uniteval import UnitEval
 from holytools.network import IpProvider
 from holytools.logging import CaptureLogs
@@ -91,14 +90,12 @@ class BrowserEval(UnitEval):
 
 class PythonEval(UnitEval):
     def test_read_file(self):
-        proj = BasicPythonProject()
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
 
-        is_successful = self.keyword_eval(task_name=f'read_file\0{proj.proj_dirpath}', keyword='log', query=query)
+        is_successful = self.keyword_eval(task_name=f'read_file\0{self.proj_dirpath}', keyword='log', query=query)
         self.assertTrue(is_successful)
 
     def test_run_api_call(self):
-        proj = BasicPythonProject()
         p = Process(target=BrowserServers.run_api_server, args=(API_RETRIEVAL_PORT,))
         p.start()
 
@@ -107,7 +104,6 @@ class PythonEval(UnitEval):
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):
-        proj = BasicPythonProject()
         task = self.task_provider.get_task(f'build_and_run\0{proj.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 

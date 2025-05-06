@@ -16,6 +16,7 @@ class Workspace(Timber):
     def __init__(self):
         super().__init__()
         self.is_open : bool = False
+        self.prevent_close : bool = False
         self.target_methods = ModuleInspector.get_methods(obj=self, include_inherited=False, include_private=False)
         self.workspace_actions : list[Tool] = self.create_workspace_actions()
 
@@ -71,7 +72,8 @@ class Workspace(Timber):
         return WorkspaceAction()
 
     def get_actions(self) -> list[Tool]:
-        while_open = self.workspace_actions + [self.close_action]
+        conditional_close = [] if self.prevent_close else [self.close_action]
+        while_open = self.workspace_actions + conditional_close
         while_closed = [self.open_action]
         return while_open if self.is_open else while_closed
 

@@ -1,6 +1,9 @@
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 from typing import Optional
 
 import fuzzywuzzy.fuzz
@@ -19,13 +22,21 @@ class UnitEval(Unittest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls_dirpath = os.path.dirname(sys.modules[cls.__module__].__file__)
-        task_fpath = os.path.join(cls_dirpath, 'tasks.txt')
+        cls.cls_dirpath = os.path.dirname(sys.modules[cls.__module__].__file__)
+        task_fpath = os.path.join(cls.cls_dirpath, 'tasks.txt')
         cls.task_provider : TaskProvider = TaskProvider(tasks_fpath=task_fpath)
         cls.engine : LotusEngine = LotusEngine()
+        cls.proj_dirpath : Optional[str] = None
 
     def setUp(self):
         self.engine.reset()
+        self.reset_files()
+
+    def reset_files(self):
+        proj_dirpath = os.path.join(self.cls_dirpath, 'project')
+        target_dirpath = tempfile.mkdtemp()
+        shutil.copytree(proj_dirpath, target_dirpath)
+        subprocess.run(['python3', '-m', 'venv', f'{target_dirpath}/.venv'])
 
     @classmethod
     def evaluate(cls, reps : int = 5, test_names : Optional[list[str]] = None):
@@ -136,3 +147,6 @@ class UnitEval(Unittest):
         else:
             match = v1 == v2
         return match
+
+if __name__ == "__main__":
+    pass
