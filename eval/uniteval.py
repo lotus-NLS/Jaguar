@@ -6,6 +6,7 @@ from typing import Optional
 import fuzzywuzzy.fuzz
 
 from engine.l0_main.lotus_engine import LotusEngine
+from engine.l1_agents.tasks import TaskProvider
 from engine.l2_models import InfConfig
 from engine.l2_models.language import Message
 from engine.l3_aos.tools import Tool, ToolArg

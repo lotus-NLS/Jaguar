@@ -4,7 +4,7 @@ import os.path
 from dataclasses import dataclass
 from typing import Optional
 
-from engine.l1_agents.guidance.tasktracker import Task
+from engine.l1_agents.tasks.task import Task
 from engine.l3_aos.tools import Tool, ToolArg
 from holytools.fileIO import SegmentProvider
 
@@ -82,8 +82,8 @@ class Workflow:
         proj_name = os.path.basename(project_dirpath)
 
         notice = (f'You are tasked with creating a unittest for the file {filename} in project {proj_name}.'
-                  f'You will be guided through this process through the TaskTracker tool. '
-                  f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+                  f'You will be guided through this process through the Tracker tool. '
+                  f'Focus only on the currently displayed tasks in the Tracker tool.'
                   f'As soon as you finish this section of tasks, the next secetion will be presented to you until'
                   f'the workflow is complete.')
 
@@ -92,7 +92,7 @@ class Workflow:
                f'    - Open file: Open file {filename} in the PythonIDE\n'
                f'    - Analyse file {filename}: Take note of the the functionalities in {filename} that to be checked in a unittest.\n'
                f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest\n'
-               f'    - Mark complete: Once the above tasks are done, complete task 1 (= sectionA) in the TaskTracker tool to proceed to the next section')
+               f'    - Mark complete: Once the above tasks are done, complete task 1 (= sectionA) in the Tracker tool to proceed to the next section')
         get_acquainted_task = Task.from_yaml(s=ys1)
         n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
 
@@ -215,15 +215,15 @@ class Workflow:
     @classmethod
     def example(cls) -> Workflow:
         n1 = Node.single_directive(name='start', directive='Test task A. Mark this task completed')
-        n2 = Node.single_directive(name='end', directive='Complete the task with taskID = 1. Do *not* under any circumstance close the TaskTracker')
+        n2 = Node.single_directive(name='end', directive='Complete the task with taskID = 1. Do *not* under any circumstance close the Tracker')
         edge = Edge(source=n1, target=n2, case='Success. This workflow is just an example with a single exit case')
         return cls(start_node=n1, nodes=[n1, n2], edges=[edge], notice='You will be guided through this workflow through a series of'
-                                                                       'task lists. They will each be presented to you in thie TaskTracker tool'
-                                                                       'Only the active TaskTracker tool is relevant.')
+                                                                       'task lists. They will each be presented to you in thie Tracker tool'
+                                                                       'Only the active Tracker tool is relevant.')
     @classmethod
     def get_default_notice(cls) -> str:
-        return (f'You will be guided through this process through the TaskTracker tool'
-                f'Focus only on the currently displayed tasks in the TaskTracker tool.'
+        return (f'You will be guided through this process through the Tracker tool'
+                f'Focus only on the currently displayed tasks in the Tracker tool.'
                 f'As soon as you finish this section of tasks the next section will be presented to you')
 
 class NodeNavigation(Tool):

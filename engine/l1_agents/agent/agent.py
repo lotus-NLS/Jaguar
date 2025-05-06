@@ -4,8 +4,9 @@ from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
 
-from engine.l1_agents.guidance import Core
-from engine.l1_agents.guidance.tasktracker import TaskTracker, Task
+from engine.l1_agents.agent.core import Core
+from engine.l1_agents.tasks.task import Task
+from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models import Generation, InfConfig
 from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Message, Context

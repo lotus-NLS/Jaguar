@@ -2,8 +2,9 @@ import time
 
 from engine.l0_main.lotus_io import LotusIO
 from engine.l0_main.settings import LotusCredentials
-from engine.l1_agents import Agent, Task
-from engine.l1_agents.guidance.workflow import Workflow, Node
+from engine.l1_agents import Agent
+from engine.l1_agents.tasks.task import Task
+from engine.l1_agents.workflows.workflow import Workflow, Node
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM

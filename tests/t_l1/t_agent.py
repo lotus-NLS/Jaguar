@@ -1,10 +1,9 @@
 from engine.l0_main.lotus_io import LotusIO
-from engine.l1_agents import Agent, Task, TaskTracker
+from engine.l1_agents import Agent
 from engine.l2_models import OpenAIModel, InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.cenarios.task_provider import TaskProvider
 from tests.basetests import CredTest
 from tests.t_l2.base import Greet
 
@@ -39,7 +38,7 @@ class TestAgent(CredTest):
         self.assertTrue(f'{PythonIDE.__name__}_open' in total_view)
         self.assertTrue(f'{Terminal.__name__}_open' in total_view)
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
-        self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
+        self.assertTrue(not f'{Tracker.__name__}_open' in total_view)
 
     def test_headline(self):
         final_step = None
@@ -60,7 +59,7 @@ class TestAgent(CredTest):
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
 
-    def test_tasktracker_freeze(self):
+    def test_Tracker_freeze(self):
         task = Task.from_yaml(s='- Complete this task')
         work_notice = self.agent.task_tracker.work_notice
         close_tool = self.agent.task_tracker.close_action
@@ -71,12 +70,12 @@ class TestAgent(CredTest):
             break
 
         gen_ctx_view = close_step.pre_ctx.get_view()
-        self.assertTrue('TaskTracker[Active]' in gen_ctx_view)
+        self.assertTrue('Tracker[Active]' in gen_ctx_view)
         self.assertTrue(work_notice in gen_ctx_view)
 
         post_ctx_view = close_step.post_ctx.get_view()
-        self.assertTrue('TaskTracker[Archived]' in post_ctx_view)
-        self.assertTrue('TaskTracker[Active]' not in post_ctx_view)
+        self.assertTrue('Tracker[Archived]' in post_ctx_view)
+        self.assertTrue('Tracker[Active]' not in post_ctx_view)
         self.assertTrue(work_notice not in post_ctx_view)
 
 

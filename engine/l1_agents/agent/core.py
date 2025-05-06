@@ -8,7 +8,6 @@ from engine.l2_models.language import Message
 
 # ----------------------------------------------------
 
-
 class Core:
     def __init__(self, identity : Identity):
         self.identity : Identity = identity
