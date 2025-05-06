@@ -1,5 +1,6 @@
 from engine.l0_main.lotus_io import LotusIO
 from engine.l1_agents import Agent
+from engine.l1_agents.tasks import Task, TaskTracker
 from engine.l2_models import OpenAIModel, InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
@@ -15,7 +16,6 @@ class TestAgent(CredTest):
         model = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.agent: Agent = MockAgent(aos=aos, model=model)
         self.default_inf_config: InfConfig = InfConfig()
-        self.task_provider: TaskProvider = TaskProvider()
         self.example_task : Task = self.task_provider.get_task(identifier='test')
         self.lotusIO: LotusIO = LotusIO(disable_socket=True)
 
@@ -38,7 +38,7 @@ class TestAgent(CredTest):
         self.assertTrue(f'{PythonIDE.__name__}_open' in total_view)
         self.assertTrue(f'{Terminal.__name__}_open' in total_view)
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
-        self.assertTrue(not f'{Tracker.__name__}_open' in total_view)
+        self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
 
     def test_headline(self):
         final_step = None
@@ -83,7 +83,7 @@ class MockAgent(Agent):
     def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
         context = self.get_context(inf_config=inf_config)
         if not inf_config.required_tool:
-            return Step.failed(context=context)
+            return Step.failed(context=context, err_msg=f'No required tool provided')
         else:
             return super().handle(inf_config=inf_config)
 

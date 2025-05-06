@@ -80,5 +80,4 @@ class Browser(Workspace):
         return None
 
 if __name__ == "__main__":
-    b = Browser(google_api_key=None, searchengine_id=None)
-    b.open_action.execute({'url' : 'http://localhost:5000/context'})
+    pass
