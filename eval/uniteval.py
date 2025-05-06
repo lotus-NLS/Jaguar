@@ -18,7 +18,7 @@ from holytools.logging import CaptureLogs
 
 # ---------------------------------------------------
 
-class UnitEval(Unittest):
+class Uniteval(Unittest):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -30,12 +30,9 @@ class UnitEval(Unittest):
 
     def setUp(self):
         self.engine.reset()
-        self.reset_files()
-
-    def reset_files(self):
-        proj_dirpath = os.path.join(self.cls_dirpath, 'project')
-        target_dirpath = tempfile.mkdtemp()
-        shutil.copytree(proj_dirpath, target_dirpath)
+        self.proj_dirpath = os.path.join(self.cls_dirpath, 'project')
+        target_dirpath = tempfile.mktemp()
+        shutil.copytree(self.proj_dirpath, target_dirpath)
         subprocess.run(['python3', '-m', 'venv', f'{target_dirpath}/.venv'])
 
     @classmethod
@@ -138,8 +135,8 @@ class UnitEval(Unittest):
     def values_match(v1: str, v2: str, fuzzy : bool, fuzzy_tol : int = 75):
         if '|' in v2:
             v21, v22 = v2.split('||')
-            v21_match = UnitEval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
-            v22_match = UnitEval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            v21_match = Uniteval.values_match(v1, v21, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
+            v22_match = Uniteval.values_match(v1, v22, fuzzy=fuzzy, fuzzy_tol=fuzzy_tol)
             return v21_match or v22_match
 
         if fuzzy:

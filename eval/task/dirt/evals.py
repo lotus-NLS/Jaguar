@@ -6,13 +6,13 @@ from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.task.dirt.frame.basic_server import BrowserServers
 from eval.task.dirt.project.api_retrieval import API_RETRIEVAL_PORT
-from eval.uniteval import UnitEval
+from eval.uniteval import Uniteval
 from holytools.network import IpProvider
 from holytools.logging import CaptureLogs
 
 # ---------------------------------------------------
 
-class TerminalEval(UnitEval):
+class TerminalEval(Uniteval):
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
@@ -61,7 +61,7 @@ class TerminalEval(UnitEval):
             self.assertTrue(file_content == expected_content)
 
 
-class BrowserEval(UnitEval):
+class BrowserEval(Uniteval):
     def test_enter_text(self):
         port = IpProvider.get_free_port()
         p = Process(target=BrowserServers.run_enter_server, args=(port,))
@@ -88,7 +88,7 @@ class BrowserEval(UnitEval):
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
-class PythonEval(UnitEval):
+class PythonEval(Uniteval):
     def test_read_file(self):
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
 
