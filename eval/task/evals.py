@@ -4,8 +4,8 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.task.dirt.frame.basic_server import BrowserServers
-from eval.task.dirt.project.api_retrieval import API_RETRIEVAL_PORT
+from eval.task.frame.basic_server import BrowserServers
+from eval.task.project.api_retrieval import API_RETRIEVAL_PORT
 from eval.uniteval import Uniteval
 from holytools.network import IpProvider
 from holytools.logging import CaptureLogs
@@ -100,15 +100,15 @@ class PythonEval(Uniteval):
         p.start()
 
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
-        is_successful = self.keyword_eval(task_name=f'run_api_call\0{proj.proj_dirpath}', query=query, keyword='Farfalle')
+        is_successful = self.keyword_eval(task_name=f'run_api_call\0{self.proj_dirpath}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):
-        task = self.task_provider.get_task(f'build_and_run\0{proj.proj_dirpath}')
+        task = self.task_provider.get_task(f'build_and_run\0{self.proj_dirpath}')
         self.engine.do_task(task=task, max_steps=10)
 
         python_ide : PythonIDE = self.engine.agent.aos.ide
-        hello_fpath = os.path.join(proj.proj_dirpath, 'hello.py')
+        hello_fpath = os.path.join(self.proj_dirpath, 'hello.py')
         output = python_ide.output_map[hello_fpath]
         expected_output = 'Hello World :)'
 
