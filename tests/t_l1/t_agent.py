@@ -12,11 +12,12 @@ from tests.t_l2.base import Greet
 class TestAgent(AgentTest):
     def setUp(self):
         super().setUp()
-        self.agent = MockAgent(model=self.model, aos=AOS.empty())
+        self.mock_agent = MockAgent(model=self.model, aos=AOS.empty())
+
 
     def test_memory_context(self):
         content = f'Hello there!'
-        step = self.agent.talk(msg=content)
+        step = self.mock_agent.talk(msg=content)
         view = step.post_ctx.get_view()
         self.assertTrue(content in view)
 
@@ -36,11 +37,11 @@ class TestAgent(AgentTest):
 
     def test_report(self):
         final_step = None
-        for step in self.agent.work(task=self.example_task, max_steps=self.agent.get_report_frequency()):
+        for step in self.mock_agent.work(task=self.example_task, max_steps=self.mock_agent.get_report_frequency()):
             print(f'Used tool: {step.tool_outputs[0].tool_name if step.tool_outputs else None}')
             final_step = step
 
-        update_tool_name = self.agent.task_tracker.update_tool.get_name()
+        update_tool_name = self.mock_agent.task_tracker.update_tool.get_name()
         print(f'Update tool name, used tool name = {update_tool_name}, {final_step.tool_outputs[0].tool_name}')
         self.assertTrue(len(final_step.tool_outputs) == 1)
         self.assertTrue(update_tool_name == final_step.tool_outputs[0].tool_name)
@@ -48,7 +49,7 @@ class TestAgent(AgentTest):
     def test_required_tool_use(self):
         greet_tool = Greet()
         inf_config = InfConfig(required_tool=greet_tool)
-        step = self.agent.handle(inf_config=inf_config)
+        step = self.mock_agent.handle(inf_config=inf_config)
 
         outputs: list[ToolOutput] = step.tool_outputs
 
@@ -57,12 +58,12 @@ class TestAgent(AgentTest):
 
     def test_Tracker_freeze(self):
         task = Task.from_yaml(s='- Complete this task')
-        work_notice = self.agent.task_tracker.work_notice
-        close_tool = self.agent.task_tracker.close_action
+        work_notice = self.mock_agent.task_tracker.work_notice
+        close_tool = self.mock_agent.task_tracker.close_action
 
         close_step = None
-        for _ in self.agent.work(task=task, max_steps=1):
-            close_step = self.agent.handle(inf_config=InfConfig.single_tool(close_tool))
+        for _ in self.mock_agent.work(task=task, max_steps=1):
+            close_step = self.mock_agent.handle(inf_config=InfConfig.single_tool(close_tool))
             break
 
         gen_ctx_view = close_step.pre_ctx.get_view()
@@ -85,4 +86,4 @@ class MockAgent(Agent):
 
 if __name__ == "__main__":
     ta = TestAgent.ready()
-    ta.test_report()
+    ta.execute_all()
