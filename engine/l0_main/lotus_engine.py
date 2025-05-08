@@ -79,9 +79,8 @@ class LotusEngine(Timber):
         user_mesage = Message.user(msg=query)
         self.IO.send(user_mesage)
 
-        step = self.agent.talk(msg=query)
-        response = self.IO.observe(step=step)
-        return response
+        for step in self.agent.talk(msg=query):
+            return self.IO.observe(step=step)
 
 
 if __name__ == "__main__":

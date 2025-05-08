@@ -8,7 +8,7 @@ from typing import Optional, Any
 # --------------------------------------------------
 
 @dataclass
-class ToolReport:
+class ToolOutput:
     tool_name : str
     value : Optional[Any] = None
     call_args: Optional[dict] = None

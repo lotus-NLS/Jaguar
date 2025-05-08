@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from typing import Iterator, Optional
 
 from openai import APITimeoutError, APIError
@@ -8,11 +9,11 @@ from engine.l1_agents.agent.core import Core
 from engine.l1_agents.tasks.task import Task
 from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models import Generation, InfConfig
-from engine.l2_models.generation.step import TextPipe, Step
+from engine.l2_models.generation.action import TextPipe, Action
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolReport, ToolCall, Tool
+from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
 from engine.l3_aos.workspaces import Workspace
 
 # ---------------------------------------------------------
@@ -46,26 +47,28 @@ class Agent:
         agent.aos.ide.open_action.execute(args_dict={'project_dirpath' : project_dirpath})
         agent.aos.ide.prevent_close = True
 
-    def talk(self, msg : str) -> Step:
+    def talk(self, msg : str) -> Iterator[Action]:
         self.memory.append(Message.user(msg=msg))
-        return self.handle()
+        for action in self.handle():
+            yield action
 
-    def work(self, task : Task, max_steps : int) -> Iterator[Step]:
+    def work(self, task : Task, max_steps : int) -> Iterator[Action]:
         self.task_tracker.root = task
         open_tool = self.task_tracker.open_action
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
 
-        require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
         self.update_memory(entry=Message.system(msg=f'Start by exploring your options for how you can realize this task, then outline a plan of action. This plan of action should include: \n'
                                                     f'- Major steps: What are the major steps of your plan?\n'
                                                     f'  - Tools needed: What Workspaces are needed to realize this step?\n'
                                                     f'  - Execution: How are you going to use these tools to realize this step?'))
-        yield self.handle(inf_config=InfConfig.text_only())
+        yield self.handle(inf_config=InfConfig.text_only()).__next__()
+
+        require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         for work_step in range(max_steps-1):
             inf_options = require_update if (work_step+2) % self.get_report_frequency() == 0 else InfConfig()
-            step = self.handle(inf_config=inf_options)
-            yield step
+            for action in self.handle(inf_config=inf_options):
+                yield action
 
             if not self.task_tracker.is_open:
                 break
@@ -84,28 +87,32 @@ class Agent:
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Action]:
         context = self.get_context(inf_config=inf_config)
+
+        def make_action(pipe : Optional[TextPipe], tool_outputs : list[ToolOutput]):
+            headline = self.task_tracker.headline
+            self.task_tracker.headline = None
+            post_context = self.get_context(inf_config=inf_config)
+            return Action(text_pipe=pipe, tool_outputs=tool_outputs, ckpt_label=headline, pre_ctx=context, post_ctx=post_context)
 
         try:
             generation = self.model.get_generation(context=context, config=inf_config)
-            pipe = self.write(generation=generation)
-            outputs = self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool)
+            the_pipe = TextPipe()
+            thread = threading.Thread(target=self.process, args=(generation, the_pipe))
+            thread.start()
+
+            yield make_action(pipe=the_pipe, tool_outputs=[])
+            thread.join()
+            yield make_action(pipe=None, tool_outputs=self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool))
         except APITimeoutError:
-            return Step.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
+            yield Action.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
         except APIError:
-            return Step.failed(context=context, err_msg=f'OpenAI API request failed')
+            yield Action.failed(context=context, err_msg=f'OpenAI API request failed')
 
-        headline = self.task_tracker.headline
-        self.task_tracker.headline = None
-        post_context = self.get_context(inf_config=inf_config)
-        return Step(text_pipe=pipe, ckpt_label=headline, pre_ctx=context, post_ctx=post_context, tool_outputs=outputs)
-
-    def write(self, generation : Generation):
-        pipe = TextPipe()
+    def process(self, generation : Generation, pipe : TextPipe) -> TextPipe:
         for chunk in generation:
             pipe.put(chunk.get_text())
-
 
         text = generation.get_text()
         if text:
@@ -115,7 +122,7 @@ class Agent:
         pipe.stop()
         return pipe
 
-    def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolReport]:
+    def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolOutput]:
         if not temp_tool:
             outputs = self.aos.process(tool_calls=tool_calls)
         elif temp_tool and len(tool_calls) > 1:

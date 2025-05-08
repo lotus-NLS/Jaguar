@@ -1,4 +1,4 @@
-from engine.l3_aos.tools import ToolReport, ToolDoc
+from engine.l3_aos.tools import ToolOutput, ToolDoc
 from engine.l3_aos.tools.output import ExitStatus, ProgUpdate
 from tests.t_l3.t_tools.tooltest import ToolTest
 
@@ -13,7 +13,7 @@ class TestTool(ToolTest):
 
     def test_success(self):
         output = self.simple_tool.execute(self.valid_tool_call.get_args_dict())
-        self.assertIsInstance(output, ToolReport)
+        self.assertIsInstance(output, ToolOutput)
         self.assertEqual(output.get_exit_status(), ExitStatus.SUCCESS)
 
     def test_timeout(self):

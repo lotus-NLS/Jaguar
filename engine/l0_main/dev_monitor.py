@@ -6,7 +6,7 @@ from typing import Optional
 from flask import Flask, request, jsonify, Response
 
 from engine.l0_main.settings import DefaultPorts
-from engine.l2_models.generation.step import State, Report
+from engine.l2_models.generation.action import State, Report
 from engine.l2_models.language import Context
 from holytools.network import Endpoint
 from holytools.userIO import MessageFormatter

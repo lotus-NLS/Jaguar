@@ -1,3 +1,3 @@
 from .gen import Generation, Chunk
 from .infconfig import CallOptions, InfConfig
-from .step import Step, State
+from .action import Action, State

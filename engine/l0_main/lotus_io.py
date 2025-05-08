@@ -1,3 +1,4 @@
+import sys
 import time
 import uuid
 from queue import Queue
@@ -8,7 +9,7 @@ from flask_socketio import SocketIO, emit
 from engine.l0_main.settings import DefaultPorts
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents.tasks.tasktracker import TaskTracker
-from engine.l2_models.generation.step import Step
+from engine.l2_models.generation.action import Action, TextPipe
 from engine.l2_models.language import Message
 from holytools.abstract import Serializable
 from holytools.logging import LoggerFactory
@@ -64,27 +65,17 @@ class LotusIO(Timber):
         socketio.start_background_task(start)
         socketio.start_background_task(send_outgoing)
 
-    def observe(self, step : Step) -> str:
+    def observe(self, step : Action) -> str:
         if step.is_failed():
             self.error(f'Failed step: {step.err_msg}')
             return ''
 
-        text = ''
-        self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
 
-        stream = step.text_pipe.get_text_stream()
-        try:
-            first_chunk = stream.__next__()
-            if first_chunk:
-                print(f'Assistant {first_chunk}', end='')
-                text += first_chunk
-            for chunk in step.text_pipe.get_text_stream():
-                time.sleep(0.05)
-                text += chunk
-                print(chunk, end='')
-            print('\n')
-        except StopIteration:
-            pass
+        self.post(endpoint=self.step_endpoint, obj=step.get_state(uuid=self.sess_uuid))
+        if step.text_pipe:
+            text = self.observe_pipe(text_pipe=step.text_pipe)
+        else:
+            text = ''
 
         for o in step.tool_outputs:
             if not TaskTracker.get_name() in o.tool_name:
@@ -96,6 +87,26 @@ class LotusIO(Timber):
         if text:
             msg = Message.agent(msg=text)
             self.outgoing_messages.put(msg)
+
+        return text
+
+    @staticmethod
+    def observe_pipe(text_pipe : TextPipe) -> str:
+        text = ''
+        stream = text_pipe.get_text_stream()
+        try:
+            first_chunk = stream.__next__()
+            if first_chunk:
+                print(f'Assistant {first_chunk}', end='')
+                text += first_chunk
+            for chunk in text_pipe.get_text_stream():
+                time.sleep(0.05)
+                text += chunk
+                print(chunk, end='')
+                sys.stdout.flush()
+            print('\n')
+        except StopIteration:
+            pass
 
         return text
 

@@ -10,7 +10,7 @@ from func_timeout import func_timeout, FunctionTimedOut
 from holytools.devtools import ModuleInspector
 from holytools.logging import LoggerFactory
 from .input import ToolArg, ToolDoc, ToolCall
-from .output import MissingArgs, InvalidArgValue, ToolReport, ToolException
+from .output import MissingArgs, InvalidArgValue, ToolOutput, ToolException
 
 
 # ---------------------------------------------------------
@@ -32,8 +32,8 @@ class Tool:
             raise ValueError(f'Hook function \"{pre_hook.__name__}\" must not have any non-default arguments')
         self.prehook = pre_hook
 
-    def execute(self, args_dict : dict) -> ToolReport:
-        output = ToolReport(tool_name=self.get_name(), call_args=args_dict)
+    def execute(self, args_dict : dict) -> ToolOutput:
+        output = ToolOutput(tool_name=self.get_name(), call_args=args_dict)
         output.start(msg=f'Starting \"{self.get_name()}\" with args {args_dict}')
         try:
             self._set_args(args_dict=args_dict)

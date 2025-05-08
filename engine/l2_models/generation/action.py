@@ -6,7 +6,7 @@ from queue import Queue, Empty
 from typing import Iterator
 
 from engine.l2_models.language import Context
-from engine.l3_aos.tools import ToolReport
+from engine.l3_aos.tools import ToolOutput
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
 
@@ -16,12 +16,12 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 # ----------------------------------------------
 
 @dataclass
-class Step:
+class Action:
     text_pipe : TextPipe
+    tool_outputs : list[ToolOutput]
     pre_ctx : Context
     post_ctx: Context
-    ckpt_label: str
-    tool_outputs : list[ToolReport]
+    ckpt_label: Optional[str] = None
     err_msg : Optional[str] = None
 
     def is_failed(self) -> bool:

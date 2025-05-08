@@ -1,3 +1,3 @@
 from .tool import Tool, ToolArg, ToolDoc
-from .output import ToolReport, InvalidArgValue, MissingArgs
+from .output import ToolOutput, InvalidArgValue, MissingArgs
 from .input import ToolArg, ToolCall

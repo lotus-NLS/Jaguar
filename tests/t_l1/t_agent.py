@@ -1,8 +1,8 @@
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task, TaskTracker
-from engine.l2_models import InfConfig, Step
+from engine.l2_models import InfConfig, Action
 from engine.l3_aos import Browser, Terminal, AOS
-from engine.l3_aos.tools import ToolReport
+from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from tests.basetests import AgentTest
 from tests.t_l2.base import Greet
@@ -51,7 +51,7 @@ class TestAgent(AgentTest):
         inf_config = InfConfig(required_tool=greet_tool)
         step = self.mock_agent.handle(inf_config=inf_config)
 
-        outputs: list[ToolReport] = step.tool_outputs
+        outputs: list[ToolOutput] = step.tool_outputs
 
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
@@ -77,10 +77,10 @@ class TestAgent(AgentTest):
 
 
 class MockAgent(Agent):
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Step:
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Action:
         context = self.get_context(inf_config=inf_config)
         if not inf_config.required_tool:
-            return Step.failed(context=context, err_msg=f'No required tool provided')
+            return Action.failed(context=context, err_msg=f'No required tool provided')
         else:
             return super().handle(inf_config=inf_config)
 
