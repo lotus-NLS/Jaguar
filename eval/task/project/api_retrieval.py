@@ -1,7 +1,7 @@
 import urllib.request
 import json
 
-API_RETRIEVAL_PORT = 8002
+API_RETRIEVAL_PORT = None
 
 if __name__ == "__main__":
     with urllib.request.urlopen(f'http://localhost:{API_RETRIEVAL_PORT}/') as response:

@@ -12,6 +12,11 @@ from holytools.userIO import MessageFormatter
 
 # --------------------------------------------------------------
 
+class DefaultPorts:
+    socket_port : 5001
+    context_port : 5000
+
+
 class DevMonitor:
     def __init__(self, ip : str, port : int):
         self.ip : str = ip
@@ -81,7 +86,7 @@ class DevMonitor:
 
     @classmethod
     def default(cls) -> DevMonitor:
-        return cls.localhost(port=5000)
+        return cls.localhost(port=DefaultPorts.context_port)
 
     @classmethod
     def localhost(cls, port : int) -> DevMonitor:

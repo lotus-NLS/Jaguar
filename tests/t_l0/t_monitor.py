@@ -4,6 +4,7 @@ from engine.l0_main.dev_monitor import DevMonitor
 from engine.l2_models import Step
 from engine.l2_models.generation.step import TextPipe, State, Report
 from engine.l2_models.language import Context
+from holytools.network import IpProvider
 from holytools.devtools import Unittest
 from holytools.devtools.testing.unit import BlockedTester
 
@@ -32,8 +33,7 @@ class TestDevMonitor(Unittest):
 class ServerTester(BlockedTester):
     def __init__(self):
         super().__init__()
-        self.port : int = 5006
-        self.dev_monitor : DevMonitor = DevMonitor.localhost(port=self.port)
+        self.dev_monitor : DevMonitor = DevMonitor.localhost(port=IpProvider.get_free_port())
         self.mock_engine : MockEngine = MockEngine(self.dev_monitor)
 
     def blocked(self):

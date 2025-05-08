@@ -43,7 +43,8 @@
 - Obtain return message from API endpoint
     - Open the PythonProject located at #1
     - Open the api_retrieval module
-    - Run it
+    - Set the API_RETREIVAL port to #2
+    - Run the file
     - Report back with the content of the received message
 ++build_and_run
 - Build and run a simple hello world file

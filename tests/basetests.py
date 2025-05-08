@@ -1,5 +1,5 @@
 from engine.l0_main.lotus_engine import LotusEngine
-from engine.l0_main.settings import LotusCredentials
+from engine.l0_main.credentials import LotusCredentials
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task
 from engine.l2_models import OpenAIModel, InfConfig
@@ -13,7 +13,6 @@ class CredTest(Unittest):
     @classmethod
     def setUpClass(cls):
         credentials : LotusCredentials = LotusCredentials.auto()
-        # cls.creds : LotusCredentials = credentials
         cls.searchengine_id : str = credentials.search_engine_id
         cls.google_api_key : str = credentials.google_api_key
         cls.openai_api_key : str = credentials.openai_api_key

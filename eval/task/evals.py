@@ -4,7 +4,7 @@ from multiprocessing import Process
 
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from eval.task.frame.basic_server import BrowserServers
+from eval.task.frame.servers import BrowserServers
 from eval.task.project.api_retrieval import API_RETRIEVAL_PORT
 from eval.uniteval import Uniteval
 from holytools.network import IpProvider
@@ -96,11 +96,12 @@ class PythonEval(Uniteval):
         self.assertTrue(is_successful)
 
     def test_run_api_call(self):
-        p = Process(target=BrowserServers.run_api_server, args=(API_RETRIEVAL_PORT,))
+        port = IpProvider.get_free_port()
+        p = Process(target=BrowserServers.run_api_server, args=(port,))
         p.start()
 
         query = 'What was the content of the recieved message? The content of this function is the #keyword'
-        is_successful = self.keyword_eval(task_name=f'run_api_call\0{self.proj_dirpath}', query=query, keyword='Farfalle')
+        is_successful = self.keyword_eval(task_name=f'run_api_call\0{self.proj_dirpath}\0{port}', query=query, keyword='Farfalle')
         self.assertTrue(is_successful)
 
     def test_build_and_run(self):

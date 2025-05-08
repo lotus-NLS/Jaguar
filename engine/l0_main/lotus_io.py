@@ -5,7 +5,7 @@ from queue import Queue
 from flask import Flask
 from flask_socketio import SocketIO, emit
 
-from engine.l0_main.dev_monitor import DevMonitor
+from engine.l0_main.dev_monitor import DevMonitor, DefaultPorts
 from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models.generation.step import Step
 from engine.l2_models.language import Message
@@ -17,10 +17,10 @@ from holytools.network import Endpoint
 # ---------------------------------------------------------
 
 class LotusIO(Timber):
-    def __init__(self, disable_socket : bool = False, socket_port : int = 8000):
+    def __init__(self, disable_socket : bool = False, io_port : int = DefaultPorts.socket_port):
         super().__init__()
         self.sess_uuid: str = self.generate_session_uuid()
-        self.socket_port : int = socket_port
+        self.io_port : int = io_port
 
         dev_monitor : DevMonitor = DevMonitor.default()
         self.step_endpoint: Endpoint = dev_monitor.step_endpoint
@@ -53,7 +53,7 @@ class LotusIO(Timber):
             emit('uuid', {'uuid': self.generate_session_uuid()})
 
         def start():
-            socketio.run(app, host='localhost', port=self.socket_port, allow_unsafe_werkzeug=True)
+            socketio.run(app, host='localhost', port=self.io_port, allow_unsafe_werkzeug=True)
 
         def send_outgoing():
             while True:
@@ -104,6 +104,7 @@ class LotusIO(Timber):
             endpoint.post(msg=obj.to_str(), secure=False)
         except:
             self.warning(f'Monitor endpoint {endpoint.get_url(protocol=f"https")} unresponsive')
+
 
 
 if __name__ == "__main__":

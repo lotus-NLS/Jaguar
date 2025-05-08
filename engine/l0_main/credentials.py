@@ -14,7 +14,7 @@ from holytools.logging import Timber
 # --------------------------------------------
 
 @dataclass
-class LotusCredentials(Timber):
+class LotusCredentials:
     openai_api_key : str
     google_api_key : str
     search_engine_id : str
