@@ -1,5 +1,3 @@
-++test
-- Test: Mark this task in the Tracker as completed. It only serves to test the Tracker completion functionality.
 ++gpu
 - Determine GPU model
     - Open Terminal

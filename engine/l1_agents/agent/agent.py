@@ -56,16 +56,14 @@ class Agent:
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
 
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
-        report_frequency = 5
-
         self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
         self.update_memory(entry=Message.system(msg=f'Start by exploring your options for how you can realize this task, then outline a plan of action. This plan of action should include: \n'
                                                     f'- Major steps: What are the major steps of your plan?\n'
                                                     f'  - Tools needed: What Workspaces are needed to realize this step?\n'
                                                     f'  - Execution: How are you going to use these tools to realize this step?'))
         yield self.handle(inf_config=InfConfig.text_only())
-        for j in range(max_steps):
-            inf_options = require_update if (j+1) % report_frequency == 0 else InfConfig()
+        for work_step in range(max_steps-1):
+            inf_options = require_update if (work_step+2) % self.get_report_frequency() == 0 else InfConfig()
             step = self.handle(inf_config=inf_options)
             yield step
 
@@ -132,6 +130,10 @@ class Agent:
 
     # ---------------------------------------------------
     # context
+
+    @classmethod
+    def get_report_frequency(cls) -> int:
+        return 5
 
     def update_memory(self, entry : Message):
         self.memory.append(entry)

@@ -1,29 +1,23 @@
-from engine.l0_main.lotus_io import LotusIO
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task, TaskTracker
-from engine.l2_models import OpenAIModel, InfConfig, Step
+from engine.l2_models import InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
-from tests.basetests import CredTest
+from tests.basetests import AgentTest
 from tests.t_l2.base import Greet
 
 # ------------------------------------------
 
-class TestAgent(CredTest):
+class TestAgent(AgentTest):
     def setUp(self):
-        aos = AOS.full(self.google_api_key, self.searchengine_id)
-        model = OpenAIModel.default_model(api_key=self.openai_api_key)
-        self.agent: Agent = MockAgent(aos=aos, model=model)
-        self.default_inf_config: InfConfig = InfConfig()
-        self.example_task : Task = self.task_provider.get_task(identifier='test')
-        self.lotusIO: LotusIO = LotusIO(disable_socket=True)
+        super().setUp()
+        self.agent = MockAgent(model=self.model, aos=AOS.empty())
 
     def test_memory_context(self):
         content = f'Hello there!'
         step = self.agent.talk(msg=content)
         view = step.post_ctx.get_view()
-
         self.assertTrue(content in view)
 
     def test_aos_context(self):
@@ -40,12 +34,14 @@ class TestAgent(CredTest):
         self.assertTrue(f'{Browser.__name__}_open' in total_view)
         self.assertTrue(not f'{TaskTracker.__name__}_open' in total_view)
 
-    def test_headline(self):
+    def test_report(self):
         final_step = None
-        for step in self.agent.work(task=self.example_task, max_steps=5):
+        for step in self.agent.work(task=self.example_task, max_steps=self.agent.get_report_frequency()):
+            print(f'Used tool: {step.tool_outputs[0].tool_name if step.tool_outputs else None}')
             final_step = step
 
         update_tool_name = self.agent.task_tracker.update_tool.get_name()
+        print(f'Update tool name, used tool name = {update_tool_name}, {final_step.tool_outputs[0].tool_name}')
         self.assertTrue(len(final_step.tool_outputs) == 1)
         self.assertTrue(update_tool_name == final_step.tool_outputs[0].tool_name)
 
@@ -88,5 +84,5 @@ class MockAgent(Agent):
             return super().handle(inf_config=inf_config)
 
 if __name__ == "__main__":
-    ta = TestAgent()
-    ta.execute_all()
+    ta = TestAgent.ready()
+    ta.test_report()
