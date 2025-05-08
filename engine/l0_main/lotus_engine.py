@@ -56,7 +56,8 @@ class LotusEngine(Timber):
 
             exit_tool = wf.get_exit_tool(node_name=node.name)
             self.agent.update_memory(entry=Message.tool(msg=exit_tool.get_desc(), name=exit_tool.get_name()))
-            self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
+            for _ in self.agent.handle(inf_config=InfConfig(required_tool=exit_tool)):
+                pass
             choice = exit_tool.exit_choice.get_value()
             node = outgoing_edges[choice].target
 
@@ -79,8 +80,10 @@ class LotusEngine(Timber):
         user_mesage = Message.user(msg=query)
         self.IO.send(user_mesage)
 
+        text = ''
         for step in self.agent.talk(msg=query):
-            return self.IO.observe(step=step)
+            text += self.IO.observe(step=step)
+        return text
 
 
 if __name__ == "__main__":
