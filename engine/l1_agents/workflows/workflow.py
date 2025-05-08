@@ -14,23 +14,23 @@ from holytools.fileIO import SegmentProvider
 class Node:
     name : str
     max_steps : int
-    task : Optional[Task]
+    mandate : Optional[Task | Workflow]
 
     @classmethod
     def final(cls, name : str) -> Node:
-        return Node(name=name, task=None, max_steps=0)
+        return Node(name=name, mandate=None, max_steps=0)
 
     @classmethod
     def single_directive(cls, name : str, directive : str, max_steps : int = 5):
         task = Task.from_yaml(s=f'-{directive}')
-        return Node(name=name, task=task, max_steps=max_steps)
+        return Node(name=name, mandate=task, max_steps=max_steps)
 
     @classmethod
     def from_yaml(cls, yaml_str : str,  max_steps : int):
         first_line = yaml_str.split('\n')[0]
         first_line.strip('-').strip()
         task = Task.from_yaml(s=yaml_str)
-        return Node(name=first_line, task=task,max_steps=max_steps)
+        return Node(name=first_line, mandate=task, max_steps=max_steps)
 
 @dataclass
 class Edge:
@@ -94,7 +94,7 @@ class Workflow:
                f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest\n'
                f'    - Mark complete: Once the above tasks are done, complete task 1 (= sectionA) in the Tracker tool to proceed to the next section')
         get_acquainted_task = Task.from_yaml(s=ys1)
-        n0 = Node(name='Get acquinted', task=get_acquainted_task, max_steps=25)
+        n0 = Node(name='Get acquinted', mandate=get_acquainted_task, max_steps=25)
 
         ys2 = (f'- Section B: Write out unittest\n'
                f'    - Determine common resources: Make a list of resources that are shared between runs.\n'
@@ -103,7 +103,7 @@ class Workflow:
                f'    - Fix issues: Fix any issues that appear in the inspection popup\n'
                f'    - Run: Run the test module')
         write_unittest_task = Task.from_yaml(s=ys2)
-        n1 = Node(name='Write unittest', task=write_unittest_task, max_steps=20)
+        n1 = Node(name='Write unittest', mandate=write_unittest_task, max_steps=20)
         edges = [Edge(source=n0, target=n1, case='Success')]
 
 
@@ -142,9 +142,9 @@ class Workflow:
         build_node = Node.from_yaml(yaml_str=build_ys, max_steps=10)
         inspect_node = Node.from_yaml(yaml_str=inspection_ys, max_steps=10)
         iterate_node = Node.from_yaml(yaml_str=run_ys, max_steps=10)
-        inspection_issue = Node(f'Inspection failed!', task=None, max_steps=0)
-        iterate_issue = Node(f'Iteration failed!', task=None, max_steps=0)
-        build_success = Node(f'Build success!', task=None, max_steps=0)
+        inspection_issue = Node(f'Inspection failed!', mandate=None, max_steps=0)
+        iterate_issue = Node(f'Iteration failed!', mandate=None, max_steps=0)
+        build_success = Node(f'Build success!', mandate=None, max_steps=0)
 
         lib_build_edge = Edge(source=lib_node, target=build_node, case='Success')
         build_inspect_edge = Edge(source=build_node, target=inspect_node, case='Success')
@@ -174,8 +174,8 @@ class Workflow:
                       f'    - Fix inspection issues if any arise')
         changes_task = Task.from_yaml(s=changes_ys)
 
-        planning_node = Node(name='Planning', task=planning_task, max_steps=10)
-        changes_task = Node(name='Changes', task=changes_task, max_steps=10)
+        planning_node = Node(name='Planning', mandate=planning_task, max_steps=10)
+        changes_task = Node(name='Changes', mandate=changes_task, max_steps=10)
         edge = Edge(source=planning_node, target=changes_task, case='Success')
 
         return Workflow(nodes=[planning_node, changes_task],edges=[edge], notice=notice, start_node=planning_node)

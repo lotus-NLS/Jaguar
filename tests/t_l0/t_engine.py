@@ -11,7 +11,7 @@ class TestEngine(Unittest):
         wf = Workflow.example()
         final_node = self.engine.do_workflow(wf=wf)
         self.assertTrue(final_node.name == 'end')
-        self.assertTrue(final_node.task.is_recursively_handled())
+        self.assertTrue(final_node.mandate.is_recursively_handled())
 
 if __name__ == '__main__':
     TestEngine.execute_all()

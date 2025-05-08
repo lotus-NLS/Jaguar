@@ -6,9 +6,9 @@ from holytools.devtools import Unittest
 
 class TestWorkflow(Unittest):
     def setUp(self):
-        nodes = [Node(name='Start', task=Task.get_example(), max_steps=3),
-                 Node(name='A', task=Task.get_example(), max_steps=3),
-                 Node(name='B', task=Task.get_example(), max_steps=3),]
+        nodes = [Node(name='Start', mandate=Task.get_example(), max_steps=3),
+                 Node(name='A', mandate=Task.get_example(), max_steps=3),
+                 Node(name='B', mandate=Task.get_example(), max_steps=3), ]
         edges = [Edge(source=nodes[0], target=nodes[0], case='Success'),
                  Edge(source=nodes[0], target=nodes[2], case='Failure')]
         self.workflow = Workflow(start_node=nodes[0], nodes=nodes, edges=edges)
@@ -26,8 +26,8 @@ class TestWorkflow(Unittest):
         self.assertTrue(isinstance(exit_tool, NodeNavigation))
 
     def test_invalid_wf(self):
-        nodeA = Node(name='StepA', max_steps=3, task=Task.get_example())
-        nodeB = Node(name='StepB', max_steps=3, task=Task.get_example())
+        nodeA = Node(name='StepA', max_steps=3, mandate=Task.get_example())
+        nodeB = Node(name='StepB', max_steps=3, mandate=Task.get_example())
         nodes = [nodeA]
         edges = [Edge(source=nodeA, target=nodeB, case='Success')]
 

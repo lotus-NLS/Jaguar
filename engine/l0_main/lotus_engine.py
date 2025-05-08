@@ -49,16 +49,19 @@ class LotusEngine(Timber):
 
         while True:
             self.info(f'\n## Now starting work on node: {node.name}')
-            self.do_task(task=node.task, max_turns=node.max_steps)
+            if isinstance(node.mandate, Task):
+                self.do_task(task=node.mandate, max_turns=node.max_steps)
+                exit_tool = wf.get_exit_tool(node_name=node.name)
+                self.agent.update_memory(entry=Message.tool(msg=exit_tool.get_desc(), name=exit_tool.get_name()))
+                for _ in self.agent.handle(inf_config=InfConfig(required_tool=exit_tool)):
+                    pass
+                choice = exit_tool.exit_choice.get_value()
+            else:
+                node = self.do_workflow(wf=node.mandate)
+                choice = node.name
 
             if not node.name in wf.outgoing_edge_map:
                 break
-
-            exit_tool = wf.get_exit_tool(node_name=node.name)
-            self.agent.update_memory(entry=Message.tool(msg=exit_tool.get_desc(), name=exit_tool.get_name()))
-            for _ in self.agent.handle(inf_config=InfConfig(required_tool=exit_tool)):
-                pass
-            choice = exit_tool.exit_choice.get_value()
             node = outgoing_edges[choice].target
 
         return node
