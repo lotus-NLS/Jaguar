@@ -65,7 +65,7 @@ class Uniteval(Unittest):
                 return [self.keyword_arg]
 
         task = self.task_provider.get_task(task_name)
-        self.engine.do_task(task=task, max_steps=10)
+        self.engine.do_task(task=task, max_turns=10)
 
         self.engine.agent.update_memory(entry=Message.user(msg=query))
         tool = KeywordProviderTool()
@@ -103,7 +103,7 @@ class Uniteval(Unittest):
                 pass
 
         task = self.task_provider.get_task(task_name)
-        self.engine.do_task(task=task, max_steps=10)
+        self.engine.do_task(task=task, max_turns=10)
         self.engine.agent.update_memory(entry=Message.user(msg=query))
 
         tool = DictProviderTool()

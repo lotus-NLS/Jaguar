@@ -27,7 +27,6 @@ class AgentTest(CredTest):
         self.example_task = Task.from_yaml(s=task_yaml)
         self.default_inf_config: InfConfig = InfConfig()
 
-
 class EngineTest(CredTest):
     def setUp(self):
         self.model : LLM = OpenAIModel.default_model(api_key=self.openai_api_key)

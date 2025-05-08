@@ -1,6 +1,8 @@
+from typing import Iterator
+
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task, TaskTracker
-from engine.l2_models import InfConfig, Action
+from engine.l2_models import InfConfig, Step
 from engine.l3_aos import Browser, Terminal, AOS
 from engine.l3_aos.tools import ToolOutput
 from engine.l3_aos.workspaces.python_ide import PythonIDE
@@ -17,7 +19,7 @@ class TestAgent(AgentTest):
 
     def test_memory_context(self):
         content = f'Hello there!'
-        step = self.mock_agent.talk(msg=content)
+        step = self.mock_agent.talk(msg=content).__next__()
         view = step.post_ctx.get_view()
         self.assertTrue(content in view)
 
@@ -37,7 +39,7 @@ class TestAgent(AgentTest):
 
     def test_report(self):
         final_step = None
-        for step in self.mock_agent.work(task=self.example_task, max_steps=self.mock_agent.get_report_frequency()):
+        for step in self.mock_agent.work(task=self.example_task, max_turns=self.mock_agent.get_report_frequency()):
             print(f'Used tool: {step.tool_outputs[0].tool_name if step.tool_outputs else None}')
             final_step = step
 
@@ -49,9 +51,10 @@ class TestAgent(AgentTest):
     def test_required_tool_use(self):
         greet_tool = Greet()
         inf_config = InfConfig(required_tool=greet_tool)
-        step = self.mock_agent.handle(inf_config=inf_config)
+        action_generator = self.mock_agent.handle(inf_config=inf_config)
+        talk, action = action_generator.__next__(), action_generator.__next__()
 
-        outputs: list[ToolOutput] = step.tool_outputs
+        outputs: list[ToolOutput] = action.tool_outputs
 
         self.assertTrue(len(outputs) == 1)
         self.assertTrue(outputs[0].tool_name == greet_tool.get_name())
@@ -62,8 +65,9 @@ class TestAgent(AgentTest):
         close_tool = self.mock_agent.task_tracker.close_action
 
         close_step = None
-        for _ in self.mock_agent.work(task=task, max_steps=1):
-            close_step = self.mock_agent.handle(inf_config=InfConfig.single_tool(close_tool))
+        for _ in self.mock_agent.work(task=task, max_turns=1):
+            require_close_tool = InfConfig.single_tool(close_tool)
+            close_step = self.mock_agent.handle(inf_config=require_close_tool).__next__()
             break
 
         gen_ctx_view = close_step.pre_ctx.get_view()
@@ -77,12 +81,12 @@ class TestAgent(AgentTest):
 
 
 class MockAgent(Agent):
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Action:
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
         context = self.get_context(inf_config=inf_config)
         if not inf_config.required_tool:
-            return Action.failed(context=context, err_msg=f'No required tool provided')
+            yield Step.failed(context=context, err_msg=f'No required tool provided')
         else:
-            return super().handle(inf_config=inf_config)
+            yield from super().handle(inf_config=inf_config)
 
 if __name__ == "__main__":
     ta = TestAgent.ready()

@@ -16,7 +16,7 @@ pipeLogger = LoggerFactory.get_logger(name=__name__)
 # ----------------------------------------------
 
 @dataclass
-class Action:
+class Step:
     text_pipe : TextPipe
     tool_outputs : list[ToolOutput]
     pre_ctx : Context

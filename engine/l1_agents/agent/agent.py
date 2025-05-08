@@ -9,7 +9,7 @@ from engine.l1_agents.agent.core import Core
 from engine.l1_agents.tasks.task import Task
 from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models import Generation, InfConfig
-from engine.l2_models.generation.action import TextPipe, Action
+from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
@@ -47,12 +47,12 @@ class Agent:
         agent.aos.ide.open_action.execute(args_dict={'project_dirpath' : project_dirpath})
         agent.aos.ide.prevent_close = True
 
-    def talk(self, msg : str) -> Iterator[Action]:
+    def talk(self, msg : str) -> Iterator[Step]:
         self.memory.append(Message.user(msg=msg))
         for action in self.handle():
             yield action
 
-    def work(self, task : Task, max_steps : int) -> Iterator[Action]:
+    def work(self, task : Task, max_turns : int) -> Iterator[Step]:
         self.task_tracker.root = task
         open_tool = self.task_tracker.open_action
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
@@ -65,7 +65,7 @@ class Agent:
         yield self.handle(inf_config=InfConfig.text_only()).__next__()
 
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
-        for work_step in range(max_steps-1):
+        for work_step in range(max_turns - 1):
             inf_options = require_update if (work_step+2) % self.get_report_frequency() == 0 else InfConfig()
             for action in self.handle(inf_config=inf_options):
                 yield action
@@ -79,7 +79,7 @@ class Agent:
                 self.update_memory(entry=Message.system(msg=f'Some tasks have been marked for a second go around'
                                                             f'Please start by reflecting on the issues with attempting this task'
                                                             f'and then explore alternative ways of accomplishing these tasks'))
-                self.work(task=new_root, max_steps=max_steps)
+                self.work(task=new_root, max_turns=max_turns)
 
         if self.task_tracker.is_open:
             self.act([self.task_tracker.close_action.get_toolcall()])
@@ -87,14 +87,14 @@ class Agent:
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Action]:
+    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
         context = self.get_context(inf_config=inf_config)
 
         def make_action(pipe : Optional[TextPipe], tool_outputs : list[ToolOutput]):
             headline = self.task_tracker.headline
             self.task_tracker.headline = None
             post_context = self.get_context(inf_config=inf_config)
-            return Action(text_pipe=pipe, tool_outputs=tool_outputs, ckpt_label=headline, pre_ctx=context, post_ctx=post_context)
+            return Step(text_pipe=pipe, tool_outputs=tool_outputs, ckpt_label=headline, pre_ctx=context, post_ctx=post_context)
 
         try:
             generation = self.model.get_generation(context=context, config=inf_config)
@@ -106,9 +106,9 @@ class Agent:
             thread.join()
             yield make_action(pipe=None, tool_outputs=self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool))
         except APITimeoutError:
-            yield Action.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
+            yield Step.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
         except APIError:
-            yield Action.failed(context=context, err_msg=f'OpenAI API request failed')
+            yield Step.failed(context=context, err_msg=f'OpenAI API request failed')
 
     def process(self, generation : Generation, pipe : TextPipe) -> TextPipe:
         for chunk in generation:

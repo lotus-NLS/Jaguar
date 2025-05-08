@@ -2,7 +2,7 @@ import threading
 import time
 
 from engine.l2_models import State
-from engine.l2_models.generation.action import TextPipe, Action
+from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Context
 from holytools.devtools import Unittest
 
@@ -40,7 +40,7 @@ class TestStep(Unittest):
         self.tp = TextPipe()
         context = Context.get_example_context()
         ckpt_label = f'Checkpoint'
-        self.step = Action(text_pipe=self.tp, post_ctx=context, ckpt_label=ckpt_label, tool_outputs=[], pre_ctx=context)
+        self.step = Step(text_pipe=self.tp, post_ctx=context, ckpt_label=ckpt_label, tool_outputs=[], pre_ctx=context)
 
     def test_roundtrip(self):
         state = self.step.get_state(uuid='uuid4')

@@ -11,7 +11,7 @@ class BrowserTest(CredTest):
         self.lightning_site = 'https://lightning.ai/docs/pytorch/stable'
         self.browser : Browser = Browser(google_api_key=self.google_api_key,
                                          searchengine_id=self.searchengine_id,
-                                         headless=not self.has_graphic_capabilities())
+                                         headless=True)
 
     def test_visit(self):
         self.browser.open(url=self.beaver_test)

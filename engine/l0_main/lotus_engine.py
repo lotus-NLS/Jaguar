@@ -49,7 +49,7 @@ class LotusEngine(Timber):
 
         while True:
             self.info(f'\n## Now starting work on node: {node.name}')
-            self.do_task(task=node.task, max_steps=node.max_steps)
+            self.do_task(task=node.task, max_turns=node.max_steps)
 
             if not node.name in wf.outgoing_edge_map:
                 break
@@ -62,10 +62,10 @@ class LotusEngine(Timber):
 
         return node
 
-    def do_task(self, task : Task, max_steps : int, halt_every_step : bool = False):
+    def do_task(self, task : Task, max_turns : int, halt_every_step : bool = False):
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')
         writings : list[str] = []
-        for step in self.agent.work(task=task, max_steps=max_steps):
+        for step in self.agent.work(task=task, max_turns=max_turns):
             w = self.IO.observe(step=step)
             writings.append(w)
 

@@ -9,7 +9,7 @@ from flask_socketio import SocketIO, emit
 from engine.l0_main.settings import DefaultPorts
 from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents.tasks.tasktracker import TaskTracker
-from engine.l2_models.generation.action import Action, TextPipe
+from engine.l2_models.generation.step import Step, TextPipe
 from engine.l2_models.language import Message
 from holytools.abstract import Serializable
 from holytools.logging import LoggerFactory
@@ -65,7 +65,7 @@ class LotusIO(Timber):
         socketio.start_background_task(start)
         socketio.start_background_task(send_outgoing)
 
-    def observe(self, step : Action) -> str:
+    def observe(self, step : Step) -> str:
         if step.is_failed():
             self.error(f'Failed step: {step.err_msg}')
             return ''

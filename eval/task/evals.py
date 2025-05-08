@@ -43,7 +43,7 @@ class TerminalEval(Uniteval):
         fpath = tempfile.mktemp()
         content = 'Ramen'
         task = self.task_provider.get_task(f'nano\0{fpath}\0{content}')
-        self.engine.do_task(task, max_steps=15)
+        self.engine.do_task(task, max_turns=15)
 
         workspaces = self.engine.agent.aos.get_workspaces()
         terminal = [ws for ws in workspaces if ws.get_name() == Terminal.get_name()][0]
@@ -81,7 +81,7 @@ class BrowserEval(Uniteval):
 
     def test_rosinstall(self):
         task = self.task_provider.get_task('rosinstall')
-        self.engine.do_task(task=task, max_steps=10)
+        self.engine.do_task(task=task, max_turns=10)
 
         browser : Browser = self.engine.agent.aos.browser
         url = browser.emulator.get_url()
@@ -106,7 +106,7 @@ class PythonEval(Uniteval):
 
     def test_build_and_run(self):
         task = self.task_provider.get_task(f'build_and_run\0{self.proj_dirpath}')
-        self.engine.do_task(task=task, max_steps=10)
+        self.engine.do_task(task=task, max_turns=10)
 
         python_ide : PythonIDE = self.engine.agent.aos.ide
         hello_fpath = os.path.join(self.proj_dirpath, 'hello.py')
