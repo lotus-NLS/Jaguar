@@ -53,10 +53,8 @@ class Terminal(Workspace):
             session = server.find_where({"session_name": self.tmux_name})
             return session
         except Exception as e:
-            self.error(msg=f'An exception occured while trying to start terminal session using executable'
-                           f' \"{shell_cmd}\": \"{e}\"')
-            err = e
-            raise err
+            raise ChildProcessError(f'An exception occured while trying to start terminal session using executable'
+                                    f' \"{shell_cmd}\": \"{e}\"')
 
     # ---------------------------------------------------------
     # actions

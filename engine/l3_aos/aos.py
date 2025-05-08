@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from engine.l3_aos.tools import Tool, ToolCall, ToolOutput, ToolDoc
+from engine.l3_aos.tools import Tool, ToolCall, ToolReport, ToolDoc
 from engine.l3_aos.workspaces import Workspace, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from engine.l3_aos.workspaces.terminal import Terminal
@@ -22,20 +22,20 @@ class AOS:
         for ws in [ws for ws in [terminal, browser, ide] if ws is not None]:
             self.add_workspace(ws)
 
-    def process(self, tool_calls : list[ToolCall]) -> list[ToolOutput]:
-        outputs: list[ToolOutput] = []
+    def process(self, tool_calls : list[ToolCall]) -> list[ToolReport]:
+        outputs: list[ToolReport] = []
         tools_map = {t.get_name(): t for t in self.get_tools()}
 
         for call in tool_calls:
             try:
                 tool = tools_map[call.name]
                 outputs.append(tool.execute(args_dict=call.get_args_dict()))
-            except KeyError as e:
-                self.error(f'No tool found with name {call.name}')
-                outputs.append(ToolOutput.exception(name=call.name, reason=e))
+            except KeyError:
+                err = KeyError(f'No tool found with name {call.name}')
+                outputs.append(ToolReport.exception(name=call.name, reason=err))
             except Exception as e:
-                self.error(f'Error while executing tool {call.name}: {e.__repr__()}')
-                outputs.append(ToolOutput.exception(name=call.name, reason=e))
+                err = RuntimeError(f'An error occured while executing tool {call.name}: {e.__repr__()}')
+                outputs.append(ToolReport.exception(name=call.name, reason=err))
         return outputs
 
     def add_workspace(self, ws : Workspace):

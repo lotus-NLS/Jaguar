@@ -8,14 +8,14 @@ from typing import Optional, Any
 # --------------------------------------------------
 
 @dataclass
-class ToolOutput:
+class ToolReport:
     tool_name : str
     value : Optional[Any] = None
     call_args: Optional[dict] = None
 
     def __post_init__(self):
         super().__init__()
-        self.prog_updates : list[ProgressUpdate] = []
+        self.prog_updates : list[ProgUpdate] = []
 
     @classmethod
     def failed(cls, reason : str):
@@ -27,32 +27,32 @@ class ToolOutput:
     def exception(cls, name : str, reason : Optional[BaseException] = None):
         output = cls(tool_name=name)
         conditional_reason = f': {reason}' if reason else ''
-        output.error(msg=f'Tool{name} failed{conditional_reason}')
+        output.error(msg=f'Tool {name} failed{conditional_reason}')
         return output
 
     def start(self, msg : str):
-        self.log_update(ProgressUpdate.start(content=msg))
+        self.log_update(ProgUpdate.start(content=msg))
 
     def info(self, msg : str):
-        self.log_update(ProgressUpdate.info(content=msg))
+        self.log_update(ProgUpdate.info(content=msg))
 
     def error(self, msg : str):
-        self.log_update(ProgressUpdate.exception(content=msg))
+        self.log_update(ProgUpdate.exception(content=msg))
 
     def fail(self, msg : str):
-        self.log_update(ProgressUpdate.failed(content=msg))
+        self.log_update(ProgUpdate.failed(content=msg))
 
     def finish(self, msg : str):
-        self.log_update(ProgressUpdate.finish(content=msg))
+        self.log_update(ProgUpdate.finish(content=msg))
 
-    def log_update(self, update : ProgressUpdate):
+    def log_update(self, update : ProgUpdate):
         self.prog_updates.append(update)
 
     # -----------------------------------------------------------
 
     def get_exit_status(self) -> ExitStatus:
-        EXCEPTION = ProgressUpdate.exception(content='')
-        FAILED = ProgressUpdate.failed(content='')
+        EXCEPTION = ProgUpdate.exception(content='')
+        FAILED = ProgUpdate.failed(content='')
 
         for progress in self.prog_updates:
             if progress.update_type == EXCEPTION.update_type:
@@ -71,8 +71,8 @@ class ToolOutput:
         return log_msg
 
     def get_error_msgs(self) -> list[str]:
-        FAILED = ProgressUpdate.failed(content='')
-        EXCEPTION = ProgressUpdate.exception(content='')
+        FAILED = ProgUpdate.failed(content='')
+        EXCEPTION = ProgUpdate.exception(content='')
 
         return [progress.content for progress in self.prog_updates if progress.update_type in [FAILED.update_type, EXCEPTION.update_type]]
 
@@ -84,28 +84,28 @@ class ExitStatus(Enum):
 
 
 @dataclass
-class ProgressUpdate:
+class ProgUpdate:
     update_type : str
     content : str
 
     @classmethod
-    def start(cls, content : str) -> ProgressUpdate:
+    def start(cls, content : str) -> ProgUpdate:
         return cls(update_type='START', content=content)
 
     @classmethod
-    def info(cls, content : str) -> ProgressUpdate:
+    def info(cls, content : str) -> ProgUpdate:
         return cls(update_type='INFO', content=content)
 
     @classmethod
-    def exception(cls, content : str) -> ProgressUpdate:
+    def exception(cls, content : str) -> ProgUpdate:
         return cls(update_type='EXCEPTION', content=content)
 
     @classmethod
-    def failed(cls, content : str) -> ProgressUpdate:
+    def failed(cls, content : str) -> ProgUpdate:
         return cls(update_type='FAILED', content=content)
 
     @classmethod
-    def finish(cls, content : str) -> ProgressUpdate:
+    def finish(cls, content : str) -> ProgUpdate:
         return cls(update_type='FINISH', content=content)
 
     def __str__(self):

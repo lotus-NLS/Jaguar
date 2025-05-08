@@ -20,5 +20,4 @@ if __name__ == "__main__":
         if user_input == 'exit':
             break
         engine.do_talk(query=user_input)
-        print()
 

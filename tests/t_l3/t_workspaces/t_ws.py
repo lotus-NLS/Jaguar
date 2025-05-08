@@ -28,14 +28,14 @@ class TestWorkspace(Unittest):
             raise ValueError('Add or reset action not found')
 
         add_json_str = '{"msg": "New text"}'
-        tool_call = ToolCall(json_str=add_json_str)
+        tool_call = ToolCall(args_json=add_json_str)
 
         add.execute(args_dict=tool_call.get_args_dict())
         self.assertIn('New text', self.workspace.get_text())
         self.log(f'Window context before reset: {Message.from_workspace(ws=self.workspace)}')
 
         reset_json_str = '{}'
-        tool_call = ToolCall(json_str=reset_json_str)
+        tool_call = ToolCall(args_json=reset_json_str)
         reset.execute(args_dict=tool_call.get_args_dict())
         self.assertEqual('', self.workspace.get_text())
         self.log(f'Window context after reset : {Message.from_workspace(ws=self.workspace)}')

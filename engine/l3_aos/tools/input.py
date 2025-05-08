@@ -120,30 +120,30 @@ class ToolDoc(dict):
 
 
 class ToolCall:
-    def __init__(self, name : str = '', json_str : str = ''):
+    def __init__(self, name : str = '', args_json : str = ''):
         self.name : str = name
-        self.json_str : str = json_str
+        self.args_json : str = args_json
 
     @classmethod
     def no_args(cls, name : str) -> ToolCall:
-        return cls(name=name, json_str='{}')
+        return cls(name=name, args_json='{}')
 
     @classmethod
     def from_dict(cls, attr_dict : dict) -> ToolCall:
-        return cls(json_str=json.dumps(attr_dict))
+        return cls(args_json=json.dumps(attr_dict))
 
     def update(self, other : ToolCall):
         self.name += other.name
-        self.json_str += other.json_str
+        self.args_json += other.args_json
 
     def get_args_dict(self) -> dict:
-        if len(self.json_str) == 0:
+        if len(self.args_json) == 0:
             raise ValueError('Empty json string')
 
         try:
-            tool_args_dict = json.loads(s=self.json_str)
+            tool_args_dict = json.loads(s=self.args_json)
         except:
-            json_str = repair_json(json_str=self.json_str)
+            json_str = repair_json(json_str=self.args_json)
             tool_args_dict = json.loads(s=json_str)
         for k, v in tool_args_dict.items():
             if isinstance(v, int):
@@ -151,13 +151,13 @@ class ToolCall:
             if isinstance(v, bool):
                 v = str(int(v))
             if not isinstance(v, str):
-                raise ValueError(f'Invalid json string: {self.json_str}, includes non-string values')
+                raise ValueError(f'Invalid json string: {self.args_json}, includes non-string values')
             tool_args_dict[k] = v
 
         return tool_args_dict
 
     def __str__(self):
-        return f'{self.name}: {self.json_str}'
+        return f'{self.name}: {self.args_json}'
 
 
 

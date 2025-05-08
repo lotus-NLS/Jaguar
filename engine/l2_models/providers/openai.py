@@ -32,9 +32,10 @@ class OpenAIModel(LLM):
             if not isinstance(entry, Message):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
-        self.log(f'Creating generation request')
+        # TODO: THINK ABOUT HOW TO HANDLE THIS
+        # self.log(f'Creating generation request')
         openai_response = self.get_response(context=context, options=config)
-        self.log(f"Received generation response. Currently at {self.tokenizer.count_context_tokens(context=context)} tokens")
+        # self.log(f"Received generation response. Currently at {self.tokenizer.count_context_tokens(context=context)} tokens")
 
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
@@ -89,7 +90,7 @@ class OpenAIChunk(Chunk):
                 raise ValueError(f'Invalid tool call name: {f.name}, type = {type(f.name)}')
             if not isinstance(args, str):
                 raise ValueError(f'Invalid tool call arguments: {f.arguments}, type = {type(f.arguments)}')
-            calls[c.index] = ToolCall(name=name, json_str=args)
+            calls[c.index] = ToolCall(name=name, args_json=args)
 
         return calls
 

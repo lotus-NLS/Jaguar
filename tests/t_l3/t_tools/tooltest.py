@@ -11,9 +11,9 @@ from holytools.devtools import Unittest
 class ToolTest(Unittest):
     @classmethod
     def setUpClass(cls):
-        cls.valid_tool_call : ToolCall = ToolCall(json_str=MockToolCalls.valid_printer_args)
-        cls.invalid_tool_call : ToolCall = ToolCall(json_str=MockToolCalls.invalid_printer_args)
-        cls.empty_tool_call : ToolCall = ToolCall(json_str=MockToolCalls.empty_args_json)
+        cls.valid_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.valid_printer_args)
+        cls.invalid_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.invalid_printer_args)
+        cls.empty_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.empty_args_json)
 
     def setUp(self):
         self.simple_tool : Tool = PrinterTool()

@@ -53,14 +53,14 @@ class TestToolCall(Unittest):
         js2 = ',{"arg_two": "value"}'
         n1, n2 = 'Hammer', 'Screwdriver'
 
-        tool_call = ToolCall(name=n1, json_str=js1)
-        other = ToolCall(name=n2, json_str=js2)
+        tool_call = ToolCall(name=n1, args_json=js1)
+        other = ToolCall(name=n2, args_json=js2)
         tool_call.update(other)
         self.assertTrue(tool_call.name == n1+n2)
-        self.assertTrue(tool_call.json_str == js1+js2)
+        self.assertTrue(tool_call.args_json == js1 + js2)
 
     def test_get_args(self):
-        tool_call = ToolCall(name='Hammer', json_str='{"arg_one": "value"}')
+        tool_call = ToolCall(name='Hammer', args_json='{"arg_one": "value"}')
         args_dict= tool_call.get_args_dict()
         self.assertTrue(len(args_dict) == 1)
         for k, v in args_dict.items():
@@ -68,8 +68,8 @@ class TestToolCall(Unittest):
             self.assertTrue(v == 'value')
 
     def test_non_string_items(self):
-        tc1 = ToolCall(name='Hammer', json_str='{"arg_one": 1}')
-        tc2 = ToolCall(name='Screwdriver', json_str='{"arg_one": "1"}')
+        tc1 = ToolCall(name='Hammer', args_json='{"arg_one": 1}')
+        tc2 = ToolCall(name='Screwdriver', args_json='{"arg_one": "1"}')
 
         arg_dict_one = tc1.get_args_dict()
         arg_dict_two = tc2.get_args_dict()

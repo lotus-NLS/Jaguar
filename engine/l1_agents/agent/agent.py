@@ -12,7 +12,7 @@ from engine.l2_models.generation.step import TextPipe, Step
 from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
-from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
+from engine.l3_aos.tools import ToolReport, ToolCall, Tool
 from engine.l3_aos.workspaces import Workspace
 
 # ---------------------------------------------------------
@@ -115,7 +115,7 @@ class Agent:
         pipe.stop()
         return pipe
 
-    def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolOutput]:
+    def act(self, tool_calls : list[ToolCall], temp_tool : Optional[Tool] = None) -> list[ToolReport]:
         if not temp_tool:
             outputs = self.aos.process(tool_calls=tool_calls)
         elif temp_tool and len(tool_calls) > 1:

@@ -90,7 +90,7 @@ class LotusIO(Timber):
             if not TaskTracker.get_name() in o.tool_name:
                 msg = Message.from_tool_output(tool_output=o)
                 self.outgoing_messages.put(msg)
-            for update  in o.prog_updates:
+            for update in o.prog_updates:
                 self.info(str(update))
 
         if text:

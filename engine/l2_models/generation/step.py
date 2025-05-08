@@ -6,7 +6,7 @@ from queue import Queue, Empty
 from typing import Iterator
 
 from engine.l2_models.language import Context
-from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.tools import ToolReport
 from holytools.abstract import JsonDataclass
 from holytools.logging import LoggerFactory
 
@@ -21,15 +21,14 @@ class Step:
     pre_ctx : Context
     post_ctx: Context
     ckpt_label: str
-    tool_outputs : list[ToolOutput]
-    is_final : bool = False
+    tool_outputs : list[ToolReport]
     err_msg : Optional[str] = None
-
-    def get_state(self, uuid : str) -> State:
-        return State(post_context=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
     def is_failed(self) -> bool:
         return self.ckpt_label == 'failed'
+
+    def get_state(self, uuid : str) -> State:
+        return State(post_context=self.post_ctx, ckpt_label=self.ckpt_label, sess_uuid=uuid)
 
     @classmethod
     def failed(cls, context : Context, err_msg : str):

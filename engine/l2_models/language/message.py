@@ -6,7 +6,7 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
-from engine.l3_aos.tools import ToolOutput
+from engine.l3_aos.tools import ToolReport
 from engine.l3_aos.workspaces import Workspace
 from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
@@ -41,7 +41,7 @@ class Message(JsonDataclass):
         return Message.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
 
     @classmethod
-    def from_tool_output(cls, tool_output : ToolOutput) -> Message:
+    def from_tool_output(cls, tool_output : ToolReport) -> Message:
         return Message.tool(msg=tool_output.get_report(), name=tool_output.tool_name)
 
     @classmethod
