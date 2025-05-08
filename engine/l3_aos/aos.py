@@ -6,12 +6,11 @@ from engine.l3_aos.tools import Tool, ToolCall, ToolOutput, ToolDoc
 from engine.l3_aos.workspaces import Workspace, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from engine.l3_aos.workspaces.terminal import Terminal
-from holytools.logging import Timber
 
 
 # ---------------------------------------------------------
 
-class AOS(Timber):
+class AOS:
     def __init__(self, browser : Optional[Browser] = None, terminal : Optional[Terminal] = None, ide : Optional[PythonIDE] = None):
         super().__init__()
 

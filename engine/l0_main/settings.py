@@ -10,11 +10,10 @@ from func_timeout import func_timeout, FunctionTimedOut
 from holytools.configs import FileConfigs
 from holytools.logging import Timber
 
-
 # --------------------------------------------
 
 @dataclass
-class LotusCredentials:
+class LotusCredentials(Timber):
     openai_api_key : str
     google_api_key : str
     search_engine_id : str
@@ -123,10 +122,13 @@ class LotusCredentials:
                 self.error(msg=f'Error after test run of search engine: {err_details}')
             return is_successful
 
+class DefaultPorts:
+    socket_port : int = 5001
+    context_port : int = 5000
+
+
 
 if __name__ == "__main__":
-    # creds = LotusCredentials.from_file()
-    # os.environ['OPENAI_API_KEY'] = 'a'
-    # os.environ['GOOGLE_API_KEY'] = 'b'
-    # os.environ['SEARCH_ENGINE_ID'] = 'c'
     LotusCredentials.auto()
+
+

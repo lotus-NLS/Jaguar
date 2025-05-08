@@ -1,5 +1,5 @@
 from engine.l0_main.lotus_engine import LotusEngine
-from engine.l0_main.credentials import LotusCredentials
+from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task
 from engine.l2_models import OpenAIModel, InfConfig

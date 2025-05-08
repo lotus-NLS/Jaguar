@@ -1,7 +1,7 @@
 import time
 
 from engine.l0_main.lotus_io import LotusIO
-from engine.l0_main.credentials import LotusCredentials
+from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks.task import Task
 from engine.l1_agents.workflows.workflow import Workflow, Node

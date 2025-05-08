@@ -5,7 +5,8 @@ from queue import Queue
 from flask import Flask
 from flask_socketio import SocketIO, emit
 
-from engine.l0_main.dev_monitor import DevMonitor, DefaultPorts
+from engine.l0_main.settings import DefaultPorts
+from engine.l0_main.dev_monitor import DevMonitor
 from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models.generation.step import Step
 from engine.l2_models.language import Message
@@ -108,4 +109,4 @@ class LotusIO(Timber):
 
 
 if __name__ == "__main__":
-    pass
+    io = LotusIO()

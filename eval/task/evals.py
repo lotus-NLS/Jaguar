@@ -5,10 +5,10 @@ from multiprocessing import Process
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.task.frame.servers import BrowserServers
-from eval.task.project.api_retrieval import API_RETRIEVAL_PORT
 from eval.uniteval import Uniteval
-from holytools.network import IpProvider
 from holytools.logging import CaptureLogs
+from holytools.network import IpProvider
+
 
 # ---------------------------------------------------
 

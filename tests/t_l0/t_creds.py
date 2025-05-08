@@ -1,4 +1,4 @@
-from engine.l0_main.credentials import LotusCredentials
+from engine.l0_main.settings import LotusCredentials
 from holytools.events import Timer
 from tests.basetests import CredTest
 
