@@ -143,7 +143,15 @@ class Agent:
         context = Context(messages=[self.identity.as_system_entry(ws_names=ws_names)])
         context += Context(docs=self.aos.get_docs(required_tool=inf_config.required_tool))
         context += Context(messages=self.memory)
-        context.interweave_workspaces(aos=self.aos)
+
+        msg_map = Context.get_entry_map(aos=self.aos)
+        tokenizer = self.model.tokenizer
+        WS_TOKEN_LIMIT = inf_config.input_tokens_max//4
+        for v in msg_map.values():
+            if tokenizer.count_string_tokens(v.text) > WS_TOKEN_LIMIT:
+                limited_str = tokenizer.get_limited_string(v.text, max_tokens=inf_config.input_tokens_max//4)
+                v.text = f'{limited_str}. View is limited, workspace context too large to display!'
+        context.interweave_workspaces(ws_msg_map=msg_map)
 
         if self.task_tracker.is_open:
             work_entry = Message.system(msg=self.task_tracker.work_notice)

@@ -19,14 +19,13 @@ class Context(JsonDataclass):
     messages: list[Message] = field(default_factory=list)
     docs: list[ToolDoc] = field(default_factory=list)
 
-    def interweave_workspaces(self, aos : AOS):
-        msg_map = self.get_entry_map(aos=aos)
+    def interweave_workspaces(self, ws_msg_map : dict[str, Message]):
         for j, m in enumerate(reversed(self.messages)):
-            matching_ws_name = self.get_matching_ws_name(ws_names=list(msg_map.keys()), tool_name=m.text)
+            matching_ws_name = self.get_matching_ws_name(ws_names=list(ws_msg_map.keys()), tool_name=m.text)
             if m.role == Role.TOOL and not matching_ws_name is None:
-                index, msg = len(self.messages)-j, msg_map[matching_ws_name]
+                index, msg = len(self.messages)-j, ws_msg_map[matching_ws_name]
                 self.messages.insert(index, msg)
-                del msg_map[matching_ws_name]
+                del ws_msg_map[matching_ws_name]
 
     @staticmethod
     def get_matching_ws_name(ws_names: list[str], tool_name: str):
