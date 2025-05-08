@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# import sys
+# import time
 from typing import Optional, Iterator
 from abc import abstractmethod
 
@@ -36,6 +38,9 @@ class Generation:
     def _add_text(self, chunk: Chunk):
         text = chunk.get_text()
         if not text is None:
+            # time.sleep(0.05)
+            # print(text, end='')
+            # sys.stdout.flush()
             self.text += text
 
     def _add_toolcalls(self, chunk : Chunk):
