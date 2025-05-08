@@ -16,17 +16,17 @@ class TestDevMonitor(Unittest):
         self.server_tester : ServerTester = ServerTester()
 
     def test_context(self):
-        context_ok = self.server_tester.check_ok(case='context', delay=0.5)
+        context_ok = self.server_tester.check_ok(check_func=self.server_tester.check_context, delay=0.5)
         print(context_ok)
         self.assertTrue(context_ok)
 
     def test_checkpoints(self):
-        ckpts_ok = self.server_tester.check_ok(case='checkpoints', delay=0.5)
+        ckpts_ok = self.server_tester.check_ok(check_func=self.server_tester.check_endpoints, delay=0.5)
         print(ckpts_ok)
         self.assertTrue(ckpts_ok)
 
     def test_report(self):
-        report_ok = self.server_tester.check_ok(case='report', delay=0.5)
+        report_ok = self.server_tester.check_ok(check_func=self.server_tester.check_report, delay=0.5)
         print(report_ok)
         self.assertTrue(report_ok)
 
@@ -35,36 +35,31 @@ class ServerTester(BlockedTester):
         super().__init__()
         self.dev_monitor : DevMonitor = DevMonitor.localhost(port=IpProvider.get_free_port())
         self.mock_engine : MockEngine = MockEngine(self.dev_monitor)
+        self.sess_uuid : str = self.mock_engine.uuid
 
     def blocked(self):
         self.dev_monitor.serve()
 
-    def perform_check(self, case : str) -> bool:
-        sess_uuid = self.mock_engine.uuid
+    def check_context(self) -> bool:
+        self.mock_engine.post_state()
+        actual_context = self.mock_engine.context
+        conv_context = self.dev_monitor.context_map[self.mock_engine.uuid]
+        print(f'Conversation context = {conv_context.get_view()}')
+        return conv_context.to_str() == actual_context.to_str()
 
-        if case == 'context':
-            self.mock_engine.post_state()
-            actual_context = self.mock_engine.context
-            conv_context = self.dev_monitor.context_map[self.mock_engine.uuid]
-            print(f'Conversation context = {conv_context.get_view()}')
-            return conv_context.to_str() == actual_context.to_str()
+    def check_endpoints(self) -> bool:
+        self.mock_engine.post_state()
+        ckpts = self.dev_monitor.ckpt_map[self.sess_uuid]
 
-        elif case == 'checkpoints':
-            self.mock_engine.post_state()
-            ckpts = self.dev_monitor.ckpt_map[sess_uuid]
+        print(f'Checkpoints = {ckpts}')
+        ckpt_len_ok = len(ckpts) == 1
+        ckpt_content_ok = ckpts[0] == self.mock_engine.ckpt_label
+        return ckpt_len_ok and ckpt_content_ok
 
-            print(f'Checkpoints = {ckpts}')
-            ckpt_len_ok = len(ckpts) == 1
-            ckpt_content_ok = ckpts[0] == self.mock_engine.ckpt_label
-            return ckpt_len_ok and ckpt_content_ok
-
-        elif case == 'report':
-            self.mock_engine.post_report()
-            ckpts = self.dev_monitor.ckpt_map[sess_uuid]
-            return ckpts[-1] == '✓'
-
-        else:
-            raise ValueError(f'Unknown case: {case}')
+    def check_report(self) -> bool:
+        self.mock_engine.post_report()
+        ckpts = self.dev_monitor.ckpt_map[self.sess_uuid]
+        return ckpts[-1] == '✓'
 
 
 class MockEngine:
