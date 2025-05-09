@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import os.path
+import os.path
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import Optional
 
-from engine.l1_agents.tasks.task import Task
+import html2text
+
+from engine.l1_agents.tasks import Task
 from engine.l3_aos.tools import Tool, ToolArg
 from holytools.fileIO import SegmentProvider
+
 
 # ------------------------------------------------
 
@@ -69,6 +74,79 @@ class Workflow:
             if not e.source.name in self.outgoing_edge_map:
                 self.outgoing_edge_map[e.source.name] = []
             self.outgoing_edge_map[e.source.name].append(e)
+
+    @classmethod
+    def from_drawio_xml(cls, xml_fpath : str):
+        with open(xml_fpath, 'r') as f:
+            xml_content = f.read()
+
+        root = ET.fromstring(xml_content)
+        mx_root = root.find('.//root')
+        mx_cells = []
+        for cell in mx_root.findall('mxCell'):
+            cell_data = {k: v for k, v in cell.attrib.items()}
+            if cell.text:
+                cell_data['text'] = cell.text.strip()
+            mx_cells.append(cell_data)
+
+        drawio_edges = [e for e in mx_cells if 'edge' in e]
+        drawio_vertices = [c for c in mx_cells if 'vertex' in c]
+
+        edge_map = {e['id']: e for e in drawio_edges}
+        is_true_vertex = lambda data : data['parent'] == 1
+        pseudo_vertices = [c for c in drawio_vertices if not is_true_vertex(data=c)]
+        for v in pseudo_vertices:
+            parent_uuid = v['parent']
+            if parent_uuid in edge_map:
+                e = edge_map[parent_uuid]
+                e['value'] = v['value']
+
+        nodes = []
+        node_map = {}
+        true_vertices = [c for c in drawio_vertices if is_true_vertex(data=c)]
+        for j, v in enumerate(true_vertices):
+            uuid, parent_uuid = v['id'], v['parent']
+            parsed_content = cls.drawio_to_yaml(html_text=v['value'])
+
+            task = Task.from_yaml(s=parsed_content)
+            node_map[uuid] = Node(name=uuid, mandate=task, max_steps=0)
+
+        edges = []
+        for j, e in enumerate(drawio_edges):
+            print(f'Edge No.{j}: {e}')
+            source_uuid, target_uuid = e['source'], e['target']
+            case = e['value']
+            source, target = node_map[source_uuid], node_map[target_uuid]
+
+            edge = Edge(source=source, target=target, case=case)
+            edges.append(edge)
+
+        return cls(start_node=nodes[0], nodes=nodes, edges=edges)
+
+    @staticmethod
+    def drawio_to_yaml(html_text: str):
+        html_text = html2text.html2text(html=html_text)
+
+        lines = html_text.split('\n')
+        lines = [l for l in lines if l]
+        temp_lines = []
+
+        for l in lines:
+            if not l.startswith('  '):
+                raise ValueError(f'Invalid indentation in line "{l}"')
+            temp_lines.append(l[2:])
+
+        yaml_lines = []
+        for l in temp_lines:
+            sl = l.lstrip(' ')
+            indentation = len(l) - len(sl)
+            if not indentation % 2 == 0:
+                raise ValueError(f'Invalid indentation: {l}')
+            target_indent = indentation * 2
+            yaml_lines.append(f' ' * target_indent + '- ' + sl)
+        yaml_lines = [l.replace('* ', '') for l in yaml_lines]
+
+        return '\n'.join(yaml_lines)
 
     def get_node(self, name : str) -> Node:
         return self.node_map[name]
