@@ -10,7 +10,6 @@ import html2text
 
 from engine.l1_agents.tasks import Task
 from engine.l3_aos.tools import Tool, ToolArg
-from holytools.fileIO import SegmentProvider
 
 
 # ------------------------------------------------
@@ -18,24 +17,24 @@ from holytools.fileIO import SegmentProvider
 @dataclass
 class Node:
     name : str
-    max_steps : int
+    max_turns : int
     mandate : Optional[Task | Workflow]
 
     @classmethod
     def final(cls, name : str) -> Node:
-        return Node(name=name, mandate=None, max_steps=0)
+        return Node(name=name, mandate=None, max_turns=0)
 
     @classmethod
     def single_directive(cls, name : str, directive : str, max_steps : int = 5):
         task = Task.from_yaml(s=f'-{directive}')
-        return Node(name=name, mandate=task, max_steps=max_steps)
+        return Node(name=name, mandate=task, max_turns=max_steps)
 
     @classmethod
     def from_yaml(cls, yaml_str : str,  max_steps : int):
         first_line = yaml_str.split('\n')[0]
         first_line.strip('-').strip()
         task = Task.from_yaml(s=yaml_str)
-        return Node(name=first_line, mandate=task, max_steps=max_steps)
+        return Node(name=first_line, mandate=task, max_turns=max_steps)
 
 @dataclass
 class Edge:
@@ -76,7 +75,7 @@ class Workflow:
             self.outgoing_edge_map[e.source.name].append(e)
 
     @classmethod
-    def from_drawio_xml(cls, xml_fpath : str):
+    def from_drawio_xml(cls, xml_fpath : str, **kwargs):
         with open(xml_fpath, 'r') as f:
             xml_content = f.read()
 
@@ -92,24 +91,31 @@ class Workflow:
         drawio_edges = [e for e in mx_cells if 'edge' in e]
         drawio_vertices = [c for c in mx_cells if 'vertex' in c]
 
-        edge_map = {e['id']: e for e in drawio_edges}
-        is_true_vertex = lambda data : data['parent'] == 1
+        drawio_edge_map = {e['id']: e for e in drawio_edges}
+        is_true_vertex = lambda data : data['parent'] == '1'
         pseudo_vertices = [c for c in drawio_vertices if not is_true_vertex(data=c)]
         for v in pseudo_vertices:
             parent_uuid = v['parent']
-            if parent_uuid in edge_map:
-                e = edge_map[parent_uuid]
+            if parent_uuid in drawio_edge_map:
+                e = drawio_edge_map[parent_uuid]
                 e['value'] = v['value']
 
-        nodes = []
         node_map = {}
         true_vertices = [c for c in drawio_vertices if is_true_vertex(data=c)]
         for j, v in enumerate(true_vertices):
             uuid, parent_uuid = v['id'], v['parent']
-            parsed_content = cls.drawio_to_yaml(html_text=v['value'])
+            text = html2text.html2text(v['value'])
+
+            leading_line = text.split('\n')[0]
+            name, num_steps = leading_line.split(',')
+
+            content_lines = text.split('\n')[2:]
+            content = '\n'.join(content_lines)
+            parsed_content = cls.drawio_to_yaml(content=content, variable_map=kwargs)
 
             task = Task.from_yaml(s=parsed_content)
-            node_map[uuid] = Node(name=uuid, mandate=task, max_steps=0)
+            node_map[uuid] = Node(name=name, mandate=task, max_turns=num_steps)
+        nodes = list(node_map.values())
 
         edges = []
         for j, e in enumerate(drawio_edges):
@@ -121,13 +127,12 @@ class Workflow:
             edge = Edge(source=source, target=target, case=case)
             edges.append(edge)
 
+
         return cls(start_node=nodes[0], nodes=nodes, edges=edges)
 
     @staticmethod
-    def drawio_to_yaml(html_text: str):
-        html_text = html2text.html2text(html=html_text)
-
-        lines = html_text.split('\n')
+    def drawio_to_yaml(content: str, variable_map : dict[str,str]):
+        lines = content.split('\n')
         lines = [l for l in lines if l]
         temp_lines = []
 
@@ -145,8 +150,11 @@ class Workflow:
             target_indent = indentation * 2
             yaml_lines.append(f' ' * target_indent + '- ' + sl)
         yaml_lines = [l.replace('* ', '') for l in yaml_lines]
+        yaml_str = '\n'.join(yaml_lines)
 
-        return '\n'.join(yaml_lines)
+        for name, value in variable_map.items():
+            yaml_str = yaml_str.replace(f'[{name.upper()}]', value)
+        return yaml_str
 
     def get_node(self, name : str) -> Node:
         return self.node_map[name]
@@ -172,7 +180,7 @@ class Workflow:
                f'    - List test cases: Give an informal (not code) list of cases that need to be tested via method in the unittest\n'
                f'    - Mark complete: Once the above tasks are done, complete task 1 (= sectionA) in the Tracker tool to proceed to the next section')
         get_acquainted_task = Task.from_yaml(s=ys1)
-        n0 = Node(name='Get acquinted', mandate=get_acquainted_task, max_steps=25)
+        n0 = Node(name='Get acquinted', mandate=get_acquainted_task, max_turns=25)
 
         ys2 = (f'- Section B: Write out unittest\n'
                f'    - Determine common resources: Make a list of resources that are shared between runs.\n'
@@ -181,7 +189,7 @@ class Workflow:
                f'    - Fix issues: Fix any issues that appear in the inspection popup\n'
                f'    - Run: Run the test module')
         write_unittest_task = Task.from_yaml(s=ys2)
-        n1 = Node(name='Write unittest', mandate=write_unittest_task, max_steps=20)
+        n1 = Node(name='Write unittest', mandate=write_unittest_task, max_turns=20)
         edges = [Edge(source=n0, target=n1, case='Success')]
 
 
@@ -220,9 +228,9 @@ class Workflow:
         build_node = Node.from_yaml(yaml_str=build_ys, max_steps=10)
         inspect_node = Node.from_yaml(yaml_str=inspection_ys, max_steps=10)
         iterate_node = Node.from_yaml(yaml_str=run_ys, max_steps=10)
-        inspection_issue = Node(f'Inspection failed!', mandate=None, max_steps=0)
-        iterate_issue = Node(f'Iteration failed!', mandate=None, max_steps=0)
-        build_success = Node(f'Build success!', mandate=None, max_steps=0)
+        inspection_issue = Node(f'Inspection failed!', mandate=None, max_turns=0)
+        iterate_issue = Node(f'Iteration failed!', mandate=None, max_turns=0)
+        build_success = Node(f'Build success!', mandate=None, max_turns=0)
 
         lib_build_edge = Edge(source=lib_node, target=build_node, case='Success')
         build_inspect_edge = Edge(source=build_node, target=inspect_node, case='Success')
@@ -252,8 +260,8 @@ class Workflow:
                       f'    - Fix inspection issues if any arise')
         changes_task = Task.from_yaml(s=changes_ys)
 
-        planning_node = Node(name='Planning', mandate=planning_task, max_steps=10)
-        changes_task = Node(name='Changes', mandate=changes_task, max_steps=10)
+        planning_node = Node(name='Planning', mandate=planning_task, max_turns=10)
+        changes_task = Node(name='Changes', mandate=changes_task, max_turns=10)
         edge = Edge(source=planning_node, target=changes_task, case='Success')
 
         return Workflow(nodes=[planning_node, changes_task],edges=[edge], notice=notice, start_node=planning_node)
@@ -326,8 +334,7 @@ class NodeNavigation(Tool):
 
 
 if __name__ == "__main__":
-    task_provider = SegmentProvider(fpath='tasks.txt', delimiter='##')
-    analyse_file = task_provider.retrieve(name=f'')
-
-    t1 = Task.from_yaml(s=analyse_file)
-    print(t1.get_tree())
+    wf_fpath = '/home/daniel/lotus/engine/engine/l1_agents/workflows/wf.drawio'
+    wf = Workflow.from_drawio_xml(xml_fpath=wf_fpath,FILEPATH='/home/daniel/somefiel.txt')
+    print(wf.nodes[1].mandate.get_tree())
+    print(wf.nodes[1].max_turns)
