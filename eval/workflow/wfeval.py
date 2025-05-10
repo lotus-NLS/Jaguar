@@ -13,9 +13,16 @@ class WorkflowEval(UnitEval):
 
         testenv_script_fpath = os.path.join(self.frame_dirpath,cls_fname)
         print(f'-Script dirpath = {testenv_script_fpath}')
-        process = subprocess.Popen([self.testenv_python_fpath, f'{testenv_script_fpath}'])
+
+        input(f'Implement the solution if you please!'
+              f'Module can be found at {os.path.join(self.proj_dirpath, 'build.py')}')
+
+        env = os.environ.copy()
+        env['PYTHONPATH'] = f'{self.testenv_dirpath}'
+        print(env['PYTHONPATH'])
+        process = subprocess.Popen(['/home/daniel/lotus/engine/.venv/bin/python', f'{testenv_script_fpath}'], env=env)
         exit_code = process.wait()
-        
+
         return exit_code == 0
 
 
