@@ -20,11 +20,12 @@ class WorkflowEval(UnitEval):
         env = os.environ.copy()
         env['PYTHONPATH'] = f'{self.testenv_dirpath}'
         print(env['PYTHONPATH'])
-        process = subprocess.Popen(['/home/daniel/lotus/engine/.venv/bin/python', f'{testenv_script_fpath}'], env=env)
+        process = subprocess.Popen([self.testenv_python_fpath, f'{testenv_script_fpath}'], env=env)
         exit_code = process.wait()
 
         return exit_code == 0
 
-
 if __name__ == '__main__':
-    pass
+    from eval.workflow.frame import TestNVDATicker
+    wf_eval = WorkflowEval.ready()
+    wf_eval.evaluate_unittest(unittest=TestNVDATicker)
