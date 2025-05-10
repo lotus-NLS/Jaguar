@@ -78,7 +78,7 @@ class UnitEval(Unittest):
         env = {'PATH' : os.environ['PATH']}
         if not os.path.isdir(venv_dirpath):
             subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
-            subprocess.run([python_dirpath, '-m', 'pip', 'install', 'holytools'], env=env)
+            subprocess.run([python_dirpath, '-m', 'pip', 'install', 'holytools' '@' 'git+https://git@github.com/Somerandomguy10111/holytools.git'], env=env)
 
         return venv_dirpath
 
