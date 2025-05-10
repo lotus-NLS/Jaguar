@@ -1,32 +1,12 @@
-from eval.uniteval import UnitEval
-from eval.workflow.frame.build import TestNVDABuild
+from wfeval import WorkflowEval
+from frame.build import TestNVDATicker
 
-#
-# class BuildWorkflows(UnitEval):
-#     def test_nvda_ticker(self):
-#
-#         # Instructions:
-#             # API key or how to get it
-#             # Endpoint details
-#             # Desired quanity: Closing value of NVDA on 05.05.25 as float
-#         # Cleaning up after is not so important for now
-#
-#         pass
-#
-#     def test_boxed_train(self):
-#         pass
-#
-# class EditWorkflow(UnitEval):
-#     pass
-#
-# class UnittestWorkflow(UnitEval):
-#     pass
-#
-# class DebugWorkflow(UnitEval):
-#     pass
-#
-#
-# if __name__ == '__main__':
-#     BuildWorkflows.ready()
-#
+class BuildEval(WorkflowEval):
+    def test_build_nvda_ticker(self):
+        success = self.evaluate_unittest(unittest=TestNVDATicker)
+        if not success:
+            self.fail('Failed to pass unittest')
 
+
+if __name__ == '__main__':
+    BuildEval.execute_all()

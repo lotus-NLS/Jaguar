@@ -30,11 +30,12 @@ class UnitEval(Unittest):
         testenv_dirpath = tempfile.mktemp()
         self.proj_dirpath = os.path.join(testenv_dirpath, 'project')
         self.frame_dirpath = os.path.join(testenv_dirpath, 'frame')
-        testenv_venv_dirpath = os.path.join(testenv_dirpath, '.venv')
+        self.testenv_venv_dirpath = os.path.join(testenv_dirpath, '.venv')
+        self.testenv_python_fpath = os.path.join(self.testenv_venv_dirpath, 'bin', 'python')
 
         shutil.copytree(source_proj_dirpath, self.proj_dirpath)
         shutil.copytree(source_frame_dirpath, self.frame_dirpath)
-        shutil.copytree(source_venv_dirpath, testenv_venv_dirpath)
+        shutil.copytree(source_venv_dirpath, self.testenv_venv_dirpath)
 
         print(f'- Set up test environment at "{testenv_dirpath}"')
 
