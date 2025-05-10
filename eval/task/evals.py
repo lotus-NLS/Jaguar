@@ -5,14 +5,13 @@ from multiprocessing import Process
 from engine.l3_aos.workspaces import Terminal, Browser
 from engine.l3_aos.workspaces.python_ide import PythonIDE
 from eval.task.frame.servers import BrowserServers
-from eval.uniteval import Uniteval
+from eval.task.taskeval import TaskEval
 from holytools.logging import CaptureLogs
 from holytools.network import IpProvider
 
-
 # ---------------------------------------------------
 
-class TerminalEval(Uniteval):
+class TerminalEval(TaskEval):
     def test_gpu_research(self):
         query = ('Please state the model of the GPU that you found. Like so'
                  '[Manufacturer] [Product line] [Model]. This full information consitutes the #keyword')
@@ -61,7 +60,7 @@ class TerminalEval(Uniteval):
             self.assertTrue(file_content == expected_content)
 
 
-class BrowserEval(Uniteval):
+class BrowserEval(TaskEval):
     def test_enter_text(self):
         port = IpProvider.get_free_port()
         p = Process(target=BrowserServers.run_enter_server, args=(port,))
@@ -88,7 +87,7 @@ class BrowserEval(Uniteval):
         self.assertTrue(url == 'https://docs.ros.org/en/humble/Installation.html')
 
 
-class PythonEval(Uniteval):
+class PythonEval(TaskEval):
     def test_read_file(self):
         query = 'What is bottom most function in the calculator module? The name of this function is the #keyword'
 

@@ -1,7 +1,7 @@
-from eval.uniteval import Uniteval
+from eval.uniteval import UnitEval
 
 
-class BuildWorkflows(Uniteval):
+class BuildWorkflows(UnitEval):
     def test_nvda_ticker(self):
 
         # Instructions:
@@ -15,12 +15,15 @@ class BuildWorkflows(Uniteval):
     def test_boxed_train(self):
         pass
 
-class EditWorkflow(Uniteval):
+class EditWorkflow(UnitEval):
     pass
 
-class UnittestWorkflow(Uniteval):
+class UnittestWorkflow(UnitEval):
     pass
 
-class DebugWorkflow(Uniteval):
+class DebugWorkflow(UnitEval):
     pass
 
+
+if __name__ == '__main__':
+    BuildWorkflows.ready()

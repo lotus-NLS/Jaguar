@@ -1,6 +1,6 @@
 import os
 
-from eval.task.provider import TaskProvider
+from eval.task.taskeval import TaskProvider
 from holytools.devtools import Unittest
 
 
