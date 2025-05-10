@@ -28,16 +28,17 @@ class UnitEval(Unittest):
         source_venv_dirpath = self.get_cachedvenv_dirpath()
 
         self.testenv_dirpath = tempfile.mktemp()
-        self.proj_dirpath = os.path.join(self.testenv_dirpath, 'project')
-        self.frame_dirpath = os.path.join(self.testenv_dirpath, 'frame')
         self.testenv_venv_dirpath = os.path.join(self.testenv_dirpath, '.venv')
         self.testenv_python_fpath = os.path.join(self.testenv_venv_dirpath, 'bin', 'python')
+        self.package_dirpath = os.path.join(self.testenv_dirpath, 'pkg')
+        self.proj_dirpath = os.path.join(self.package_dirpath, 'project')
+        self.frame_dirpath = os.path.join(self.package_dirpath, 'frame')
 
         shutil.copytree(source_proj_dirpath, self.proj_dirpath)
         shutil.copytree(source_frame_dirpath, self.frame_dirpath)
         shutil.copytree(source_venv_dirpath, self.testenv_venv_dirpath)
 
-        print(f'- Set up test environment at "{self.testenv_dirpath}"')
+        print(f'- Set up test environment at "{self.package_dirpath}"')
 
     @classmethod
     def evaluate(cls, reps : int = 5, test_names : Optional[list[str]] = None):
