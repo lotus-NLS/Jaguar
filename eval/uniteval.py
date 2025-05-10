@@ -145,5 +145,19 @@ class Uniteval(Unittest):
             match = v1 == v2
         return match
 
+    @staticmethod
+    def get_cachedvenv_dirpath() -> str:
+        cache_dirpath = os.path.expanduser('~/.cache/uniteval')
+        os.makedirs(cache_dirpath, exist_ok=True)
+
+        venv_dirpath = os.path.join(cache_dirpath, '.venv')
+        python_dirpath = os.path.join(venv_dirpath, 'bin', 'python')
+        env = {'PATH' : os.environ['PATH']}
+        if not os.path.isdir(venv_dirpath):
+            subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
+            subprocess.run([python_dirpath, '-m', 'pip', 'install', 'holytools'], env=env)
+
+        return venv_dirpath
+
 if __name__ == "__main__":
-    pass
+    Uniteval.get_cachedvenv_dirpath()

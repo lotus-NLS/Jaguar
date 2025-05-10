@@ -5,7 +5,7 @@ authors = [{name = "Daniel Hollarek", email = "daniel.hollarek@googlemail.com"}]
 dependencies = ["distro", "func_timeout", "requests", "tiktoken", "flask", "openai", "json_repair", "pillow", "libtmux",
     "pylint", "flask_socketio", "fuzzywuzzy",
     "holytools @ git+https://git@github.com/Somerandomguy10111/holytools.git",
-    "pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape.git", "python-Levenshtein"]
+    "pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape.git", "levenshtein"]
 
 [tool.setuptools.packages.find]
 include = ["engine*", "eval*"]
