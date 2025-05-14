@@ -31,18 +31,22 @@ class PythonEditor:
     @staticmethod
     def replace(fpath : str, line_start : int, line_end : int, content : str):
         with open(fpath, 'r') as f:
-            file_lines = f.readlines()
-            content_lines = content.split('\n')
+            file_lines = f.read().split('\n')
+            content_lines = content.split('\n') if content else []
             newlines = file_lines[:line_start-1] + content_lines + file_lines[line_end:]
-        return '\n'.join(newlines)
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
 
     @staticmethod
-    def insert(fpath : str, after_line : str, content : str):
+    def insert(fpath : str, after_line : int, content : str):
         with open(fpath, 'r') as f:
-            file_lines = f.readlines()
+            file_lines = f.read().split('\n')
             content_lines = content.split('\n')
             newlines = file_lines[:after_line] + content_lines + file_lines[after_line:]
-        return '\n'.join(newlines)
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
 
     def get_metadata(self) -> str:
         venv = os.path.relpath(self.interpreter_fpath, self.proj_dirpath) if self.interpreter_fpath else None

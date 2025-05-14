@@ -21,11 +21,41 @@ class TestPythonIDE(Unittest):
             testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
             f.write(testscript_content)
 
-    def test_open_new(self):
+    def test_insert(self):
+        self.ide.open_file(fpath=self.script_fpath)
+        fpath = self.script_fpath
+        new_content = f'import PIL\n'
+        self.ide.insert(fileNo=0, after_line=0, content=new_content)
+
+        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
+        expected_file_content = ''' 1   | import PIL
+ 2   | 
+ 3   | print(f'Hello world :)')
+ 4   | a = 2
+ 5   | b=3'''
+
+        print(f'- New file content:\n{file_content}')
+        print(f'- Expected file content\n{expected_file_content}')
+        self.assertEqual(file_content, expected_file_content)
+
+    def test_replace(self):
+        self.ide.open_file(fpath=self.script_fpath)
+        fpath = self.script_fpath
+        self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
+
+        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
+        expected_file_content = ''' 1   | a = 2
+ 2   | b=3'''
+
+        print(f'- New file content:\n{file_content}')
+        print(f'- Expected content:\n{expected_file_content}')
+
+        self.assertEqual(file_content, expected_file_content)
+
+    def test_open_file(self):
         self.ide.open_file(fpath='newfile.py')
         self.ide.get_text()
 
-    def test_relative_fpath(self):
         fpath = 'test.py'
         self.ide.open_file(fpath=fpath)
 
@@ -54,33 +84,6 @@ class TestPythonIDE(Unittest):
         self.assertTrue(not self.ide.interpreter_fpath is None)
         self.assertTrue(os.path.isfile(self.ide.interpreter_fpath))
 
-    def test_insert(self):
-        self.ide.open_file(fpath=self.script_fpath)
-        fpath = self.script_fpath
-        new_content = f'import PIL\n'
-        self.ide.replace(fileNo=0, start_line=2, end_line=2, content=new_content)
-
-        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
-        expected_file_content = ''' 1   | import PIL
- 2   | 
- 3   | print(f'Hello world :)')
- 4   | a = 2
- 5   | b=3'''
-
-        print(f'- New file content:\n{file_content}')
-        self.assertEqual(file_content, expected_file_content)
-
-    def test_replace(self):
-        self.ide.open_file(fpath=self.script_fpath)
-        fpath = self.script_fpath
-        self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
-
-        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
-        expected_file_content = ''' 1   | a = 2
- 2   | b=3'''
-
-        print(f'- New file content:\n{file_content}')
-        self.assertEqual(file_content, expected_file_content)
 
 
 if __name__ == "__main__":

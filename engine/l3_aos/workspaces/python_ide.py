@@ -77,9 +77,9 @@ class PythonIDE(Workspace):
         """Replaces lines starting from [line_start] to [line_end] including start and end in fileNo [fileNo] with new [content]"""
         self.editor.replace(fpath=self._open_fpaths[fileNo], line_start=start_line, line_end=end_line, content=content)
 
-    def insert(self, fileNo : int, line : int, content : str):
+    def insert(self, fileNo : int, after_line : int, content : str):
         """Inserts [content] at line [line] in fileNo [fileNo]"""
-        self.editor.insert(fpath=self._open_fpaths[fileNo], after_line=line, content=content)
+        self.editor.insert(fpath=self._open_fpaths[fileNo], after_line=after_line, content=content)
 
     def _get_abspath(self, fpath : str):
         fpath= os.path.expanduser(fpath)
