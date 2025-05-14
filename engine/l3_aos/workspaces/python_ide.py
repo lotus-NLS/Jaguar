@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 from typing import Optional
 
@@ -28,9 +29,13 @@ class PythonIDE(Workspace):
         if not os.path.isdir(project_dirpath):
             raise ValueError(f'Project dirpath does not exist: {project_dirpath}')
 
+        cache_venv_dirpath = self._get_cachedvenv_dirpath()
+        proj_venv_dirpath = os.path.join(project_dirpath, '.venv')
+        shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
-        self.interpreter_fpath = os.path.join(project_dirpath, '.venv/bin/python')
         self.editor = PythonEditor(proj_dirpath=project_dirpath, interpreter_fpath=self.interpreter_fpath)
+        self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
+
 
     def close(self, *args, **kwargs):
         self.editor = None
@@ -89,8 +94,16 @@ class PythonIDE(Workspace):
             return os.path.join(self.proj_dirpath, fpath)
 
     @staticmethod
-    def _mkvenv(proj_dirpath : str):
-        subprocess.run(['python3', '-m', 'venv', f'{proj_dirpath}/.venv'])
+    def _get_cachedvenv_dirpath() -> str:
+        cache_dirpath = os.path.expanduser('~/.cache/jaguar')
+        os.makedirs(cache_dirpath, exist_ok=True)
+
+        venv_dirpath = os.path.join(cache_dirpath, '.venv')
+        env = {'PATH' : os.environ['PATH']}
+        if not os.path.isdir(venv_dirpath):
+            subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
+        return venv_dirpath
+
 
 
 
