@@ -4,7 +4,7 @@ import subprocess
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from engine.l3_aos.workspaces.python_editor import PythonEditor
+from engine.l3_aos.workspaces.python_editor import PythonProject
 from engine.l3_aos.workspaces.workspace import Workspace
 
 # --------------------------------------------
@@ -15,7 +15,7 @@ class PythonIDE(Workspace):
         super().__init__()
         self.proj_dirpath : Optional[str] = None
         self.interpreter_fpath : Optional[str] = None
-        self.editor : Optional[PythonEditor] = None
+        self.editor : Optional[PythonProject] = None
 
         self.output_map : dict[str, str] = {}
         self._open_fpaths : list[str] = []
@@ -33,7 +33,7 @@ class PythonIDE(Workspace):
         proj_venv_dirpath = os.path.join(project_dirpath, '.venv')
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
-        self.editor = PythonEditor(proj_dirpath=project_dirpath, interpreter_fpath=self.interpreter_fpath)
+        self.editor = PythonProject(proj_dirpath=project_dirpath, interpreter_fpath=self.interpreter_fpath)
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
 
 

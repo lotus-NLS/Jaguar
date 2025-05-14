@@ -8,7 +8,7 @@ from holytools.fsys import Directory
 from holytools.userIO import MessageFormatter
 
 
-class PythonEditor:
+class PythonProject:
     def __init__(self, proj_dirpath : str, interpreter_fpath : str):
         self.proj_dirpath : str = proj_dirpath
         self.interpreter_fpath : str = interpreter_fpath
@@ -27,26 +27,6 @@ class PythonEditor:
             view += editor
 
         return view
-
-    @staticmethod
-    def replace(fpath : str, line_start : int, line_end : int, content : str):
-        with open(fpath, 'r') as f:
-            file_lines = f.read().split('\n')
-            content_lines = content.split('\n') if content else []
-            newlines = file_lines[:line_start-1] + content_lines + file_lines[line_end:]
-        new_content = '\n'.join(newlines)
-        with open(fpath, 'w') as f:
-            f.write(new_content)
-
-    @staticmethod
-    def insert(fpath : str, after_line : int, content : str):
-        with open(fpath, 'r') as f:
-            file_lines = f.read().split('\n')
-            content_lines = content.split('\n')
-            newlines = file_lines[:after_line] + content_lines + file_lines[after_line:]
-        new_content = '\n'.join(newlines)
-        with open(fpath, 'w') as f:
-            f.write(new_content)
 
     def get_metadata(self) -> str:
         venv = os.path.relpath(self.interpreter_fpath, self.proj_dirpath) if self.interpreter_fpath else None
@@ -83,7 +63,7 @@ class PythonEditor:
         all_contents = ''
         for j, path in enumerate(open_fpaths):
             fname = os.path.basename(path)
-            texts = [PythonEditor._get_with_lineno(fpath=path), PythonEditor._get_inspections(fpath=path)]
+            texts = [PythonProject._get_with_lineno(fpath=path), PythonProject._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
 
             if path in run_output:
@@ -118,3 +98,26 @@ class PythonEditor:
             enumerated_content += f'{n+1:< 5}| {l}\n'
         enumerated_content = enumerated_content.rstrip('\n')
         return enumerated_content
+
+    # -------------------------------------------------------
+    # edit
+
+    @staticmethod
+    def replace(fpath : str, line_start : int, line_end : int, content : str):
+        with open(fpath, 'r') as f:
+            file_lines = f.read().split('\n')
+            content_lines = content.split('\n') if content else []
+            newlines = file_lines[:line_start-1] + content_lines + file_lines[line_end:]
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
+
+    @staticmethod
+    def insert(fpath : str, after_line : int, content : str):
+        with open(fpath, 'r') as f:
+            file_lines = f.read().split('\n')
+            content_lines = content.split('\n')
+            newlines = file_lines[:after_line] + content_lines + file_lines[after_line:]
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
