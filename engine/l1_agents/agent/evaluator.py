@@ -14,7 +14,7 @@ class Evaluator:
         query = (f'Please evaluate whether or not the following #property holds for the given #msg\n'
                           f'    - #property: \"{prop}\"\n'
                           f'    - #msg     : \"{report}\"')
-        entries = [Message.user(msg=query)]
+        entries = [Message.user(text=query)]
         docs = [yn.get_doc()]
         context = Context(messages=entries, docs=docs)
 
@@ -22,7 +22,7 @@ class Evaluator:
         generation.exhaust()
         eval_text, calls = generation.get_text(), generation.get_tool_calls()
 
-        context += Context.singleton(entry=Message.agent(msg=eval_text))
+        context += Context.singleton(entry=Message.agent(text=eval_text))
         options = InfConfig(required_tool=yn)
         yn_generation = self.model.get_generation(context=context, config=options)
         yn_generation.exhaust()

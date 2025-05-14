@@ -64,7 +64,7 @@ class Context(JsonDataclass):
 
     @classmethod
     def get_example_context(cls, msg : str = 'I am GOTO') -> Context:
-        entries : list[Message] = [Message.system(msg=msg), Message.user(msg=f'Hello there')]
+        entries : list[Message] = [Message.system(text=msg), Message.user(text=f'Hello there')]
         basic_context = Context(messages=entries)
         return basic_context
 

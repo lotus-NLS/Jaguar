@@ -39,7 +39,7 @@ class TaskEval(UnitEval):
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_turns=10)
 
-        self.engine.agent.update_memory(entry=Message.user(msg=query))
+        self.engine.agent.update_memory(entry=Message.user(text=query))
         tool = KeywordProviderTool()
         inf_config = InfConfig(required_tool=tool)
         self.engine.agent.handle(inf_config=inf_config)
@@ -76,7 +76,7 @@ class TaskEval(UnitEval):
 
         task = self.task_provider.get_task(task_name)
         self.engine.do_task(task=task, max_turns=10)
-        self.engine.agent.update_memory(entry=Message.user(msg=query))
+        self.engine.agent.update_memory(entry=Message.user(text=query))
 
         tool = DictProviderTool()
         inf_config = InfConfig(required_tool=tool)

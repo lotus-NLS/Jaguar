@@ -38,28 +38,27 @@ class Message(JsonDataclass):
         else:
             headline = f'{ws.get_name()}[Archived]'
         msg += MessageFormatter.get_boxed(text=ws.get_text(), headline=headline)
-        return Message.tool(name=ws.get_name(), msg=msg, image=ws.get_image())
+        return Message.tool(name=ws.get_name(), text=msg, image=ws.get_image())
 
     @classmethod
     def from_tool_output(cls, tool_output : ToolOutput) -> Message:
-        return Message.tool(msg=tool_output.get_report(), name=tool_output.tool_name)
+        return Message.tool(text=tool_output.get_report(), name=tool_output.tool_name)
 
     @classmethod
-    def user(cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.USER, name=name, text=msg, image=image)
+    def user(cls, text: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
+        return cls(role=Role.USER, name=name, text=text, image=image)
 
     @classmethod
-    def system(cls, msg: str, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.SYSTEM, name=None, text=msg, image=image)
+    def system(cls, text: str, image: Optional[PILImage] = None) -> Message:
+        return cls(role=Role.SYSTEM, name=None, text=text, image=image)
 
     @classmethod
-    def agent(
-            cls, msg: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.AGENT, name=name, text=msg, image=image)
+    def agent(cls, text: str, name: Optional[str] = None, image: Optional[PILImage] = None) -> Message:
+        return cls(role=Role.AGENT, name=name, text=text, image=image)
 
     @classmethod
-    def tool(cls, msg: str, name: str, image: Optional[PILImage] = None) -> Message:
-        return cls(role=Role.TOOL, name=name, text=msg, image=image)
+    def tool(cls, text: str, name: str, image: Optional[PILImage] = None) -> Message:
+        return cls(role=Role.TOOL, name=name, text=text, image=image)
 
     def __eq__(self, other):
         if not isinstance(other, Message):

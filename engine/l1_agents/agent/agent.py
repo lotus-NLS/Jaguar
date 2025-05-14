@@ -48,7 +48,7 @@ class Agent:
         agent.aos.ide.prevent_close = True
 
     def talk(self, msg : str) -> Iterator[Step]:
-        self.memory.append(Message.user(msg=msg))
+        self.memory.append(Message.user(text=msg))
         for action in self.handle():
             yield action
 
@@ -57,8 +57,8 @@ class Agent:
         open_tool = self.task_tracker.open_action
         self.act(tool_calls=[open_tool.get_toolcall()], temp_tool=open_tool)
 
-        self.update_memory(entry=Message.system(msg=f'Now entering work mode. Please complete the outlined tasks'))
-        self.update_memory(entry=Message.system(msg=f'Start by exploring your options for how you can realize this task, then outline a plan of action. This plan of action should include: \n'
+        self.update_memory(entry=Message.system(text=f'Now entering work mode. Please complete the outlined tasks'))
+        self.update_memory(entry=Message.system(text=f'Start by exploring your options for how you can realize this task, then outline a plan of action. This plan of action should include: \n'
                                                     f'- Major steps: What are the major steps of your plan?\n'
                                                     f'  - Tools needed: What Workspaces are needed to realize this step?\n'
                                                     f'  - Execution: How are you going to use these tools to realize this step?'))
@@ -76,7 +76,7 @@ class Agent:
         if self.task_tracker.is_open:
             new_root = self.task_tracker.root.collect_retry()
             if new_root:
-                self.update_memory(entry=Message.system(msg=f'Some tasks have been marked for a second go around'
+                self.update_memory(entry=Message.system(text=f'Some tasks have been marked for a second go around'
                                                             f'Please start by reflecting on the issues with attempting this task'
                                                             f'and then explore alternative ways of accomplishing these tasks'))
                 self.work(task=new_root, max_turns=max_turns)
@@ -116,7 +116,7 @@ class Agent:
 
         text = generation.get_text()
         if text:
-            self.update_memory(entry=Message.agent(msg=text))
+            self.update_memory(entry=Message.agent(text=text))
             pipe.put('\n')
 
         pipe.stop()
@@ -161,7 +161,7 @@ class Agent:
         context.interweave_workspaces(ws_msg_map=msg_map)
 
         if self.task_tracker.is_open:
-            work_entry = Message.system(msg=self.task_tracker.work_notice)
+            work_entry = Message.system(text=self.task_tracker.work_notice)
             context += Context.singleton(entry=work_entry)
 
         return context

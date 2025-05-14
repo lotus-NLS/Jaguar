@@ -37,14 +37,14 @@ class LotusEngine(Timber):
     def testroutine(self):
         while True:
             time.sleep(2)
-            msg = Message.user(msg='Hello world')
+            msg = Message.user(text='Hello world')
             self.IO.outgoing_messages.put(msg)
 
     def do_workflow(self, wf : Workflow) -> Node:
         node = wf.start_node
         outgoing_edges = wf.outgoing_edge_map[node.name]
 
-        workflow_description = Message.system(msg=wf.notice)
+        workflow_description = Message.system(text=wf.notice)
         self.agent.update_memory(entry=workflow_description)
 
         while True:
@@ -52,7 +52,7 @@ class LotusEngine(Timber):
             if isinstance(node.mandate, Task):
                 self.do_task(task=node.mandate, max_turns=node.max_turns)
                 exit_tool = wf.get_exit_tool(node_name=node.name)
-                self.agent.update_memory(entry=Message.tool(msg=exit_tool.get_desc(), name=exit_tool.get_name()))
+                self.agent.update_memory(entry=Message.tool(text=exit_tool.get_desc(), name=exit_tool.get_name()))
                 for _ in self.agent.handle(inf_config=InfConfig(required_tool=exit_tool)):
                     pass
                 choice = exit_tool.exit_choice.get_value()
@@ -80,7 +80,7 @@ class LotusEngine(Timber):
         self.info(f'- Finished work mode after {len(writings)} steps\n')
 
     def do_talk(self, query : str) -> str:
-        user_mesage = Message.user(msg=query)
+        user_mesage = Message.user(text=query)
         self.IO.send(user_mesage)
 
         text = ''

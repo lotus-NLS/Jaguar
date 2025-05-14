@@ -22,7 +22,7 @@ class Core:
         msg += f'You operate on the OS: {self.os_information}. '
         msg += f'The current date is {self.get_date()} and the current time in this moment is {self.get_time()}.'
         msg += f'The following workspaces are available to you: {ws_names}'
-        return Message.system(msg=msg)
+        return Message.system(text=msg)
 
     @staticmethod
     def get_os_info():

@@ -85,7 +85,7 @@ class LotusIO(Timber):
                 self.info(str(update))
 
         if text:
-            msg = Message.agent(msg=text)
+            msg = Message.agent(text=text)
             self.outgoing_messages.put(msg)
 
         return text
