@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Optional
 
 from pylint import lint
 from pylint.reporters import CollectingReporter
@@ -9,10 +10,8 @@ from holytools.userIO import MessageFormatter
 
 
 class PythonProject:
-    def __init__(self, proj_dirpath : str, interpreter_fpath : str):
+    def __init__(self, proj_dirpath : str):
         self.proj_dirpath : str = proj_dirpath
-        self.interpreter_fpath : str = interpreter_fpath
-
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*']
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea', 'build']
     
@@ -28,11 +27,12 @@ class PythonProject:
 
         return view
 
-    def get_metadata(self) -> str:
-        venv = os.path.relpath(self.interpreter_fpath, self.proj_dirpath) if self.interpreter_fpath else None
-        metadata = (f'{"Project name":<20}: {os.path.basename(self.proj_dirpath)}\n'
-                    f'{"Project dirpath":<20}: {self.proj_dirpath} \n'
-                    f'{"Virtual environment":<20}: {venv}')
+    def get_metadata(self, venv_dirpath : Optional[str] = None) -> str:
+        metadata = (f'{"Project name":<20}: {os.path.basename(self.proj_dirpath)}'
+                    f'\n{"Project dirpath":<20}: {self.proj_dirpath}')
+        if not venv_dirpath is None:
+            metadata += f'\n{"Virtual environment":<20}: {venv_dirpath}'
+
         return metadata
 
     def get_project_filetree(self) -> str:

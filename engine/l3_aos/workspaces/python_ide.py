@@ -33,7 +33,7 @@ class PythonIDE(Workspace):
         proj_venv_dirpath = os.path.join(project_dirpath, '.venv')
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
-        self.editor = PythonProject(proj_dirpath=project_dirpath, interpreter_fpath=self.interpreter_fpath)
+        self.editor = PythonProject(proj_dirpath=project_dirpath)
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
 
 
