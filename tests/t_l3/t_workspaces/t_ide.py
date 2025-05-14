@@ -30,7 +30,7 @@ class TestPythonIDE(Unittest):
         self.ide.open_file(fpath=fpath)
 
     def test_script_display(self):
-        file_content = self.ide.viewprovider._get_with_lineno(fpath=self.script_fpath)
+        file_content = self.ide.editor._get_with_lineno(fpath=self.script_fpath)
         expected_file_content = ''' 1   | print(f'Hello world :)')
  2   | a = 2
  3   | b=3'''
@@ -54,13 +54,13 @@ class TestPythonIDE(Unittest):
         self.assertTrue(not self.ide.interpreter_fpath is None)
         self.assertTrue(os.path.isfile(self.ide.interpreter_fpath))
 
-    def test_write(self):
+    def test_insert(self):
         self.ide.open_file(fpath=self.script_fpath)
         fpath = self.script_fpath
         new_content = f'import PIL\n'
-        self.ide.write(fileNo=0, after_line=0, content=new_content)
+        self.ide.replace(fileNo=0, start_line=2, end_line=2, content=new_content)
 
-        file_content = self.ide.viewprovider._get_with_lineno(fpath=fpath)
+        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | import PIL
  2   | 
  3   | print(f'Hello world :)')
@@ -70,12 +70,12 @@ class TestPythonIDE(Unittest):
         print(f'- New file content:\n{file_content}')
         self.assertEqual(file_content, expected_file_content)
 
-    def test_delete(self):
+    def test_replace(self):
         self.ide.open_file(fpath=self.script_fpath)
         fpath = self.script_fpath
-        self.ide.delete(fileNo=0, start_line=1, end_line=1)
+        self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
 
-        file_content = self.ide.viewprovider._get_with_lineno(fpath=fpath)
+        file_content = self.ide.editor._get_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | a = 2
  2   | b=3'''
 
