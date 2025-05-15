@@ -48,7 +48,7 @@ class PythonIDE(Workspace):
         fpaths = [p for p in fpaths if not self.view.is_excluded(fpath=p)]
         self.path_to_id = {path : j for j, path in enumerate(fpaths)}
 
-        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map, path_to_id=path_to_id)
+        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map, path_to_id=self.path_to_id)
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -79,7 +79,7 @@ class PythonIDE(Workspace):
 
         self.output_map[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
-    def open_file(self, fileNo : str):
+    def open_file(self, fileNo : int):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
         id_to_path = {v : k for k, v in self.path_to_id.items()}
         fpath = id_to_path[int(fileNo)]

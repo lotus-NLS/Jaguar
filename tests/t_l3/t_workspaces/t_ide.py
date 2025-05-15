@@ -31,7 +31,7 @@ class TestPythonIDE(PythonTest):
         self.assertTrue('🗎 test.py | FileID = 0' in text)
 
     def test_insert(self):
-        self.ide.open_file(fpath=self.script_fpath)
+        self.ide.open_file(fileNo=0)
         fpath = self.script_fpath
         new_content = f'import PIL\n'
         self.ide.insert(fileNo=0, after_line=0, content=new_content)
@@ -47,7 +47,7 @@ class TestPythonIDE(PythonTest):
         self.assertEqual(file_content, expected_file_content)
 
     def test_replace(self):
-        self.ide.open_file(fpath=self.script_fpath)
+        self.ide.open_file(fileNo=0)
         fpath = self.script_fpath
         self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
 
@@ -79,11 +79,10 @@ class TestPythonIDE(PythonTest):
 
 class TestProjectView(PythonTest):
     def test_open_file(self):
-        self.ide.open_file(fpath='newfile.py')
+        self.ide.open_file(fileNo=0)
         self.ide.get_text()
 
-        fpath = 'test.py'
-        self.ide.open_file(fpath=fpath)
+        self.ide.open_file(fileNo=1)
 
     def test_script_display(self):
         file_content = self.ide.view._get_with_lineno(fpath=self.script_fpath)
