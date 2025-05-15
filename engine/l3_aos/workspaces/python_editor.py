@@ -6,6 +6,7 @@ from pylint import lint
 from pylint.reporters import CollectingReporter
 
 from holytools.fsys import Directory
+from holytools.fsys.tree import TreeGenerator
 from holytools.userIO import MessageFormatter
 
 
@@ -35,18 +36,16 @@ class ProjectView:
 
         return metadata
 
-    def get_project_filetree(self) -> str:
+    def get_project_filetree(self, desc_map : Optional[dict[str,str]] = None) -> str:
         root_node = Directory(path=self.proj_dirpath)
         fpaths = root_node.get_subfile_fpaths()
         fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
-        fs_dict = root_node.to_dict(fpaths=fpaths)
 
-        parts = self.proj_dirpath.split('/')
-        for p in parts:
-            fs_dict = fs_dict[p]
+        fsys_dict = TreeGenerator.to_dict(fpaths=fpaths)
+        for p in self.proj_dirpath.split('/'):
+            fsys_dict = fsys_dict[p]
 
-        filetree = root_node.dict_to_tree(fs_dict=fs_dict, parent_dirpath=self.proj_dirpath, max_children=10)
-
+        filetree = TreeGenerator.dict_to_tree(fsys_dict=fsys_dict, desc_map=desc_map, parent_dirpath=self.proj_dirpath, max_children=10)
         return filetree
 
     def is_excluded(self, fpath : str) -> bool:

@@ -24,7 +24,7 @@ class TestAgent(AgentTest):
         self.assertTrue(content in view)
 
     def test_aos_context(self):
-        ctx = self.agent.get_context(inf_config=self.default_inf_config)
+        ctx = self.agent.get_exploration_context(inf_config=self.default_inf_config)
 
         total_view = ''
         for d in ctx.docs:
