@@ -20,32 +20,32 @@ class ToolOutput:
     @classmethod
     def failed(cls, reason : str):
         output = cls(tool_name='None')
-        output.fail(msg=f'Failed: {reason}')
+        output.note_fail(msg=f'Failed: {reason}')
         return output
 
     @classmethod
     def exception(cls, name : str, reason : Optional[BaseException] = None):
         output = cls(tool_name=name)
         conditional_reason = f': {reason}' if reason else ''
-        output.error(msg=f'Tool {name} failed{conditional_reason}')
+        output.note_error(msg=f'Tool {name} failed{conditional_reason}')
         return output
 
     def start(self, msg : str):
-        self.log_update(ProgUpdate.start(content=msg))
+        self.note(ProgUpdate.start(content=msg))
 
-    def info(self, msg : str):
-        self.log_update(ProgUpdate.info(content=msg))
+    def note_info(self, msg : str):
+        self.note(ProgUpdate.info(content=msg))
 
-    def error(self, msg : str):
-        self.log_update(ProgUpdate.exception(content=msg))
+    def note_error(self, msg : str):
+        self.note(ProgUpdate.exception(content=msg))
 
-    def fail(self, msg : str):
-        self.log_update(ProgUpdate.failed(content=msg))
+    def note_fail(self, msg : str):
+        self.note(ProgUpdate.failed(content=msg))
 
-    def finish(self, msg : str):
-        self.log_update(ProgUpdate.finish(content=msg))
+    def note_finish(self, msg : str):
+        self.note(ProgUpdate.finish(content=msg))
 
-    def log_update(self, update : ProgUpdate):
+    def note(self, update : ProgUpdate):
         self.prog_updates.append(update)
 
     # -----------------------------------------------------------
@@ -61,14 +61,19 @@ class ToolOutput:
                 return ExitStatus.FAILED
         return ExitStatus.SUCCESS
 
-    def get_report(self) -> str:
+    def get_report(self, verbose : bool = False) -> str:
         exit_status = self.get_exit_status()
         log_msg = (f'Tool \"{self.tool_name}\" finished execution with status:'
                    f' {exit_status.value}')
         if not exit_status == ExitStatus.SUCCESS:
             log_msg += f'; failure/exception reason: {self.get_error_msgs()}'
-        log_msg += f'; Call arguments were {self.call_args}'
+        log_msg += f'- Call arguments were {self.call_args}'
+        if verbose:
+            for update in self.prog_updates:
+                log_msg += str(update)
+
         return log_msg
+
 
     def get_error_msgs(self) -> list[str]:
         FAILED = ProgUpdate.failed(content='')

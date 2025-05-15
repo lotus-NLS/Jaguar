@@ -38,18 +38,18 @@ class Tool:
         try:
             self._set_args(args_dict=args_dict)
             self.prehook()
-            output.info(msg=f'Running tool \"{self.get_name()}\"')
+            output.note_info(msg=f'Running tool \"{self.get_name()}\"')
             output.value = func_timeout(timeout=self.timeout, func=self._do)
-            output.info(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully')
+            output.note_info(msg=f'Tool \"{self.get_name()}\" completed execution sucessfully')
 
         except ToolException as e:
-            output.fail(msg=f'{e.__class__.__name__}: {e}')
+            output.note_fail(msg=f'{e.__class__.__name__}: {e}')
         except FunctionTimedOut:
-            output.fail(msg=f'Timed out without completing after {self.timeout} seconds')
+            output.note_fail(msg=f'Timed out without completing after {self.timeout} seconds')
         except Exception as e:
-            output.error(msg=f'Encountered exception: {e}. Aborting ...')
+            output.note_error(msg=f'Encountered exception: {e}. Aborting ...')
 
-        output.finish(msg=f'Tool call finished')
+        output.note_finish(msg=f'Tool call finished')
 
         return output
 
