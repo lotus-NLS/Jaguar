@@ -6,6 +6,8 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 from engine.l3_aos.workspaces.python_editor import ProjectView
 from engine.l3_aos.workspaces.workspace import Workspace
+from holytools.fsys import Directory
+
 
 # --------------------------------------------
 
@@ -15,6 +17,7 @@ class PythonIDE(Workspace):
         super().__init__()
         self.proj_dirpath : Optional[str] = None
         self.interpreter_fpath : Optional[str] = None
+        self.path_to_id : dict[str, int] = {}
         self.view : Optional[ProjectView] = None
 
         self.output_map : dict[str, str] = {}
@@ -40,7 +43,12 @@ class PythonIDE(Workspace):
         self.view = None
 
     def get_text(self) -> str:
-        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map)
+        root_node = Directory(path=self.proj_dirpath)
+        fpaths = root_node.get_subfile_fpaths()
+        fpaths = [p for p in fpaths if not self.view.is_excluded(fpath=p)]
+        self.path_to_id = {path : j for j, path in enumerate(fpaths)}
+
+        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map, path_to_id=path_to_id)
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -71,9 +79,10 @@ class PythonIDE(Workspace):
 
         self.output_map[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
-    def open_file(self, fpath : str):
+    def open_file(self, fileNo : str):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
-        fpath = self._get_abspath(fpath=fpath)
+        id_to_path = {v : k for k, v in self.path_to_id.items()}
+        fpath = id_to_path[int(fileNo)]
         parent_dir = os.path.dirname(fpath)
 
         if not os.path.isdir(parent_dir):

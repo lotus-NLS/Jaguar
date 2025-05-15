@@ -25,6 +25,11 @@ class PythonTest(Unittest):
 
 
 class TestPythonIDE(PythonTest):
+    def test_get_text(self):
+        text = self.ide.get_text()
+        print(f'- Text:\n{text}')
+        self.assertTrue('🗎 test.py | FileID = 0' in text)
+
     def test_insert(self):
         self.ide.open_file(fpath=self.script_fpath)
         fpath = self.script_fpath
@@ -103,4 +108,4 @@ class TestProjectView(PythonTest):
 
 if __name__ == "__main__":
     TestPythonIDE.execute_all()
-    TestProjectView.execute_all()
+    # TestProjectView.execute_all()

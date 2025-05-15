@@ -13,12 +13,13 @@ from holytools.userIO import MessageFormatter
 class ProjectView:
     def __init__(self, proj_dirpath : str):
         self.proj_dirpath : str = proj_dirpath
-        self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*', '.*\.egg-info']
+        self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*', '.*\\.egg-info']
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea', 'build']
     
-    def get_view(self, open_fpaths : list[str], run_output : dict[str, str]):
+    def get_view(self, open_fpaths : list[str], run_output : dict[str, str],
+                 path_to_id : Optional[dict[str, int]] = None):
         metadata = self.get_metadata()
-        filetree = self.get_project_filetree()
+        filetree = self.get_project_filetree(path_to_fileID=path_to_id)
         editor = self.get_editor(open_fpaths=open_fpaths, run_output=run_output)
 
         view = MessageFormatter.get_boxed(text=metadata, headline=f'Project metadata')
@@ -36,7 +37,7 @@ class ProjectView:
 
         return metadata
 
-    def get_project_filetree(self, desc_map : Optional[dict[str,str]] = None) -> str:
+    def get_project_filetree(self, desc_map : Optional[dict[str,str]] = None, path_to_fileID : Optional[dict[str, int]] = None) -> str:
         root_node = Directory(path=self.proj_dirpath)
         fpaths = root_node.get_subfile_fpaths()
         fpaths = [p for p in fpaths if not self.is_excluded(fpath=p)]
@@ -45,7 +46,8 @@ class ProjectView:
         for p in self.proj_dirpath.split('/'):
             fsys_dict = fsys_dict[p]
 
-        filetree = TreeGenerator.dict_to_tree(fsys_dict=fsys_dict, desc_map=desc_map, parent_dirpath=self.proj_dirpath, max_children=10)
+        print(f'path to id = {path_to_fileID}')
+        filetree = TreeGenerator.dict_to_tree(fsys_dict=fsys_dict, desc_map=desc_map, parent_dirpath=self.proj_dirpath, max_children=10, path_to_fileID=path_to_fileID)
         return filetree
 
     def is_excluded(self, fpath : str) -> bool:
