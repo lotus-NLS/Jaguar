@@ -12,7 +12,7 @@ from holytools.userIO import MessageFormatter
 class ProjectView:
     def __init__(self, proj_dirpath : str):
         self.proj_dirpath : str = proj_dirpath
-        self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*']
+        self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*', '.*\.egg-info']
         self.excluded_dirs : list[str] = ['.venv', '.git', '.idea', 'build']
     
     def get_view(self, open_fpaths : list[str], run_output : dict[str, str]):
