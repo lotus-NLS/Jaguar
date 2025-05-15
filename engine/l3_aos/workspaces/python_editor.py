@@ -9,7 +9,7 @@ from holytools.fsys import Directory
 from holytools.userIO import MessageFormatter
 
 
-class PythonProject:
+class ProjectView:
     def __init__(self, proj_dirpath : str):
         self.proj_dirpath : str = proj_dirpath
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__/.*']
@@ -63,7 +63,7 @@ class PythonProject:
         all_contents = ''
         for j, path in enumerate(open_fpaths):
             fname = os.path.basename(path)
-            texts = [PythonProject._get_with_lineno(fpath=path), PythonProject._get_inspections(fpath=path)]
+            texts = [ProjectView._get_with_lineno(fpath=path), ProjectView._get_inspections(fpath=path)]
             headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
 
             if path in run_output:
@@ -99,25 +99,3 @@ class PythonProject:
         enumerated_content = enumerated_content.rstrip('\n')
         return enumerated_content
 
-    # -------------------------------------------------------
-    # edit
-
-    @staticmethod
-    def replace(fpath : str, line_start : int, line_end : int, content : str):
-        with open(fpath, 'r') as f:
-            file_lines = f.read().split('\n')
-            content_lines = content.split('\n') if content else []
-            newlines = file_lines[:line_start-1] + content_lines + file_lines[line_end:]
-        new_content = '\n'.join(newlines)
-        with open(fpath, 'w') as f:
-            f.write(new_content)
-
-    @staticmethod
-    def insert(fpath : str, after_line : int, content : str):
-        with open(fpath, 'r') as f:
-            file_lines = f.read().split('\n')
-            content_lines = content.split('\n')
-            newlines = file_lines[:after_line] + content_lines + file_lines[after_line:]
-        new_content = '\n'.join(newlines)
-        with open(fpath, 'w') as f:
-            f.write(new_content)

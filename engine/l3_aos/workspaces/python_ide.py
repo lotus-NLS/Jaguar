@@ -4,7 +4,7 @@ import subprocess
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from engine.l3_aos.workspaces.python_editor import PythonProject
+from engine.l3_aos.workspaces.python_editor import ProjectView
 from engine.l3_aos.workspaces.workspace import Workspace
 
 # --------------------------------------------
@@ -15,7 +15,7 @@ class PythonIDE(Workspace):
         super().__init__()
         self.proj_dirpath : Optional[str] = None
         self.interpreter_fpath : Optional[str] = None
-        self.editor : Optional[PythonProject] = None
+        self.view : Optional[ProjectView] = None
 
         self.output_map : dict[str, str] = {}
         self._open_fpaths : list[str] = []
@@ -33,18 +33,28 @@ class PythonIDE(Workspace):
         proj_venv_dirpath = os.path.join(project_dirpath, '.venv')
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
-        self.editor = PythonProject(proj_dirpath=project_dirpath)
+        self.view = ProjectView(proj_dirpath=project_dirpath)
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
 
-
     def close(self, *args, **kwargs):
-        self.editor = None
+        self.view = None
 
     def get_text(self) -> str:
-        return self.editor.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map)
+        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map)
 
     def get_image(self) -> Optional[PILImage]:
         return None
+
+    @staticmethod
+    def _get_cachedvenv_dirpath() -> str:
+        cache_dirpath = os.path.expanduser('~/.cache/jaguar')
+        os.makedirs(cache_dirpath, exist_ok=True)
+
+        venv_dirpath = os.path.join(cache_dirpath, '.venv')
+        env = {'PATH' : os.environ['PATH']}
+        if not os.path.isdir(venv_dirpath):
+            subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
+        return venv_dirpath
 
     # --------------------------------------------------------------------
     # Functionalities
@@ -80,11 +90,25 @@ class PythonIDE(Workspace):
 
     def replace(self, fileNo : int, start_line : int, end_line : int, content : str):
         """Replaces lines starting from [line_start] to [line_end] including start and end in fileNo [fileNo] with new [content]"""
-        self.editor.replace(fpath=self._open_fpaths[fileNo], line_start=start_line, line_end=end_line, content=content)
+        fpath = self._open_fpaths[fileNo]
+        with open(fpath, 'r') as f:
+            file_lines = f.read().split('\n')
+            content_lines = content.split('\n') if content else []
+            newlines = file_lines[:start_line-1] + content_lines + file_lines[end_line:]
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
 
     def insert(self, fileNo : int, after_line : int, content : str):
         """Inserts [content] at line [line] in fileNo [fileNo]"""
-        self.editor.insert(fpath=self._open_fpaths[fileNo], after_line=after_line, content=content)
+        fpath = self._open_fpaths[fileNo]
+        with open(fpath, 'r') as f:
+            file_lines = f.read().split('\n')
+            content_lines = content.split('\n')
+            newlines = file_lines[:after_line] + content_lines + file_lines[after_line:]
+        new_content = '\n'.join(newlines)
+        with open(fpath, 'w') as f:
+            f.write(new_content)
 
     def _get_abspath(self, fpath : str):
         fpath= os.path.expanduser(fpath)
@@ -92,18 +116,3 @@ class PythonIDE(Workspace):
             return fpath
         else:
             return os.path.join(self.proj_dirpath, fpath)
-
-    @staticmethod
-    def _get_cachedvenv_dirpath() -> str:
-        cache_dirpath = os.path.expanduser('~/.cache/jaguar')
-        os.makedirs(cache_dirpath, exist_ok=True)
-
-        venv_dirpath = os.path.join(cache_dirpath, '.venv')
-        env = {'PATH' : os.environ['PATH']}
-        if not os.path.isdir(venv_dirpath):
-            subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
-        return venv_dirpath
-
-
-
-
