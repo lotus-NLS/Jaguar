@@ -28,7 +28,7 @@ class TestAgent(AgentTest):
 
         total_view = ''
         for d in ctx.docs:
-            view = d.get_view()
+            view = d.get_editor()
             total_view += f'{view}\n'
         print(f'-> Total tool doc view:\n{total_view}')
 

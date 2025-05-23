@@ -92,7 +92,7 @@ class ToolDoc(dict):
         return cls(tool_doc)
 
     def __eq__(self, other):
-        return self.get_view() == other.get_view()
+        return self.get_view() == other.get_editor()
 
     def get_view(self) -> str:
         func_name = self.get_tool_name()

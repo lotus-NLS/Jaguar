@@ -4,9 +4,10 @@ import subprocess
 from typing import Optional
 
 from PIL.Image import Image as PILImage
-from engine.l3_aos.workspaces.python_editor import ProjectView
+
+from engine.l3_aos.workspaces.python_editor import ProjectNode, PythonEditor
 from engine.l3_aos.workspaces.workspace import Workspace
-from holytools.fsys import Directory
+from holytools.userIO import MessageFormatter
 
 
 # --------------------------------------------
@@ -17,9 +18,8 @@ class PythonIDE(Workspace):
         super().__init__()
         self.proj_dirpath : Optional[str] = None
         self.interpreter_fpath : Optional[str] = None
-        self.path_to_id : dict[str, int] = {}
-        self.view : Optional[ProjectView] = None
 
+        self.root_node : Optional[ProjectNode] = None
         self.output_map : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
@@ -36,22 +36,12 @@ class PythonIDE(Workspace):
         proj_venv_dirpath = os.path.join(project_dirpath, '.venv')
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
-        self.view = ProjectView(proj_dirpath=project_dirpath)
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
+        self.root_node = ProjectNode(path=project_dirpath)
+        self._populate_project(desc_map={}, path_to_fileID={})
 
     def close(self, *args, **kwargs):
-        self.view = None
-
-    def get_text(self) -> str:
-        root_node = Directory(path=self.proj_dirpath)
-        fpaths = root_node.get_subfile_fpaths()
-        fpaths = [p for p in fpaths if not self.view.is_excluded(fpath=p)]
-        self.path_to_id = {path : j for j, path in enumerate(fpaths)}
-
-        return self.view.get_view(open_fpaths=self._open_fpaths, run_output=self.output_map, path_to_id=self.path_to_id)
-
-    def get_image(self) -> Optional[PILImage]:
-        return None
+        pass
 
     @staticmethod
     def _get_cachedvenv_dirpath() -> str:
@@ -64,25 +54,35 @@ class PythonIDE(Workspace):
             subprocess.run(['python3', '-m', 'venv', venv_dirpath], env=env)
         return venv_dirpath
 
+    def get_text(self) -> str:
+        self._populate_project(desc_map={}, path_to_fileID={})
+        proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
+        filetree = self._get_project_filetree()
+        editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
+
+        view = MessageFormatter.get_boxed(text=proj_info, headline=f'Project metadata')
+        view += MessageFormatter.get_boxed(text=filetree, headline=f'Project file structure ({self.proj_dirpath})')
+        if self._open_fpaths:
+            view += editor
+        return view
+
+    def _get_project_filetree(self):
+        return self.root_node.get_tree()
+
+    def get_image(self) -> Optional[PILImage]:
+        return None
+
+    def _populate_project(self, desc_map : dict[str, str], path_to_fileID : dict[str, int]):
+        self.root_node.fill_ancestors(desc_map=desc_map, path_to_ID=path_to_fileID)
+
     # --------------------------------------------------------------------
     # Functionalities
 
-    def run_file(self, script_fpath : str):
-        script_fpath = self._get_abspath(fpath=script_fpath)
-        env, cwd = {'PYTHONPATH': self.proj_dirpath}, self.proj_dirpath
-        arg_list = [self.interpreter_fpath, script_fpath]
-        result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
-
-        script_stdout = f'{result.stdout}'
-        script_stderr = f'\033[31m{result.stderr}\033[0m'
-        exit_code_msg = f'Process finished with exit code {result.returncode}'
-
-        self.output_map[script_fpath] = f'{script_fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
-
-    def open_file(self, fileNo : int):
+    def open_file(self, projectFileNo : int):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
-        id_to_path = {v : k for k, v in self.path_to_id.items()}
-        fpath = id_to_path[int(fileNo)]
+        path_to_fileID = self.root_node.get_fpath_fileID_map()
+        id_to_path = {v : k for k, v in path_to_fileID.items()}
+        fpath = id_to_path[int(projectFileNo)]
         parent_dir = os.path.dirname(fpath)
 
         if not os.path.isdir(parent_dir):
@@ -92,10 +92,22 @@ class PythonIDE(Workspace):
                 f.write('')
         self._open_fpaths.append(fpath)
         
-    def close_file(self, fpath : str):
+    def close_file(self, openFileNo : int):
         """Closes file spcified relative to the project dirpath"""
-        fpath = self._get_abspath(fpath=fpath)
+        fpath = self._open_fpaths[openFileNo]
         self._open_fpaths.remove(fpath)
+
+    def run_file(self, openFileNo : int):
+        fpath = self._open_fpaths[openFileNo]
+        env, cwd = {'PYTHONPATH': self.proj_dirpath}, self.proj_dirpath
+        arg_list = [self.interpreter_fpath, fpath]
+        result = subprocess.run(arg_list, capture_output=True, text=True, env=env, cwd=cwd)
+
+        script_stdout = f'{result.stdout}'
+        script_stderr = f'\033[31m{result.stderr}\033[0m'
+        exit_code_msg = f'Process finished with exit code {result.returncode}'
+
+        self.output_map[fpath] = f'{fpath}\n{script_stdout}{script_stderr}\n{exit_code_msg}'
 
     def replace(self, fileNo : int, start_line : int, end_line : int, content : str):
         """Replaces lines starting from [line_start] to [line_end] including start and end in fileNo [fileNo] with new [content]"""
