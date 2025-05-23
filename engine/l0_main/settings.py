@@ -29,8 +29,10 @@ class LotusCredentials(Timber):
     def auto(cls):
         try:
             creds = cls.from_env()
+            print(f'Successfully loaded credentials from environment variables')
         except:
             creds = cls.from_file()
+            print(f'Successfully loaded credentials from file')
         return creds
 
     @classmethod
