@@ -6,7 +6,6 @@ from pylint import lint
 from pylint.reporters import CollectingReporter
 
 from holytools.fsys import Directory
-from holytools.fsys.tree import TreeGenerator
 from holytools.userIO import MessageFormatter
 
 

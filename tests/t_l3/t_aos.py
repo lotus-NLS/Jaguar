@@ -4,7 +4,6 @@ from PIL.Image import Image as PILImage
 
 from engine.l3_aos import AOS, Workspace
 from engine.l3_aos.tools import ToolCall
-from tests.basetests import CredTest
 
 
 class TestAOS(CredTest):
