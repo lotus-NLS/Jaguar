@@ -3,7 +3,6 @@ import os
 from engine.l3_aos.ide.python_editor import PythonEditor
 from tests.basetests import PythonProjTest
 
-
 # --------------------------------------------------------------
 
 class TestIDE(PythonProjTest):

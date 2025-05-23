@@ -16,7 +16,6 @@ from engine.l3_aos.tools import ToolCall, Tool, ToolArg
 from holytools.devtools import Unittest
 from holytools.fsys import FsysManager
 
-
 # ------------------------------------------------------------
 
 class CredTest(Unittest):
@@ -45,22 +44,19 @@ class EngineTest(CredTest):
 
 
 class PythonProjTest(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        cls.proj_dirpath : str = tempfile.mktemp()
-        os.makedirs(cls.proj_dirpath)
-        cls.ide : PythonIDE = PythonIDE()
-        cls.ide.open(project_dirpath=cls.proj_dirpath)
-        cls.root_node : ProjectNode = ProjectNode(path=cls.proj_dirpath)
-
     def setUp(self):
+        self.proj_dirpath : str = tempfile.mktemp()
+        os.makedirs(self.proj_dirpath)
+        self.ide : PythonIDE = PythonIDE()
+        self.ide.open(project_dirpath=self.proj_dirpath)
+        
+        self.root_node : ProjectNode = ProjectNode(path=self.proj_dirpath)
         self.script_fpath = os.path.join(self.proj_dirpath, 'test.py')
         with open(self.script_fpath, 'w') as f:
             testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
             f.write(testscript_content)
         manager = FsysManager(root_dirpath=self.proj_dirpath)
         manager.add_tree(tree={'.venv': {}, '__pycache__' : {}, 'somefile.txt' : 'Content'})
-
 
 
 class ToolTest(Unittest):

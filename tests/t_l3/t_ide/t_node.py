@@ -6,7 +6,7 @@ from tests.basetests import PythonProjTest
 class TestProjectNode(PythonProjTest):
     def test_exclude_directores(self):
         self.root_node.fill_ancestors(desc_map={})
-        filetree = self.ide._get_project_filetree()
+        filetree = self.root_node.get_tree()
 
         print(f'- Filetree:\n{filetree}')
         self.assertTrue(not '.venv' in filetree)
@@ -18,17 +18,16 @@ class TestProjectNode(PythonProjTest):
         description_map = {os.path.join(self.proj_dirpath, 'somefile.txt') : 'This is a file'}
 
         self.root_node.fill_ancestors(desc_map=description_map)
-        tree = self.ide._get_project_filetree()
+        tree = self.root_node.get_tree()
+
         print(f'- Described tree:\n{tree}')
         self.assertTrue(f'🗎 somefile.txt\n\tThis is a file' in tree)
 
     def test_enumerated_tree(self):
-        path_to_fileID = {os.path.join(self.proj_dirpath, 'somefile.txt') : '1'}
-
-        self.ide._populate_project(desc_map={}, path_to_fileID=path_to_fileID)
-        tree = self.ide._get_project_filetree()
+        self.root_node.fill_ancestors(desc_map={})
+        tree = self.root_node.get_tree(show_idx=True)
         print(f'- Enumerated tree:\n{tree}')
-        self.assertTrue(f'🗎 somefile.txt | FileID = 1' in tree)
+        self.assertTrue(f'🗎 somefile.txt | FileID = 2' in tree)
 
 
 if __name__ == "__main__":

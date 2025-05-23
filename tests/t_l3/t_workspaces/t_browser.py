@@ -1,7 +1,7 @@
 import os
 
-from engine.l3_aos import Browser
 from tests.basetests import CredTest
+from engine.l3_aos import Browser
 
 # ----------------------------------------------------------------
 

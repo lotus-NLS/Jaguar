@@ -9,9 +9,9 @@ from typing import Optional
 class ProjectNode:
     def __init__(self, path : str, idx : Optional[int] = None, desc : Optional[str] = None):
         self.path = path
-        self.idx : int = idx
         self.description : str = desc
         self.children : list[ProjectNode] = []
+        self.idx : Optional[int] = idx
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__', '.*\\.egg-info',
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
 
@@ -32,32 +32,34 @@ class ProjectNode:
             self.children.append(d)
             d.fill_ancestors(desc_map=desc_map)
 
+        fileID = 0
+        ancestors = self.get_ancestors()
+        for node in ancestors:
+            if not node.is_dir():
+                fileID += 1
+                node.idx = fileID
+
     def is_excluded(self, fpath : str) -> bool:
         regex_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
         matches_exclusion = any([pattern.match(fpath) for pattern in regex_patterns])
         return matches_exclusion
 
-    def get_tree(self, indent : int = 0) -> str:
+    def get_tree(self, show_idx : bool = False, indent : int = 0) -> str:
         symbol = '🗎' if os.path.isfile(self.path) else '🗀'
         indentation = '\t' * indent
         cond_desc = f'\n{indentation}{self.description}' if self.description else ""
-        cond_idx = f' | FileID = {self.idx}' if self.idx is not None else ''
+        cond_idx = f' | FileID = {self.idx}' if self.idx is not None and show_idx else ''
         cond_backslash = '/' if os.path.isdir(self.path) else ''
 
         total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
                      f'{cond_desc}')
         for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(indent=indent+1)}'
+            total_str += f'\n{subnode.get_tree(indent=indent+1, show_idx=show_idx)}'
 
         return total_str
 
     def get_name(self) -> str:
         return os.path.basename(self.path)
-
-    def get_fpath_fileID_map(self) -> dict[str, int]:
-        ancestors = self.get_ancestors()
-        file_ancestors = [node for node in ancestors if os.path.isfile(node.path)]
-        return {node.path : j for j,node in enumerate(file_ancestors)}
 
     def get_ancestors(self) -> list[ProjectNode]:
         if os.path.isfile(self.path):
