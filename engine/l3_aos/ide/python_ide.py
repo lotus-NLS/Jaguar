@@ -39,6 +39,7 @@ class PythonIDE(Workspace):
         self.proj_dirpath = project_dirpath
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
         self.root_node = ProjectNode(path=project_dirpath)
+        self.root_node.fill_ancestors(desc_map={})
 
     def close(self, *args, **kwargs):
         pass
@@ -57,7 +58,7 @@ class PythonIDE(Workspace):
     def get_text(self) -> str:
         self.root_node.fill_ancestors(desc_map={})
         proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
-        filetree = self._get_project_filetree()
+        filetree = self.root_node.get_tree(show_idx=True)
         editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
 
         view = MessageFormatter.get_boxed(text=proj_info, headline=f'Project metadata')
@@ -65,9 +66,6 @@ class PythonIDE(Workspace):
         if self._open_fpaths:
             view += editor
         return view
-
-    def _get_project_filetree(self):
-        return self.root_node.get_tree()
 
     def get_image(self) -> Optional[PILImage]:
         return None
@@ -77,7 +75,7 @@ class PythonIDE(Workspace):
 
     def open_file(self, projectFileNo : int):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
-        path_to_fileID = self.root_node.get_fpath_fileID_map()
+        path_to_fileID = self.root_node.get_path_to_idx()
         id_to_path = {v : k for k, v in path_to_fileID.items()}
         fpath = id_to_path[int(projectFileNo)]
         parent_dir = os.path.dirname(fpath)

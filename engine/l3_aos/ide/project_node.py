@@ -36,8 +36,8 @@ class ProjectNode:
         ancestors = self.get_ancestors()
         for node in ancestors:
             if not node.is_dir():
-                fileID += 1
                 node.idx = fileID
+                fileID += 1
 
     def is_excluded(self, fpath : str) -> bool:
         regex_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
@@ -60,6 +60,10 @@ class ProjectNode:
 
     def get_name(self) -> str:
         return os.path.basename(self.path)
+
+    def get_path_to_idx(self) -> dict[str, int]:
+        ancestor_nodes = self.get_ancestors()
+        return {node.path : node.idx for node in ancestor_nodes}
 
     def get_ancestors(self) -> list[ProjectNode]:
         if os.path.isfile(self.path):

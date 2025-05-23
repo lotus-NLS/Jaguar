@@ -45,18 +45,17 @@ class EngineTest(CredTest):
 
 class PythonProjTest(Unittest):
     def setUp(self):
-        self.proj_dirpath : str = tempfile.mktemp()
-        os.makedirs(self.proj_dirpath)
-        self.ide : PythonIDE = PythonIDE()
-        self.ide.open(project_dirpath=self.proj_dirpath)
-        
-        self.root_node : ProjectNode = ProjectNode(path=self.proj_dirpath)
+        self.proj_dirpath : str = tempfile.mkdtemp()
         self.script_fpath = os.path.join(self.proj_dirpath, 'test.py')
         with open(self.script_fpath, 'w') as f:
             testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
             f.write(testscript_content)
         manager = FsysManager(root_dirpath=self.proj_dirpath)
-        manager.add_tree(tree={'.venv': {}, '__pycache__' : {}, 'somefile.txt' : 'Content'})
+        manager.add_tree(tree={'__pycache__' : {}, 'somefile.txt' : 'Content'})
+
+        self.ide: PythonIDE = PythonIDE()
+        self.ide.open(project_dirpath=self.proj_dirpath)
+        self.root_node: ProjectNode = self.ide.root_node
 
 
 class ToolTest(Unittest):
