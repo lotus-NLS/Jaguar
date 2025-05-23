@@ -3,9 +3,8 @@ from typing import Iterator
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks import Task, TaskTracker
 from engine.l2_models import InfConfig, Step
-from engine.l3_aos import Browser, Terminal, AOS
+from engine.l3_aos import Browser, Terminal, AOS, PythonIDE
 from engine.l3_aos.tools import ToolOutput
-from engine.l3_aos.workspaces.python_ide import PythonIDE
 from tests.basetests import AgentTest
 from tests.t_l2.base import Greet
 

@@ -2,7 +2,7 @@ from typing import Optional
 
 from engine.l2_models.language import Message
 from engine.l3_aos.tools import ToolDoc, ToolCall, Tool
-from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.workspace import Workspace
 from holytools.devtools import Unittest
 from PIL.Image import Image as PILImage
 

@@ -5,8 +5,9 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
-from engine.l3_aos.workspaces.python_editor import ProjectNode, PythonEditor
-from engine.l3_aos.workspaces.workspace import Workspace
+from engine.l3_aos.ide.project_node import ProjectNode
+from engine.l3_aos.ide.python_editor import PythonEditor
+from engine.l3_aos.workspace import Workspace
 from holytools.userIO import MessageFormatter
 
 
@@ -38,7 +39,6 @@ class PythonIDE(Workspace):
         self.proj_dirpath = project_dirpath
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
         self.root_node = ProjectNode(path=project_dirpath)
-        self._populate_project(desc_map={}, path_to_fileID={})
 
     def close(self, *args, **kwargs):
         pass
@@ -55,7 +55,7 @@ class PythonIDE(Workspace):
         return venv_dirpath
 
     def get_text(self) -> str:
-        self._populate_project(desc_map={}, path_to_fileID={})
+        self.root_node.fill_ancestors(desc_map={}, path_to_ID={})
         proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
         filetree = self._get_project_filetree()
         editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
@@ -71,9 +71,6 @@ class PythonIDE(Workspace):
 
     def get_image(self) -> Optional[PILImage]:
         return None
-
-    def _populate_project(self, desc_map : dict[str, str], path_to_fileID : dict[str, int]):
-        self.root_node.fill_ancestors(desc_map=desc_map, path_to_ID=path_to_fileID)
 
     # --------------------------------------------------------------------
     # Functionalities

@@ -2,8 +2,7 @@ import os.path
 import tempfile
 from multiprocessing import Process
 
-from engine.l3_aos.workspaces import Terminal, Browser
-from engine.l3_aos.workspaces.python_ide import PythonIDE
+from engine.l3_aos import Terminal, Browser, PythonIDE
 from eval.task.frame.servers import BrowserServers
 from eval.task.taskeval import TaskEval
 from holytools.logging import CaptureLogs

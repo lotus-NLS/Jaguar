@@ -14,7 +14,8 @@ from engine.l2_models.language import Message, Context
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos.tools import ToolOutput, ToolCall, Tool
-from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.workspace import Workspace
+
 
 # ---------------------------------------------------------
 

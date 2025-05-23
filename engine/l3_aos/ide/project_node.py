@@ -3,64 +3,7 @@ import os
 import re
 from typing import Optional
 
-from pylint import lint
-from pylint.reporters import CollectingReporter
-
-from holytools.userIO import MessageFormatter
-
-
-# -----------------------------------------------------
-class PythonEditor:
-    @staticmethod
-    def get_info(proj_dirpath : str, venv_dirpath: Optional[str] = None) -> str:
-        metadata = (f'{"Project name":<20}: {os.path.basename(proj_dirpath)}'
-                    f'\n{"Project dirpath":<20}: {proj_dirpath}')
-        if not venv_dirpath is None:
-            metadata += f'\n{"Virtual environment":<20}: {venv_dirpath}'
-
-        return metadata
-
-    @classmethod
-    def get_editor(cls, open_fpaths: list[str], run_output: dict[str, str]) -> str:
-        all_contents = ''
-        for j, path in enumerate(open_fpaths):
-            fname = os.path.basename(path)
-            texts = [cls._get_file_with_lineno(fpath=path), cls._get_inspections(fpath=path)]
-            headlines = [f'[{fname} (fileNo: {j})]', 'Problems']
-
-            if path in run_output:
-                texts.append(run_output[path])
-                headlines.append('Execution output')
-
-            all_contents += MessageFormatter.multi_section_box(texts=texts, headlines=headlines)
-
-        return all_contents
-
-    @staticmethod
-    def _get_inspections(fpath: str) -> str:
-        reporter = CollectingReporter()
-        lint.Run([fpath] + ['--disable=C,R'], reporter=reporter, exit=False)
-        criticalility_dict = {'W': '⚠️', 'E': '🛑'}
-
-        formatted_inspections = ''
-        for m in reporter.messages:
-            symbol = criticalility_dict[m.C]
-            formatted_inspections += f' {symbol} l.{m.line:<4}| {m.msg}\n'
-
-        return formatted_inspections
-
-
-    @staticmethod
-    def _get_file_with_lineno(fpath: str) -> str:
-        with open(fpath, 'r') as f:
-            c = f.read()
-        lines = c.split('\n')
-
-        enumerated_content = ''
-        for n, l in enumerate(lines):
-            enumerated_content += f'{n + 1:< 5}| {l}\n'
-        enumerated_content = enumerated_content.rstrip('\n')
-        return enumerated_content
+# -------------------------------------------------
 
 
 class ProjectNode:
@@ -72,14 +15,14 @@ class ProjectNode:
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__', '.*\\.egg-info',
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
 
-    def fill_ancestors(self, desc_map : dict[str, str], path_to_ID : dict[str, int]):
+    def fill_ancestors(self, desc_map : dict[str, str]):
         if os.path.isfile(self.path):
             return
 
         subnode_names = os.listdir(self.path)
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
-        subnodes = [ProjectNode(path=p, desc=desc_map.get(p), idx=path_to_ID.get(p)) for p in subnode_paths]
+        subnodes = [ProjectNode(path=p, desc=desc_map.get(p)) for p in subnode_paths]
 
         dir_nodes = [subnode for subnode in subnodes if os.path.isdir(subnode.path)]
         file_nodes = [subnode for subnode in subnodes if os.path.isfile(subnode.path)]
@@ -87,7 +30,7 @@ class ProjectNode:
             self.children.append(f)
         for d in dir_nodes:
             self.children.append(d)
-            d.fill_ancestors(desc_map=desc_map, path_to_ID=path_to_ID)
+            d.fill_ancestors(desc_map=desc_map)
 
     def is_excluded(self, fpath : str) -> bool:
         regex_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
@@ -112,8 +55,9 @@ class ProjectNode:
         return os.path.basename(self.path)
 
     def get_fpath_fileID_map(self) -> dict[str, int]:
-
-        pass
+        ancestors = self.get_ancestors()
+        file_ancestors = [node for node in ancestors if os.path.isfile(node.path)]
+        return {node.path : j for j,node in enumerate(file_ancestors)}
 
     def get_ancestors(self) -> list[ProjectNode]:
         if os.path.isfile(self.path):

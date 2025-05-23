@@ -6,7 +6,7 @@ from PIL.Image import Image as PILImage
 
 from engine.l1_agents.tasks.task import Task
 from engine.l3_aos.tools import Tool
-from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.workspace import Workspace
 
 
 # -------------------------------------------------------

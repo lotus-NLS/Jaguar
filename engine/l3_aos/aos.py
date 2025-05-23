@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
+from engine.l3_aos.browser import Browser
+from engine.l3_aos.ide import PythonIDE
+from engine.l3_aos.terminal import Terminal
 from engine.l3_aos.tools import Tool, ToolCall, ToolOutput, ToolDoc
-from engine.l3_aos.workspaces import Workspace, Browser
-from engine.l3_aos.workspaces.python_ide import PythonIDE
-from engine.l3_aos.workspaces.terminal import Terminal
-
+from engine.l3_aos.workspace import Workspace
 
 # ---------------------------------------------------------
 

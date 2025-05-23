@@ -9,7 +9,7 @@ from PIL.Image import Image as PILImage
 from libtmux import Session
 
 from engine.l3_aos.tools import InvalidArgValue
-from engine.l3_aos.workspaces.workspace import Workspace
+from engine.l3_aos.workspace import Workspace
 
 # ---------------------------------------------------------
 

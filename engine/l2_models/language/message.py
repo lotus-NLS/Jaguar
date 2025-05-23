@@ -7,7 +7,7 @@ from typing import Optional
 from PIL.Image import Image as PILImage
 
 from engine.l3_aos.tools import ToolOutput
-from engine.l3_aos.workspaces import Workspace
+from engine.l3_aos.workspace import Workspace
 from holytools.abstract import JsonDataclass
 from holytools.fileIO.converters import ImageConverter
 from holytools.userIO import MessageFormatter
