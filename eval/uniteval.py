@@ -15,11 +15,8 @@ from holytools.logging import CaptureLogs
 # ---------------------------------------------------
 
 class UnitEval(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        cls.engine : LotusEngine = LotusEngine()
-
     def setUp(self):
+        self.engine : LotusEngine = LotusEngine()
         self.engine.reset()
         cls_dirpath = os.path.dirname(sys.modules[self.__class__.__module__].__file__)
 

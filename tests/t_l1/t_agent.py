@@ -13,8 +13,7 @@ from tests.t_l2.base import Greet
 class TestAgent(AgentTest):
     def setUp(self):
         super().setUp()
-        self.mock_agent = MockAgent(model=self.model, aos=AOS.empty())
-
+        self.mock_agent : MockAgent = MockAgent(model=self.model, aos=AOS.empty())
 
     def test_memory_context(self):
         content = f'Hello there!'
@@ -23,11 +22,11 @@ class TestAgent(AgentTest):
         self.assertTrue(content in view)
 
     def test_aos_context(self):
-        ctx = self.agent.get_exploration_context(inf_config=self.default_inf_config)
+        ctx = self.agent.get_context(inf_config=self.default_inf_config)
 
         total_view = ''
         for d in ctx.docs:
-            view = d.get_editor()
+            view = d.get_view()
             total_view += f'{view}\n'
         print(f'-> Total tool doc view:\n{total_view}')
 
@@ -39,7 +38,7 @@ class TestAgent(AgentTest):
     def test_report(self):
         final_step = None
         for step in self.mock_agent.work(task=self.example_task, max_turns=self.mock_agent.get_report_frequency()):
-            print(f'Used tool: {step.tool_outputs[0].tool_name if step.tool_outputs else None}')
+            # print(f'Used tool: {step.tool_outputs[0].tool_name if step.tool_outputs else None}')
             final_step = step
 
         update_tool_name = self.mock_agent.task_tracker.update_tool.get_name()
@@ -66,14 +65,16 @@ class TestAgent(AgentTest):
         close_step = None
         for _ in self.mock_agent.work(task=task, max_turns=1):
             require_close_tool = InfConfig.single_tool(close_tool)
-            close_step = self.mock_agent.handle(inf_config=require_close_tool).__next__()
-            break
+            iterator = self.mock_agent.handle(inf_config=require_close_tool)
+            iterator.__next__()
+            close_step = iterator.__next__()
 
         gen_ctx_view = close_step.pre_ctx.get_view()
         self.assertTrue('Tracker[Active]' in gen_ctx_view)
         self.assertTrue(work_notice in gen_ctx_view)
 
         post_ctx_view = close_step.post_ctx.get_view()
+        # print(f'Post context view = {post_ctx_view}')
         self.assertTrue('Tracker[Archived]' in post_ctx_view)
         self.assertTrue('Tracker[Active]' not in post_ctx_view)
         self.assertTrue(work_notice not in post_ctx_view)

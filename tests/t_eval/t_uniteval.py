@@ -19,6 +19,5 @@ class TestEvaluation(Unittest):
             proj_directory = Directory(path=proj_dirpath)
             print(proj_directory.get_tree())
 
-
 if __name__ == "__main__":
     TestEvaluation.execute_all()

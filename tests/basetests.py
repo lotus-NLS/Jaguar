@@ -30,7 +30,7 @@ class AgentTest(CredTest):
     def setUp(self):
         self.model = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.aos = AOS.full(google_api_key=self.google_api_key, searchengine_id=self.searchengine_id)
-        self.agent = Agent(aos=self.aos, model=self.model)
+        self.agent : Agent = Agent(aos=self.aos, model=self.model)
         task_yaml = ('- Test task'
                      '    - Mark this task in the Tracker as completed. It only serves to test the Tracker completion functionality.')
         self.example_task = Task.from_yaml(s=task_yaml)
