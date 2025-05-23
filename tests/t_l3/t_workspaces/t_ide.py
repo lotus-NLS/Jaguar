@@ -21,7 +21,7 @@ class TestPythonIDE(PythonTest):
         new_content = f'import PIL\n'
         self.ide.insert(fileNo=0, after_line=0, content=new_content)
 
-        file_content = self.ide.view._get_with_lineno(fpath=fpath)
+        file_content = self.ide.view._get_file_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | import PIL
  2   | 
  3   | print(f'Hello world :)')
@@ -36,7 +36,7 @@ class TestPythonIDE(PythonTest):
         fpath = self.script_fpath
         self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
 
-        file_content = self.ide.view._get_with_lineno(fpath=fpath)
+        file_content = self.ide.view._get_file_with_lineno(fpath=fpath)
         expected_file_content = ''' 1   | a = 2
  2   | b=3'''
 

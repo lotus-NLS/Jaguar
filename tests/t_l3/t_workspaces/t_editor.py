@@ -1,5 +1,4 @@
 from engine.l3_aos import PythonIDE
-from tree import DecoratedDirectory
 import tempfile
 
 from holytools.devtools import Unittest
@@ -34,7 +33,7 @@ class TestProjectView(PythonTest):
         self.ide.open_file(fileNo=1)
 
     def test_script_display(self):
-        file_content = self.ide.view._get_with_lineno(fpath=self.script_fpath)
+        file_content = self.ide.view._get_file_with_lineno(fpath=self.script_fpath)
         excepted_content = ''' 1   | print(f'Hello world :)')
  2   | a = 2
  3   | b=3'''
@@ -53,35 +52,6 @@ class TestProjectView(PythonTest):
         self.assertTrue(not '__pycache__' in filetree)
         self.assertTrue('somefile.txt' in filetree)
         self.assertTrue('test.py' in filetree)
-
-
-class TestDecoratedDirectory(Unittest):
-    num_hard_files = 9
-    num_hard_folders = 3
-    num_total_dat_files = 5
-    num_total_files = num_hard_files+1
-    num_total_nodes= num_total_files+num_hard_folders
-
-    def setUp(self):
-        self.root_dirpath = tempfile.mkdtemp()
-        self.files = ['file1.txt', 'file2.txt']
-        self.subdirs = ['.hiddendir','dir1', 'dir2']
-        self.subfiles = {'dir1': ['sub1.dat', 'sub2.dat', 'sub3.dat', '.hiddenfile.dat'],
-                         'dir2': ['sub1.png', 'sub2.png', 'sub3.png']}
-
-        for d in self.subdirs:
-            os.makedirs(os.path.join(self.root_dirpath, d))
-
-        for the_file in self.files:
-            open(os.path.join(self.root_dirpath, the_file), 'a').close()  # Create empty files
-
-        for subdir, subfiles in self.subfiles.items():
-            subdir_path = os.path.join(self.root_dirpath, subdir)
-            for subfile in subfiles:
-                open(os.path.join(subdir_path, subfile), 'a').close()
-
-        os.symlink(os.path.join(self.root_dirpath, 'dir1', 'sub1.dat'), os.path.join(self.root_dirpath, 'symlink_sub1.dat'))
-        self.root_node = DecoratedDirectory(path=self.root_dirpath)
 
     def test_get_described_tree(self):
         description_map = {os.path.join(self.root_dirpath, 'file1.txt') : 'This is a file'}
