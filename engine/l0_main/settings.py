@@ -84,16 +84,13 @@ class LotusCredentials(Timber):
             err_details = f'Request to OpenAI servers timed out after {timeout}'
         except BaseException as err:
             err_details = f'{err}'
-        finally:
-            if not is_successful:
-                self.error(msg=f'Error after test run of openai_api_key: {err_details.__repr__()}')
-            openai.api_key = temp
-            return is_successful
-
+        if not is_successful:
+            self.error(msg=f'Error after test run of openai_api_key: {err_details.__repr__()}')
+        openai.api_key = temp
+        return is_successful
 
     def validate_search_engine(self) -> bool:
         is_successful = False
-        err_details = ''
         try:
 
             url = "https://www.googleapis.com/customsearch/v1"
@@ -113,14 +110,12 @@ class LotusCredentials(Timber):
                 err_details = f"Google API Error: {error_info.get('message', 'Unknown error')}"
             else:
                 err_details = f"Received unexpected status code {response.status_code}"
-
         except Exception as err:
             err_details = f'Google services could not be reached. Is internet connection available? {err}'
 
-        finally:
-            if not is_successful:
-                self.error(msg=f'Error after test run of search engine: {err_details}')
-            return is_successful
+        if not is_successful:
+            self.error(msg=f'Error after test run of search engine: {err_details}')
+        return is_successful
 
 class DefaultPorts:
     socket_port : int = 5001

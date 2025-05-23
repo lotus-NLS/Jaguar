@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 
 from json_repair import repair_json
 
@@ -60,8 +60,8 @@ class ToolArg:
 
     # ---------------------------------------------------
 
-    def get_json_doc(self) -> dict[str,str]:
-        arg_doc = {
+    def get_json_doc(self) -> dict[str, Any]:
+        arg_doc : dict[str, Any] = {
             'type': 'string',
             'description': f'{self.desc}'
         }

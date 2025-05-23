@@ -114,7 +114,7 @@ class Workflow:
             parsed_content = cls.drawio_to_yaml(content=content, variable_map=kwargs)
 
             task = Task.from_yaml(s=parsed_content)
-            node_map[uuid] = Node(name=name, mandate=task, max_turns=num_steps)
+            node_map[uuid] = Node(name=name, mandate=task, max_turns=int(num_steps))
         nodes = list(node_map.values())
 
         edges = []

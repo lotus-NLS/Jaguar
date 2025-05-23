@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import traceback
 from dataclasses import dataclass, field
+from typing import Optional
 
 from engine.l3_aos.tools import ToolDoc
 from holytools.abstract import JsonDataclass
@@ -28,10 +29,11 @@ class Context(JsonDataclass):
                 del ws_msg_map[matching_ws_name]
 
     @staticmethod
-    def get_matching_ws_name(ws_names: list[str], tool_name: str):
+    def get_matching_ws_name(ws_names: list[str], tool_name: str) -> Optional[str]:
         for n in ws_names:
             if n in tool_name:
                 return n
+        return None
 
     @staticmethod
     def get_entry_map(aos : AOS) -> dict[str, Message]:

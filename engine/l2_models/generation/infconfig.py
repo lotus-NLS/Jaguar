@@ -29,7 +29,7 @@ class CallOptions:
         if not self.call_allowed and self.required_tool_name:
             raise ValueError('Cannot require a tool call if the call is not allowed')
 
-    def get_openai_syntax(self) -> object:
+    def get_openai_syntax(self) -> str | dict:
         if not self.call_allowed:
             return 'none'
 
