@@ -108,8 +108,8 @@ class Agent:
             yield make_action(pipe=None, tool_outputs=self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool))
         except APITimeoutError:
             yield Step.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
-        except APIError:
-            yield Step.failed(context=context, err_msg=f'OpenAI API request failed')
+        except APIError as e:
+            yield Step.failed(context=context, err_msg=f'OpenAI API request failed: {e.__repr__()}')
 
     def process(self, generation : Generation, pipe : TextPipe) -> TextPipe:
         for chunk in generation:
