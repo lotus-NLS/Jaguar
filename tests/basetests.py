@@ -1,3 +1,8 @@
+import json
+import os
+import tempfile
+import time
+
 from engine.l0_main.lotus_engine import LotusEngine
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents import Agent
@@ -5,7 +10,12 @@ from engine.l1_agents.tasks import Task
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
+from engine.l3_aos import PythonIDE
+from engine.l3_aos.ide.project_node import ProjectNode
+from engine.l3_aos.tools import ToolCall, Tool, ToolArg
 from holytools.devtools import Unittest
+from holytools.fsys import FsysManager
+
 
 # ------------------------------------------------------------
 
@@ -32,3 +42,70 @@ class EngineTest(CredTest):
         self.model : LLM = OpenAIModel.default_model(api_key=self.openai_api_key)
         self.engine : LotusEngine = LotusEngine()
         self.agent : Agent = self.engine.agent
+
+
+class PythonProjTest(Unittest):
+    @classmethod
+    def setUpClass(cls):
+        cls.proj_dirpath : str = tempfile.mktemp()
+        os.makedirs(cls.proj_dirpath)
+        cls.ide : PythonIDE = PythonIDE()
+        cls.ide.open(project_dirpath=cls.proj_dirpath)
+        cls.root_node : ProjectNode = ProjectNode(path=cls.proj_dirpath)
+
+    def setUp(self):
+        self.script_fpath = os.path.join(self.proj_dirpath, 'test.py')
+        with open(self.script_fpath, 'w') as f:
+            testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
+            f.write(testscript_content)
+        manager = FsysManager(root_dirpath=self.proj_dirpath)
+        manager.add_tree(tree={'.venv': {}, '__pycache__' : {}, 'somefile.txt' : 'Content'})
+
+
+
+class ToolTest(Unittest):
+    @classmethod
+    def setUpClass(cls):
+        cls.valid_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.valid_printer_args)
+        cls.invalid_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.invalid_printer_args)
+        cls.empty_tool_call : ToolCall = ToolCall(args_json=MockToolCalls.empty_args_json)
+
+    def setUp(self):
+        self.simple_tool : Tool = PrinterTool()
+        self.invalid_tool : Tool = InvalidTool()
+
+
+class MockToolCalls:
+    valid_printer_args = json.dumps({f'arg_one': 'value'})
+    invalid_printer_args = json.dumps({'arg_onee': ''})
+    empty_args_json = json.dumps({})
+
+
+class InvalidTool(Tool):
+    def get_desc(self) -> str:
+        return 'throws error on execution'
+
+    def _do(self):
+        raise ValueError
+
+    def get_args(self) -> list[ToolArg]:
+        return []
+
+
+class PrinterTool(Tool):
+    def __init__(self, call_timeout: float = 60):
+        super().__init__(call_timeout=call_timeout)
+        self.text_arg : ToolArg = ToolArg(name="arg_one")
+        self.text_arg_two : ToolArg = ToolArg(name="arg_two", is_optional=True)
+
+    def _do(self):
+        time.sleep(0.1)
+        msg = f"SimpleTool says: {self.text_arg.input}"
+        print(msg)
+        return msg
+
+    def get_desc(self) -> str:
+        return "SimpleTool is a basic implementation for testing."
+
+    def get_args(self) -> list[ToolArg]:
+        return [self.text_arg, self.text_arg_two]

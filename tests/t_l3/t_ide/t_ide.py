@@ -1,35 +1,12 @@
 import os
-import tempfile
 
-from engine.l3_aos import PythonIDE
-from engine.l3_aos.ide.project_node import ProjectNode
 from engine.l3_aos.ide.python_editor import PythonEditor
-from holytools.devtools import Unittest
-from holytools.fsys import FsysManager
+from tests.basetests import PythonProjTest
 
 
 # --------------------------------------------------------------
 
-
-class PythonTest(Unittest):
-    @classmethod
-    def setUpClass(cls):
-        cls.proj_dirpath : str = tempfile.mktemp()
-        os.makedirs(cls.proj_dirpath)
-        cls.ide : PythonIDE = PythonIDE()
-        cls.ide.open(project_dirpath=cls.proj_dirpath)
-        cls.root_node : ProjectNode = ProjectNode(path=cls.proj_dirpath)
-
-    def setUp(self):
-        self.script_fpath = os.path.join(self.proj_dirpath, 'test.py')
-        with open(self.script_fpath, 'w') as f:
-            testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
-            f.write(testscript_content)
-        manager = FsysManager(root_dirpath=self.proj_dirpath)
-        manager.add_tree(tree={'.venv': {}, '__pycache__' : {}, 'somefile.txt' : 'Content'})
-
-
-class TestIDE(PythonTest):
+class TestIDE(PythonProjTest):
     def test_open_file(self):
         self.ide.open_file(projectFileNo=0)
         file_content = PythonEditor._get_file_with_lineno(fpath=self.script_fpath)
@@ -89,8 +66,6 @@ class TestIDE(PythonTest):
     def test_venv_exists(self):
         self.assertTrue(not self.ide.interpreter_fpath is None)
         self.assertTrue(os.path.isfile(self.ide.interpreter_fpath))
-
-
 
 if __name__ == "__main__":
     TestIDE.execute_all()

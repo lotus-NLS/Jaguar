@@ -55,7 +55,7 @@ class PythonIDE(Workspace):
         return venv_dirpath
 
     def get_text(self) -> str:
-        self.root_node.fill_ancestors(desc_map={}, path_to_ID={})
+        self.root_node.fill_ancestors(desc_map={})
         proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
         filetree = self._get_project_filetree()
         editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)

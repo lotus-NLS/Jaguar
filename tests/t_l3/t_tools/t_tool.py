@@ -1,6 +1,6 @@
 from engine.l3_aos.tools import ToolOutput, ToolDoc
 from engine.l3_aos.tools.output import ExitStatus, ProgUpdate
-from tests.t_l3.t_tools.tooltest import ToolTest
+from tests.basetests import ToolTest
 
 
 # -----------------------------------------------------

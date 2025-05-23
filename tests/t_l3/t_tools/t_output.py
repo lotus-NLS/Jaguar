@@ -1,5 +1,5 @@
 from engine.l3_aos.tools.output import ExitStatus, MissingArgs
-from tests.t_l3.t_tools.tooltest import ToolTest
+from tests.basetests import ToolTest
 
 
 class TestToolOutput(ToolTest):

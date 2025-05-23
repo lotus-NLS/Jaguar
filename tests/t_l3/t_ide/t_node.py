@@ -1,15 +1,9 @@
 import os
-import tempfile
 
-from engine.l3_aos import PythonIDE
-from engine.l3_aos.ide.project_node import ProjectNode
-from engine.l3_aos.ide.python_editor import PythonEditor
-from holytools.devtools import Unittest
-from holytools.fsys import FsysManager
-from tests.t_l3.t_ide.t_ide import PythonTest
+from tests.basetests import PythonProjTest
 
 
-class TestProjectNode(PythonTest):
+class TestProjectNode(PythonProjTest):
     def test_exclude_directores(self):
         self.root_node.fill_ancestors(desc_map={})
         filetree = self.ide._get_project_filetree()
@@ -35,3 +29,7 @@ class TestProjectNode(PythonTest):
         tree = self.ide._get_project_filetree()
         print(f'- Enumerated tree:\n{tree}')
         self.assertTrue(f'🗎 somefile.txt | FileID = 1' in tree)
+
+
+if __name__ == "__main__":
+    TestProjectNode.execute_all()
