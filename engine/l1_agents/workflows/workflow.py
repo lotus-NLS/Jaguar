@@ -64,15 +64,15 @@ class Workflow:
                 raise ValueError(f'Node with name {n.name} already exists')
             self.node_map[n.name] = n
 
-        self.outgoing_edge_map : dict[str, list[Edge]] = {}
+        self.source_edge_map : dict[str, list[Edge]] = {}
         for e in self.edges:
             if not e.source.name in self.node_map:
                 raise KeyError(f'Node {e.source.name} not found')
             if not e.target.name  in self.node_map:
                 raise KeyError(f'Node {e.target.name} not found')
-            if not e.source.name in self.outgoing_edge_map:
-                self.outgoing_edge_map[e.source.name] = []
-            self.outgoing_edge_map[e.source.name].append(e)
+            if not e.source.name in self.source_edge_map:
+                self.source_edge_map[e.source.name] = []
+            self.source_edge_map[e.source.name].append(e)
 
     @classmethod
     def from_drawio_xml(cls, xml_fpath : str, **kwargs):
@@ -160,7 +160,10 @@ class Workflow:
         return self.node_map[name]
 
     def get_exit_tool(self, node_name : str) -> NodeNavigation:
-        exit_tool = NodeNavigation(edges=self.outgoing_edge_map[node_name])
+        if not node_name in self.source_edge_map:
+            raise KeyError(f'Node {node_name} does not have outgoing edges')
+
+        exit_tool = NodeNavigation(edges=self.source_edge_map[node_name])
         return exit_tool
 
     @classmethod
@@ -301,9 +304,12 @@ class Workflow:
     @classmethod
     def example(cls) -> Workflow:
         n1 = Node.single_directive(name='start', directive='Test task A. Mark this task completed')
-        n2 = Node.single_directive(name='end', directive='Complete the task with taskID = 1. Do *not* under any circumstance close the Tracker')
-        edge = Edge(source=n1, target=n2, case='Success. This workflow is just an example with a single exit case')
-        return cls(start_node=n1, nodes=[n1, n2], edges=[edge], notice='You will be guided through this workflow through a series of'
+        n2 = Node.single_directive(name='middle', directive='Complete the task with taskID = 1. Do *not* under any circumstance close the Tracker')
+        n3 = Node.single_directive(name='end', directive='Test task B. Mark this task completed')
+        e12 = Edge(source=n1, target=n2, case='Success. This workflow is just an example with a single exit case')
+        e23 = Edge(source=n2, target=n3, case='Success. This workflow is just an example with a single exit case')
+
+        return cls(start_node=n1, nodes=[n1, n2, n3], edges=[e12, e23], notice='You will be guided through this workflow through a series of'
                                                                        'task lists. They will each be presented to you in thie Tracker tool'
                                                                        'Only the active Tracker tool is relevant.')
     @classmethod

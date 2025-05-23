@@ -42,26 +42,24 @@ class LotusEngine(Timber):
 
     def do_workflow(self, wf : Workflow) -> Node:
         node = wf.start_node
-        outgoing_edges = wf.outgoing_edge_map[node.name]
-
         workflow_description = Message.system(text=wf.notice)
         self.agent.update_memory(entry=workflow_description)
 
         while True:
             self.info(f'\n## Now starting work on node: {node.name}')
-            if isinstance(node.mandate, Task):
-                self.do_task(task=node.mandate, max_turns=node.max_turns)
-                exit_tool = wf.get_exit_tool(node_name=node.name)
-                self.agent.update_memory(entry=Message.tool(text=exit_tool.get_desc(), name=exit_tool.get_name()))
-                for _ in self.agent.handle(inf_config=InfConfig(required_tool=exit_tool)):
-                    pass
-                choice = exit_tool.exit_choice.get_value()
-            else:
-                node = self.do_workflow(wf=node.mandate)
-                choice = node.name
-
-            if not node.name in wf.outgoing_edge_map:
+            self.do_task(task=node.mandate, max_turns=node.max_turns)
+            if not node.name in wf.source_edge_map:
                 break
+            else:
+                outgoing_edges = wf.source_edge_map[node.name]
+
+            exit_tool = wf.get_exit_tool(node_name=node.name)
+            self.agent.update_memory(entry=Message.tool(text=exit_tool.get_desc(), name=exit_tool.get_name()))
+            iterator = self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
+            _ = iterator.__next__()
+            __ = iterator.__next__()
+
+            choice = exit_tool.exit_choice.get_value()
             node = outgoing_edges[choice].target
 
         return node
