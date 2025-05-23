@@ -27,7 +27,7 @@ class TestProjectNode(PythonProjTest):
         self.root_node.fill_ancestors(desc_map={})
         tree = self.root_node.get_tree(show_idx=True)
         print(f'- Enumerated tree:\n{tree}')
-        self.assertTrue(f'🗎 somefile.txt | FileID = 2' in tree)
+        self.assertTrue(f'🗎 somefile.txt | FileID = 1' in tree)
 
 
 if __name__ == "__main__":

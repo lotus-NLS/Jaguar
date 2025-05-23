@@ -19,13 +19,14 @@ class ProjectNode:
         if os.path.isfile(self.path):
             return
 
+        self.children = []
         subnode_names = os.listdir(self.path)
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
         subnodes = [ProjectNode(path=p, desc=desc_map.get(p)) for p in subnode_paths]
 
-        dir_nodes = [subnode for subnode in subnodes if os.path.isdir(subnode.path)]
-        file_nodes = [subnode for subnode in subnodes if os.path.isfile(subnode.path)]
+        dir_nodes = [sn for sn in subnodes if os.path.isdir(sn.path)]
+        file_nodes = [sn for sn in subnodes if os.path.isfile(sn.path)]
         for f in file_nodes:
             self.children.append(f)
         for d in dir_nodes:
