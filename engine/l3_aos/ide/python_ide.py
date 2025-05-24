@@ -5,7 +5,7 @@ from typing import Optional
 
 from PIL.Image import Image as PILImage
 
-from engine.l3_aos.ide.waypoint import ModuleWaypoint
+from engine.l3_aos.ide.node import ModuleNode
 from engine.l3_aos.ide.python_editor import PythonEditor
 from engine.l3_aos.workspace import Workspace
 from holytools.userIO import MessageFormatter
@@ -20,7 +20,7 @@ class PythonIDE(Workspace):
         self.proj_dirpath : Optional[str] = None
         self.interpreter_fpath : Optional[str] = None
 
-        self.root_node : Optional[ModuleWaypoint] = None
+        self.root_node : Optional[ModuleNode] = None
         self.output_map : dict[str, str] = {}
         self._open_fpaths : list[str] = []
 
@@ -38,7 +38,7 @@ class PythonIDE(Workspace):
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
-        self.root_node = ModuleWaypoint(path=project_dirpath)
+        self.root_node = ModuleNode(path=project_dirpath)
         self.root_node.fill_ancestors(desc_map={})
 
     def close(self, *args, **kwargs):

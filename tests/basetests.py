@@ -11,7 +11,7 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
 from engine.l3_aos import PythonIDE
-from engine.l3_aos.ide.waypoint import ModuleWaypoint
+from engine.l3_aos.ide.node import ModuleNode
 from engine.l3_aos.tools import ToolCall, Tool, ToolArg
 from holytools.devtools import Unittest
 from holytools.fsys import FsysManager
@@ -62,7 +62,7 @@ class PythonProjTest(Unittest):
 
         self.ide: PythonIDE = PythonIDE()
         self.ide.open(project_dirpath=self.proj_dirpath)
-        self.root_node: ModuleWaypoint = self.ide.root_node
+        self.root_node: ModuleNode = self.ide.root_node
 
 
 class ToolTest(Unittest):

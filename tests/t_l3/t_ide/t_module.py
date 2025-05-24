@@ -3,7 +3,7 @@ import os
 from tests.basetests import PythonProjTest
 
 
-class TestModuleWaypoint(PythonProjTest):
+class TestModuleNode(PythonProjTest):
     def test_exclude_directores(self):
         self.root_node.fill_ancestors(desc_map={})
         filetree = self.root_node.get_tree()
@@ -58,4 +58,4 @@ class TestModuleWaypoint(PythonProjTest):
         self.assertEqual(actual_tree, expected_tree)
 
 if __name__ == "__main__":
-    TestModuleWaypoint.execute_all()
+    TestModuleNode.execute_all()
