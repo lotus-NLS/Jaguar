@@ -60,7 +60,7 @@ class Terminal(Workspace):
     # actions
 
     def send(self, content : str, send_enter_after : bool = False) :
-        """Sends content to current terminal session. Can be used to execute commands, answer prompts or write in text file. Commands are only executed if an Enter press (=Newline) is included in the content or send_enter_after content is toggled on"""
+        """Sends content to current terminal session. Can be used to execute commands, answer prompts.txt or write in text file. Commands are only executed if an Enter press (=Newline) is included in the content or send_enter_after content is toggled on"""
         window = self.tmux_session.windows[0]
         pane = window.panes[0]
 
