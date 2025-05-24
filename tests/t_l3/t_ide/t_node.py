@@ -18,7 +18,7 @@ class TestProjectNode(PythonProjTest):
         description_map = {os.path.join(self.proj_dirpath, 'somefile.txt') : 'This is a file'}
 
         self.root_node.fill_ancestors(desc_map=description_map)
-        tree = self.root_node.get_tree()
+        tree = self.root_node.get_tree(show_desc=True)
 
         print(f'- Described tree:\n{tree}')
         self.assertTrue(f'🗎 somefile.txt\n\tThis is a file' in tree)
@@ -28,6 +28,19 @@ class TestProjectNode(PythonProjTest):
         tree = self.root_node.get_tree(show_idx=True)
         print(f'- Enumerated tree:\n{tree}')
         self.assertTrue(f'🗎 somefile.txt | FileID = 1' in tree)
+
+    def test_get_tree(self):
+        self.root_node.fill_ancestors(desc_map={})
+        actual_tree = self.root_node.get_tree()
+        expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
+	🗎 test.py
+	🗎 somefile.txt
+	🗀 subdir/
+		🗎 file2
+		🗎 file1'''
+
+        self.assertEqual(actual_tree, expected_tree)
+
 
 
 if __name__ == "__main__":

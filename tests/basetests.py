@@ -48,10 +48,17 @@ class PythonProjTest(Unittest):
         self.proj_dirpath : str = tempfile.mkdtemp()
         self.script_fpath = os.path.join(self.proj_dirpath, 'test.py')
         with open(self.script_fpath, 'w') as f:
-            testscript_content = "print(f'Hello world :)')\na = 2\nb=3"
+            testscript_content = ""
             f.write(testscript_content)
+
+        fsys_tree = {'__pycache__': {},
+                     'somefile.txt': 'Content',
+                     'test.py': "print(f'Hello world :)')\na = 2\nb=3",
+                     'subdir':
+                         {'file1': 'Content', 'file2': 'Content2'}}
+
         manager = FsysManager(root_dirpath=self.proj_dirpath)
-        manager.add_tree(tree={'__pycache__' : {}, 'somefile.txt' : 'Content'})
+        manager.add_tree(tree=fsys_tree)
 
         self.ide: PythonIDE = PythonIDE()
         self.ide.open(project_dirpath=self.proj_dirpath)

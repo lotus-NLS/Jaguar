@@ -16,6 +16,9 @@ class ProjectNode:
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
 
     def fill_ancestors(self, desc_map : dict[str, str]):
+        if self.path in desc_map:
+            self.description = desc_map[self.path]
+
         if os.path.isfile(self.path):
             return
 
@@ -45,17 +48,17 @@ class ProjectNode:
         matches_exclusion = any([pattern.match(fpath) for pattern in regex_patterns])
         return matches_exclusion
 
-    def get_tree(self, show_idx : bool = False, indent : int = 0) -> str:
+    def get_tree(self, show_idx : bool = False, show_desc : bool = False, indent : int = 0) -> str:
         symbol = '🗎' if os.path.isfile(self.path) else '🗀'
         indentation = '\t' * indent
-        cond_desc = f'\n{indentation}{self.description}' if self.description else ""
+        cond_desc = f'\n{indentation}{self.description}' if self.description and show_desc else ""
         cond_idx = f' | FileID = {self.idx}' if self.idx is not None and show_idx else ''
         cond_backslash = '/' if os.path.isdir(self.path) else ''
 
         total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
                      f'{cond_desc}')
         for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(indent=indent+1, show_idx=show_idx)}'
+            total_str += f'\n{subnode.get_tree(indent=indent+1, show_idx=show_idx, show_desc=show_desc)}'
 
         return total_str
 
@@ -69,7 +72,7 @@ class ProjectNode:
     def get_ancestors(self) -> list[ProjectNode]:
         if os.path.isfile(self.path):
             return []
-        ancestors = self.children
+        ancestors = [x for x in self.children]
         for n in [c for c in self.children if c.is_dir()]:
             ancestors += n.get_ancestors()
         return ancestors

@@ -25,14 +25,16 @@ class LotusCredentials(Timber):
             self.perform_validation()
         self.info(msg=f'Completed setup for all Settings')
 
+
+
     @classmethod
     def auto(cls):
         try:
             creds = cls.from_env()
-            print(f'Successfully loaded credentials from environment variables')
+            creds.info(f'Successfully loaded credentials from environment variables')
         except:
             creds = cls.from_file()
-            print(f'Successfully loaded credentials from file')
+            creds.info(f'Successfully loaded credentials from file')
         return creds
 
     @classmethod

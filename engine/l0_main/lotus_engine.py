@@ -20,7 +20,7 @@ class LotusEngine(Timber):
 
         model = OpenAIModel.default_model(api_key=self._creds.openai_api_key)
         self.agent : Agent = self.make_agent(model=model)
-        self.IO : LotusIO = LotusIO()
+        self.IO : LotusIO = LotusIO(disable_socket=True)
 
     def reset(self):
         self.agent = self.make_agent(model=self.agent.model)
