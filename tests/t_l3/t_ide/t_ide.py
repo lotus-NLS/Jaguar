@@ -7,7 +7,7 @@ from tests.basetests import PythonProjTest
 
 class TestIDE(PythonProjTest):
     def test_open_file(self):
-        self.ide.open_file(projectFileNo=0)
+        self.ide.open_file(projectFileNo=1)
         file_content = PythonEditor._get_file_with_lineno(fpath=self.script_fpath)
         excepted_content = ''' 1   | print(f'Hello world :)')
  2   | a = 2
@@ -19,10 +19,10 @@ class TestIDE(PythonProjTest):
 
         text = self.ide.get_text()
         print(f'- Text:\n{text}')
-        self.assertTrue('🗎 test.py | FileID = 0' in text)
+        self.assertTrue('🗎 somefile.txt | FileID = 0' in text)
 
     def test_run_file(self):
-        self.ide.open_file(projectFileNo=0)
+        self.ide.open_file(projectFileNo=1)
         self.ide.run_file(openFileNo=0)
         out1 = self.ide.output_map[self.script_fpath]
         print(f'- Run output:\n{out1}')
@@ -34,7 +34,7 @@ class TestIDE(PythonProjTest):
         self.assertTrue('Hello world :)' in out2)
 
     def test_insert(self):
-        self.ide.open_file(projectFileNo=0)
+        self.ide.open_file(projectFileNo=1)
         fpath = self.script_fpath
         new_content = f'import PIL\n'
         self.ide.insert(fileNo=0, after_line=0, content=new_content)
@@ -50,7 +50,7 @@ class TestIDE(PythonProjTest):
         self.assertEqual(file_content, expected_file_content)
 
     def test_replace(self):
-        self.ide.open_file(projectFileNo=0)
+        self.ide.open_file(projectFileNo=1)
         fpath = self.script_fpath
         self.ide.replace(fileNo=0, start_line=1, end_line=1, content='')
 
