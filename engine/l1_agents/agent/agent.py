@@ -55,7 +55,7 @@ class Agent:
         for action in self.handle():
             yield action
 
-    def use(self, tool : Tool) -> ToolOutput:
+    def use(self, tool : Tool) -> Step:
         iterator = self.handle(inf_config=InfConfig.single_tool(tool=tool))
         s1 = iterator.__next__()
         if s1.is_failed():
@@ -64,7 +64,7 @@ class Agent:
         if not len(s2.tool_outputs) == 1:
             raise ValueError(f'Expected exactly one tool output, got {len(s2.tool_outputs)}')
 
-        return s2.tool_outputs[0]
+        return s2
 
 
     def work(self, task : Task, max_turns : int) -> Iterator[Step]:
