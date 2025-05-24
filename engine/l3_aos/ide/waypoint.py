@@ -6,11 +6,11 @@ from typing import Optional
 # -------------------------------------------------
 
 
-class ProjectNode:
+class ModuleWaypoint:
     def __init__(self, path : str, idx : Optional[int] = None, desc : Optional[str] = None):
         self.path = path
         self.description : str = desc
-        self.children : list[ProjectNode] = []
+        self.children : list[ModuleWaypoint] = []
         self.idx : Optional[int] = idx
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__', '.*\\.egg-info',
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
@@ -26,7 +26,7 @@ class ProjectNode:
         subnode_names = os.listdir(self.path)
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
-        subnodes = [ProjectNode(path=p, desc=desc_map.get(p)) for p in subnode_paths]
+        subnodes = [ModuleWaypoint(path=p, desc=desc_map.get(p)) for p in subnode_paths]
 
         dir_nodes = [sn for sn in subnodes if os.path.isdir(sn.path)]
         file_nodes = [sn for sn in subnodes if os.path.isfile(sn.path)]
@@ -48,6 +48,9 @@ class ProjectNode:
         matches_exclusion = any([pattern.match(fpath) for pattern in regex_patterns])
         return matches_exclusion
 
+    # ---------------------------------------------
+    # Attributes
+
     def get_tree(self, show_idx : bool = False, show_desc : bool = False, indent : int = 0) -> str:
         symbol = '🗎' if os.path.isfile(self.path) else '🗀'
         indentation = '\t' * indent
@@ -62,14 +65,22 @@ class ProjectNode:
 
         return total_str
 
-    def get_name(self) -> str:
-        return os.path.basename(self.path)
+    def get_pruned(self, paths : list[str]) -> Optional[ModuleWaypoint]:
+        def is_relevant(p : str):
+            return any([np.startswith(p) for np in paths])
+
+        if not is_relevant(p=self.path):
+            return None
+        else:
+            module = ModuleWaypoint(path=self.path, idx=self.idx, desc=self.description)
+            module.children = [c.get_pruned(paths=paths) for c in self.children if is_relevant(c.path)]
+            return module
 
     def get_path_to_idx(self) -> dict[str, int]:
         ancestor_nodes = self.get_ancestors()
         return {node.path : node.idx for node in ancestor_nodes}
 
-    def get_ancestors(self) -> list[ProjectNode]:
+    def get_ancestors(self) -> list[ModuleWaypoint]:
         if os.path.isfile(self.path):
             return []
         ancestors = [x for x in self.children]
@@ -77,5 +88,9 @@ class ProjectNode:
             ancestors += n.get_ancestors()
         return ancestors
 
+
     def is_dir(self) -> bool:
         return os.path.isdir(self.path)
+
+    def get_name(self) -> str:
+        return os.path.basename(self.path)

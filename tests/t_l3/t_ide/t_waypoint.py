@@ -3,7 +3,7 @@ import os
 from tests.basetests import PythonProjTest
 
 
-class TestProjectNode(PythonProjTest):
+class TestModuleWaypoint(PythonProjTest):
     def test_exclude_directores(self):
         self.root_node.fill_ancestors(desc_map={})
         filetree = self.root_node.get_tree()
@@ -39,9 +39,23 @@ class TestProjectNode(PythonProjTest):
 		🗎 file2
 		🗎 file1'''
 
+        print(f'- Filetree:\n{actual_tree}')
         self.assertEqual(actual_tree, expected_tree)
 
+    def test_get_pruned(self):
+        test_fpath = os.path.join(self.proj_dirpath, 'test.py')
+        subdir_dirpath = os.path.join(self.proj_dirpath, 'subdir')
+        file2_fpath = os.path.join(subdir_dirpath, 'file2')
 
+        new_node = self.root_node.get_pruned(paths=[test_fpath, subdir_dirpath, file2_fpath])
+        actual_tree = new_node.get_tree()
+        expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
+	🗎 test.py
+	🗀 subdir/
+		🗎 file2'''
+
+        print(f'- Pruned filetree:\n{actual_tree}')
+        self.assertEqual(actual_tree, expected_tree)
 
 if __name__ == "__main__":
-    TestProjectNode.execute_all()
+    TestModuleWaypoint.execute_all()
