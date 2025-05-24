@@ -27,17 +27,17 @@ class TestModuleNode(PythonProjTest):
         self.root_node.fill_ancestors(desc_map={})
         tree = self.root_node.get_tree(show_idx=True)
         print(f'- Enumerated tree:\n{tree}')
-        self.assertTrue(f'🗎 somefile.txt | FileID = 1' in tree)
+        self.assertTrue(f'🗎 somefile.txt | FileID = 0' in tree)
 
     def test_get_tree(self):
         self.root_node.fill_ancestors(desc_map={})
         actual_tree = self.root_node.get_tree()
         expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
-	🗎 test.py
 	🗎 somefile.txt
+	🗎 test.py
 	🗀 subdir/
-		🗎 file2
-		🗎 file1'''
+		🗎 file1
+		🗎 file2'''
 
         print(f'- Filetree:\n{actual_tree}')
         self.assertEqual(actual_tree, expected_tree)
@@ -56,6 +56,7 @@ class TestModuleNode(PythonProjTest):
 
         print(f'- Pruned filetree:\n{actual_tree}')
         self.assertEqual(actual_tree, expected_tree)
+
 
 if __name__ == "__main__":
     TestModuleNode.execute_all()

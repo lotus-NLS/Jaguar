@@ -23,7 +23,7 @@ class ModuleNode:
             return
 
         self.children = []
-        subnode_names = os.listdir(self.path)
+        subnode_names = sorted(os.listdir(self.path))
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
         subnodes = [ModuleNode(path=p, comment=desc_map.get(p)) for p in subnode_paths]
