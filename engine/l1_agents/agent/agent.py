@@ -48,10 +48,24 @@ class Agent:
         agent.aos.ide.open_action.execute(args_dict={'project_dirpath' : project_dirpath})
         agent.aos.ide.prevent_close = True
 
+
+
     def talk(self, msg : str) -> Iterator[Step]:
         self.memory.append(Message.user(text=msg))
         for action in self.handle():
             yield action
+
+    def use(self, tool : Tool) -> ToolOutput:
+        iterator = self.handle(inf_config=InfConfig.single_tool(tool=tool))
+        s1 = iterator.__next__()
+        if s1.is_failed():
+            raise ValueError(f'Failed to use tool {tool.get_name()}: {s1.err_msg}')
+        s2 = iterator.__next__()
+        if not len(s2.tool_outputs) == 1:
+            raise ValueError(f'Expected exactly one tool output, got {len(s2.tool_outputs)}')
+
+        return s2.tool_outputs[0]
+
 
     def work(self, task : Task, max_turns : int) -> Iterator[Step]:
         self.task_tracker.root = task
@@ -91,7 +105,7 @@ class Agent:
     def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
         context = self.get_context(inf_config=inf_config)
 
-        def make_action(pipe : Optional[TextPipe], tool_outputs : list[ToolOutput]):
+        def do_step(pipe : Optional[TextPipe], tool_outputs : list[ToolOutput]):
             headline = self.task_tracker.headline
             self.task_tracker.headline = None
             post_context = self.get_context(inf_config=inf_config)
@@ -103,9 +117,9 @@ class Agent:
             thread = threading.Thread(target=self.process, args=(generation, the_pipe))
             thread.start()
 
-            yield make_action(pipe=the_pipe, tool_outputs=[])
+            yield do_step(pipe=the_pipe, tool_outputs=[])
             thread.join()
-            yield make_action(pipe=None, tool_outputs=self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool))
+            yield do_step(pipe=None, tool_outputs=self.act(tool_calls=generation.get_tool_calls(), temp_tool=inf_config.required_tool))
         except APITimeoutError:
             yield Step.failed(context=context, err_msg=f'OpenAI API request timed out after {inf_config.timeout} seconds')
         except APIError as e:
