@@ -32,11 +32,7 @@ class OpenAIModel(LLM):
             if not isinstance(entry, Message):
                 raise TypeError(f'Entry {entry} is not of required type OpenAI but {type(entry)}')
 
-        # TODO: THINK ABOUT HOW TO HANDLE THIS
-        # self.log(f'Creating generation request')
         openai_response = self.get_response(context=context, options=config)
-        # self.log(f"Received generation response. Currently at {self.tokenizer.count_context_tokens(context=context)} tokens")
-
         return Generation(generator=openai_response, chunk_type=OpenAIChunk)
 
     def get_response(self, context : Context, options: InfConfig) -> Stream[ChatCompletionChunk]:
