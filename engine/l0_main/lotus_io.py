@@ -7,7 +7,7 @@ from flask import Flask
 from flask_socketio import SocketIO, emit
 
 from engine.l0_main.settings import DefaultPorts
-from engine.l0_main.dev_monitor import DevMonitor
+from engine.l0_main.dev_monitor import ContextMonitor
 from engine.l1_agents.tasks.tasktracker import TaskTracker
 from engine.l2_models.generation.step import Step, TextPipe
 from engine.l2_models.language import Message
@@ -24,7 +24,7 @@ class LotusIO(Timber):
         self.sess_uuid: str = self.generate_session_uuid()
         self.io_port : int = io_port
 
-        dev_monitor : DevMonitor = DevMonitor.default()
+        dev_monitor : ContextMonitor = ContextMonitor.default()
         self.step_endpoint: Endpoint = dev_monitor.step_endpoint
         self.outgoing_messages : Queue[Message] = Queue()
         if not disable_socket:

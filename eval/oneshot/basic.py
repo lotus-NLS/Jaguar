@@ -7,7 +7,6 @@ from engine.l2_models.language import Context, Message
 from holytools.fsys import Directory
 from tests.basetests import CredTest
 
-
 # ---------------------------------------------------------------
 
 class TestFileStructure(CredTest):
