@@ -49,7 +49,7 @@ class TestAgent(AgentTest):
     def test_required_tool_use(self):
         greet_tool = Greet()
         inf_config = InfConfig(required_tool=greet_tool)
-        action_generator = self.mock_agent.handle(inf_config=inf_config)
+        action_generator = self.mock_agent.step(inf_config=inf_config)
         talk, action = action_generator.__next__(), action_generator.__next__()
 
         outputs: list[ToolOutput] = action.tool_outputs
@@ -65,7 +65,7 @@ class TestAgent(AgentTest):
         close_step = None
         for _ in self.mock_agent.work(task=task, max_turns=1):
             require_close_tool = InfConfig.single_tool(close_tool)
-            iterator = self.mock_agent.handle(inf_config=require_close_tool)
+            iterator = self.mock_agent.step(inf_config=require_close_tool)
             iterator.__next__()
             close_step = iterator.__next__()
 
@@ -81,12 +81,12 @@ class TestAgent(AgentTest):
 
 
 class MockAgent(Agent):
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
+    def step(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
         context = self.get_context(inf_config=inf_config)
         if not inf_config.required_tool:
             yield Step.failed(context=context, err_msg=f'No required tool provided')
         else:
-            yield from super().handle(inf_config=inf_config)
+            yield from super().step(inf_config=inf_config)
 
 if __name__ == "__main__":
     ta = TestAgent.ready()

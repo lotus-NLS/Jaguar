@@ -1,5 +1,9 @@
 from engine.l0_main.lotus_engine import LotusEngine
 
+
+def testFunction():
+    pass
+
 if __name__ == "__main__":
     engine = LotusEngine()
 
@@ -14,6 +18,8 @@ if __name__ == "__main__":
     # 5 | Open /home/daniel/lotus/engine
     # 6 | What top level folders does it contain
 
+
+    testFunction()
 
     while True:
         user_input = input("User:")

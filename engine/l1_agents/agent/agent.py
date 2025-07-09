@@ -49,14 +49,13 @@ class Agent:
         agent.aos.ide.prevent_close = True
 
 
-
     def talk(self, msg : str) -> Iterator[Step]:
         self.memory.append(Message.user(text=msg))
-        for action in self.handle():
+        for action in self.step():
             yield action
 
     def use(self, tool : Tool) -> Step:
-        iterator = self.handle(inf_config=InfConfig.single_tool(tool=tool))
+        iterator = self.step(inf_config=InfConfig.single_tool(tool=tool))
         s1 = iterator.__next__()
         if s1.is_failed():
             raise ValueError(f'Failed to use tool {tool.get_name()}: {s1.err_msg}')
@@ -77,12 +76,12 @@ class Agent:
                                                     f'- Major steps: What are the major steps of your plan?\n'
                                                     f'  - Tools needed: What Workspaces are needed to realize this step?\n'
                                                     f'  - Execution: How are you going to use these tools to realize this step?'))
-        yield self.handle(inf_config=InfConfig.text_only()).__next__()
+        yield self.step(inf_config=InfConfig.text_only()).__next__()
 
         require_update = InfConfig(required_tool=self.task_tracker.update_tool)
         for work_step in range(max_turns - 1):
             inf_options = require_update if (work_step+2) % self.get_report_frequency() == 0 else InfConfig()
-            for action in self.handle(inf_config=inf_options):
+            for action in self.step(inf_config=inf_options):
                 yield action
 
             if not self.task_tracker.is_open:
@@ -102,7 +101,7 @@ class Agent:
     # ---------------------------------------------------
     # Main routine
 
-    def handle(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
+    def step(self, inf_config : InfConfig = InfConfig()) -> Iterator[Step]:
         context = self.get_context(inf_config=inf_config)
 
         def do_step(pipe : Optional[TextPipe], tool_outputs : list[ToolOutput]):

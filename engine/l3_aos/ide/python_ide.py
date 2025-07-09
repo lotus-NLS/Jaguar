@@ -75,9 +75,8 @@ class PythonIDE(Workspace):
 
     def open_file(self, projectFileNo : int):
         """Opens a file specified relative to the project dirpath. If the file does not exist it is created instead"""
-        path_to_fileID = self.root_node.get_path_to_idx()
-        id_to_path = {v : k for k, v in path_to_fileID.items()}
-        fpath = id_to_path[int(projectFileNo)]
+        idx = int(projectFileNo)
+        fpath= self.root_node.get_path(idx=idx)
         parent_dir = os.path.dirname(fpath)
 
         if not os.path.isdir(parent_dir):

@@ -55,7 +55,7 @@ class LotusEngine(Timber):
 
             exit_tool = wf.get_exit_tool(node_name=node.name)
             self.agent.update_memory(entry=Message.tool(text=exit_tool.get_desc(), name=exit_tool.get_name()))
-            iterator = self.agent.handle(inf_config=InfConfig(required_tool=exit_tool))
+            iterator = self.agent.step(inf_config=InfConfig(required_tool=exit_tool))
             _ = iterator.__next__()
             __ = iterator.__next__()
 

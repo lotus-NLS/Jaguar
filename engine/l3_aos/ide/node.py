@@ -48,6 +48,14 @@ class ModuleNode:
         matches_exclusion = any([pattern.match(fpath) for pattern in regex_patterns])
         return matches_exclusion
 
+    def get_path(self, idx : int):
+        idx_to_path = { node.idx : node.path for node in self.get_ancestors()}
+        return idx_to_path[idx]
+
+    def get_idx(self, path : str):
+        path_to_idx = { node.path : node.idx for node in self.get_ancestors()}
+        return path_to_idx[path]
+
     # ---------------------------------------------
     # Attributes
 
@@ -75,10 +83,6 @@ class ModuleNode:
             module = ModuleNode(path=self.path, idx=self.idx, comment=self.comment)
             module.children = [c.get_pruned(paths=paths) for c in self.children if is_relevant(c.path)]
             return module
-
-    def get_path_to_idx(self) -> dict[str, int]:
-        ancestor_nodes = self.get_ancestors()
-        return {node.path : node.idx for node in ancestor_nodes}
 
     def get_ancestors(self) -> list[ModuleNode]:
         if os.path.isfile(self.path):

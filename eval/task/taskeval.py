@@ -42,7 +42,7 @@ class TaskEval(UnitEval):
         self.engine.agent.update_memory(entry=Message.user(text=query))
         tool = KeywordProviderTool()
         inf_config = InfConfig(required_tool=tool)
-        self.engine.agent.handle(inf_config=inf_config)
+        self.engine.agent.step(inf_config=inf_config)
         given_keyword = tool.keyword_arg.get_value()
 
         print('\n-> Keyword task evaluation:')
@@ -80,7 +80,7 @@ class TaskEval(UnitEval):
 
         tool = DictProviderTool()
         inf_config = InfConfig(required_tool=tool)
-        self.engine.agent.handle(inf_config=inf_config)
+        self.engine.agent.step(inf_config=inf_config)
 
         given_dict = {}
         for k in target_dict:
