@@ -9,6 +9,7 @@ from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM
 from engine.l3_aos import AOS
+from engine.l3_aos.tools import Tool
 from holytools.logging import Timber
 
 # ---------------------------------------------------------
@@ -85,6 +86,15 @@ class LotusEngine(Timber):
         for step in self.agent.talk(msg=query):
             text += self.IO.observe(step=step)
         return text
+
+    def use_tool(self, tool : Tool, view : str, task : str):
+        view = Message.system(text=view)
+        task_msg = Message.system(text=task)
+
+        agent = self.make_agent(model=self.agent.model)
+        agent.memory = [view, task_msg]
+        step = agent.use(tool=tool)
+        self.IO.observe(step=step)
 
 
 if __name__ == "__main__":

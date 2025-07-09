@@ -6,11 +6,11 @@ from typing import Optional
 # -------------------------------------------------
 
 
-class ModuleNode:
+class SourceNode:
     def __init__(self, path : str, idx : Optional[int] = None, comment : Optional[str] = None):
         self.path = path
         self.comment : str = comment
-        self.children : list[ModuleNode] = []
+        self.children : list[SourceNode] = []
         self.idx : Optional[int] = idx
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__', '.*\\.egg-info',
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
@@ -26,7 +26,7 @@ class ModuleNode:
         subnode_names = sorted(os.listdir(self.path))
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
-        subnodes = [ModuleNode(path=p, comment=desc_map.get(p)) for p in subnode_paths]
+        subnodes = [SourceNode(path=p, comment=desc_map.get(p)) for p in subnode_paths]
 
         dir_nodes = [sn for sn in subnodes if os.path.isdir(sn.path)]
         file_nodes = [sn for sn in subnodes if os.path.isfile(sn.path)]
@@ -73,18 +73,18 @@ class ModuleNode:
 
         return total_str
 
-    def get_pruned(self, paths : list[str]) -> Optional[ModuleNode]:
+    def get_pruned(self, paths : list[str]) -> Optional[SourceNode]:
         def is_relevant(p : str):
             return any([np.startswith(p) for np in paths])
 
         if not is_relevant(p=self.path):
             return None
         else:
-            module = ModuleNode(path=self.path, idx=self.idx, comment=self.comment)
+            module = SourceNode(path=self.path, idx=self.idx, comment=self.comment)
             module.children = [c.get_pruned(paths=paths) for c in self.children if is_relevant(c.path)]
             return module
 
-    def get_ancestors(self) -> list[ModuleNode]:
+    def get_ancestors(self) -> list[SourceNode]:
         if os.path.isfile(self.path):
             return []
         ancestors = [x for x in self.children]
