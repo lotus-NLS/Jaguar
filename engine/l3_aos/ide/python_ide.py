@@ -38,7 +38,7 @@ class PythonIDE(Workspace):
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
-        self.root_node = SourceNode.ancestor(source_path=project_dirpath)
+        self.root_node = SourceNode.root(source_path=project_dirpath)
 
     def close(self, *args, **kwargs):
         pass

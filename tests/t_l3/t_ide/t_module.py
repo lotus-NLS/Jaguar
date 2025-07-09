@@ -21,15 +21,19 @@ class TestSourceNode(PythonProjTest):
     def test_get_tree(self):
         actual_tree = self.root_node.get_tree()
         expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
+	🗎 somefile.txt
+	🗎 test.py
 	🗀 subdir/
 		🗎 file1
-		🗎 file2
-	🗎 somefile.txt
-	🗎 test.py'''
+		🗎 file2'''
 
         print(f'- Filetree:\n{actual_tree}')
         self.assertEqual(actual_tree, expected_tree)
 
+    def test_ancestors(self):
+        decendants = self.root_node.get_descendants()
+        last_desc = decendants[-1]
+        self.assertEqual(len(last_desc.ancestors), 2)
 
 if __name__ == "__main__":
     TestSourceNode.execute_all()

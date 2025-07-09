@@ -1,30 +1,34 @@
 from __future__ import annotations
 import os
 import re
-from typing import Optional
+from typing import Optional, Any
+
 
 # -------------------------------------------------
 
 
 class SourceNode:
-    def __init__(self, source_path : str, idx : Optional[int] = None, comment : Optional[str] = None):
+    def __init__(self, source_path : str, ancestors : list[SourceNode]):
         self.source_path = source_path
-        self.comment : str = comment
+        self.ancestors : list[SourceNode] = ancestors
+        self.comment : Optional[str] = None
+        self.idx : Optional[int] = None
         self.children : list[SourceNode] = []
-        self.idx : Optional[int] = idx
 
     @classmethod
-    def ancestor(cls, source_path : str, is_root : bool = True) -> SourceNode:
-        parent = cls(source_path=source_path)
-        if os.path.isfile(source_path):
+    def root(cls, source_path : str, ancestors : Optional[list[SourceNode]] = None) -> SourceNode:
+        parent = cls(source_path=source_path, ancestors=ancestors)
+        if os.path.isfile(path=source_path):
             return parent
 
         child_paths = [os.path.join(source_path, name) for name in sorted(os.listdir(source_path))]
         child_paths = [p for p in child_paths if not cls.is_excluded(fpath=p)]
-        parent.children += [cls.ancestor(source_path=p, is_root=False) for p in child_paths if os.path.isdir(p)]
-        parent.children += [cls.ancestor(source_path=p, is_root=False) for p in child_paths if os.path.isfile(p)]
 
-        if is_root:
+        child_ancestors = [parent] if ancestors is None else ancestors + [parent]
+        parent.children += [cls.root(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isfile(p)]
+        parent.children += [cls.root(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isdir(p)]
+
+        if ancestors is None:
             fileID = 0
             for node in parent.get_descendants():
                 if not os.path.isdir(node.source_path):
@@ -33,7 +37,7 @@ class SourceNode:
 
         return parent
 
-    def get_descendants(self) -> list[SourceNode]:
+    def get_descendants(self) -> list[SourceNode] | list[Any]:
         ancestors = [x for x in self.children]
         for n in [c for c in self.children if os.path.isdir(self.source_path)]:
             ancestors += n.get_descendants()
