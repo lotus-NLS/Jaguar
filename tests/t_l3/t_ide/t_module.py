@@ -3,9 +3,9 @@ import os
 from tests.basetests import PythonProjTest
 
 
-class TestModuleNode(PythonProjTest):
+class TestSourceNode(PythonProjTest):
     def test_exclude_directores(self):
-        self.root_node.fill_ancestors(desc_map={})
+        self.root_node.fill_ancestors()
         filetree = self.root_node.get_tree()
 
         print(f'- Filetree:\n{filetree}')
@@ -14,23 +14,14 @@ class TestModuleNode(PythonProjTest):
         self.assertTrue('somefile.txt' in filetree)
         self.assertTrue('test.py' in filetree)
 
-    def test_describe_dirs(self):
-        description_map = {os.path.join(self.proj_dirpath, 'somefile.txt') : 'This is a file'}
-
-        self.root_node.fill_ancestors(desc_map=description_map)
-        tree = self.root_node.get_tree(show_desc=True)
-
-        print(f'- Described tree:\n{tree}')
-        self.assertTrue(f'🗎 somefile.txt\n\tThis is a file' in tree)
-
     def test_enumerated_tree(self):
-        self.root_node.fill_ancestors(desc_map={})
+        self.root_node.fill_ancestors()
         tree = self.root_node.get_tree(show_idx=True)
         print(f'- Enumerated tree:\n{tree}')
         self.assertTrue(f'🗎 somefile.txt | FileID = 0' in tree)
 
     def test_get_tree(self):
-        self.root_node.fill_ancestors(desc_map={})
+        self.root_node.fill_ancestors()
         actual_tree = self.root_node.get_tree()
         expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
 	🗎 somefile.txt
@@ -59,4 +50,4 @@ class TestModuleNode(PythonProjTest):
 
 
 if __name__ == "__main__":
-    TestModuleNode.execute_all()
+    TestSourceNode.execute_all()

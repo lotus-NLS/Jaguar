@@ -13,6 +13,7 @@ class TerminalTest(Unittest):
         tc = ToolCall.from_dict(attr_dict={'workdir_path' : '~'})
         self.terminal.open_action.execute(args_dict=tc.get_args_dict())
         text = self.terminal.get_text()
+        print(f'- Retrieved text = "{text}"')
         self.assertTrue('@' in text)
 
     def test_hello_world(self):

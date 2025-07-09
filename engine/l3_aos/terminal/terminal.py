@@ -19,7 +19,7 @@ class Terminal(Workspace):
         super().__init__()
         self.tmux_session : Optional[Session] = None
         self.tmux_name : str = 'jaguar'
-        self.use_root : bool = True
+        self.use_root : bool = False
 
     def open(self, workdir_path : str = '~/testdir'):
         """Opens a terminal in the specified working directory available only to you"""

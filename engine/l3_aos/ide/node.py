@@ -15,10 +15,11 @@ class SourceNode:
         self.excluded_patterns : list[str] = ['.*\\.pyc', '.*/__pycache__', '.*\\.egg-info',
                                               '.*/.venv', '.*.git.*', '.*\\.idea.*', '.*build.*']
 
-    def fill_ancestors(self, desc_map : dict[str, str]):
-        if self.path in desc_map:
-            self.comment = desc_map[self.path]
+    @classmethod
+    def root(cls, dirpath : str):
+        pass
 
+    def fill_ancestors(self):
         if os.path.isfile(self.path):
             return
 
@@ -26,7 +27,7 @@ class SourceNode:
         subnode_names = sorted(os.listdir(self.path))
         subnode_paths = [os.path.join(self.path, name) for name in subnode_names]
         subnode_paths = [os.path.abspath(p) for p in subnode_paths if not self.is_excluded(fpath=p)]
-        subnodes = [SourceNode(path=p, comment=desc_map.get(p)) for p in subnode_paths]
+        subnodes = [SourceNode(path=p) for p in subnode_paths]
 
         dir_nodes = [sn for sn in subnodes if os.path.isdir(sn.path)]
         file_nodes = [sn for sn in subnodes if os.path.isfile(sn.path)]
@@ -34,7 +35,7 @@ class SourceNode:
             self.children.append(f)
         for d in dir_nodes:
             self.children.append(d)
-            d.fill_ancestors(desc_map=desc_map)
+            d.fill_ancestors()
 
         fileID = 0
         ancestors = self.get_ancestors()
@@ -42,6 +43,7 @@ class SourceNode:
             if not node.is_dir():
                 node.idx = fileID
                 fileID += 1
+
 
     def is_excluded(self, fpath : str) -> bool:
         regex_patterns = [re.compile(pattern) for pattern in self.excluded_patterns]
