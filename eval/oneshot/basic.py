@@ -5,7 +5,8 @@ import tempfile
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Context, Message
 from holytools.fsys import Directory
-from tests import CredTest
+from tests.basetests import CredTest
+
 
 # ---------------------------------------------------------------
 

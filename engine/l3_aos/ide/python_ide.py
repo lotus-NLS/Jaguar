@@ -38,8 +38,7 @@ class PythonIDE(Workspace):
         shutil.copytree(cache_venv_dirpath, proj_venv_dirpath)
         self.proj_dirpath = project_dirpath
         self.interpreter_fpath = os.path.join(proj_venv_dirpath, 'bin/python')
-        self.root_node = SourceNode(path=project_dirpath)
-        self.root_node.fill_ancestors()
+        self.root_node = SourceNode.ancestor(source_path=project_dirpath)
 
     def close(self, *args, **kwargs):
         pass
@@ -56,7 +55,6 @@ class PythonIDE(Workspace):
         return venv_dirpath
 
     def get_text(self) -> str:
-        self.root_node.fill_ancestors()
         proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
         filetree = self.root_node.get_tree(show_idx=True)
         editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
