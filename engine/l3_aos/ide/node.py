@@ -10,13 +10,12 @@ from typing import Optional, Any
 class SourceNode:
     def __init__(self, source_path : str, ancestors : list[SourceNode]):
         self.source_path = source_path
-        self.ancestors : list[SourceNode] = ancestors
-        self.comment : Optional[str] = None
+        self.ancestors : list = ancestors
         self.idx : Optional[int] = None
-        self.children : list[SourceNode] = []
+        self.children : list = []
 
     @classmethod
-    def root(cls, source_path : str, ancestors : Optional[list[SourceNode]] = None) -> SourceNode:
+    def create_tree(cls, source_path : str, ancestors : Optional[list[SourceNode]] = None) -> SourceNode:
         parent = cls(source_path=source_path, ancestors=ancestors)
         if os.path.isfile(path=source_path):
             return parent
@@ -25,8 +24,8 @@ class SourceNode:
         child_paths = [p for p in child_paths if not cls.is_excluded(fpath=p)]
 
         child_ancestors = [parent] if ancestors is None else ancestors + [parent]
-        parent.children += [cls.root(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isfile(p)]
-        parent.children += [cls.root(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isdir(p)]
+        parent.children += [cls.create_tree(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isfile(p)]
+        parent.children += [cls.create_tree(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isdir(p)]
 
         if ancestors is None:
             fileID = 0
@@ -66,19 +65,24 @@ class SourceNode:
     # ---------------------------------------------
     # Properties
 
-    def get_tree(self, show_idx : bool = False, show_desc : bool = False, indent : int = 0) -> str:
+    def get_tree(self, indent : int = 0) -> str:
+        comment = self.get_comment()
+
         symbol = '🗎' if os.path.isfile(self.source_path) else '🗀'
         indentation = '\t' * indent
-        cond_desc = f'\n{indentation}{self.comment}' if self.comment and show_desc else ""
-        cond_idx = f' | FileID = {self.idx}' if self.idx is not None and show_idx else ''
+        cond_comment = f'\n{indentation}{comment}' if comment else ""
+        cond_idx = f' | FileID = {self.idx}' if self.idx is not None else ''
         cond_backslash = '/' if os.path.isdir(self.source_path) else ''
 
         total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
-                     f'{cond_desc}')
+                     f'{cond_comment}')
         for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(indent=indent+1, show_idx=show_idx, show_desc=show_desc)}'
+            total_str += f'\n{subnode.get_tree(indent=indent + 1)}'
 
         return total_str
 
     def get_name(self) -> str:
         return os.path.basename(self.source_path)
+
+    def get_comment(self) -> Optional[str]:
+        pass
