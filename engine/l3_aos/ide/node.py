@@ -65,24 +65,24 @@ class SourceNode:
     # ---------------------------------------------
     # Properties
 
-    def get_tree(self, indent : int = 0) -> str:
-        comment = self.get_comment()
+    def get_tree(self, show_comments : bool = False, indent : int = 0) -> str:
+        comment = self.get_desc()
 
         symbol = '🗎' if os.path.isfile(self.source_path) else '🗀'
         indentation = '\t' * indent
-        cond_comment = f'\n{indentation}{comment}' if comment else ""
+        cond_comment = f'\n{indentation}{comment}' if comment and show_comments else ""
         cond_idx = f' | FileID = {self.idx}' if self.idx is not None else ''
         cond_backslash = '/' if os.path.isdir(self.source_path) else ''
 
         total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
                      f'{cond_comment}')
         for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(indent=indent + 1)}'
+            total_str += f'\n{subnode.get_tree(show_comments=show_comments, indent=indent + 1)}'
 
         return total_str
 
     def get_name(self) -> str:
         return os.path.basename(self.source_path)
 
-    def get_comment(self) -> Optional[str]:
+    def get_desc(self) -> Optional[str]:
         pass
