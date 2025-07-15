@@ -12,7 +12,7 @@ class SourceNode:
         self.source_path = source_path
         self.ancestors : list = ancestors
         self.idx : Optional[int] = None
-        self.children : list = []
+        self.children : list[SourceNode] = []
 
     @classmethod
     def create_tree(cls, source_path : str, ancestors : Optional[list[SourceNode]] = None) -> SourceNode:
@@ -65,19 +65,19 @@ class SourceNode:
     # ---------------------------------------------
     # Properties
 
-    def get_tree(self, show_comments : bool = False, indent : int = 0) -> str:
+    def get_tree(self, show_idx : bool = False, show_comments : bool = False, indent : int = 0) -> str:
         comment = self.get_desc()
 
         symbol = '🗎' if os.path.isfile(self.source_path) else '🗀'
         indentation = '\t' * indent
         cond_comment = f'\n{indentation}{comment}' if comment and show_comments else ""
-        cond_idx = f' | FileID = {self.idx}' if self.idx is not None else ''
+        cond_idx = f' | FileID = {self.idx}' if not self.idx is None and show_idx else ''
         cond_backslash = '/' if os.path.isdir(self.source_path) else ''
 
         total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
                      f'{cond_comment}')
         for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(show_comments=show_comments, indent=indent + 1)}'
+            total_str += f'\n{subnode.get_tree(show_idx, show_comments, indent + 1)}'
 
         return total_str
 
