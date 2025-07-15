@@ -19,7 +19,7 @@ class TestIDE(PythonProjTest):
 
         text = self.ide.get_text()
         print(f'- Text:\n{text}')
-        self.assertTrue('🗎 somefile.txt | FileID = 0' in text)
+        self.assertTrue('🗎 somefile.txt | ID = 0 ' in text)
 
     def test_run_file(self):
         self.ide.open_file(projectFileNo=1)

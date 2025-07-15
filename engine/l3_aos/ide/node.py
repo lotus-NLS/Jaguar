@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Optional
 
 from holytools.abstract import TreeNode
 
@@ -29,6 +30,8 @@ class SourceNode(TreeNode):
 
         return root
 
+    def is_indexable(self) -> bool:
+        return os.path.isfile(self.source_path)
 
     @staticmethod
     def is_excluded(fpath : str) -> bool:

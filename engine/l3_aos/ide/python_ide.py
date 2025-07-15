@@ -56,7 +56,9 @@ class PythonIDE(Workspace):
 
     def get_text(self) -> str:
         proj_info = PythonEditor.get_info(proj_dirpath=self.proj_dirpath, venv_dirpath=self.interpreter_fpath)
-        filetree = self.root_node.get_tree(show_idx=True)
+
+        node_to_idx = self.root_node.get_node_to_idx()
+        filetree = self.root_node.get_tree(node_to_idx=node_to_idx)
         editor = PythonEditor.get_editor(open_fpaths=self._open_fpaths, run_output=self.output_map)
 
         view = MessageFormatter.get_boxed(text=proj_info, headline=f'Project metadata')
