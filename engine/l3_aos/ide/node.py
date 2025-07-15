@@ -8,33 +8,32 @@ from typing import Optional, Any
 
 
 class SourceNode:
-    def __init__(self, source_path : str, ancestors : list[SourceNode]):
+    def __init__(self, source_path : str, parent : SourceNode):
         self.source_path = source_path
-        self.ancestors : list = ancestors
+        self.parent : SourceNode = parent
         self.idx : Optional[int] = None
         self.children : list[SourceNode] = []
 
     @classmethod
-    def create_tree(cls, source_path : str, ancestors : Optional[list[SourceNode]] = None) -> SourceNode:
-        parent = cls(source_path=source_path, ancestors=ancestors)
+    def create_tree(cls, source_path : str, parent : Optional[SourceNode] = None) -> SourceNode:
+        root = cls(source_path=source_path, parent=parent)
         if os.path.isfile(path=source_path):
-            return parent
+            return root
 
         child_paths = [os.path.join(source_path, name) for name in sorted(os.listdir(source_path))]
         child_paths = [p for p in child_paths if not cls.is_excluded(fpath=p)]
 
-        child_ancestors = [parent] if ancestors is None else ancestors + [parent]
-        parent.children += [cls.create_tree(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isfile(p)]
-        parent.children += [cls.create_tree(source_path=p, ancestors=child_ancestors) for p in child_paths if os.path.isdir(p)]
+        root.children += [cls.create_tree(source_path=p, parent=parent) for p in child_paths if os.path.isfile(p)]
+        root.children += [cls.create_tree(source_path=p, parent=parent) for p in child_paths if os.path.isdir(p)]
 
-        if ancestors is None:
+        if parent is None:
             fileID = 0
-            for node in parent.get_descendants():
+            for node in root.get_descendants():
                 if not os.path.isdir(node.source_path):
                     node.idx = fileID
                     fileID += 1
 
-        return parent
+        return root
 
     def get_descendants(self) -> list[SourceNode] | list[Any]:
         ancestors = [x for x in self.children]
