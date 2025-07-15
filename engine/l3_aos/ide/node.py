@@ -1,45 +1,34 @@
 from __future__ import annotations
 import os
 import re
+from dataclasses import dataclass, field
 from typing import Optional, Any
+
+from holytools.abstract import TreeNode
 
 
 # -------------------------------------------------
 
-
-class SourceNode:
-    def __init__(self, source_path : str, parent : SourceNode):
-        self.source_path = source_path
-        self.parent : SourceNode = parent
-        self.idx : Optional[int] = None
-        self.children : list[SourceNode] = []
+@dataclass
+class SourceNode(TreeNode):
+    source_path : str
+    parent: SourceNode
+    children: list[SourceNode] = field(default_factory=list)
 
     @classmethod
     def create_tree(cls, source_path : str, parent : Optional[SourceNode] = None) -> SourceNode:
-        root = cls(source_path=source_path, parent=parent)
+        root = cls(source_path=source_path, parent=parent, name=os.path.basename(source_path))
         if os.path.isfile(path=source_path):
             return root
 
         child_paths = [os.path.join(source_path, name) for name in sorted(os.listdir(source_path))]
         child_paths = [p for p in child_paths if not cls.is_excluded(fpath=p)]
 
-        root.children += [cls.create_tree(source_path=p, parent=parent) for p in child_paths if os.path.isfile(p)]
-        root.children += [cls.create_tree(source_path=p, parent=parent) for p in child_paths if os.path.isdir(p)]
-
-        if parent is None:
-            fileID = 0
-            for node in root.get_descendants():
-                if not os.path.isdir(node.source_path):
-                    node.idx = fileID
-                    fileID += 1
+        root.children += [cls.create_tree(source_path=p, parent=root) for p in child_paths if os.path.isfile(p)]
+        root.children += [cls.create_tree(source_path=p, parent=root) for p in child_paths if os.path.isdir(p)]
 
         return root
 
-    def get_descendants(self) -> list[SourceNode] | list[Any]:
-        ancestors = [x for x in self.children]
-        for n in [c for c in self.children if os.path.isdir(self.source_path)]:
-            ancestors += n.get_descendants()
-        return ancestors
 
     @staticmethod
     def is_excluded(fpath : str) -> bool:
@@ -50,38 +39,13 @@ class SourceNode:
         matches_exclusion = any([pattern.match(fpath) for pattern in regex_patterns])
         return matches_exclusion
 
-    # --------------------------------------------------
-    # Index resolution
-
-    def get_path(self, idx : int):
-        idx_to_path = {node.idx : node.source_path for node in self.get_descendants()}
-        return idx_to_path[idx]
-
-    def get_idx(self, path : str):
-        path_to_idx = {node.source_path : node.idx for node in self.get_descendants()}
-        return path_to_idx[path]
-
     # ---------------------------------------------
     # Properties
 
-    def get_tree(self, show_idx : bool = False, show_comments : bool = False, indent : int = 0) -> str:
-        comment = self.get_desc()
-
+    def get_fullname(self) -> str:
         symbol = '🗎' if os.path.isfile(self.source_path) else '🗀'
-        indentation = '\t' * indent
-        cond_comment = f'\n{indentation}{comment}' if comment and show_comments else ""
-        cond_idx = f' | FileID = {self.idx}' if not self.idx is None and show_idx else ''
         cond_backslash = '/' if os.path.isdir(self.source_path) else ''
-
-        total_str = (f'{indentation}{symbol} {self.get_name()}{cond_backslash}{cond_idx}'
-                     f'{cond_comment}')
-        for subnode in self.children:
-            total_str += f'\n{subnode.get_tree(show_idx, show_comments, indent + 1)}'
-
-        return total_str
+        return f'{symbol} {self.name}{cond_backslash}'
 
     def get_name(self) -> str:
         return os.path.basename(self.source_path)
-
-    def get_desc(self) -> Optional[str]:
-        pass

@@ -14,9 +14,11 @@ class TestSourceNode(PythonProjTest):
         self.assertTrue('test.py' in filetree)
 
     def test_enumerated_tree(self):
-        tree = self.root_node.get_tree(show_idx=True)
+        node_to_idx = self.root_node.get_node_to_idx()
+
+        tree = self.root_node.get_tree(node_to_idx=node_to_idx)
         print(f'- Enumerated tree:\n{tree}')
-        self.assertTrue(f'🗎 somefile.txt | FileID = 0' in tree)
+        self.assertIn(f'🗎 somefile.txt | ID = 1', tree)
 
     def test_get_tree(self):
         actual_tree = self.root_node.get_tree()
@@ -30,10 +32,10 @@ class TestSourceNode(PythonProjTest):
         print(f'- Filetree:\n{actual_tree}')
         self.assertEqual(actual_tree, expected_tree)
 
-    def test_ancestors(self):
+    def test_parenthood(self):
         decendants = self.root_node.get_descendants()
         last_desc = decendants[-1]
-        self.assertEqual(len(last_desc.ancestors), 2)
+        self.assertIs(last_desc.parent.parent, self.root_node)
 
 if __name__ == "__main__":
     TestSourceNode.execute_all()
