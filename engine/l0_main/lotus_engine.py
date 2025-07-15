@@ -92,7 +92,7 @@ class LotusEngine(Timber):
         task_msg = Message.system(text=task)
 
         agent = self.make_agent(model=self.agent.model)
-        agent.memory = [view, task_msg]
+        agent.memory = [task_msg, view]
         step = agent.use(tool=tool)
         self.IO.observe(step=step)
 
