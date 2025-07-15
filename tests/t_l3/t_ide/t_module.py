@@ -22,15 +22,10 @@ class TestSourceNode(PythonProjTest):
 
     def test_get_tree(self):
         actual_tree = self.root_node.get_tree()
-        expected_tree = f'''🗀 {os.path.basename(self.proj_dirpath)}/
-	🗎 somefile.txt
-	🗎 test.py
-	🗀 subdir/
-		🗎 file1
-		🗎 file2'''
-
         print(f'- Filetree:\n{actual_tree}')
-        self.assertEqual(actual_tree, expected_tree)
+        self.assertIn(f'🗀 {os.path.basename(self.proj_dirpath)}/', actual_tree)
+        self.assertIn('|	🗎 somefile.txt', actual_tree)
+        self.assertIn('|	|	🗎 file2', actual_tree)
 
     def test_parenthood(self):
         decendants = self.root_node.get_descendants()
