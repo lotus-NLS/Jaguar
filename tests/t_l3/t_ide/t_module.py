@@ -18,7 +18,7 @@ class TestSourceNode(PythonProjTest):
 
         tree = self.root_node.get_tree(node_to_idx=node_to_idx)
         print(f'- Enumerated tree:\n{tree}')
-        self.assertIn(f'🗎 somefile.txt | ID = 1', tree)
+        self.assertIn(f'🗎 somefile.txt | ID = 0', tree)
 
     def test_get_tree(self):
         actual_tree = self.root_node.get_tree()
