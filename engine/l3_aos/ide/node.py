@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Any
 
 from holytools.abstract import TreeNode
 
@@ -14,7 +14,7 @@ from holytools.abstract import TreeNode
 @dataclass
 class SourceNode(TreeNode):
     source_path : str
-    parent: SourceNode
+    parent: SourceNode | Any
     children: list[SourceNode] = field(default_factory=list)
 
     @classmethod
