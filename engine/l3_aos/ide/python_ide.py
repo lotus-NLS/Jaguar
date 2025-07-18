@@ -28,7 +28,7 @@ class PythonIDE(Workspace):
     # Workspace generics
 
     def open(self, project_dirpath : str):
-        """Starts a minimal text operable python IDE only available to you. Use for python development tasks."""
+        """Starts a minimal text operable python IDE only available to you. Use for python development t_tasks."""
         project_dirpath = self._get_abspath(fpath=project_dirpath)
         if not os.path.isdir(project_dirpath):
             raise ValueError(f'Project dirpath does not exist: {project_dirpath}')

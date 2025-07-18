@@ -4,7 +4,6 @@ from engine.l0_main.lotus_io import LotusIO
 from engine.l0_main.settings import LotusCredentials
 from engine.l1_agents import Agent
 from engine.l1_agents.tasks.task import Task
-from engine.l1_agents.workflows.workflow import Workflow, Node
 from engine.l2_models import OpenAIModel, InfConfig
 from engine.l2_models.language import Message
 from engine.l2_models.llm import LLM
@@ -40,30 +39,6 @@ class LotusEngine(Timber):
             time.sleep(2)
             msg = Message.user(text='Hello world')
             self.IO.outgoing_messages.put(msg)
-
-    def do_workflow(self, wf : Workflow) -> Node:
-        node = wf.start_node
-        workflow_description = Message.system(text=wf.notice)
-        self.agent.update_memory(entry=workflow_description)
-
-        while True:
-            self.info(f'\n## Now starting work on node: {node.name}')
-            self.do_task(task=node.mandate, max_turns=node.max_turns)
-            if not node.name in wf.source_edge_map:
-                break
-            else:
-                outgoing_edges = wf.source_edge_map[node.name]
-
-            exit_tool = wf.get_exit_tool(node_name=node.name)
-            self.agent.update_memory(entry=Message.tool(text=exit_tool.get_desc(), name=exit_tool.get_name()))
-            iterator = self.agent.step(inf_config=InfConfig(required_tool=exit_tool))
-            _ = iterator.__next__()
-            __ = iterator.__next__()
-
-            choice = exit_tool.exit_choice.get_value()
-            node = outgoing_edges[choice].target
-
-        return node
 
     def do_task(self, task : Task, max_turns : int, halt_every_step : bool = False):
         self.info(f'- {Agent.__name__}.{Agent.work.__name__}: Starting work on task')

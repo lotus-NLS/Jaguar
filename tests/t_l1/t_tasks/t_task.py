@@ -46,7 +46,7 @@ class TestTask(Unittest):
             l = l.strip(f' -')
             self.assertIn(l, tree)
 
-    def test_get_Tree(self):
+    def test_get_tree(self):
         tree = self.root.get_tree()
         self.assertIn(f'	[x] 12: Subtask 1.2', tree)
         self.assertIn(f'[ ] 2: Task 2',tree)
