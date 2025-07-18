@@ -3,9 +3,9 @@ name = "engine"
 version = "0.1.0"
 authors = [{name = "Daniel Hollarek", email = "daniel.hollarek@googlemail.com"}]
 dependencies = ["distro", "func_timeout", "requests", "tiktoken", "flask", "openai", "json_repair", "pillow", "libtmux",
-    "pylint", "flask_socketio", "fuzzywuzzy",
+    "pylint", "flask_socketio", "levenshtein",
     "holytools @ git+https://git@github.com/Somerandomguy10111/holytools",
-    "pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape", "levenshtein", 'html2text']
+    "pyscrape @ git+https://git@github.com/Somerandomguy10111/pyscrape" ]
 
 [tool.setuptools.packages.find]
 include = ["engine*", "eval*"]
